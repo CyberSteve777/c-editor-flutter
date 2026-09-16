@@ -3134,6 +3134,10 @@ class _FileItemRow extends StatelessWidget {
   static const _iconBox = 40.0;
   static const _titleBodyGap = 2.0;
 
+  /// Extra space so device fonts whose glyphs paint past the line box (common
+  /// with bold Roboto on Android) don't overflow a tight [itemExtentBuilder].
+  static const _layoutSlack = 2.0;
+
   /// Scroll-axis extent of a row, including the card's bottom margin.
   ///
   /// Used by [ListView.itemExtentBuilder] so large jumps don't lay out every
@@ -3157,7 +3161,7 @@ class _FileItemRow extends StatelessWidget {
       final textH = titleH + _titleBodyGap + subtitleH;
       contentH = textH > _iconBox ? textH : _iconBox;
     }
-    return contentH + (_verticalPadding * 2) + _marginBottom;
+    return contentH + (_verticalPadding * 2) + _marginBottom + _layoutSlack;
   }
 
   static double _measureLineHeight(
@@ -3165,16 +3169,18 @@ class _FileItemRow extends StatelessWidget {
     TextScaler textScaler, {
     required double fallbackSize,
   }) {
+    final effective = style ?? TextStyle(fontSize: fallbackSize);
     final painter = TextPainter(
-      text: TextSpan(
-        text: 'Ag',
-        style: style ?? TextStyle(fontSize: fallbackSize),
-      ),
+      text: TextSpan(text: 'Ag', style: effective),
       textDirection: TextDirection.ltr,
       textScaler: textScaler,
       maxLines: 1,
+      strutStyle: StrutStyle.fromTextStyle(effective),
     )..layout();
-    return painter.height;
+    final height = painter.height > painter.preferredLineHeight
+        ? painter.height
+        : painter.preferredLineHeight;
+    return height.ceilToDouble();
   }
 
   static const _iconBtnStyle = ButtonStyle(
@@ -3511,35 +3517,48 @@ class _FileItemRow extends StatelessWidget {
                   ),
                   SizedBox(width: gap),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          displayName,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (!item.isDirectory) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            isRsbSmf
-                                ? '.rsb.smf'
-                                : (isSmfFile
-                                      ? '.smf'
-                                      : p
-                                            .extension(item.name)
-                                            .replaceFirst('.', '')
-                                            .toUpperCase()),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                    child: LayoutBuilder(
+                      builder: (context, textConstraints) {
+                        return FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: SizedBox(
+                            width: textConstraints.maxWidth,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  displayName,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if (!item.isDirectory) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    isRsbSmf
+                                        ? '.rsb.smf'
+                                        : (isSmfFile
+                                              ? '.smf'
+                                              : p
+                                                    .extension(item.name)
+                                                    .replaceFirst('.', '')
+                                                    .toUpperCase()),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ],
                             ),
                           ),
-                        ],
-                      ],
+                        );
+                      },
                     ),
                   ),
                   Flexible(
