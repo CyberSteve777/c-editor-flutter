@@ -1363,7 +1363,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombieTagSteamRenai => 'Паровые Века/Эпоха Возрождения';
 
   @override
-  String get zombieTagHenaiAtlantis => 'Эпоха Хэйан/Подводный Мир';
+  String get zombieTagHeianAtlantis => 'Эпоха Хэйан/Подводный Мир';
 
   @override
   String get zombieTagMoon => 'Лунная База';

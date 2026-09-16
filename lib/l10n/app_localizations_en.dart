@@ -1349,7 +1349,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombieTagSteamRenai => 'Steam Ages / Renaissance Ages';
 
   @override
-  String get zombieTagHenaiAtlantis => 'Heian Ages / Underwater World';
+  String get zombieTagHeianAtlantis => 'Heian Ages / Underwater World';
 
   @override
   String get zombieTagMoon => 'Moon BaseZ';

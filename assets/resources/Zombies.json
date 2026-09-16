@@ -4060,7 +4060,7 @@
     "id": "heian_worker",
     "name": "zombie_heian_worker",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4070,7 +4070,7 @@
     "id": "heian_armor1",
     "name": "zombie_heian_armor1",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4080,7 +4080,7 @@
     "id": "heian_armor2",
     "name": "zombie_heian_armor2",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4090,7 +4090,7 @@
     "id": "heian_armor4",
     "name": "zombie_heian_armor4",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4100,7 +4100,7 @@
     "id": "heian_flag",
     "name": "zombie_heian_flag",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4110,7 +4110,7 @@
     "id": "heian_gargantuar",
     "name": "zombie_heian_gargantuar",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Gargantuar",
       "Chinese"
     ],
@@ -4120,7 +4120,7 @@
     "id": "heian_ninja",
     "name": "zombie_heian_ninja",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Imp",
       "Chinese"
     ],
@@ -4130,7 +4130,7 @@
     "id": "new_pvp_heian_ninja",
     "name": "zombie_new_pvp_heian_ninja",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Imp",
       "PvP",
       "Chinese"
@@ -4141,7 +4141,7 @@
     "id": "heian_hanabi",
     "name": "zombie_heian_hanabi",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4151,7 +4151,7 @@
     "id": "new_pvp_heian_hanabi",
     "name": "zombie_new_pvp_heian_hanabi",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "PvP",
       "Chinese"
@@ -4162,7 +4162,7 @@
     "id": "heian_akinndo",
     "name": "zombie_heian_akinndo",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4172,7 +4172,7 @@
     "id": "heian_sushi",
     "name": "zombie_heian_sushi",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Strong",
       "Chinese"
     ],
@@ -4182,7 +4182,7 @@
     "id": "heian_onmyoji",
     "name": "zombie_heian_onmyoji",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4192,7 +4192,7 @@
     "id": "new_pvp_heian_onmyoji",
     "name": "zombie_new_pvp_heian_onmyoji",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "PvP",
       "Chinese"
@@ -4203,7 +4203,7 @@
     "id": "atlantis_basic",
     "name": "zombie_atlantis_basic",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4213,7 +4213,7 @@
     "id": "atlantis_armor1",
     "name": "zombie_atlantis_armor1",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4223,7 +4223,7 @@
     "id": "atlantis_armor2",
     "name": "zombie_atlantis_armor2",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4233,7 +4233,7 @@
     "id": "atlantis_armor4",
     "name": "zombie_atlantis_armor4",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4243,7 +4243,7 @@
     "id": "atlantis_flag",
     "name": "zombie_atlantis_flag",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4253,7 +4253,7 @@
     "id": "atlantis_land_basic",
     "name": "zombie_atlantis_land_basic",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4263,7 +4263,7 @@
     "id": "atlantis_land_armor1",
     "name": "zombie_atlantis_land_armor1",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4273,7 +4273,7 @@
     "id": "atlantis_land_armor2",
     "name": "zombie_atlantis_land_armor2",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4283,7 +4283,7 @@
     "id": "atlantis_land_armor4",
     "name": "zombie_atlantis_land_armor4",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4293,7 +4293,7 @@
     "id": "atlantis_land_flag",
     "name": "zombie_atlantis_land_flag",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4303,7 +4303,7 @@
     "id": "atlantis_gargantuar",
     "name": "zombie_atlantis_gargantuar",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Gargantuar",
       "Chinese"
     ],
@@ -4313,7 +4313,7 @@
     "id": "atlantis_land_gargantuar",
     "name": "zombie_atlantis_land_gargantuar",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Gargantuar",
       "Chinese"
     ],
@@ -4323,7 +4323,7 @@
     "id": "atlantis_imp",
     "name": "zombie_atlantis_imp",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Imp",
       "Chinese"
     ],
@@ -4333,7 +4333,7 @@
     "id": "fat_dive",
     "name": "zombie_fat_dive",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Fat",
       "Chinese"
     ],
@@ -4343,7 +4343,7 @@
     "id": "lanternfish_rider",
     "name": "zombie_lanternfish_rider",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Pet",
       "Chinese"
@@ -4354,7 +4354,7 @@
     "id": "priest",
     "name": "zombie_priest",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Basic",
       "Chinese"
     ],
@@ -4364,7 +4364,7 @@
     "id": "poseidon_assistant",
     "name": "zombie_poseidon_assistant",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Strong",
       "Pet",
       "Chinese"
@@ -4375,7 +4375,7 @@
     "id": "seaurchinpitcher",
     "name": "zombie_seaurchinpitcher",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Strong",
       "Pet",
       "Chinese"
@@ -4386,7 +4386,7 @@
     "id": "giant_hermit_crab",
     "name": "zombie_giant_hermit_crab",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Pet",
       "Elite",
       "Chinese"
@@ -4397,7 +4397,7 @@
     "id": "cthulhu_jelly_fish",
     "name": "zombie_cthulhu_jelly_fish",
     "tags": [
-      "Henai_Atlantis",
+      "Heian_Atlantis",
       "Pet",
       "Elite",
       "Chinese"
@@ -6007,6 +6007,7 @@
     "id": "elite_heian_onmyoji",
     "name": "zombie_elite_heian_onmyoji",
     "tags": [
+      "Heian_Atlantis",
       "Memory",
       "Basic",
       "Elite",
@@ -6018,6 +6019,7 @@
     "id": "elite_heian_onmyoji_pvz1_normal",
     "name": "zombie_elite_heian_onmyoji_pvz1_normal",
     "tags": [
+      "Heian_Atlantis",
       "Memory",
       "Basic",
       "Elite",
@@ -6030,6 +6032,7 @@
     "id": "elite_heian_onmyoji_pvz1_hard",
     "name": "zombie_elite_heian_onmyoji_pvz1_hard",
     "tags": [
+      "Heian_Atlantis",
       "Memory",
       "Basic",
       "Elite",

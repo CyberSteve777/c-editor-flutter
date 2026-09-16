@@ -36,7 +36,7 @@ enum ZombieTag {
   eightiesDino,
   modernPvz1,
   steamRenai,
-  henaiAtlantis,
+  heianAtlantis,
   moon,
   taleZCorp,
   parkourSpeed,
@@ -71,7 +71,7 @@ const List<ZombieTag> zombieWorldTagOrder = [
   ZombieTag.eightiesDino,
   ZombieTag.modernPvz1,
   ZombieTag.steamRenai,
-  ZombieTag.henaiAtlantis,
+  ZombieTag.heianAtlantis,
   ZombieTag.moon,
   ZombieTag.taleZCorp,
   ZombieTag.parkourSpeed,
@@ -105,8 +105,8 @@ extension ZombieTagExtension on ZombieTag {
         return s.zombieTagModernPvz1;
       case ZombieTag.steamRenai:
         return s.zombieTagSteamRenai;
-      case ZombieTag.henaiAtlantis:
-        return s.zombieTagHenaiAtlantis;
+      case ZombieTag.heianAtlantis:
+        return s.zombieTagHeianAtlantis;
       case ZombieTag.moon:
         return s.zombieTagMoon;
       case ZombieTag.taleZCorp:
@@ -165,7 +165,7 @@ extension ZombieTagExtension on ZombieTag {
       case ZombieTag.eightiesDino:
       case ZombieTag.modernPvz1:
       case ZombieTag.steamRenai:
-      case ZombieTag.henaiAtlantis:
+      case ZombieTag.heianAtlantis:
       case ZombieTag.moon:
       case ZombieTag.taleZCorp:
       case ZombieTag.parkourSpeed:
