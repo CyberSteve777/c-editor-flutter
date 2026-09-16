@@ -1318,7 +1318,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombieTagSteamRenai => '蒸汽/复兴';
 
   @override
-  String get zombieTagHenaiAtlantis => '平安/海底';
+  String get zombieTagHeianAtlantis => '平安/海底';
 
   @override
   String get zombieTagMoon => '月球基地';
