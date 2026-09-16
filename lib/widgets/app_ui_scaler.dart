@@ -1,6 +1,8 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/app_ui_scale.dart';
 
@@ -10,8 +12,10 @@ const double _compactViewportBreakpoint = 600;
 /// Root UI zoom used by [MaterialApp.builder].
 ///
 /// Inflates [MediaQuery] to a larger logical size, lays the navigator out at
-/// that size with an [OverflowBox] (bounded constraints), then paints with
-/// [Transform.scale].
+/// that size, then paints with a viewport-sized scale layer so hit-tests and
+/// pixels share the same transform. Web skips the paint scale entirely: phone
+/// browsers already mismatch layout vs visual viewport, and an extra scale
+/// leaves untappable strips along the bottom and trailing edge.
 ///
 /// Do **not** use [FittedBox] here: it lays out its child with unbounded
 /// constraints, which leaves Material dialog `ConstrainedBox(minWidth: 280)`
@@ -65,8 +69,22 @@ class _AppUiScalerState extends State<AppUiScaler> {
         );
   }
 
+  Widget _unscaledChild() {
+    return AppUiScale(
+      scale: 1.0,
+      child: widget.wrapMessenger
+          ? AppMessageMessenger(child: widget.child)
+          : widget.child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Transform.scale is a known mobile-web hit-test footgun: the canvas
+    // still fills the screen, but pointers along the bottom and trailing
+    // edge miss the widgets painted there. Skip the scaler on web entirely.
+    if (kIsWeb) return _unscaledChild();
+
     final mediaQuery = MediaQuery.of(context);
 
     return LayoutBuilder(
@@ -145,24 +163,129 @@ class _AppUiScalerState extends State<AppUiScaler> {
           child: content,
         );
 
-        // Clipping invalidates the visible paint region as the window changes.
-        // Leaving filterQuality null keeps the root on a normal transform layer
-        // instead of retaining the entire interface in an ImageFilterLayer.
+        // Native Transform.scale takes the child's layout size, so compact
+        // phone scale (0.85) and user zoom leave a strip of painted pixels
+        // whose hit-tests miss. Size the scale layer to the visible window
+        // instead. Web keeps the unscaled path above: this paint scale is a
+        // native-only hit-test fix and must not return to the mobile-web canvas.
         return ClipRect(
-          child: Transform.scale(
+          key: const ValueKey('appUiScalerClip'),
+          child: _ScaledViewport(
             scale: safeScale,
-            alignment: Alignment.topLeft,
-            child: OverflowBox(
-              alignment: Alignment.topLeft,
-              minWidth: scaledSize.width,
-              maxWidth: scaledSize.width,
-              minHeight: scaledSize.height,
-              maxHeight: scaledSize.height,
-              child: media,
-            ),
+            childSize: scaledSize,
+            child: media,
           ),
         );
       },
     );
+  }
+}
+
+/// Viewport-sized scale layer: layout size is the visible window, the child is
+/// laid out at [childSize], and paint + hit-tests share the scale matrix.
+class _ScaledViewport extends SingleChildRenderObjectWidget {
+  const _ScaledViewport({
+    required this.scale,
+    required this.childSize,
+    required Widget child,
+  }) : super(child: child);
+
+  final double scale;
+  final Size childSize;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    return _RenderScaledViewport(scale: scale, childSize: childSize);
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant _RenderScaledViewport renderObject,
+  ) {
+    renderObject
+      ..scale = scale
+      ..childSize = childSize;
+  }
+}
+
+class _RenderScaledViewport extends RenderProxyBox {
+  _RenderScaledViewport({required double scale, required Size childSize})
+    : _scale = scale,
+      _childSize = childSize;
+
+  double _scale;
+  double get scale => _scale;
+  set scale(double value) {
+    if (_scale == value) return;
+    final wasCompositing = alwaysNeedsCompositing;
+    _scale = value;
+    markNeedsLayout();
+    if (wasCompositing != alwaysNeedsCompositing) {
+      markNeedsCompositingBitsUpdate();
+    }
+  }
+
+  Size _childSize;
+  Size get childSize => _childSize;
+  set childSize(Size value) {
+    if (_childSize == value) return;
+    _childSize = value;
+    markNeedsLayout();
+  }
+
+  Matrix4 get _paintTransform => Matrix4.diagonal3Values(_scale, _scale, 1);
+
+  @override
+  bool get alwaysNeedsCompositing => _scale != 1.0;
+
+  @override
+  void performLayout() {
+    size = Size(
+      constraints.hasBoundedWidth
+          ? constraints.maxWidth
+          : _childSize.width * _scale,
+      constraints.hasBoundedHeight
+          ? constraints.maxHeight
+          : _childSize.height * _scale,
+    );
+    child?.layout(BoxConstraints.tight(_childSize));
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final child = this.child;
+    if (child == null) {
+      layer = null;
+      return;
+    }
+    if (_scale == 1.0) {
+      context.paintChild(child, offset);
+      layer = null;
+      return;
+    }
+    layer = context.pushTransform(
+      needsCompositing,
+      offset,
+      _paintTransform,
+      (context, offset) => context.paintChild(child, offset),
+      oldLayer: layer as TransformLayer?,
+    );
+  }
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
+    return result.addWithPaintTransform(
+      transform: _scale == 1.0 ? null : _paintTransform,
+      position: position,
+      hitTest: (result, position) {
+        return child?.hitTest(result, position: position) ?? false;
+      },
+    );
+  }
+
+  @override
+  void applyPaintTransform(RenderBox child, Matrix4 transform) {
+    if (_scale != 1.0) transform.multiply(_paintTransform);
   }
 }

@@ -399,13 +399,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pluginOpenScreen => 'Открыть';
 
   @override
-  String get pluginOpenSettings => 'Settings';
+  String get pluginOpenSettings => 'Настройки';
 
   @override
-  String get pluginInstallAction => 'Install';
+  String get pluginInstallAction => 'Установить';
 
   @override
-  String get pluginConfigurable => 'Configurable';
+  String get pluginConfigurable => 'Настраиваемый';
 
   @override
   String get pluginFeaturesSection => 'Функции и экраны';
@@ -414,7 +414,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pluginNoDescription => 'Описание не указано.';
 
   @override
-  String get pluginSettingsUnavailable => 'This plugin has no settings screen.';
+  String get pluginSettingsUnavailable =>
+      'У этого плагина нет экрана настроек.';
 
   @override
   String get share => 'Поделиться';
@@ -934,11 +935,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get targetWaveIndex => 'Номер целевой волны';
 
   @override
-  String get targetWaveAlreadyContainsEvent => 'Already contains this event';
+  String get targetWaveAlreadyContainsEvent =>
+      'Эта волна уже содержит это событие';
 
   @override
   String get targetWaveIndexHelper =>
-      'When copying references, waves that already contain this event are automatically skipped.';
+      'При копировании ссылок волны, которые уже содержат это событие, пропускаются автоматически.';
 
   @override
   String get moveToWaveIndex => 'Переместить в волну №';
@@ -1361,7 +1363,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombieTagSteamRenai => 'Паровые Века/Эпоха Возрождения';
 
   @override
-  String get zombieTagHenaiAtlantis => 'Эпоха Хэйан/Подводный Мир';
+  String get zombieTagHeianAtlantis => 'Эпоха Хэйан/Подводный Мир';
 
   @override
   String get zombieTagMoon => 'Лунная База';
@@ -1958,22 +1960,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get addEvent => 'Добавить событие';
 
   @override
-  String get reuseExistingEvent => 'Reuse event';
+  String get reuseExistingEvent => 'Использовать существующее событие';
 
   @override
   String reuseExistingEventForWave(int wave) {
-    return 'Reuse event for wave $wave';
+    return 'Использовать существующее событие для волны $wave';
   }
 
   @override
-  String get reuseExistingEventEmpty => 'No events in this level yet';
+  String get reuseExistingEventEmpty => 'В этом уровне ещё нет событий';
 
   @override
-  String get reuseExistingEventUnused => 'Not used in any wave';
+  String get reuseExistingEventUnused => 'Не используется ни в одной волне';
 
   @override
   String reuseExistingEventUsedInWaves(String waves) {
-    return 'Waves: $waves';
+    return 'Волны: $waves';
   }
 
   @override
@@ -1989,10 +1991,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get close => 'Закрыть';
 
   @override
-  String get levelOverview => 'Level Overview';
+  String get levelOverview => 'Обзор уровня';
 
   @override
-  String get levelOverviewOpenLevel => 'Open level';
+  String get levelOverviewOpenLevel => 'Открыть уровень';
 
   @override
   String get previewStartingPlantFood => 'Начальная подкормка';
@@ -2013,19 +2015,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get previewSeedBank => 'Банк семян';
 
   @override
-  String get previewIZombieSeedBank => 'Seed Bank (I, Zombie)';
+  String get previewIZombieSeedBank => 'Банк семян (I, Zombie)';
 
   @override
   String get previewFeatures => 'Особенности';
 
   @override
-  String get previewActiveModules => 'Active Modules';
+  String get previewActiveModules => 'Активные модули';
 
   @override
   String get previewInitial => 'Начальные';
 
   @override
-  String get previewGenerateImagePreview => 'Generate preview image';
+  String get previewGenerateImagePreview => 'Создать превью изображения';
 
   @override
   String get editProperties => 'Редактировать свойства';
@@ -6929,11 +6931,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get recommendedExpeditionTilesTitle =>
-      'Works with the \"Expedition Tiles\" module';
+      'Можно использовать с модулем «Плитки Врат Экспедиции»';
 
   @override
   String get recommendedExpeditionTilesBody =>
-      'Add the \"Expedition Tiles\" module to work around the lawn\'s missing tiles and create an experience that more closely matches Expedition Gate.';
+      'Добавьте модуль «Плитки Врат Экспедиции», чтобы обойти отсутствие плиток на лужайке и получить опыт, ближе соответствующий режиму Врат Экспедиции.';
 
   @override
   String get selectedPosition => 'Выбранная позиция';

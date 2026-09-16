@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -19,6 +19,10 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Level Editor for Plants vs. Zombies 2 Chinese">
+  <!-- Do not lock pinch-zoom: iOS then reports tap coordinates that do not
+       match the canvas, killing the bottom and trailing edge. Desktop-site
+       mode ignores that restriction. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -31,6 +35,19 @@
 
   <title>C-Editor</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
+      position: fixed;
+      inset: 0;
+    }
+  </style>
 </head>
 <body>
   <!--
@@ -41,6 +58,7 @@
     For more details:
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
+  <script src="mobile_web_input.js"></script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

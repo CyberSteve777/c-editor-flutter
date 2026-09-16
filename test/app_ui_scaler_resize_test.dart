@@ -60,11 +60,8 @@ void main() {
       scaledMedia.displayFeatures.single.bounds,
       const Rect.fromLTWH(245, 0, 10, 400),
     );
-    expect(
-      tester.widget<Transform>(find.byType(Transform)).filterQuality,
-      isNull,
-    );
-    expect(find.byType(ClipRect), findsOneWidget);
+    expect(find.byKey(const ValueKey('appUiScalerClip')), findsOneWidget);
+    expect(find.byType(Transform), findsNothing);
     expect(tester.takeException(), isNull);
   });
 

@@ -988,22 +988,19 @@ class _PluginIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final image = plugin.iconImageProvider();
     final scheme = Theme.of(context).colorScheme;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: SizedBox(
-        width: size,
-        height: size,
-        child: image != null
-            ? Image(image: image, fit: BoxFit.cover)
-            : ColoredBox(
-                color: scheme.surfaceContainerHighest,
-                child: Icon(
-                  Icons.settings,
-                  size: size * 0.55,
-                  color: scheme.primary,
-                ),
+    return SizedBox(
+      width: size,
+      height: size,
+      child: image != null
+          ? Image(image: image, fit: BoxFit.contain)
+          : ColoredBox(
+              color: scheme.surfaceContainerHighest,
+              child: Icon(
+                Icons.settings,
+                size: size * 0.55,
+                color: scheme.primary,
               ),
-      ),
+            ),
     );
   }
 }

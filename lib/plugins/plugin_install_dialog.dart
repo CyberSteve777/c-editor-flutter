@@ -61,18 +61,15 @@ Future<bool> showCpluginInstallDialog(
             children: [
               Center(
                 child: icon != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image(
-                          image: icon,
-                          width: 72,
-                          height: 72,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => Icon(
-                            Icons.extension,
-                            size: 72,
-                            color: theme.colorScheme.primary,
-                          ),
+                    ? Image(
+                        image: icon,
+                        width: 72,
+                        height: 72,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, _, _) => Icon(
+                          Icons.extension,
+                          size: 72,
+                          color: theme.colorScheme.primary,
                         ),
                       )
                     : Icon(

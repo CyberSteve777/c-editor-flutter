@@ -2518,11 +2518,11 @@ abstract class AppLocalizations {
   /// **'Steam Ages / Renaissance Ages'**
   String get zombieTagSteamRenai;
 
-  /// No description provided for @zombieTagHenaiAtlantis.
+  /// No description provided for @zombieTagHeianAtlantis.
   ///
   /// In en, this message translates to:
   /// **'Heian Ages / Underwater World'**
-  String get zombieTagHenaiAtlantis;
+  String get zombieTagHeianAtlantis;
 
   /// No description provided for @zombieTagMoon.
   ///
