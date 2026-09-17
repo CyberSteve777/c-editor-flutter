@@ -1275,9 +1275,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templateCustomLawnExample => 'Custom lawn level template';
 
   @override
-  String get templateMoonGrappleExample => 'Moon Grapple level template';
-
-  @override
   String get unsavedChanges => 'Unsaved changes';
 
   @override
@@ -1291,122 +1288,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saved => 'Saved';
-
-  @override
-  String get moonGrappleSaveBlockedTitle => 'Cannot save Moon Grapple level';
-
-  @override
-  String get moonGrappleSaveBlockedMessage =>
-      'Moon Grapple levels must contain at least 3 rounds before they can be saved.';
-
-  @override
-  String moonGrappleRound(int round) {
-    return 'Round $round';
-  }
-
-  @override
-  String get moonGrappleTargetScore => 'Target score';
-
-  @override
-  String get moonGrappleSpawnThreshold => 'Spawn threshold';
-
-  @override
-  String get moonGrappleSpawnInterval => 'Spawn interval';
-
-  @override
-  String get moonGrappleMinimumSpeed => 'Minimum speed';
-
-  @override
-  String get moonGrappleMaximumSpeed => 'Maximum speed';
-
-  @override
-  String get moonGrappleRenderingFixed => 'Rendering definition is fixed';
-
-  @override
-  String get moonGrappleRemoveSpawnObject => 'Remove spawn object';
-
-  @override
-  String get moonGrappleSpawnWeight => 'Spawn weight';
-
-  @override
-  String get moonGrappleReturnSpeedFactor => 'Return speed factor';
-
-  @override
-  String get moonGrappleScore => 'Score';
-
-  @override
-  String get moonGrappleExperience => 'Experience';
-
-  @override
-  String get moonGrappleCollisionRadius => 'Collision radius';
-
-  @override
-  String get moonGrappleRemoveRound => 'Remove round';
-
-  @override
-  String get moonGrappleAddSpawnObject => 'Add spawn object';
-
-  @override
-  String get moonGrappleBackgroundObjects => 'Background objects';
-
-  @override
-  String get moonGrappleRemoveBackgroundObject => 'Remove background object';
-
-  @override
-  String get moonGrappleAnimationArtCenterFixed =>
-      'Animation and art center are fixed';
-
-  @override
-  String get moonGrappleSpeed => 'Speed';
-
-  @override
-  String get moonGrappleAddBackgroundObject => 'Add background object';
-
-  @override
-  String get moonGrappleHookGameplay => 'Hook gameplay';
-
-  @override
-  String get moonGrappleShipPosition => 'Ship position';
-
-  @override
-  String get moonGrappleMinimumHookDistance => 'Minimum hook distance';
-
-  @override
-  String get moonGrappleMaximumHookDistance => 'Maximum hook distance';
-
-  @override
-  String get moonGrappleFiringArcDegrees => 'Firing arc degrees';
-
-  @override
-  String get moonGrappleLaunchSpeed => 'Launch speed';
-
-  @override
-  String get moonGrappleEmptyReturnSpeed => 'Empty return speed';
-
-  @override
-  String get moonGrappleLoadedReturnSpeed => 'Loaded return speed';
-
-  @override
-  String get moonGrappleHookCollisionRadius => 'Hook collision radius';
-
-  @override
-  String get moonGrappleSpawnLayout => 'Spawn layout';
-
-  @override
-  String get moonGrappleFormationSpacing => 'Formation spacing';
-
-  @override
-  String get moonGrappleFormationYOffset => 'Formation Y offset';
-
-  @override
-  String get moonGrappleAddRound => 'Add round';
-
-  @override
-  String get moduleDesc_MoonGrappleModuleProperties =>
-      'Configure the Moon BaseZ grappling game.';
-
-  @override
-  String get moduleTitle_MoonGrappleModuleProperties => 'Moon Grapple';
 
   @override
   String get failedToLoadLevel =>

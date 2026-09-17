@@ -1289,9 +1289,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get templateCustomLawnExample => 'Пример пользовательской лужайки';
 
   @override
-  String get templateMoonGrappleExample => 'Пример уровня «Лунный крюк»';
-
-  @override
   String get unsavedChanges => 'Несохранённые изменения';
 
   @override
@@ -1305,123 +1302,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get saved => 'Сохранено';
-
-  @override
-  String get moonGrappleSaveBlockedTitle =>
-      'Невозможно сохранить уровень «Лунный крюк»';
-
-  @override
-  String get moonGrappleSaveBlockedMessage =>
-      'Для сохранения уровня «Лунный крюк» необходимо как минимум 3 раунда.';
-
-  @override
-  String moonGrappleRound(int round) {
-    return 'Раунд $round';
-  }
-
-  @override
-  String get moonGrappleTargetScore => 'Целевой счёт';
-
-  @override
-  String get moonGrappleSpawnThreshold => 'Порог появления';
-
-  @override
-  String get moonGrappleSpawnInterval => 'Интервал появления';
-
-  @override
-  String get moonGrappleMinimumSpeed => 'Минимальная скорость';
-
-  @override
-  String get moonGrappleMaximumSpeed => 'Максимальная скорость';
-
-  @override
-  String get moonGrappleRenderingFixed => 'Определение отображения фиксировано';
-
-  @override
-  String get moonGrappleRemoveSpawnObject => 'Удалить объект появления';
-
-  @override
-  String get moonGrappleSpawnWeight => 'Вес появления';
-
-  @override
-  String get moonGrappleReturnSpeedFactor => 'Множитель скорости возврата';
-
-  @override
-  String get moonGrappleScore => 'Счёт';
-
-  @override
-  String get moonGrappleExperience => 'Опыт';
-
-  @override
-  String get moonGrappleCollisionRadius => 'Радиус столкновения';
-
-  @override
-  String get moonGrappleRemoveRound => 'Удалить раунд';
-
-  @override
-  String get moonGrappleAddSpawnObject => 'Добавить объект появления';
-
-  @override
-  String get moonGrappleBackgroundObjects => 'Фоновые объекты';
-
-  @override
-  String get moonGrappleRemoveBackgroundObject => 'Удалить фоновый объект';
-
-  @override
-  String get moonGrappleAnimationArtCenterFixed =>
-      'Анимация и центр изображения фиксированы';
-
-  @override
-  String get moonGrappleSpeed => 'Скорость';
-
-  @override
-  String get moonGrappleAddBackgroundObject => 'Добавить фоновый объект';
-
-  @override
-  String get moonGrappleHookGameplay => 'Игровой процесс с крюком';
-
-  @override
-  String get moonGrappleShipPosition => 'Позиция корабля';
-
-  @override
-  String get moonGrappleMinimumHookDistance => 'Минимальная дальность крюка';
-
-  @override
-  String get moonGrappleMaximumHookDistance => 'Максимальная дальность крюка';
-
-  @override
-  String get moonGrappleFiringArcDegrees => 'Угол запуска';
-
-  @override
-  String get moonGrappleLaunchSpeed => 'Скорость запуска';
-
-  @override
-  String get moonGrappleEmptyReturnSpeed => 'Скорость возврата без груза';
-
-  @override
-  String get moonGrappleLoadedReturnSpeed => 'Скорость возврата с грузом';
-
-  @override
-  String get moonGrappleHookCollisionRadius => 'Радиус столкновения крюка';
-
-  @override
-  String get moonGrappleSpawnLayout => 'Расположение появления';
-
-  @override
-  String get moonGrappleFormationSpacing => 'Интервал построения';
-
-  @override
-  String get moonGrappleFormationYOffset => 'Смещение построения по Y';
-
-  @override
-  String get moonGrappleAddRound => 'Добавить раунд';
-
-  @override
-  String get moduleDesc_MoonGrappleModuleProperties =>
-      'Настройка игры «Лунный крюк» на Лунной базе.';
-
-  @override
-  String get moduleTitle_MoonGrappleModuleProperties => 'Лунный крюк';
 
   @override
   String get failedToLoadLevel =>

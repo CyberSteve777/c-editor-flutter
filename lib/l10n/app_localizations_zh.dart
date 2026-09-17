@@ -1245,9 +1245,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get templateCustomLawnExample => '自定义地图示例';
 
   @override
-  String get templateMoonGrappleExample => '月球钩爪关卡示例';
-
-  @override
   String get unsavedChanges => '有未保存的更改';
 
   @override
@@ -1261,119 +1258,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get saved => '已保存';
-
-  @override
-  String get moonGrappleSaveBlockedTitle => '无法保存月球钩爪关卡';
-
-  @override
-  String get moonGrappleSaveBlockedMessage => '月球钩爪关卡至少需要 3 个回合才能保存。';
-
-  @override
-  String moonGrappleRound(int round) {
-    return '第 $round 回合';
-  }
-
-  @override
-  String get moonGrappleTargetScore => '目标分数';
-
-  @override
-  String get moonGrappleSpawnThreshold => '生成阈值';
-
-  @override
-  String get moonGrappleSpawnInterval => '生成间隔';
-
-  @override
-  String get moonGrappleMinimumSpeed => '最低速度';
-
-  @override
-  String get moonGrappleMaximumSpeed => '最高速度';
-
-  @override
-  String get moonGrappleRenderingFixed => '渲染定义固定';
-
-  @override
-  String get moonGrappleRemoveSpawnObject => '移除生成物';
-
-  @override
-  String get moonGrappleSpawnWeight => '生成权重';
-
-  @override
-  String get moonGrappleReturnSpeedFactor => '返回速度倍率';
-
-  @override
-  String get moonGrappleScore => '分数';
-
-  @override
-  String get moonGrappleExperience => '经验';
-
-  @override
-  String get moonGrappleCollisionRadius => '碰撞半径';
-
-  @override
-  String get moonGrappleRemoveRound => '移除回合';
-
-  @override
-  String get moonGrappleAddSpawnObject => '添加生成物';
-
-  @override
-  String get moonGrappleBackgroundObjects => '背景物体';
-
-  @override
-  String get moonGrappleRemoveBackgroundObject => '移除背景物体';
-
-  @override
-  String get moonGrappleAnimationArtCenterFixed => '动画和美术中心固定';
-
-  @override
-  String get moonGrappleSpeed => '速度';
-
-  @override
-  String get moonGrappleAddBackgroundObject => '添加背景物体';
-
-  @override
-  String get moonGrappleHookGameplay => '抓钩玩法';
-
-  @override
-  String get moonGrappleShipPosition => '飞船位置';
-
-  @override
-  String get moonGrappleMinimumHookDistance => '最小抓钩距离';
-
-  @override
-  String get moonGrappleMaximumHookDistance => '最大抓钩距离';
-
-  @override
-  String get moonGrappleFiringArcDegrees => '发射弧度';
-
-  @override
-  String get moonGrappleLaunchSpeed => '发射速度';
-
-  @override
-  String get moonGrappleEmptyReturnSpeed => '空载返回速度';
-
-  @override
-  String get moonGrappleLoadedReturnSpeed => '负载返回速度';
-
-  @override
-  String get moonGrappleHookCollisionRadius => '抓钩碰撞半径';
-
-  @override
-  String get moonGrappleSpawnLayout => '生成布局';
-
-  @override
-  String get moonGrappleFormationSpacing => '编队间距';
-
-  @override
-  String get moonGrappleFormationYOffset => '编队 Y 偏移';
-
-  @override
-  String get moonGrappleAddRound => '添加回合';
-
-  @override
-  String get moduleDesc_MoonGrappleModuleProperties => '配置月球基地的月球钩爪小游戏。';
-
-  @override
-  String get moduleTitle_MoonGrappleModuleProperties => '月球钩爪';
 
   @override
   String get failedToLoadLevel => '关卡加载失败。\n建议检查关卡文件是否为加密格式 (如热更新使用的JSON文件)。';

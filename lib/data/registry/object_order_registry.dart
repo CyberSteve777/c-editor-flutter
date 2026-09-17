@@ -36,7 +36,6 @@ class ObjectOrderRegistry {
     'HeianWindModuleProperties',
     'SpermWhaleModuleProperties',
     'MoonLifeSupportSystemProperties',
-    'MoonGrappleModuleProperties',
     'LunarTerminalModuleProperties',
     'RadiationMeteorModuleProperties',
     'LevelPowerupModuleProperties',
