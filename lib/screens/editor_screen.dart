@@ -410,7 +410,10 @@ class _EditorScreenState extends State<EditorScreen> {
     }
     if (!existingClasses.contains('ZombiesDeadWinConProperties') &&
         !existingClasses.contains('BronzeDeadWinConProperties')) {
-      if (!isEvilDave && !isZombossMechBattle && !isZombossBattle) {
+      if (!isEvilDave &&
+          !isZombossMechBattle &&
+          !isZombossBattle &&
+          !existingClasses.contains('PVZ1SeeingStarsModuleProperties')) {
         missingList.add('ZombiesDeadWinConProperties');
       }
     }
