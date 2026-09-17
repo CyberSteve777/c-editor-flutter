@@ -35,6 +35,9 @@ import 'package:c_editor/screens/editor/others/unknown_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/star_challenge_screen.dart';
 import 'package:c_editor/screens/editor/modules/max_sun_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/moon_expert_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/statue_maze_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/camel_minigame_screen.dart';
+import 'package:c_editor/screens/editor/modules/oak_train_screen.dart';
 import 'package:c_editor/screens/editor/modules/rift_theme_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/bowling_minigame_screen.dart';
 import 'package:c_editor/screens/editor/modules/death_hole_module_screen.dart';
@@ -410,7 +413,10 @@ class _EditorScreenState extends State<EditorScreen> {
     }
     if (!existingClasses.contains('ZombiesDeadWinConProperties') &&
         !existingClasses.contains('BronzeDeadWinConProperties')) {
-      if (!isEvilDave && !isZombossMechBattle && !isZombossBattle) {
+      if (!isEvilDave &&
+          !isZombossMechBattle &&
+          !isZombossBattle &&
+          !existingClasses.contains('PVZ1SeeingStarsModuleProperties')) {
         missingList.add('ZombiesDeadWinConProperties');
       }
     }
@@ -421,7 +427,8 @@ class _EditorScreenState extends State<EditorScreen> {
           !isSingleHanded &&
           !isSingleHandedTutorial &&
           !isZombossMechBattle &&
-          !isZombossBattle) {
+          !isZombossBattle &&
+          !existingClasses.contains('CamelMinigameProperties')) {
         missingList.add('StandardLevelIntroProperties');
       }
     }
@@ -517,6 +524,10 @@ class _EditorScreenState extends State<EditorScreen> {
                 builder: (_) => ZombieSelectionScreen(
                   stateBucketId: _selectionStateBucketId,
                   editorCubit: _ec,
+                  levelFile: _ec.state.levelFile,
+                  onAddModule: (objClass) {
+                    _addModule(ModuleRegistry.getMetadata(objClass));
+                  },
                   multiSelect: false,
                   onZombieSelected: (id) {
                     Navigator.pop(context);
@@ -1253,6 +1264,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1289,6 +1304,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1327,6 +1346,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1363,6 +1386,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1458,6 +1485,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1552,6 +1583,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1611,6 +1646,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1670,6 +1709,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1756,6 +1799,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1794,6 +1841,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1942,6 +1993,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -2220,6 +2275,10 @@ class _EditorScreenState extends State<EditorScreen> {
         builder: (_) => ZombieSelectionScreen(
           stateBucketId: _selectionStateBucketId,
           editorCubit: _ec,
+          levelFile: _ec.state.levelFile,
+          onAddModule: (objClass) {
+            _addModule(ModuleRegistry.getMetadata(objClass));
+          },
           multiSelect: false,
           onZombieSelected: (id) {
             Navigator.pop(context);
@@ -2617,6 +2676,48 @@ class _EditorScreenState extends State<EditorScreen> {
     }
 
     // Check if we have a specific screen for this module
+    if (objClass == 'StatueMazeModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => StatueMazeModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (objClass == 'CamelMinigameProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CamelMinigameScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (objClass == 'OakTrainProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OakTrainScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
     if (objClass == 'StarChallengeModuleProperties') {
       Navigator.push(
         context,
@@ -2710,6 +2811,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: true,
                     onZombieSelected: (_) {},
                     onMultiZombieSelected: (ids) {
@@ -2743,6 +2848,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -2851,8 +2960,7 @@ class _EditorScreenState extends State<EditorScreen> {
       );
       return;
     }
-    if (info.source == 'CurrentLevel' &&
-        objClass == 'PVZ1SeeingStarsModuleProperties') {
+    if (objClass == 'PVZ1SeeingStarsModuleProperties') {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -3203,6 +3311,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: true,
                     onZombieSelected: (_) {},
                     onMultiZombieSelected: (ids) {
@@ -3415,6 +3527,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);

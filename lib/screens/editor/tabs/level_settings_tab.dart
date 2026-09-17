@@ -248,6 +248,7 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
     final activeConflicts = ConflictRegistry.getActiveConflicts(
       context,
       existingObjClasses,
+      levelFile: _levelFileWithDefinition(),
     );
     final levelWarnings =
         widget.warnings ??

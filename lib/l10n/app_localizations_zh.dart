@@ -2134,6 +2134,66 @@ class AppLocalizationsZh extends AppLocalizations {
       '波次生成器内嵌波次数据，不能与独立的波次管理器容器同时使用。';
 
   @override
+  String conflictDesc_StatueMazeIncompatible(String module) {
+    return '雕像迷宫与$module冲突。同时使用会导致游戏运行异常。不建议同时使用雕像迷宫和$module。';
+  }
+
+  @override
+  String conflictDesc_CamelMinigameNonTouchZombies(String zombies) {
+    return '骆驼翻牌仅支持触摸类骆驼僵尸。在波次生成器中发现非触摸类僵尸：$zombies。请将它们替换为触摸类僵尸以恢复关卡功能。';
+  }
+
+  @override
+  String get targetZombieWithoutOakTrainWarning =>
+      'Target 系列僵尸（zombie_target_*）需要 OakTrain 模块才能正常工作。在没有 OakTrain 的情况下使用会导致游戏运行异常。';
+
+  @override
+  String get targetZombieRequiresOakTrain =>
+      'Target 系列僵尸需要 OakTrain 模块。请先将 OakTrain 添加到关卡中。';
+
+  @override
+  String targetZombieRequiresOakTrainDialog(String module) {
+    return '该僵尸需要 $module 模块。是否将其添加到关卡中？';
+  }
+
+  @override
+  String get conflictDesc_CamelMinigameIntro =>
+      '骆驼翻牌与 Standard Level Intro（开场动画）模块冲突。同时使用会导致异常。建议移除开场动画模块，保留骆驼翻牌，因为骆驼翻牌内置了自己的开场动画。';
+
+  @override
+  String get targetZombieInWaveManagerWarningTitle =>
+      'Target 僵尸 + Wave Manager';
+
+  @override
+  String get targetZombieInWaveManagerWarning =>
+      'Target 系列僵尸（zombie_target_*）与 Wave Manager 配合时可能无法正常工作。建议使用 Wave Generator 并启用地底出现模式，以确保这些僵尸完整运行。';
+
+  @override
+  String get camelMinigameWaveManagerHintTitle => '骆驼翻牌 + Wave Manager';
+
+  @override
+  String get camelMinigameWaveManagerHint =>
+      '在最终波次中所有骆驼触摸僵尸被消灭后，游戏会自动消灭其余僵尸并结束关卡。在骆驼翻牌与 Wave Manager 配合使用时请注意这一点。';
+
+  @override
+  String get oakTrainUnderwaterWarningTitle => '橡木弓箭手 + 水下地图';
+
+  @override
+  String get oakTrainUnderwaterWarning =>
+      '橡木弓箭手在水下世界地图（包括其自定义变体）上没有氧气，会自动死亡，关卡将判定为失败。';
+
+  @override
+  String get camelRiseFromGroundOnlyCamelTouch =>
+      '地底出现仅适用于骆驼触摸僵尸。在骆驼翻牌中，其他僵尸无法使用此生成模式。';
+
+  @override
+  String get waveGeneratorRiseFromGroundWarningTitle => '地底出现模式';
+
+  @override
+  String get waveGeneratorRiseFromGroundWarning =>
+      '在地底出现模式下，大多数僵尸无法移动或使用技能。如果指定了具体行但未指定生成格子，僵尸将始终在第一行的第一格生成。建议为僵尸随机分配行或手动选择生成格子。';
+
+  @override
   String get missingPlantModuleWarningTitle => '缺少平行宇宙植物所需模块';
 
   @override
@@ -2291,6 +2351,11 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String plantModuleRequiredMessage(String moduleName) {
     return '要选择此植物，需要添加「$moduleName」模块。';
+  }
+
+  @override
+  String zombieModuleRequiredMessage(String moduleName) {
+    return '要选择此僵尸，需要添加「$moduleName」模块。';
   }
 
   @override
@@ -8610,6 +8675,45 @@ class AppLocalizationsZh extends AppLocalizations {
       '当前初始随机出怪点数高于每波点数增量，可能导致关卡加载时闪退。';
 
   @override
+  String get waveGeneratorSpawnColumns => '从地底出现僵尸的列范围';
+
+  @override
+  String get waveGeneratorRiseFromGround => '从地底出现模式';
+
+  @override
+  String get waveGeneratorRiseFromGroundHint => '启用后，僵尸会从指定格子从地底钻出，而非从右侧走入。';
+
+  @override
+  String get waveGeneratorIgnoreFlagCarriers => '忽略旗帜僵尸';
+
+  @override
+  String get waveGeneratorIgnoreFlagCarriersHint => '在随机出怪中禁用自动旗帜僵尸。';
+
+  @override
+  String get waveGeneratorWaveSpawnTime => '波次出怪延迟 (WaveSpawnTime)';
+
+  @override
+  String get waveGeneratorWaveSpawnTimeHint => '上一波结束后，等待多少秒才开始出这一波。';
+
+  @override
+  String get waveGeneratorZombieTargetValidTime => '目标有效时间 (TargetValidTime)';
+
+  @override
+  String get waveGeneratorZombieTargetValidTimeHint => '该僵尸可被技能锁定的持续时间（秒）。';
+
+  @override
+  String get waveGeneratorZombieRiseGridX => '出现列 (Rise_GridX)';
+
+  @override
+  String get waveGeneratorZombieRiseGridXHint => '僵尸从地底钻出的列。使用 \'?\' 表示随机。';
+
+  @override
+  String get waveGeneratorZombieRiseGridY => '出现行 (Rise_GridY)';
+
+  @override
+  String get waveGeneratorZombieRiseGridYHint => '僵尸从地底钻出的行。使用 \'?\' 表示随机。';
+
+  @override
   String waveGeneratorWaveCountSummary(int count) {
     return '共$count波';
   }
@@ -9567,4 +9671,243 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get powerPinchInfo => '用双指对准僵尸做捏合手势，像使用剪刀一样剪掉僵尸的脑袋，快速解除威胁。';
+
+  @override
+  String get moduleTitle_StatueMazeModuleProperties => '石像迷阵';
+
+  @override
+  String get moduleDesc_StatueMazeModuleProperties =>
+      '石像迷阵小游戏，玩家在旋转的网格中点击正确的石像';
+
+  @override
+  String get moduleHelpStatueMazeOverviewBody =>
+      '石像迷阵模块添加一个旋转网格拼图小游戏。每轮展示一组旋转的石像网格，玩家需要在时间内点击正确的石像。';
+
+  @override
+  String get moduleHelpStatueMazeSetsBody =>
+      '每个设置定义一轮拼图。您可以添加多轮，每轮可设置不同的网格大小、时间限制和目标数量。';
+
+  @override
+  String get moduleHelpStatueMazeTilesBody =>
+      '类型 \"c\" 是玩家需要点击的正确格子。类型 \"ac\" 是全对目标格子。WaitDuration 是格子旋转之间的停顿时间，RotateTime 是每次旋转的持续时间。';
+
+  @override
+  String statueMazeSet(int index) {
+    return '第 $index 组';
+  }
+
+  @override
+  String get statueMazeMatrixSize => '网格大小 (MatrixSize)';
+
+  @override
+  String get statueMazeDisplayTime => '显示时间（秒）';
+
+  @override
+  String get statueMazeTargetNum => '目标数量 (TargetNum)';
+
+  @override
+  String get statueMazeBonusLife => '额外生命 (BonusLife)';
+
+  @override
+  String get statueMazeTileType => '格子类型';
+
+  @override
+  String get statueMazeTileTypeCorrect => '正确 (c)';
+
+  @override
+  String get statueMazeTileTypeAllCorrect => '全对 (ac)';
+
+  @override
+  String get statueMazeWaitDuration => '等待时间（秒）';
+
+  @override
+  String get statueMazeRotateTime => '旋转时间（秒）';
+
+  @override
+  String get statueMazeAddSet => '添加组';
+
+  @override
+  String get statueMazeRemoveSet => '移除组';
+
+  @override
+  String get statueMazeAddTile => '添加格子';
+
+  @override
+  String get statueMazeRemoveTile => '移除格子';
+
+  @override
+  String get statueMazeTiles => '格子';
+
+  @override
+  String get statueMazeSets => '组';
+
+  @override
+  String get statueMazeRotations => '旋转';
+
+  @override
+  String get statueMazeGridSize => '网格大小';
+
+  @override
+  String get statueMazeNoRotations => '暂无旋转';
+
+  @override
+  String get statueMazePlay => '播放旋转';
+
+  @override
+  String get statueMazePlaying => '播放中...';
+
+  @override
+  String get statueMazeStop => '停止';
+
+  @override
+  String get moduleHelpStatueMazeRotationsBody =>
+      'Each rotation step spins the entire grid. \"c\" is clockwise, \"ac\" is anti-clockwise. WaitDuration is the pause before the rotation starts, RotateTime is how long the spin takes.';
+
+  @override
+  String get statueMazeRotationsHint => '点击箭头切换方向。点击卡片编辑等待和旋转时间。长按删除。';
+
+  @override
+  String get statueMazeRemoveRotationConfirm => '移除此旋转步骤？';
+
+  @override
+  String get moduleTitle_CamelMinigameProperties => '骆驼翻牌';
+
+  @override
+  String get moduleDesc_CamelMinigameProperties => '骆驼翻牌小游戏，玩家翻开卡片寻找配对';
+
+  @override
+  String get moduleHelpCamelOverviewBody =>
+      '骆驼翻牌小游戏在草坪上放置骆驼卡牌链。僵尸从地里钻出来，玩家需要在时间内翻开卡牌找到配对。';
+
+  @override
+  String get moduleHelpCamelTimingsBody =>
+      'CardMatchTime 是匹配成功后的延迟时间。CardMatchingTime 是翻牌动画时长。CardNoMatchTime 是匹配失败或单开一张卡后的闲置时间。';
+
+  @override
+  String get moduleHelpCamelSpawningBody =>
+      'MinSpawnXStart / MinSpawnXEnd 定义新卡牌链出现的水平范围。MaxSpawnX 是最右侧生成坐标（第1列最左线为0）。AdditionalXBufferBetweenChains 在该位置有僵尸时将后续卡牌链往后推移。';
+
+  @override
+  String get camelAdditionalXBuffer =>
+      '卡链 X 缓冲 (AdditionalXBufferBetweenChains)';
+
+  @override
+  String get camelRiseStagger => '骆驼钻出间隔（秒）';
+
+  @override
+  String get camelCardMatchTime => '匹配成功延迟（CardMatchTime，秒）';
+
+  @override
+  String get camelCardMatchingTime => '翻牌动画时间（CardMatchingTime，秒）';
+
+  @override
+  String get camelCardNoMatchTime => '匹配失败闲置时间（CardNoMatchTime，秒）';
+
+  @override
+  String get camelCardTypesUsed => '卡牌种类（1-7）';
+
+  @override
+  String get camelTutorialRiseDelay => '教学僵尸钻出延迟（秒）';
+
+  @override
+  String get camelMaxSpawnX => '最大生成 X';
+
+  @override
+  String get camelMinSpawnXEnd => '最小生成 X 末端';
+
+  @override
+  String get camelMinSpawnXStart => '最小生成 X 起始';
+
+  @override
+  String get camelShowTutorial => '显示教学';
+
+  @override
+  String get moduleTitle_OakTrainProperties => '箭箭爆头';
+
+  @override
+  String get moduleDesc_OakTrainProperties => '橡木弓手射击小游戏，玩家通过爆头击杀来袭敌人得分';
+
+  @override
+  String get moduleHelpOakTrainOverviewBody =>
+      '箭箭爆头小游戏在草坪上放置一名橡木弓手。敌人波次来袭，玩家需要通过击杀得分。弓手有总生命值上限，治疗药水和强化弓箭会按周期补充。';
+
+  @override
+  String get moduleHelpOakTrainScoresBody =>
+      'ArrowScore 是基础攻击得分。WizardScore、ArchmageScore 和 BossScore 是击杀特定敌人类型的额外得分。';
+
+  @override
+  String get moduleHelpOakTrainArrowsBody =>
+      'ArrowPowerNum 是每个周期补充的强化弓箭数量。ArrowMultipleNum 是每个周期补充的分裂弓箭数量。HealNum 是生命药水恢复的血量。';
+
+  @override
+  String get oakTrainTotalLife => '总生命值 (TotalLife)';
+
+  @override
+  String get oakTrainArrowScore => '基础攻击得分 (ArrowScore)';
+
+  @override
+  String get oakTrainWizardScore => '击杀巫师得分 (WizardScore)';
+
+  @override
+  String get oakTrainArchmageScore => '击杀大法师得分 (ArchmageScore)';
+
+  @override
+  String get oakTrainBossScore => '击杀巨人Boss得分 (BossScore)';
+
+  @override
+  String get oakTrainHealNum => '生命药水恢复量 (HealNum)';
+
+  @override
+  String get oakTrainArrowPowerNum => '每轮补充强化弓箭 (ArrowPowerNum)';
+
+  @override
+  String get oakTrainArrowMultipleNum => '每轮补充分裂弓箭 (ArrowMultipleNum)';
+
+  @override
+  String get oakTrainInitArrowsNum => '初始弓箭数量（普通、强化、分裂）';
+
+  @override
+  String get oakTrainInitArrowNormal => '普通弓箭';
+
+  @override
+  String get oakTrainInitArrowPower => '强化弓箭';
+
+  @override
+  String get oakTrainInitArrowSplit => '分裂弓箭';
+
+  @override
+  String get oakTrainInitArrowUnused => '未使用';
+
+  @override
+  String get moduleTitle_OakTrainIntroProperties => '橡木弓手教学';
+
+  @override
+  String get moduleDesc_OakTrainIntroProperties => '箭箭爆头小游戏的开场动画';
+
+  @override
+  String get moduleTitle_GoldRoadProperties => '黄金之路（除草）';
+
+  @override
+  String get moduleDesc_GoldRoadProperties => '失落之城小游戏，第一行和最后一行无法种植';
+
+  @override
+  String get goldRoadNonLostCityLawnWarningTitle => '非失落之城草坪';
+
+  @override
+  String get goldRoadNonLostCityLawnWarning =>
+      '黄金之路（除草）专为失落之城草坪设计。不建议在其他草坪中使用，否则会影响关卡的视觉效果。';
+
+  @override
+  String get goldRoadDeepseaLawnWarningTitle => '不兼容的草坪';
+
+  @override
+  String get goldRoadDeepseaLawnWarning =>
+      '黄金之路（除草）与水下世界草坪不兼容。使用后会错误地阻挡第一行和第五行，而非第一行和最后一行。';
+
+  @override
+  String get goldRoadCustomLostCityLawnWarningTitle => '非原生失落之城草坪';
+
+  @override
+  String get goldRoadCustomLostCityLawnWarning =>
+      '黄金之路（除草）专为原生失落之城草坪设计。您的关卡使用了加载了失落之城资源的自定义草坪，这仍可能影响关卡的视觉效果。请谨慎使用此模块。';
 }

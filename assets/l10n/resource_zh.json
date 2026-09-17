@@ -3323,5 +3323,16 @@
     "zombossmech_skycity_12th": "周年天空僵王 (秃鹫战机)",
     "zombossmech_skycity_vacation": "挑战天空僵王 (秃鹫战机)",
     "zombossmech_steam": "蒸汽时代僵王 (汽笛狰鸣者)",
-    "zombossmech_steam_12th": "周年蒸汽僵王 (蒸汽火车头)"
+    "zombossmech_steam_12th": "周年蒸汽僵王 (蒸汽火车头)",
+    "zombie_camel_onehump_touch": "骆驼僵尸 (3节，触摸)",
+    "zombie_camel_twohump_touch": "骆驼僵尸 (4节，触摸)",
+    "zombie_camel_manyhump_touch": "骆驼僵尸 (6节，触摸)",
+    "zombie_camel_segment_touch": "骆驼僵尸 (分节，触摸)",
+    "zombie_target_bottle": "靶子僵尸 (瓶子)",
+    "zombie_target_arrow_yellow": "靶子僵尸 (黄色箭)",
+    "zombie_target_arrow_blue": "靶子僵尸 (蓝色箭)",
+    "zombie_target_arrow_purple": "靶子僵尸 (紫色箭)",
+    "zombie_target_archmage": "靶子大法师",
+    "zombie_target_wizard": "靶子巫师",
+    "zombie_target_gargantuar": "靶子巨人"
 }

@@ -305,6 +305,105 @@ class WarningRegistry {
       title: (_, l10n) => l10n.warning,
       message: (_, l10n) => l10n.warningStageSwitchedTo5Rows,
     ),
+    LevelWarningRule(
+      id: 'targetZombieWithoutOakTrain',
+      isActive: (ctx) {
+        if (ctx.hasModule('OakTrainProperties')) return false;
+        return _hasTargetZombies(ctx.levelFile);
+      },
+      severity: LevelWarningSeverity.error,
+      title: (_, l10n) => l10n.conflictTitle_ModuleLogic,
+      message: (_, l10n) => l10n.targetZombieWithoutOakTrainWarning,
+    ),
+    LevelWarningRule(
+      id: 'oakTrainUnderwaterWarning',
+      isActive: (ctx) =>
+          ctx.hasModule('OakTrainProperties') &&
+          LevelParser.isDeepSeaLawn(ctx.levelDef, ctx.levelFile),
+      severity: LevelWarningSeverity.warning,
+      title: (_, l10n) => l10n.oakTrainUnderwaterWarningTitle,
+      message: (_, l10n) => l10n.oakTrainUnderwaterWarning,
+    ),
+    LevelWarningRule(
+      id: 'targetZombieInWaveManager',
+      isActive: (ctx) {
+        if (ctx.hasModule('OakTrainProperties')) return false;
+        if (!ctx.hasModule('WaveManagerModuleProperties')) return false;
+        return _hasTargetZombies(ctx.levelFile);
+      },
+      severity: LevelWarningSeverity.warning,
+      title: (_, l10n) => l10n.targetZombieInWaveManagerWarningTitle,
+      message: (_, l10n) => l10n.targetZombieInWaveManagerWarning,
+    ),
+    LevelWarningRule(
+      id: 'camelMinigameWaveManagerHint',
+      isActive: (ctx) =>
+          ctx.hasModule('CamelMinigameProperties') &&
+          ctx.hasModule('WaveManagerModuleProperties'),
+      severity: LevelWarningSeverity.warning,
+      title: (_, l10n) => l10n.camelMinigameWaveManagerHintTitle,
+      message: (_, l10n) => l10n.camelMinigameWaveManagerHint,
+    ),
+    LevelWarningRule(
+      id: 'waveGeneratorRiseFromGroundWarning',
+      isActive: (ctx) {
+        if (!ctx.hasModule('WaveGeneratorProperties')) return false;
+        final waveGenerator = ctx.firstObject('WaveGeneratorProperties');
+        if (waveGenerator?.objData is! Map) return false;
+        final waveData = waveGenerator!.objData as Map<String, dynamic>;
+        if ((waveData['isRiseFromGroundMode'] as bool?) == true) return true;
+        final waves = waveData['waves'];
+        if (waves is List) {
+          for (final wave in waves) {
+            if (wave is Map &&
+                (wave['riseFromGroundMode'] as bool?) == true) {
+              return true;
+            }
+          }
+        }
+        return false;
+      },
+      severity: LevelWarningSeverity.warning,
+      title: (_, l10n) => l10n.waveGeneratorRiseFromGroundWarningTitle,
+      message: (_, l10n) => l10n.waveGeneratorRiseFromGroundWarning,
+    ),
+    LevelWarningRule(
+      id: 'goldRoadNonLostCityLawnWarning',
+      isActive: (ctx) {
+        if (!ctx.hasModule('GoldRoadProperties')) return false;
+        if (LevelParser.isNativeLostCityLawn(ctx.levelDef, ctx.levelFile)) {
+          return false;
+        }
+        if (LevelParser.usesLostCityBackground(ctx.levelDef, ctx.levelFile)) {
+          return false;
+        }
+        if (LevelParser.isDeepSeaLawn(ctx.levelDef, ctx.levelFile)) return false;
+        return true;
+      },
+      title: (_, l10n) => l10n.goldRoadNonLostCityLawnWarningTitle,
+      message: (_, l10n) => l10n.goldRoadNonLostCityLawnWarning,
+    ),
+    LevelWarningRule(
+      id: 'goldRoadCustomLostCityLawnWarning',
+      isActive: (ctx) {
+        if (!ctx.hasModule('GoldRoadProperties')) return false;
+        if (LevelParser.isDeepSeaLawn(ctx.levelDef, ctx.levelFile)) return false;
+        if (LevelParser.isNativeLostCityLawn(ctx.levelDef, ctx.levelFile)) {
+          return false;
+        }
+        return LevelParser.usesLostCityBackground(ctx.levelDef, ctx.levelFile);
+      },
+      title: (_, l10n) => l10n.goldRoadCustomLostCityLawnWarningTitle,
+      message: (_, l10n) => l10n.goldRoadCustomLostCityLawnWarning,
+    ),
+    LevelWarningRule(
+      id: 'goldRoadDeepseaLawnWarning',
+      isActive: (ctx) =>
+          ctx.hasModule('GoldRoadProperties') &&
+          LevelParser.isDeepSeaLawn(ctx.levelDef, ctx.levelFile),
+      title: (_, l10n) => l10n.goldRoadDeepseaLawnWarningTitle,
+      message: (_, l10n) => l10n.goldRoadDeepseaLawnWarning,
+    ),
   ];
 
   /// Evaluates every rule against [ctx] and returns the localized results in
@@ -341,5 +440,126 @@ class WarningRegistry {
       LevelWarningContext.fromLevel(levelFile, parsed: parsed),
       editorOnly: editorOnly,
     );
+  }
+
+  static bool _isTargetZombieAlias(String alias) {
+    return alias.startsWith('zombie_target_arrow') ||
+        alias.startsWith('zombie_target_bottle') ||
+        alias.startsWith('zombie_target_wizard') ||
+        alias.startsWith('zombie_target_archmage') ||
+        alias.startsWith('zombie_target_gargantuar');
+  }
+
+  static bool _hasTargetZombies(PvzLevelFile levelFile) {
+    final customBaseTypes = <String, String>{};
+    for (final obj in levelFile.objects) {
+      if (obj.objClass != 'ZombieType') continue;
+      final aliases = obj.aliases;
+      if (aliases == null || aliases.isEmpty) continue;
+      final data = obj.objData;
+      if (data is! Map<String, dynamic>) continue;
+      final baseType = data['TypeName'] as String?;
+      if (baseType != null) {
+        customBaseTypes[aliases.first] = baseType;
+      }
+    }
+    for (final obj in levelFile.objects) {
+      if (obj.objData is! Map) continue;
+      if (_scanForTargetZombies(obj.objData, customBaseTypes)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static final _rtidRegex = RegExp(r'^RTID\(([^@()]+)@([^@()]+)\)$');
+
+  static bool _scanForTargetZombies(
+    dynamic d,
+    Map<String, String> customBaseTypes, {
+    bool isZombieEntry = false,
+  }) {
+    if (d is Map<String, dynamic>) {
+      const zombieTypeKeys = {
+        'ZombieType',
+        'ZombieName',
+        'ZombieTypeName',
+        'SpiderZombieName',
+        'ZombieInsideBallType',
+      };
+      for (final key in zombieTypeKeys) {
+        final value = d[key];
+        if (value is String && value.isNotEmpty) {
+          if (_isTargetZombieString(value, customBaseTypes)) return true;
+        }
+      }
+      for (final key in const ['Type', 'TypeName']) {
+        final value = d[key];
+        if (value is String && value.isNotEmpty) {
+          if (isZombieEntry || _looksLikeZombieRef(value)) {
+            if (_isTargetZombieString(value, customBaseTypes)) return true;
+          }
+        }
+      }
+      const zombieCollections = {
+        'Zombies',
+        'ZombiePool',
+        'AddToZombiePool',
+        'InitialZombiePlacements',
+        'ZombieSpawnData',
+        'ZombieTypesToSpawn',
+        'InitialZombie',
+      };
+      for (final entry in d.entries) {
+        if (_scanForTargetZombies(
+          entry.value,
+          customBaseTypes,
+          isZombieEntry: zombieCollections.contains(entry.key),
+        )) {
+          return true;
+        }
+      }
+    } else if (d is List) {
+      for (final e in d) {
+        if (_scanForTargetZombies(
+          e,
+          customBaseTypes,
+          isZombieEntry: isZombieEntry,
+        )) {
+          return true;
+        }
+      }
+    } else if (isZombieEntry && d is String) {
+      if (_isTargetZombieString(d, customBaseTypes)) return true;
+    }
+    return false;
+  }
+
+  static bool _isTargetZombieString(
+    String value,
+    Map<String, String> customBaseTypes,
+  ) {
+    final v = value.trim();
+    if (v.isEmpty) return false;
+    final m = _rtidRegex.firstMatch(v);
+    if (m != null) {
+      final alias = m.group(1)!;
+      final source = m.group(2)!;
+      if (source == 'ZombieTypes') {
+        return _isTargetZombieAlias(alias);
+      } else if (source == 'CurrentLevel') {
+        final base = customBaseTypes[alias];
+        return base != null && _isTargetZombieAlias(base);
+      }
+    } else if (!v.startsWith('RTID(')) {
+      return _isTargetZombieAlias(v);
+    }
+    return false;
+  }
+
+  static bool _looksLikeZombieRef(String value) {
+    final m = _rtidRegex.firstMatch(value.trim());
+    if (m == null) return false;
+    return m.group(2) == 'ZombieTypes' || m.group(2) == 'CurrentLevel';
   }
 }

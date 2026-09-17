@@ -3323,5 +3323,16 @@
     "zombossmech_skycity_12th": "Юбилейный зомбот - Истребительный стервятник",
     "zombossmech_skycity_vacation": "Зомбот - Истребительный стервятник из Босс Раша",
     "zombossmech_steam": "Зомбот - Паровой локомотив",
-    "zombossmech_steam_12th": "Юбилейный зомбот - Паровой локомотив"
+    "zombossmech_steam_12th": "Юбилейный зомбот - Паровой локомотив",
+    "zombie_camel_onehump_touch": "Зомби-верблюд (3 сегмента, касание)",
+    "zombie_camel_twohump_touch": "Зомби-верблюд (4 сегмента, касание)",
+    "zombie_camel_manyhump_touch": "Зомби-верблюд (6 сегментов, касание)",
+    "zombie_camel_segment_touch": "Зомби-верблюд (сегмент, касание)",
+    "zombie_target_bottle": "Мишень-зомби (бутылка)",
+    "zombie_target_arrow_yellow": "Мишень-зомби (жёлтая стрела)",
+    "zombie_target_arrow_blue": "Мишень-зомби (синяя стрела)",
+    "zombie_target_arrow_purple": "Мишень-зомби (фиолетовая стрела)",
+    "zombie_target_archmage": "Мишень-Архимаг",
+    "zombie_target_wizard": "Мишень-Волшебник",
+    "zombie_target_gargantuar": "Мишень-Гигант"
 }

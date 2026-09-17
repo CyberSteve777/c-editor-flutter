@@ -2198,6 +2198,68 @@ class AppLocalizationsEn extends AppLocalizations {
       'Wave Generator embeds waves directly and cannot be used with a separate Wave Manager container.';
 
   @override
+  String conflictDesc_StatueMazeIncompatible(String module) {
+    return 'Statue Maze conflicts with $module. Using them together will cause the game to work incorrectly. It is not recommended to use Statue Maze with $module.';
+  }
+
+  @override
+  String conflictDesc_CamelMinigameNonTouchZombies(String zombies) {
+    return 'Camel Minigame only works with camel touch zombies. Non-touch zombies were found in Wave Generator: $zombies. Replace them with camel touch zombies to restore level functionality.';
+  }
+
+  @override
+  String get targetZombieWithoutOakTrainWarning =>
+      'Target zombies (zombie_target_*) require the OakTrain module to function correctly. Using them without OakTrain will cause the game to work incorrectly.';
+
+  @override
+  String get targetZombieRequiresOakTrain =>
+      'Target zombies require the OakTrain module. Please add OakTrain to the level first.';
+
+  @override
+  String targetZombieRequiresOakTrainDialog(String module) {
+    return 'This zombie requires the $module module. Would you like to add it to the level?';
+  }
+
+  @override
+  String get conflictDesc_CamelMinigameIntro =>
+      'Camel Minigame conflicts with the Standard Level Intro module. They do not work correctly together. It is recommended to remove the Standard Level Intro module in favor of Camel Minigame, as it has its own built-in intro.';
+
+  @override
+  String get targetZombieInWaveManagerWarningTitle =>
+      'Target zombies + Wave Manager';
+
+  @override
+  String get targetZombieInWaveManagerWarning =>
+      'Target zombies (zombie_target_*) do not work correctly with Wave Manager. It is recommended to use Wave Generator with Rise from Ground mode enabled for full functionality of these zombies.';
+
+  @override
+  String get camelMinigameWaveManagerHintTitle =>
+      'Camel Minigame + Wave Manager';
+
+  @override
+  String get camelMinigameWaveManagerHint =>
+      'After all camel touch zombies are destroyed in the final wave, the game will automatically finish the level by killing the remaining zombies. Keep this in mind when using Camel Minigame with Wave Manager.';
+
+  @override
+  String get oakTrainUnderwaterWarningTitle =>
+      'Oak Archer Headshots + underwater lawn';
+
+  @override
+  String get oakTrainUnderwaterWarning =>
+      'The Oak Archer has no oxygen on underwater world lawns (including custom variants). It will automatically die and the level will be counted as a loss.';
+
+  @override
+  String get camelRiseFromGroundOnlyCamelTouch =>
+      'Rise from ground only works with camel touch zombies. Other zombies cannot use this spawn mode in Camel Minigame.';
+
+  @override
+  String get waveGeneratorRiseFromGroundWarningTitle => 'Rise from Ground mode';
+
+  @override
+  String get waveGeneratorRiseFromGroundWarning =>
+      'Most zombies cannot move or use abilities in Rise from Ground mode. If a specific line is set without a spawn cell, zombies will always spawn on the first cell of the first line. Set random lines or choose spawn cells manually.';
+
+  @override
   String get missingPlantModuleWarningTitle =>
       'Missing module for parallel universe plants';
 
@@ -2368,6 +2430,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String plantModuleRequiredMessage(String moduleName) {
     return 'In order to select this plant, $moduleName needs to be added.';
+  }
+
+  @override
+  String zombieModuleRequiredMessage(String moduleName) {
+    return 'In order to select this zombie, $moduleName needs to be added.';
   }
 
   @override
@@ -9040,6 +9107,53 @@ class AppLocalizationsEn extends AppLocalizations {
       'The initial random-spawn points exceed the current-wave increment and may cause the level to crash while loading.';
 
   @override
+  String get waveGeneratorSpawnColumns =>
+      'Spawn column range for Rise-from-ground zombies';
+
+  @override
+  String get waveGeneratorRiseFromGround => 'Rise from ground mode';
+
+  @override
+  String get waveGeneratorRiseFromGroundHint =>
+      'When enabled, zombies spawn by rising from the ground at specified grid positions instead of walking in from the right.';
+
+  @override
+  String get waveGeneratorIgnoreFlagCarriers => 'Ignore flag carriers';
+
+  @override
+  String get waveGeneratorIgnoreFlagCarriersHint =>
+      'Disable automatic flag carrier zombies in random spawns.';
+
+  @override
+  String get waveGeneratorWaveSpawnTime => 'Wave spawn time (WaveSpawnTime)';
+
+  @override
+  String get waveGeneratorWaveSpawnTimeHint =>
+      'Delay in seconds before this wave begins spawning after the previous wave finishes.';
+
+  @override
+  String get waveGeneratorZombieTargetValidTime =>
+      'Target valid time (TargetValidTime)';
+
+  @override
+  String get waveGeneratorZombieTargetValidTimeHint =>
+      'Duration in seconds this zombie remains targetable by abilities.';
+
+  @override
+  String get waveGeneratorZombieRiseGridX => 'Rise grid X (Rise_GridX)';
+
+  @override
+  String get waveGeneratorZombieRiseGridXHint =>
+      'Column where this zombie rises from the ground. Use \'?\' for random.';
+
+  @override
+  String get waveGeneratorZombieRiseGridY => 'Rise grid Y (Rise_GridY)';
+
+  @override
+  String get waveGeneratorZombieRiseGridYHint =>
+      'Row where this zombie rises from the ground. Use \'?\' for random.';
+
+  @override
   String waveGeneratorWaveCountSummary(int count) {
     return 'Total waves: $count';
   }
@@ -10094,4 +10208,252 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get powerPinchInfo =>
       'Pinch a zombie with two fingers like a pair of scissors to snip off its head and quickly remove the threat.';
+
+  @override
+  String get moduleTitle_StatueMazeModuleProperties => 'Statue Maze';
+
+  @override
+  String get moduleDesc_StatueMazeModuleProperties =>
+      'Statue maze puzzle minigame where players tap correct statues in a rotating grid';
+
+  @override
+  String get moduleHelpStatueMazeOverviewBody =>
+      'The Statue Maze module adds a rotating-grid puzzle minigame. Each set presents a grid of statues that spin, and the player must tap the correct ones before time runs out.';
+
+  @override
+  String get moduleHelpStatueMazeSetsBody =>
+      'Each set defines one puzzle round. You can add multiple rounds with different grid sizes, time limits, and target counts.';
+
+  @override
+  String get moduleHelpStatueMazeTilesBody =>
+      'Type \"c\" is a correct tile the player should tap. Type \"ac\" is an all-correct target tile. WaitDuration is how long tiles pause between spins, and RotateTime is the duration of each rotation.';
+
+  @override
+  String statueMazeSet(int index) {
+    return 'Set $index';
+  }
+
+  @override
+  String get statueMazeMatrixSize => 'Grid size (MatrixSize)';
+
+  @override
+  String get statueMazeDisplayTime => 'Display time (seconds)';
+
+  @override
+  String get statueMazeTargetNum => 'Target count (TargetNum)';
+
+  @override
+  String get statueMazeBonusLife => 'Bonus life (BonusLife)';
+
+  @override
+  String get statueMazeTileType => 'Tile type';
+
+  @override
+  String get statueMazeTileTypeCorrect => 'Correct (c)';
+
+  @override
+  String get statueMazeTileTypeAllCorrect => 'All-correct (ac)';
+
+  @override
+  String get statueMazeWaitDuration => 'Wait duration (seconds)';
+
+  @override
+  String get statueMazeRotateTime => 'Rotate time (seconds)';
+
+  @override
+  String get statueMazeAddSet => 'Add set';
+
+  @override
+  String get statueMazeRemoveSet => 'Remove set';
+
+  @override
+  String get statueMazeAddTile => 'Add tile';
+
+  @override
+  String get statueMazeRemoveTile => 'Remove tile';
+
+  @override
+  String get statueMazeTiles => 'Tiles';
+
+  @override
+  String get statueMazeSets => 'Sets';
+
+  @override
+  String get statueMazeRotations => 'Rotations';
+
+  @override
+  String get statueMazeGridSize => 'Grid size';
+
+  @override
+  String get statueMazeNoRotations => 'No rotations added';
+
+  @override
+  String get statueMazePlay => 'Play rotation';
+
+  @override
+  String get statueMazePlaying => 'Playing...';
+
+  @override
+  String get statueMazeStop => 'Stop';
+
+  @override
+  String get moduleHelpStatueMazeRotationsBody =>
+      'Each rotation step spins the entire grid. \"c\" is clockwise, \"ac\" is anti-clockwise. WaitDuration is the pause before the rotation starts, RotateTime is how long the spin takes.';
+
+  @override
+  String get statueMazeRotationsHint =>
+      'Tap arrow to change direction. Tap card to edit wait & rotate time. Long-press to delete.';
+
+  @override
+  String get statueMazeRemoveRotationConfirm => 'Remove this rotation step?';
+
+  @override
+  String get moduleTitle_CamelMinigameProperties => 'Camel Card Match';
+
+  @override
+  String get moduleDesc_CamelMinigameProperties =>
+      'Camel card matching minigame where players flip cards to find matching pairs';
+
+  @override
+  String get moduleHelpCamelOverviewBody =>
+      'The Camel Card Match minigame places chains of camel cards on the lawn. Zombies emerge from the ground and the player must flip cards to find matching pairs before time runs out.';
+
+  @override
+  String get moduleHelpCamelTimingsBody =>
+      'CardMatchTime is the delay after a successful match. CardMatchingTime is the flip animation duration. CardNoMatchTime is the idle time after a failed match or a single card flip.';
+
+  @override
+  String get moduleHelpCamelSpawningBody =>
+      'MinSpawnXStart / MinSpawnXEnd define the horizontal range where new card chains can appear. MaxSpawnX is the rightmost spawn coordinate (column 1 = 0). AdditionalXBufferBetweenChains pushes subsequent chains further right if a zombie occupies the spot.';
+
+  @override
+  String get camelAdditionalXBuffer =>
+      'Chain X buffer (AdditionalXBufferBetweenChains)';
+
+  @override
+  String get camelRiseStagger => 'Rise stagger between camels (seconds)';
+
+  @override
+  String get camelCardMatchTime => 'Match success delay (CardMatchTime, s)';
+
+  @override
+  String get camelCardMatchingTime =>
+      'Flip animation time (CardMatchingTime, s)';
+
+  @override
+  String get camelCardNoMatchTime => 'Mismatch idle time (CardNoMatchTime, s)';
+
+  @override
+  String get camelCardTypesUsed => 'Card types (1-7)';
+
+  @override
+  String get camelTutorialRiseDelay => 'Tutorial zombie rise delay (s)';
+
+  @override
+  String get camelMaxSpawnX => 'Max spawn X';
+
+  @override
+  String get camelMinSpawnXEnd => 'Min spawn X end';
+
+  @override
+  String get camelMinSpawnXStart => 'Min spawn X start';
+
+  @override
+  String get camelShowTutorial => 'Show tutorial';
+
+  @override
+  String get moduleTitle_OakTrainProperties => 'Oak Archer Headshots';
+
+  @override
+  String get moduleDesc_OakTrainProperties =>
+      'Oak archer shooting minigame where the player headshots waves of incoming enemies';
+
+  @override
+  String get moduleHelpOakTrainOverviewBody =>
+      'The Oak Archer Headshots minigame places an oak archer on the lawn. Waves of enemies approach and the player must score points by defeating them. The archer has a total HP pool; healing potions and power-up arrows are replenished on a timer.';
+
+  @override
+  String get moduleHelpOakTrainScoresBody =>
+      'ArrowScore is the base attack score. WizardScore, ArchmageScore, and BossScore are bonus points for defeating specific enemy types.';
+
+  @override
+  String get moduleHelpOakTrainArrowsBody =>
+      'ArrowPowerNum is the number of power arrows replenished per cycle. ArrowMultipleNum is the number of split arrows replenished per cycle. HealNum is the amount restored by a health potion.';
+
+  @override
+  String get oakTrainTotalLife => 'Total HP (TotalLife)';
+
+  @override
+  String get oakTrainArrowScore => 'Base attack score (ArrowScore)';
+
+  @override
+  String get oakTrainWizardScore => 'Wizard kill score (WizardScore)';
+
+  @override
+  String get oakTrainArchmageScore => 'Archmage kill score (ArchmageScore)';
+
+  @override
+  String get oakTrainBossScore => 'Boss kill score (BossScore)';
+
+  @override
+  String get oakTrainHealNum => 'Health potion amount (HealNum)';
+
+  @override
+  String get oakTrainArrowPowerNum => 'Power arrows per cycle (ArrowPowerNum)';
+
+  @override
+  String get oakTrainArrowMultipleNum =>
+      'Split arrows per cycle (ArrowMultipleNum)';
+
+  @override
+  String get oakTrainInitArrowsNum =>
+      'Initial arrow counts (Normal, Power, Split)';
+
+  @override
+  String get oakTrainInitArrowNormal => 'Normal arrows';
+
+  @override
+  String get oakTrainInitArrowPower => 'Power arrows';
+
+  @override
+  String get oakTrainInitArrowSplit => 'Split arrows';
+
+  @override
+  String get oakTrainInitArrowUnused => 'Unused';
+
+  @override
+  String get moduleTitle_OakTrainIntroProperties => 'Oak Archer Tutorial';
+
+  @override
+  String get moduleDesc_OakTrainIntroProperties =>
+      'Intro animation for the Oak Archer Headshots minigame';
+
+  @override
+  String get moduleTitle_GoldRoadProperties => 'Gold Road (Unsodded)';
+
+  @override
+  String get moduleDesc_GoldRoadProperties =>
+      'Lost City minigame where the first and last rows are blocked for planting';
+
+  @override
+  String get goldRoadNonLostCityLawnWarningTitle => 'Non-Lost City Lawn';
+
+  @override
+  String get goldRoadNonLostCityLawnWarning =>
+      'Gold Road (Unsodded) is designed for the Lost City lawn. Using it on other lawns is not recommended, as it will negatively affect the level\'s visual appearance.';
+
+  @override
+  String get goldRoadDeepseaLawnWarningTitle => 'Incompatible Lawn';
+
+  @override
+  String get goldRoadDeepseaLawnWarning =>
+      'Gold Road (Unsodded) does not work correctly with Deepsea lawns. It will block the 1st and 5th rows instead of the 1st and last rows.';
+
+  @override
+  String get goldRoadCustomLostCityLawnWarningTitle =>
+      'Non-Native Lost City Lawn';
+
+  @override
+  String get goldRoadCustomLostCityLawnWarning =>
+      'Gold Road (Unsodded) is designed for the native Lost City lawn. Your level uses a custom lawn with Lost City resources. This may still affect the level\'s visual appearance. Use this module with caution.';
 }

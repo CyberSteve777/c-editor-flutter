@@ -42,7 +42,7 @@ class LevelValidator {
     final existingObjClasses = _getModuleObjClasses(parsedData);
 
     // 1. Module Conflicts (Errors)
-    final conflicts = ConflictRegistry.getActiveConflicts(context, existingObjClasses);
+    final conflicts = ConflictRegistry.getActiveConflicts(context, existingObjClasses, levelFile: levelFile);
     for (final pair in conflicts) {
       issues.add(ValidationIssue(
         title: pair.first,
@@ -261,7 +261,10 @@ class LevelValidator {
     }
     if (!existingClasses.contains('ZombiesDeadWinConProperties') &&
         !existingClasses.contains('BronzeDeadWinConProperties')) {
-      if (!isEvilDave && !isZombossMechBattle && !isZombossBattle) {
+      if (!isEvilDave &&
+          !isZombossMechBattle &&
+          !isZombossBattle &&
+          !existingClasses.contains('PVZ1SeeingStarsModuleProperties')) {
         missingList.add('ZombiesDeadWinConProperties');
       }
     }
@@ -270,7 +273,8 @@ class LevelValidator {
           !isLastStand &&
           !isCowboyMinigame &&
           !isZombossMechBattle &&
-          !isZombossBattle) {
+          !isZombossBattle &&
+          !existingClasses.contains('CamelMinigameProperties')) {
         missingList.add('StandardLevelIntroProperties');
       }
     }

@@ -12,6 +12,7 @@ import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/preset_resource_list_tile.dart';
+import 'package:c_editor/utils/target_zombie_check.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Seed bank properties. Ported from Z-Editor-master SeedBankPropertiesEP.kt
@@ -193,6 +194,20 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
 
   void _addToZombies() {
     widget.onRequestZombieSelection((ids) {
+      final l10n = AppLocalizations.of(context);
+      for (final id in ids) {
+        if (isTargetZombieBlocked(id, widget.levelFile)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                l10n?.targetZombieRequiresOakTrain ??
+                    'Target zombies require the OakTrain module. Please add OakTrain to the level first.',
+              ),
+            ),
+          );
+          return;
+        }
+      }
       setState(() {
         for (final id in ids) {
           _data.presetPlantList.add(ZombieRepository().buildZombieAliases(id));

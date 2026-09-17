@@ -2212,6 +2212,69 @@ class AppLocalizationsRu extends AppLocalizations {
       'Генератор волн хранит данные волн внутри модуля и не может использоваться вместе с отдельным контейнером менеджера волн.';
 
   @override
+  String conflictDesc_StatueMazeIncompatible(String module) {
+    return 'Лабиринт статуэток конфликтует с модулем «$module». Их одновременное использование приведёт к некорректной работе игры. Не рекомендуется использовать лабиринт статуэток вместе с модулем «$module».';
+  }
+
+  @override
+  String conflictDesc_CamelMinigameNonTouchZombies(String zombies) {
+    return 'Карточная игра «Верблюд» работает только с касательными зомби-верблюдами. Некасательные зомби обнаружены в Wave Generator: $zombies. Замените их на касательных зомби-верблюдов, чтобы восстановить работоспособность уровня.';
+  }
+
+  @override
+  String get targetZombieWithoutOakTrainWarning =>
+      'Зомби-мишени (zombie_target_*) требуют модуль OakTrain для корректной работы. Их использование без OakTrain приведёт к некорректной работе игры.';
+
+  @override
+  String get targetZombieRequiresOakTrain =>
+      'Зомби-мишени требуют модуль OakTrain. Пожалуйста, сначала добавьте OakTrain в уровень.';
+
+  @override
+  String targetZombieRequiresOakTrainDialog(String module) {
+    return 'Этот зомби требует модуль «$module». Хотите добавить его в уровень?';
+  }
+
+  @override
+  String get conflictDesc_CamelMinigameIntro =>
+      'Карточная игра «Верблюд» конфликтует с модулем Standard Level Intro (вступительная заставка). Они вместе работают некорректно. Рекомендуется отказаться от модуля заставки в пользу карточной игры «Верблюд», так как в ней встроена своя заставка.';
+
+  @override
+  String get targetZombieInWaveManagerWarningTitle =>
+      'Зомби-мишени + Wave Manager';
+
+  @override
+  String get targetZombieInWaveManagerWarning =>
+      'Зомби-мишени (zombie_target_*) некорректно работают с Wave Manager. Рекомендуется использовать Wave Generator с включённым режимом появления из-под земли для полноценной работы этих зомби.';
+
+  @override
+  String get camelMinigameWaveManagerHintTitle =>
+      'Карточная игра «Верблюд» + Wave Manager';
+
+  @override
+  String get camelMinigameWaveManagerHint =>
+      'После уничтожения всех касательных зомби-верблюдов в финальной волне игра автоматически убьёт остальных зомби и завершит уровень. Учитывайте это при использовании карточной игры «Верблюд» с Wave Manager.';
+
+  @override
+  String get oakTrainUnderwaterWarningTitle =>
+      'Лучник Дуба + подводная лужайка';
+
+  @override
+  String get oakTrainUnderwaterWarning =>
+      'Лучнику Дуба не хватает кислорода на лужайках подводного мира (включая их кастомные вариации). Он автоматически погибнет, и уровень будет засчитан как проигранный.';
+
+  @override
+  String get camelRiseFromGroundOnlyCamelTouch =>
+      'Появление из-под земли работает только с касательными зомби-верблюдами. Другие зомби не могут использовать этот режим спавна в карточной игре «Верблюд».';
+
+  @override
+  String get waveGeneratorRiseFromGroundWarningTitle =>
+      'Режим появления из-под земли';
+
+  @override
+  String get waveGeneratorRiseFromGroundWarning =>
+      'Большинство зомби не сможет передвигаться и использовать свои способности в режиме появления из-под земли. Если задать конкретную линию без клетки спавна, зомби всегда будут спавниться на первой клетке первой линии. Рекомендуется задавать зомби случайную линию или выбирать клетку спавна вручную.';
+
+  @override
   String get missingPlantModuleWarningTitle =>
       'Отсутствует модуль для параллельных растений';
 
@@ -2378,6 +2441,11 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String plantModuleRequiredMessage(String moduleName) {
     return 'Чтобы выбрать это растение, нужно добавить модуль «$moduleName».';
+  }
+
+  @override
+  String zombieModuleRequiredMessage(String moduleName) {
+    return 'Чтобы выбрать этого зомби, нужно добавить модуль «$moduleName».';
   }
 
   @override
@@ -9023,6 +9091,54 @@ class AppLocalizationsRu extends AppLocalizations {
       'Начальные очки случайного призыва превышают прирост очков за волну; это может привести к сбою при загрузке уровня.';
 
   @override
+  String get waveGeneratorSpawnColumns =>
+      'Диапазон колонок для зомби, появляющихся из-под земли';
+
+  @override
+  String get waveGeneratorRiseFromGround => 'Режим появления из-под земли';
+
+  @override
+  String get waveGeneratorRiseFromGroundHint =>
+      'Если включено, зомби появляются из-под земли в указанных клетках вместо того, чтобы входить справа.';
+
+  @override
+  String get waveGeneratorIgnoreFlagCarriers => 'Игнорировать зомби с флагами';
+
+  @override
+  String get waveGeneratorIgnoreFlagCarriersHint =>
+      'Отключить автоматических зомби с флагами при случайном призыве.';
+
+  @override
+  String get waveGeneratorWaveSpawnTime =>
+      'Задержка появления волны (WaveSpawnTime)';
+
+  @override
+  String get waveGeneratorWaveSpawnTimeHint =>
+      'Задержка в секундах перед началом появления этой волны после завершения предыдущей.';
+
+  @override
+  String get waveGeneratorZombieTargetValidTime =>
+      'Время действия цели (TargetValidTime)';
+
+  @override
+  String get waveGeneratorZombieTargetValidTimeHint =>
+      'Длительность в секундах, в течение которой этот зомби может быть поражён способностями.';
+
+  @override
+  String get waveGeneratorZombieRiseGridX => 'Колонка появления (Rise_GridX)';
+
+  @override
+  String get waveGeneratorZombieRiseGridXHint =>
+      'Колонка, из которой зомби вылезает из-под земли. Используйте \'?\' для случайной.';
+
+  @override
+  String get waveGeneratorZombieRiseGridY => 'Ряд появления (Rise_GridY)';
+
+  @override
+  String get waveGeneratorZombieRiseGridYHint =>
+      'Ряд, из которого зомби вылезает из-под земли. Используйте \'?\' для случайного.';
+
+  @override
   String waveGeneratorWaveCountSummary(int count) {
     return 'Всего волн: $count';
   }
@@ -10055,4 +10171,255 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get powerPinchInfo =>
       'Сведите два пальца на зомби, словно ножницы, чтобы отрезать ему голову и быстро устранить угрозу.';
+
+  @override
+  String get moduleTitle_StatueMazeModuleProperties => 'Лабиринт статуй';
+
+  @override
+  String get moduleDesc_StatueMazeModuleProperties =>
+      'Мини-игра «Лабиринт статуй» — нужно нажимать на правильные статуи в вращающейся сетке';
+
+  @override
+  String get moduleHelpStatueMazeOverviewBody =>
+      'Модуль «Лабиринт статуй» добавляет мини-игру с вращающейся сеткой. Каждый раунд представляет сетку статуй, которые вращаются, и игрок должен успеть нажать на правильные, пока не закончилось время.';
+
+  @override
+  String get moduleHelpStatueMazeSetsBody =>
+      'Каждый набор определяет один раунд пазла. Можно добавить несколько раундов с разными размерами сетки, временными ограничениями и целевыми количествами.';
+
+  @override
+  String get moduleHelpStatueMazeTilesBody =>
+      'Тип «c» — правильная клетка, на которую нужно нажать. Тип «ac» — целевая клетка. WaitDuration — пауза между вращениями, RotateTime — длительность каждого вращения.';
+
+  @override
+  String statueMazeSet(int index) {
+    return 'Набор $index';
+  }
+
+  @override
+  String get statueMazeMatrixSize => 'Размер сетки (MatrixSize)';
+
+  @override
+  String get statueMazeDisplayTime => 'Время показа (секунды)';
+
+  @override
+  String get statueMazeTargetNum => 'Целевое количество (TargetNum)';
+
+  @override
+  String get statueMazeBonusLife => 'Бонусная жизнь (BonusLife)';
+
+  @override
+  String get statueMazeTileType => 'Тип клетки';
+
+  @override
+  String get statueMazeTileTypeCorrect => 'Правильная (c)';
+
+  @override
+  String get statueMazeTileTypeAllCorrect => 'Все правильные (ac)';
+
+  @override
+  String get statueMazeWaitDuration => 'Время ожидания (секунды)';
+
+  @override
+  String get statueMazeRotateTime => 'Время вращения (секунды)';
+
+  @override
+  String get statueMazeAddSet => 'Добавить набор';
+
+  @override
+  String get statueMazeRemoveSet => 'Удалить набор';
+
+  @override
+  String get statueMazeAddTile => 'Добавить клетку';
+
+  @override
+  String get statueMazeRemoveTile => 'Удалить клетку';
+
+  @override
+  String get statueMazeTiles => 'Клетки';
+
+  @override
+  String get statueMazeSets => 'Наборы';
+
+  @override
+  String get statueMazeRotations => 'Вращения';
+
+  @override
+  String get statueMazeGridSize => 'Размер сетки';
+
+  @override
+  String get statueMazeNoRotations => 'Вращения не добавлены';
+
+  @override
+  String get statueMazePlay => 'Воспроизвести вращение';
+
+  @override
+  String get statueMazePlaying => 'Воспроизведение...';
+
+  @override
+  String get statueMazeStop => 'Стоп';
+
+  @override
+  String get moduleHelpStatueMazeRotationsBody =>
+      'Each rotation step spins the entire grid. \"c\" is clockwise, \"ac\" is anti-clockwise. WaitDuration is the pause before the rotation starts, RotateTime is how long the spin takes.';
+
+  @override
+  String get statueMazeRotationsHint =>
+      'Нажмите стрелку, чтобы сменить направление. Нажмите карточку, чтобы изменить время ожидания и вращения. Длительное нажатие — удалить.';
+
+  @override
+  String get statueMazeRemoveRotationConfirm => 'Удалить этот шаг вращения?';
+
+  @override
+  String get moduleTitle_CamelMinigameProperties => 'Карточная игра «Верблюд»';
+
+  @override
+  String get moduleDesc_CamelMinigameProperties =>
+      'Мини-игра «Верблюд» — нужно находить пары карт, переворачивая их';
+
+  @override
+  String get moduleHelpCamelOverviewBody =>
+      'Мини-игра «Верблюд» размещает цепочки карт на газоне. Зомби вылезают из-под земли, а игрок должен успеть найти пары, переворачивая карты.';
+
+  @override
+  String get moduleHelpCamelTimingsBody =>
+      'CardMatchTime — задержка после успешного совпадения. CardMatchingTime — длительность анимации переворота. CardNoMatchTime — время простоя после неудачного совпадения или одиночного переворота.';
+
+  @override
+  String get moduleHelpCamelSpawningBody =>
+      'MinSpawnXStart / MinSpawnXEnd определяют горизонтальный диапазон появления новых цепочек карт. MaxSpawnX — крайняя правая координата (столбец 1 = 0). AdditionalXBufferBetweenChains сдвигает последующие цепочки вправо, если на месте уже есть зомби.';
+
+  @override
+  String get camelAdditionalXBuffer =>
+      'Буфер X цепочки (AdditionalXBufferBetweenChains)';
+
+  @override
+  String get camelRiseStagger => 'Задержка между верблюдами (секунды)';
+
+  @override
+  String get camelCardMatchTime =>
+      'Задержка после совпадения (CardMatchTime, с)';
+
+  @override
+  String get camelCardMatchingTime => 'Время переворота (CardMatchingTime, с)';
+
+  @override
+  String get camelCardNoMatchTime =>
+      'Простой после неудачи (CardNoMatchTime, с)';
+
+  @override
+  String get camelCardTypesUsed => 'Типы карт (1-7)';
+
+  @override
+  String get camelTutorialRiseDelay => 'Задержка учебного зомби (с)';
+
+  @override
+  String get camelMaxSpawnX => 'Макс. X появления';
+
+  @override
+  String get camelMinSpawnXEnd => 'Мин. X конец';
+
+  @override
+  String get camelMinSpawnXStart => 'Мин. X начало';
+
+  @override
+  String get camelShowTutorial => 'Показать обучение';
+
+  @override
+  String get moduleTitle_OakTrainProperties => 'Стрельба дубового лучника';
+
+  @override
+  String get moduleDesc_OakTrainProperties =>
+      'Мини-игра стрельбы дубового лучника — нужно поражать в голову волны врагов';
+
+  @override
+  String get moduleHelpOakTrainOverviewBody =>
+      'Мини-игра «Стрельба дубового лучника» размещает лучника на газоне. Волны врагов приближаются, и игрок должен набирать очки, уничтожая их. У лучника есть общий запас HP; зелья лечения и усиленные стрелы восполняются по таймеру.';
+
+  @override
+  String get moduleHelpOakTrainScoresBody =>
+      'ArrowScore — базовые очки атаки. WizardScore, ArchmageScore и BossScore — бонусные очки за уничтожение определённых типов врагов.';
+
+  @override
+  String get moduleHelpOakTrainArrowsBody =>
+      'ArrowPowerNum — количество усиленных стрел за цикл. ArrowMultipleNum — количество разделяющихся стрел за цикл. HealNum — количество HP, восстанавливаемых зельем.';
+
+  @override
+  String get oakTrainTotalLife => 'Общее HP (TotalLife)';
+
+  @override
+  String get oakTrainArrowScore => 'Очки базовой атаки (ArrowScore)';
+
+  @override
+  String get oakTrainWizardScore => 'Очки за волшебника (WizardScore)';
+
+  @override
+  String get oakTrainArchmageScore => 'Очки за архи mageа (ArchmageScore)';
+
+  @override
+  String get oakTrainBossScore => 'Очки за босса (BossScore)';
+
+  @override
+  String get oakTrainHealNum => 'Восстановление HP (HealNum)';
+
+  @override
+  String get oakTrainArrowPowerNum =>
+      'Усиленные стрелы за цикл (ArrowPowerNum)';
+
+  @override
+  String get oakTrainArrowMultipleNum =>
+      'Разделяющиеся стрелы за цикл (ArrowMultipleNum)';
+
+  @override
+  String get oakTrainInitArrowsNum =>
+      'Начальные стрелы (Обычные, Усиленные, Разделяющиеся)';
+
+  @override
+  String get oakTrainInitArrowNormal => 'Обычные стрелы';
+
+  @override
+  String get oakTrainInitArrowPower => 'Усиленные стрелы';
+
+  @override
+  String get oakTrainInitArrowSplit => 'Разделяющиеся стрелы';
+
+  @override
+  String get oakTrainInitArrowUnused => 'Unused';
+
+  @override
+  String get moduleTitle_OakTrainIntroProperties => 'Обучение дубового лучника';
+
+  @override
+  String get moduleDesc_OakTrainIntroProperties =>
+      'Вступительная анимация мини-игры «Стрельба дубового лучника»';
+
+  @override
+  String get moduleTitle_GoldRoadProperties => 'Золотая дорога (Прополка)';
+
+  @override
+  String get moduleDesc_GoldRoadProperties =>
+      'Мини-игра из Затерянного города, где первая и последняя строки заблокированы для посадки';
+
+  @override
+  String get goldRoadNonLostCityLawnWarningTitle =>
+      'Лужайка не из Затерянного города';
+
+  @override
+  String get goldRoadNonLostCityLawnWarning =>
+      '«Золотая дорога (Прополка)» предназначена для лужайки Затерянного города. Не рекомендуется использовать этот модуль на других лужайках, так как это плохо скажется на внешнем виде уровня.';
+
+  @override
+  String get goldRoadDeepseaLawnWarningTitle => 'Несовместимая лужайка';
+
+  @override
+  String get goldRoadDeepseaLawnWarning =>
+      '«Золотая дорога (Прополка)» работает некорректно с лужайками подводного мира. Вместо блокировки первой и последней строк блокируются первая и пятая.';
+
+  @override
+  String get goldRoadCustomLostCityLawnWarningTitle =>
+      'Неродная лужайка Затерянного города';
+
+  @override
+  String get goldRoadCustomLostCityLawnWarning =>
+      '«Золотая дорога (Прополка)» предназначена для родной лужайки Затерянного города. Ваш уровень использует пользовательскую лужайку с ресурсами Затерянного города. Это всё равно может повлиять на внешний вид уровня. Используйте этот модуль с осторожностью.';
 }

@@ -3323,5 +3323,16 @@
     "zombossmech_skycity_12th": "Anniversary Sky City Zomboss (Zombot Vulture Fighter)",
     "zombossmech_skycity_vacation": "Boss Rush Sky City Zomboss (Zombot Vulture Fighter)",
     "zombossmech_steam": "Steam Ages Zomboss (Zombot Steam Loco-motive)",
-    "zombossmech_steam_12th": "Anniversary Steam Ages Zomboss (Zombot Steam Loco-motive)"
+    "zombossmech_steam_12th": "Anniversary Steam Ages Zomboss (Zombot Steam Loco-motive)",
+    "zombie_camel_onehump_touch": "Camel Zombies (3 parts, touch)",
+    "zombie_camel_twohump_touch": "Camel Zombies (4 parts, touch)",
+    "zombie_camel_manyhump_touch": "Camel Zombies (6 parts, touch)",
+    "zombie_camel_segment_touch": "Camel Zombies (segment, touch)",
+    "zombie_target_bottle": "Target Zombie (bottle)",
+    "zombie_target_arrow_yellow": "Target Zombie (yellow arrow)",
+    "zombie_target_arrow_blue": "Target Zombie (blue arrow)",
+    "zombie_target_arrow_purple": "Target Zombie (purple arrow)",
+    "zombie_target_archmage": "Target Archmage Zombie",
+    "zombie_target_wizard": "Target Wizard Zombie",
+    "zombie_target_gargantuar": "Target Gargantuar"
 }
