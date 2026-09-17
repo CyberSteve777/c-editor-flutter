@@ -2374,6 +2374,12 @@ abstract class AppLocalizations {
   /// **'Custom lawn level template'**
   String get templateCustomLawnExample;
 
+  /// No description provided for @templateMoonGrappleExample.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon Grapple level template'**
+  String get templateMoonGrappleExample;
+
   /// No description provided for @unsavedChanges.
   ///
   /// In en, this message translates to:
@@ -2403,6 +2409,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved'**
   String get saved;
+
+  /// No description provided for @moonGrappleSaveBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot save Moon Grapple level'**
+  String get moonGrappleSaveBlockedTitle;
+
+  /// No description provided for @moonGrappleSaveBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon Grapple levels must contain at least 3 rounds before they can be saved.'**
+  String get moonGrappleSaveBlockedMessage;
+
+  /// Moon Grapple round heading
+  ///
+  /// In en, this message translates to:
+  /// **'Round {round}'**
+  String moonGrappleRound(int round);
+
+  /// No description provided for @moonGrappleTargetScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Target score'**
+  String get moonGrappleTargetScore;
+
+  /// No description provided for @moonGrappleSpawnThreshold.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn threshold'**
+  String get moonGrappleSpawnThreshold;
+
+  /// No description provided for @moonGrappleSpawnInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn interval'**
+  String get moonGrappleSpawnInterval;
+
+  /// No description provided for @moonGrappleMinimumSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum speed'**
+  String get moonGrappleMinimumSpeed;
+
+  /// No description provided for @moonGrappleMaximumSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum speed'**
+  String get moonGrappleMaximumSpeed;
+
+  /// No description provided for @moonGrappleRenderingFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Rendering definition is fixed'**
+  String get moonGrappleRenderingFixed;
+
+  /// No description provided for @moonGrappleRemoveSpawnObject.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove spawn object'**
+  String get moonGrappleRemoveSpawnObject;
+
+  /// No description provided for @moonGrappleSpawnWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn weight'**
+  String get moonGrappleSpawnWeight;
+
+  /// No description provided for @moonGrappleReturnSpeedFactor.
+  ///
+  /// In en, this message translates to:
+  /// **'Return speed factor'**
+  String get moonGrappleReturnSpeedFactor;
+
+  /// No description provided for @moonGrappleScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get moonGrappleScore;
+
+  /// No description provided for @moonGrappleExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get moonGrappleExperience;
+
+  /// No description provided for @moonGrappleCollisionRadius.
+  ///
+  /// In en, this message translates to:
+  /// **'Collision radius'**
+  String get moonGrappleCollisionRadius;
+
+  /// No description provided for @moonGrappleRemoveRound.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove round'**
+  String get moonGrappleRemoveRound;
+
+  /// No description provided for @moonGrappleAddSpawnObject.
+  ///
+  /// In en, this message translates to:
+  /// **'Add spawn object'**
+  String get moonGrappleAddSpawnObject;
+
+  /// No description provided for @moonGrappleBackgroundObjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Background objects'**
+  String get moonGrappleBackgroundObjects;
+
+  /// No description provided for @moonGrappleRemoveBackgroundObject.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove background object'**
+  String get moonGrappleRemoveBackgroundObject;
+
+  /// No description provided for @moonGrappleAnimationArtCenterFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Animation and art center are fixed'**
+  String get moonGrappleAnimationArtCenterFixed;
+
+  /// No description provided for @moonGrappleSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed'**
+  String get moonGrappleSpeed;
+
+  /// No description provided for @moonGrappleAddBackgroundObject.
+  ///
+  /// In en, this message translates to:
+  /// **'Add background object'**
+  String get moonGrappleAddBackgroundObject;
+
+  /// No description provided for @moonGrappleHookGameplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Hook gameplay'**
+  String get moonGrappleHookGameplay;
+
+  /// No description provided for @moonGrappleShipPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Ship position'**
+  String get moonGrappleShipPosition;
+
+  /// No description provided for @moonGrappleMinimumHookDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum hook distance'**
+  String get moonGrappleMinimumHookDistance;
+
+  /// No description provided for @moonGrappleMaximumHookDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum hook distance'**
+  String get moonGrappleMaximumHookDistance;
+
+  /// No description provided for @moonGrappleFiringArcDegrees.
+  ///
+  /// In en, this message translates to:
+  /// **'Firing arc degrees'**
+  String get moonGrappleFiringArcDegrees;
+
+  /// No description provided for @moonGrappleLaunchSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Launch speed'**
+  String get moonGrappleLaunchSpeed;
+
+  /// No description provided for @moonGrappleEmptyReturnSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty return speed'**
+  String get moonGrappleEmptyReturnSpeed;
+
+  /// No description provided for @moonGrappleLoadedReturnSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Loaded return speed'**
+  String get moonGrappleLoadedReturnSpeed;
+
+  /// No description provided for @moonGrappleHookCollisionRadius.
+  ///
+  /// In en, this message translates to:
+  /// **'Hook collision radius'**
+  String get moonGrappleHookCollisionRadius;
+
+  /// No description provided for @moonGrappleSpawnLayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn layout'**
+  String get moonGrappleSpawnLayout;
+
+  /// No description provided for @moonGrappleFormationSpacing.
+  ///
+  /// In en, this message translates to:
+  /// **'Formation spacing'**
+  String get moonGrappleFormationSpacing;
+
+  /// No description provided for @moonGrappleFormationYOffset.
+  ///
+  /// In en, this message translates to:
+  /// **'Formation Y offset'**
+  String get moonGrappleFormationYOffset;
+
+  /// No description provided for @moonGrappleAddRound.
+  ///
+  /// In en, this message translates to:
+  /// **'Add round'**
+  String get moonGrappleAddRound;
+
+  /// No description provided for @moduleDesc_MoonGrappleModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure the Moon BaseZ grappling game.'**
+  String get moduleDesc_MoonGrappleModuleProperties;
+
+  /// No description provided for @moduleTitle_MoonGrappleModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon Grapple'**
+  String get moduleTitle_MoonGrappleModuleProperties;
 
   /// No description provided for @failedToLoadLevel.
   ///
