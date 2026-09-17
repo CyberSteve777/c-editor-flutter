@@ -124,6 +124,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_SunDropperProperties;
       case 'moduleTitle_MoonExpertProperties':
         return l10n.moduleTitle_MoonExpertProperties;
+      case 'moduleTitle_MoonGrappleModuleProperties':
+        return l10n.moduleTitle_MoonGrappleModuleProperties;
       case 'moduleTitle_MoonLifeSupportSystemProperties':
         return l10n.moduleTitle_MoonLifeSupportSystemProperties;
       case 'moduleTitle_LunarTerminalModuleProperties':
@@ -294,6 +296,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_SunDropperProperties;
       case 'moduleDesc_MoonExpertProperties':
         return l10n.moduleDesc_MoonExpertProperties;
+      case 'moduleDesc_MoonGrappleModuleProperties':
+        return l10n.moduleDesc_MoonGrappleModuleProperties;
       case 'moduleDesc_MoonLifeSupportSystemProperties':
         return l10n.moduleDesc_MoonLifeSupportSystemProperties;
       case 'moduleDesc_LunarTerminalModuleProperties':
@@ -1251,6 +1255,18 @@ class ModuleRegistry {
       defaultAlias: 'MoonLifeSupportSystemModule',
       defaultSource: 'LevelModules',
       routeId: 'MoonLifeSupportSystem',
+    ),
+    'MoonGrappleModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_MoonGrappleModuleProperties',
+      descriptionKey: 'moduleDesc_MoonGrappleModuleProperties',
+      icon: Icons.anchor,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'MoonGrappleDefault',
+      defaultSource: 'CurrentLevel',
+      initialDataFactory: () => MoonGrappleModulePropertiesData.createDefault(),
+      routeId: 'MoonGrappleModule',
     ),
     'LunarTerminalModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_LunarTerminalModuleProperties',

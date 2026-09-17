@@ -1414,6 +1414,8 @@ class _LevelListScreenState extends State<LevelListScreen> {
         return l10n.templateOldStyleExample;
       case 12:
         return l10n.templateCustomLawnExample;
+      case 13:
+        return l10n.templateMoonGrappleExample;
       default:
         return LevelTemplateUtils.defaultLevelName(filename);
     }
