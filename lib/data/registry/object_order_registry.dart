@@ -50,6 +50,7 @@ class ObjectOrderRegistry {
     'DeathHoleModuleProperties',
     'PVZ1PassageModuleProperties',
     'PVZ1CopycatsModuleProperties',
+    'PVZ1SeeingStarsModuleProperties',
     'LevelScoringModuleProperties',
     'LevelMutatorStartingPlantfoodProps',
     'LevelMutatorMaxSunProps',

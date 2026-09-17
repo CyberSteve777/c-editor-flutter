@@ -155,6 +155,7 @@ LevelPreviewGridStyle resolveGridStyle(
       break;
 
     case GridPreviewModuleKind.protectPlants:
+    case GridPreviewModuleKind.seeingStars:
       gridBg = greenBg;
       borderColor = greenBorder;
       cellBorderColor = greenCellBorder;
@@ -247,6 +248,7 @@ enum GridPreviewModuleKind {
   zombossMech,
   zomboss,
   protectPlants,
+  seeingStars,
   protectItems,
   flowers,
   empty,
@@ -312,6 +314,7 @@ bool levelHasPrePlacedGridPreview(PvzLevelFile levelFile) {
   if (levelHasModule(levelFile, 'ProtectTheGridItemChallengeProperties'))
     return true;
   if (levelHasModule(levelFile, 'StarChallengeModuleProperties')) return true;
+  if (levelHasModule(levelFile, 'PVZ1SeeingStarsModuleProperties')) return true;
 
   return false;
 }
@@ -585,6 +588,14 @@ List<GridPreviewCategoryOption> collectGridPreviewCategories(
       GridPreviewCategoryOption(
         kind: GridPreviewModuleKind.protectPlants,
         label: l10n.moduleTitle_ProtectThePlantChallengeProperties,
+      ),
+    );
+  }
+  if (levelHasModule(levelFile, 'PVZ1SeeingStarsModuleProperties')) {
+    categories.add(
+      GridPreviewCategoryOption(
+        kind: GridPreviewModuleKind.seeingStars,
+        label: l10n.moduleTitle_PVZ1SeeingStarsModuleProperties,
       ),
     );
   }
@@ -1037,6 +1048,17 @@ PVZ1CopycatsModulePropertiesData? readCopycatsModuleData(
   final obj = findModuleObject(levelFile, 'PVZ1CopycatsModuleProperties');
   return obj != null
       ? PVZ1CopycatsModulePropertiesData.fromJson(
+          Map<String, dynamic>.from(obj.objData as Map),
+        )
+      : null;
+}
+
+PVZ1SeeingStarsModulePropertiesData? readSeeingStarsModuleData(
+  PvzLevelFile levelFile,
+) {
+  final obj = findModuleObject(levelFile, 'PVZ1SeeingStarsModuleProperties');
+  return obj != null
+      ? PVZ1SeeingStarsModulePropertiesData.fromJson(
           Map<String, dynamic>.from(obj.objData as Map),
         )
       : null;

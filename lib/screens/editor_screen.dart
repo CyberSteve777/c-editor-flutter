@@ -7,7 +7,6 @@ import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_module_order_utils.dart';
 import 'package:c_editor/data/cowboy_minigame_utils.dart';
-import 'package:c_editor/data/glacier_module_presets.dart';
 import 'package:c_editor/data/zomboss_eighties_speaker_presets.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/module_open_hint.dart';
@@ -96,6 +95,8 @@ import 'package:c_editor/screens/editor/modules/tunnel_defend_module_screen.dart
 import 'package:c_editor/screens/editor/modules/gulliver_tunnel_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/zombie_rush_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/pvz1_copycats_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/pvz1_seeing_stars_module_screen.dart';
+import 'package:c_editor/data/registry/warning_registry.dart';
 import 'package:c_editor/screens/editor/modules/pvz1_passage_module_screen.dart';
 import 'package:c_editor/screens/editor/tabs/izombie_tab.dart';
 import 'package:c_editor/screens/editor/tabs/level_settings_tab.dart';
@@ -318,7 +319,9 @@ class _EditorScreenState extends State<EditorScreen> {
           } else if (v is String && v.isNotEmpty) {
             out.add(v);
           }
-        } else if (k == 'PlantTypeName' && v is String && v.isNotEmpty) {
+        } else if ((k == 'PlantTypeName' || k == 'MatchTypeName') &&
+            v is String &&
+            v.isNotEmpty) {
           out.add(v);
         }
         _collectPlantIdsFromDynamic(v, out);
@@ -466,44 +469,6 @@ class _EditorScreenState extends State<EditorScreen> {
         })
         .toList();
     return metas;
-  }
-
-  bool _showGlacierModuleCompatibilityWarning() {
-    final file = _ec.state.levelFile;
-    if (file == null) return false;
-    return GlacierModulePropertiesData.shouldShowCompatibilityWarning(
-      levelFile: file,
-      moduleObjClasses: _levelModuleObjClasses(),
-    );
-  }
-
-  bool _showGlacierModuleUnderwaterWarning() {
-    final file = _ec.state.levelFile;
-    if (file == null) return false;
-    final hasGlacierModule =
-        _levelModuleObjClasses().contains('GlacierModuleProperties') ||
-        file.objects.any((o) => o.objClass == 'GlacierModuleProperties');
-    return hasGlacierModule && LevelParser.isDeepSeaLawnFromFile(file);
-  }
-
-  bool _showIceAgePlantPuzzleWarning() {
-    final file = _ec.state.levelFile;
-    if (file == null) return false;
-    final hasGlacierModule =
-        _levelModuleObjClasses().contains('GlacierModuleProperties') ||
-        file.objects.any((o) => o.objClass == 'GlacierModuleProperties');
-    if (!hasGlacierModule) return false;
-
-    final battle =
-        file.objects.firstWhereOrNull(
-          (o) => o.objClass == 'ZombossBattleModuleProperties',
-        ) ??
-        _ec.state.parsedData?.objectMap.values.firstWhereOrNull(
-          (o) => o.objClass == 'ZombossBattleModuleProperties',
-        );
-    if (battle?.objData is! Map) return false;
-    final variation = (battle!.objData as Map)['ZombossMechType'] as String?;
-    return GlacierModulePresets.isPlantPuzzleVariation(variation);
   }
 
   void _openGlacierModuleSettings() {
@@ -2887,6 +2852,23 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
     if (info.source == 'CurrentLevel' &&
+        objClass == 'PVZ1SeeingStarsModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PVZ1SeeingStarsModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+            onAddModule: (objClass) =>
+                _addModule(ModuleRegistry.getMetadata(objClass)),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
         objClass == 'ZombieMoveFastModuleProperties') {
       Navigator.push(
         context,
@@ -4147,12 +4129,12 @@ class _EditorScreenState extends State<EditorScreen> {
                                                 _calculateMissingModules(),
                                             missingModuleWarnings:
                                                 _getMissingModuleWarnings(),
-                                            showGlacierModuleCompatibilityWarning:
-                                                _showGlacierModuleCompatibilityWarning(),
-                                            showGlacierModuleUnderwaterWarning:
-                                                _showGlacierModuleUnderwaterWarning(),
-                                            showIceAgePlantPuzzleWarning:
-                                                _showIceAgePlantPuzzleWarning(),
+                                            warnings: WarningRegistry.forLevel(
+                                              context,
+                                              _ec.state.levelFile!,
+                                              parsed: _ec.state.parsedData,
+                                              editorOnly: true,
+                                            ),
                                             onEditBasicInfo:
                                                 _handleEditBasicInfo,
                                             onEditModule: _handleEditModule,

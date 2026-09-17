@@ -13251,6 +13251,120 @@ abstract class AppLocalizations {
   /// **'Add zombie to whitelist'**
   String get pvz1CopycatsAddZombie;
 
+  /// No description provided for @moduleTitle_PVZ1SeeingStarsModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Seeing Stars'**
+  String get moduleTitle_PVZ1SeeingStarsModuleProperties;
+
+  /// No description provided for @moduleDesc_PVZ1SeeingStarsModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Win by planting the requested plants on marked cells; zombies loop until the pattern is complete'**
+  String get moduleDesc_PVZ1SeeingStarsModuleProperties;
+
+  /// No description provided for @pvz1SeeingStarsModuleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Seeing Stars'**
+  String get pvz1SeeingStarsModuleTitle;
+
+  /// No description provided for @pvz1SeeingStarsSectionParams.
+  ///
+  /// In en, this message translates to:
+  /// **'Parameters'**
+  String get pvz1SeeingStarsSectionParams;
+
+  /// No description provided for @pvz1SeeingStarsSectionMatchPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Pattern cells (MatchPlants)'**
+  String get pvz1SeeingStarsSectionMatchPlants;
+
+  /// No description provided for @pvz1SeeingStarsHelpMatchPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Each entry is a lawn cell and the plant that must be planted there. Select a cell on the grid, then add a plant; adding to an occupied cell replaces it. The level is won once every cell holds its plant.'**
+  String get pvz1SeeingStarsHelpMatchPlants;
+
+  /// No description provided for @pvz1SeeingStarsFieldCycleIndexLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle wave (CycleIndex)'**
+  String get pvz1SeeingStarsFieldCycleIndexLabel;
+
+  /// No description provided for @pvz1SeeingStarsHelpCycleIndex.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave to loop back to after the final wave. In a 15-wave level with a value of 5, wave 15 is followed by wave 6, and the loop repeats until the pattern is complete.'**
+  String get pvz1SeeingStarsHelpCycleIndex;
+
+  /// No description provided for @pvz1SeeingStarsFieldSettlementDurationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Settlement delay (SettlementDuration)'**
+  String get pvz1SeeingStarsFieldSettlementDurationLabel;
+
+  /// No description provided for @pvz1SeeingStarsHelpSettlementDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Seconds to wait after the pattern is complete before the level is won. This only settles the level on its own when the Loot Drop (ZombiesDeadWinCon) module is absent.'**
+  String get pvz1SeeingStarsHelpSettlementDuration;
+
+  /// No description provided for @pvz1SeeingStarsHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Recreates the Memory Lane minigame \"Seeing Stars\". Zombies keep arriving in a wave loop while the player tries to plant the requested plants (classically Starfruit) on the marked cells. This module carries its own win condition, so it replaces the Loot Drop (ZombiesDeadWinCon) module.'**
+  String get pvz1SeeingStarsHelpOverview;
+
+  /// No description provided for @pvz1SeeingStarsHelpFieldsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parameter details'**
+  String get pvz1SeeingStarsHelpFieldsTitle;
+
+  /// No description provided for @pvz1SeeingStarsHelpWinCon.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not combine this module with Loot Drop (ZombiesDeadWinCon). With both present the level can end when the zombies die instead of when the pattern is complete, and the settlement delay is ignored.'**
+  String get pvz1SeeingStarsHelpWinCon;
+
+  /// No description provided for @pvz1SeeingStarsMatchPlantsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No pattern cells yet. Select a cell on the grid and add a plant.'**
+  String get pvz1SeeingStarsMatchPlantsEmpty;
+
+  /// No description provided for @seeingStarsWinConWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate win condition'**
+  String get seeingStarsWinConWarningTitle;
+
+  /// No description provided for @seeingStarsWinConWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Seeing Stars settles the level by itself once the pattern is complete. Loot Drop (ZombiesDeadWinCon) is also present, so the level may end when all zombies die instead, and the settlement delay will be ignored. Remove one of the two modules.'**
+  String get seeingStarsWinConWarning;
+
+  /// No description provided for @seeingStarsCycleWaveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle wave'**
+  String get seeingStarsCycleWaveLabel;
+
+  /// No description provided for @seeingStarsSettlementLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Settlement delay'**
+  String get seeingStarsSettlementLabel;
+
+  /// No description provided for @seeingStarsPatternCells.
+  ///
+  /// In en, this message translates to:
+  /// **'Pattern cells'**
+  String get seeingStarsPatternCells;
+
   /// No description provided for @magicHatSpawnPreviewTitle.
   ///
   /// In en, this message translates to:

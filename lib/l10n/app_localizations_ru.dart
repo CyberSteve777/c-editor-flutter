@@ -7470,6 +7470,72 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pvz1CopycatsAddZombie => 'Добавить зомби в белый список';
 
   @override
+  String get moduleTitle_PVZ1SeeingStarsModuleProperties => 'Звёздный узор';
+
+  @override
+  String get moduleDesc_PVZ1SeeingStarsModuleProperties =>
+      'Победа — посадить нужные растения на отмеченные клетки; волны зомби идут по кругу, пока узор не собран';
+
+  @override
+  String get pvz1SeeingStarsModuleTitle => 'Звёздный узор';
+
+  @override
+  String get pvz1SeeingStarsSectionParams => 'Параметры';
+
+  @override
+  String get pvz1SeeingStarsSectionMatchPlants => 'Клетки узора (MatchPlants)';
+
+  @override
+  String get pvz1SeeingStarsHelpMatchPlants =>
+      'Каждая запись — клетка газона и растение, которое на ней должно стоять. Выберите клетку на сетке и добавьте растение; добавление на занятую клетку заменяет её. Уровень выигран, когда на всех клетках стоят нужные растения.';
+
+  @override
+  String get pvz1SeeingStarsFieldCycleIndexLabel => 'Волна цикла (CycleIndex)';
+
+  @override
+  String get pvz1SeeingStarsHelpCycleIndex =>
+      'Волна, к которой спавн возвращается после последней. При 15 волнах и значении 5 после 15-й волны идёт 6-я, и цикл повторяется, пока узор не собран.';
+
+  @override
+  String get pvz1SeeingStarsFieldSettlementDurationLabel =>
+      'Задержка засчёта (SettlementDuration)';
+
+  @override
+  String get pvz1SeeingStarsHelpSettlementDuration =>
+      'Сколько секунд ждать после сборки узора до засчёта победы. Таймер работает сам по себе только без модуля «Полная зачистка» (ZombiesDeadWinCon).';
+
+  @override
+  String get pvz1SeeingStarsHelpOverview =>
+      'Воссоздаёт мини-игру Аллеи воспоминаний «Звёздный узор». Зомби идут по кругу волн, а игрок должен посадить требуемые растения (классически — карамболы) на отмеченные клетки. Модуль содержит собственное условие победы и заменяет модуль «Полная зачистка» (ZombiesDeadWinCon).';
+
+  @override
+  String get pvz1SeeingStarsHelpFieldsTitle => 'Описание полей';
+
+  @override
+  String get pvz1SeeingStarsHelpWinCon =>
+      'Не сочетайте этот модуль с «Полной зачисткой» (ZombiesDeadWinCon). При обоих модулях уровень может завершиться по смерти зомби вместо сборки узора, а задержка засчёта будет проигнорирована.';
+
+  @override
+  String get pvz1SeeingStarsMatchPlantsEmpty =>
+      'Клеток узора пока нет. Выберите клетку на сетке и добавьте растение.';
+
+  @override
+  String get seeingStarsWinConWarningTitle => 'Дублирующееся условие победы';
+
+  @override
+  String get seeingStarsWinConWarning =>
+      '«Звёздный узор» сам засчитывает победу после сборки узора. В уровне также есть «Полная зачистка» (ZombiesDeadWinCon), поэтому уровень может закончиться по смерти всех зомби, а задержка засчёта будет проигнорирована. Удалите один из двух модулей.';
+
+  @override
+  String get seeingStarsCycleWaveLabel => 'Волна цикла';
+
+  @override
+  String get seeingStarsSettlementLabel => 'Задержка засчёта';
+
+  @override
+  String get seeingStarsPatternCells => 'Клетки узора';
+
+  @override
   String get magicHatSpawnPreviewTitle => 'Шляпа — возможные растения';
 
   @override

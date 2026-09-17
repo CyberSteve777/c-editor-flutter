@@ -260,6 +260,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_PVZ1PassageModuleProperties;
       case 'moduleTitle_PVZ1CopycatsModuleProperties':
         return l10n.moduleTitle_PVZ1CopycatsModuleProperties;
+      case 'moduleTitle_PVZ1SeeingStarsModuleProperties':
+        return l10n.moduleTitle_PVZ1SeeingStarsModuleProperties;
       default:
         return key;
     }
@@ -430,6 +432,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_PVZ1PassageModuleProperties;
       case 'moduleDesc_PVZ1CopycatsModuleProperties':
         return l10n.moduleDesc_PVZ1CopycatsModuleProperties;
+      case 'moduleDesc_PVZ1SeeingStarsModuleProperties':
+        return l10n.moduleDesc_PVZ1SeeingStarsModuleProperties;
       default:
         return key;
     }
@@ -830,6 +834,17 @@ class ModuleRegistry {
       defaultAlias: 'PVZ1CopycatsModule',
       initialDataFactory: () => PVZ1CopycatsModulePropertiesData(),
       routeId: 'PVZ1CopycatsModule',
+    ),
+    'PVZ1SeeingStarsModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_PVZ1SeeingStarsModuleProperties',
+      descriptionKey: 'moduleDesc_PVZ1SeeingStarsModuleProperties',
+      icon: Icons.star_outline,
+      isCore: false,
+      allowMultiple: false,
+      category: ModuleCategory.mode,
+      defaultAlias: 'PVZ1SeeingStars',
+      initialDataFactory: () => PVZ1SeeingStarsModulePropertiesData(),
+      routeId: 'PVZ1SeeingStarsModule',
     ),
     'IncreasedCostModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_IncreasedCostModuleProperties',

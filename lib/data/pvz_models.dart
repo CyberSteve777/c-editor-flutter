@@ -82,6 +82,8 @@ export 'pvz_models/MoonExpertPropertiesData.dart';
 export 'pvz_models/MoonLifeSupportSystemPropertiesData.dart';
 export 'pvz_models/NewBowlingMinigamePropertiesData.dart';
 export 'pvz_models/PVZ1CopycatsModulePropertiesData.dart';
+export 'pvz_models/PVZ1SeeingStarsModulePropertiesData.dart';
+export 'pvz_models/SeeingStarsMatchPlantData.dart';
 export 'pvz_models/PVZ1OverwhelmModulePropertiesData.dart';
 export 'pvz_models/PVZ1PassageModulePropertiesData.dart';
 export 'pvz_models/ParachuteRainEventData.dart';
