@@ -77,6 +77,8 @@ PreviewModuleInfoPayload previewModuleInfoBuild({
       return _protectPlants(levelFile, t, name);
     case 'ProtectTheGridItemChallengeProperties':
       return _protectGridItems(levelFile, t, name);
+    case 'PVZ1SeeingStarsModuleProperties':
+      return _seeingStars(levelFile, t, name);
     case 'VaseBreakerPresetProperties':
     case 'VaseBreakerArcadeModuleProperties':
     case 'VaseBreakerFlowModuleProperties':
@@ -184,6 +186,7 @@ List<String> previewPresentModuleObjClasses(PvzLevelFile levelFile) {
     'InitialZombieProperties',
     'ProtectThePlantChallengeProperties',
     'ProtectTheGridItemChallengeProperties',
+    'PVZ1SeeingStarsModuleProperties',
     'VaseBreakerPresetProperties',
     'VaseBreakerArcadeModuleProperties',
     'VaseBreakerFlowModuleProperties',
@@ -646,6 +649,69 @@ PreviewModuleInfoPayload _protectGridItems(
                       _clean(g.gridItemType),
                       gridX: g.gridX,
                       gridY: g.gridY,
+                    ),
+              ],
+            ),
+          ],
+  );
+}
+
+PreviewModuleInfoPayload _seeingStars(
+  PvzLevelFile levelFile,
+  PreviewModuleL10n t,
+  PreviewModuleResourceName name,
+) {
+  final data = readSeeingStarsModuleData(levelFile);
+  if (data == null) {
+    return PreviewModuleInfoPayload(
+      lines: [t('previewGenModuleInfoNoData', 'No module data on this level')],
+    );
+  }
+  final cells = _cellsList(data.matchPlants.map((p) => (p.gridX, p.gridY)));
+  final lines = <String>[
+    t('previewGenSeeingStarsCells', 'Pattern cells: {count}', {
+      'count': data.matchPlants.length,
+    }),
+    t('previewGenSeeingStarsCycle', 'Waves loop back to wave {wave}', {
+      'wave': data.cycleIndex,
+    }),
+    t(
+      'previewGenSeeingStarsSettlement',
+      'Win settles {n}s after the pattern is complete',
+      {'n': _fmtNum(data.settlementDuration)},
+    ),
+    if (cells.isNotEmpty) cells,
+  ];
+  final (rows, cols) = _lawnDims(levelFile);
+
+  return PreviewModuleInfoPayload(
+    lines: lines,
+    gridNotes: [
+      t('previewGenSeeingStarsCycle', 'Waves loop back to wave {wave}', {
+        'wave': data.cycleIndex,
+      }),
+      t(
+        'previewGenSeeingStarsSettlement',
+        'Win settles {n}s after the pattern is complete',
+        {'n': _fmtNum(data.settlementDuration)},
+      ),
+    ],
+    lawnRows: rows,
+    lawnCols: cols,
+    sections: data.matchPlants.isEmpty
+        ? const []
+        : [
+            PreviewIconSection(
+              title: t('previewGenSeeingStarsCells', 'Pattern cells: {count}', {
+                'count': data.matchPlants.length,
+              }),
+              items: [
+                for (final p in data.matchPlants.take(96))
+                  if (_clean(p.matchTypeName).isNotEmpty)
+                    _plantItem(
+                      _clean(p.matchTypeName),
+                      gridX: p.gridX,
+                      gridY: p.gridY,
                     ),
               ],
             ),

@@ -7,8 +7,6 @@ import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_module_order_utils.dart';
 import 'package:c_editor/data/cowboy_minigame_utils.dart';
-import 'package:c_editor/data/moon_grapple_save_validation.dart';
-import 'package:c_editor/data/glacier_module_presets.dart';
 import 'package:c_editor/data/zomboss_eighties_speaker_presets.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/module_open_hint.dart';
@@ -19,7 +17,6 @@ import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/models/custom_stage_preset.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
-import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -50,7 +47,6 @@ import 'package:c_editor/screens/editor/modules/conveyor_seedbank_properties_scr
 import 'package:c_editor/screens/editor/modules/seed_bank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/sun_dropper_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/moon_life_support_system_screen.dart';
-import 'package:c_editor/screens/editor/modules/moon_grapple_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/lunar_terminal_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/level_powerup_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/lunar_mine_vein_module_screen.dart';
@@ -99,6 +95,8 @@ import 'package:c_editor/screens/editor/modules/tunnel_defend_module_screen.dart
 import 'package:c_editor/screens/editor/modules/gulliver_tunnel_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/zombie_rush_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/pvz1_copycats_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/pvz1_seeing_stars_module_screen.dart';
+import 'package:c_editor/data/registry/warning_registry.dart';
 import 'package:c_editor/screens/editor/modules/pvz1_passage_module_screen.dart';
 import 'package:c_editor/screens/editor/tabs/izombie_tab.dart';
 import 'package:c_editor/screens/editor/tabs/level_settings_tab.dart';
@@ -321,7 +319,9 @@ class _EditorScreenState extends State<EditorScreen> {
           } else if (v is String && v.isNotEmpty) {
             out.add(v);
           }
-        } else if (k == 'PlantTypeName' && v is String && v.isNotEmpty) {
+        } else if ((k == 'PlantTypeName' || k == 'MatchTypeName') &&
+            v is String &&
+            v.isNotEmpty) {
           out.add(v);
         }
         _collectPlantIdsFromDynamic(v, out);
@@ -471,44 +471,6 @@ class _EditorScreenState extends State<EditorScreen> {
     return metas;
   }
 
-  bool _showGlacierModuleCompatibilityWarning() {
-    final file = _ec.state.levelFile;
-    if (file == null) return false;
-    return GlacierModulePropertiesData.shouldShowCompatibilityWarning(
-      levelFile: file,
-      moduleObjClasses: _levelModuleObjClasses(),
-    );
-  }
-
-  bool _showGlacierModuleUnderwaterWarning() {
-    final file = _ec.state.levelFile;
-    if (file == null) return false;
-    final hasGlacierModule =
-        _levelModuleObjClasses().contains('GlacierModuleProperties') ||
-        file.objects.any((o) => o.objClass == 'GlacierModuleProperties');
-    return hasGlacierModule && LevelParser.isDeepSeaLawnFromFile(file);
-  }
-
-  bool _showIceAgePlantPuzzleWarning() {
-    final file = _ec.state.levelFile;
-    if (file == null) return false;
-    final hasGlacierModule =
-        _levelModuleObjClasses().contains('GlacierModuleProperties') ||
-        file.objects.any((o) => o.objClass == 'GlacierModuleProperties');
-    if (!hasGlacierModule) return false;
-
-    final battle =
-        file.objects.firstWhereOrNull(
-          (o) => o.objClass == 'ZombossBattleModuleProperties',
-        ) ??
-        _ec.state.parsedData?.objectMap.values.firstWhereOrNull(
-          (o) => o.objClass == 'ZombossBattleModuleProperties',
-        );
-    if (battle?.objData is! Map) return false;
-    final variation = (battle!.objData as Map)['ZombossMechType'] as String?;
-    return GlacierModulePresets.isPlantPuzzleVariation(variation);
-  }
-
   void _openGlacierModuleSettings() {
     final levelFile = _ec.state.levelFile;
     final parsed = _ec.state.parsedData;
@@ -645,16 +607,11 @@ class _EditorScreenState extends State<EditorScreen> {
     );
   }
 
-  Future<bool> _save() async {
-    final levelFile = _ec.state.levelFile;
-    if (levelFile == null) return false;
-    if (!moonGrappleHasEnoughRounds(levelFile)) {
-      await _showMoonGrappleSaveBlockedDialog();
-      return false;
-    }
+  Future<void> _save() async {
+    if (_ec.state.levelFile == null) return;
     final hadChanges = _ec.state.hasChanges;
     await _ec.save();
-    if (!mounted) return true;
+    if (!mounted) return;
     if (hadChanges) {
       final l10n = AppLocalizations.of(context);
       AppMessage.show(
@@ -663,30 +620,6 @@ class _EditorScreenState extends State<EditorScreen> {
         icon: Icons.check_circle,
       );
     }
-    return true;
-  }
-
-  Future<void> _showMoonGrappleSaveBlockedDialog() async {
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context);
-    await showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          l10n?.moonGrappleSaveBlockedTitle ?? 'Cannot save Moon Grapple level',
-        ),
-        content: Text(
-          l10n?.moonGrappleSaveBlockedMessage ??
-              'Moon Grapple levels must contain at least 3 rounds before they can be saved.',
-        ),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n?.confirm ?? 'OK'),
-          ),
-        ],
-      ),
-    );
   }
 
   void _markDirty() {
@@ -715,8 +648,8 @@ class _EditorScreenState extends State<EditorScreen> {
           ),
           FilledButton(
             onPressed: () async {
-              final saved = await _save();
-              if (saved && ctx.mounted) Navigator.pop(ctx, true);
+              await _save();
+              if (ctx.mounted) Navigator.pop(ctx, true);
             },
             child: Text(l10n?.confirm ?? 'Save'),
           ),
@@ -2682,6 +2615,7 @@ class _EditorScreenState extends State<EditorScreen> {
       objClass =
           ReferenceRepository.instance.getObjClass(info.alias) ?? 'Unknown';
     }
+
     // Check if we have a specific screen for this module
     if (objClass == 'StarChallengeModuleProperties') {
       Navigator.push(
@@ -2918,6 +2852,23 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
     if (info.source == 'CurrentLevel' &&
+        objClass == 'PVZ1SeeingStarsModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PVZ1SeeingStarsModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+            onAddModule: (objClass) =>
+                _addModule(ModuleRegistry.getMetadata(objClass)),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
         objClass == 'ZombieMoveFastModuleProperties') {
       Navigator.push(
         context,
@@ -3032,28 +2983,6 @@ class _EditorScreenState extends State<EditorScreen> {
       }
 
       openLifeSupport(rtid);
-      return;
-    }
-    if (objClass == 'MoonGrappleModuleProperties' &&
-        _ec.state.parsedData?.levelDef != null) {
-      final referenceData = ReferenceRepository.instance
-          .objectForAlias(info.alias)
-          ?.objData;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MoonGrappleModuleScreen(
-            rtid: rtid,
-            levelFile: _ec.state.levelFile!,
-            levelDef: _ec.state.parsedData!.levelDef!,
-            referenceData: referenceData is Map
-                ? Map<String, dynamic>.from(referenceData)
-                : null,
-            onChanged: _markDirty,
-            onBack: () => Navigator.pop(context),
-          ),
-        ),
-      );
       return;
     }
     if (objClass == 'WitchModuleProperties' &&
@@ -3921,9 +3850,8 @@ class _EditorScreenState extends State<EditorScreen> {
                     onPressed: _ec.state.levelFile != null
                         ? () async {
                             final hadChanges = _ec.state.hasChanges;
-                            final saved = await _save();
+                            await _save();
                             if (!mounted) return;
-                            if (!saved) return;
                             if (hadChanges) {
                               // Let the banner start its fade-in before the route covers the frame.
                               await Future<void>.delayed(
@@ -3944,16 +3872,6 @@ class _EditorScreenState extends State<EditorScreen> {
                                     levelFile: _ec.state.levelFile!,
                                     onBack: () => Navigator.pop(context),
                                     onSaved: () => _ec.onJsonViewerSaved(),
-                                    saveLevel: (filePath, levelFile) async {
-                                      if (!moonGrappleHasEnoughRounds(levelFile)) {
-                                        await _showMoonGrappleSaveBlockedDialog();
-                                        return;
-                                      }
-                                      await LevelRepository.saveAndExport(
-                                        filePath,
-                                        levelFile,
-                                      );
-                                    },
                                   ),
                                 ),
                               );
@@ -3967,7 +3885,7 @@ class _EditorScreenState extends State<EditorScreen> {
                     return IconButton(
                       icon: const Icon(Icons.save),
                       tooltip: l10n?.tooltipSave ?? 'Save',
-                      onPressed: _ec.state.hasChanges ? () => _save() : null,
+                      onPressed: _ec.state.hasChanges ? _save : null,
                     );
                   },
                 ),
@@ -4031,9 +3949,8 @@ class _EditorScreenState extends State<EditorScreen> {
                   onSelected: (value) async {
                     if (value == 'json') {
                       final hadChanges = _ec.state.hasChanges;
-                      final saved = await _save();
+                      await _save();
                       if (!mounted) return;
-                      if (!saved) return;
                       if (hadChanges) {
                         await Future<void>.delayed(
                           const Duration(milliseconds: 32),
@@ -4051,16 +3968,6 @@ class _EditorScreenState extends State<EditorScreen> {
                               levelFile: _ec.state.levelFile!,
                               onBack: () => Navigator.pop(context),
                               onSaved: () => _ec.onJsonViewerSaved(),
-                              saveLevel: (filePath, levelFile) async {
-                                if (!moonGrappleHasEnoughRounds(levelFile)) {
-                                  await _showMoonGrappleSaveBlockedDialog();
-                                  return;
-                                }
-                                await LevelRepository.saveAndExport(
-                                  filePath,
-                                  levelFile,
-                                );
-                              },
                             ),
                           ),
                         );
@@ -4222,12 +4129,12 @@ class _EditorScreenState extends State<EditorScreen> {
                                                 _calculateMissingModules(),
                                             missingModuleWarnings:
                                                 _getMissingModuleWarnings(),
-                                            showGlacierModuleCompatibilityWarning:
-                                                _showGlacierModuleCompatibilityWarning(),
-                                            showGlacierModuleUnderwaterWarning:
-                                                _showGlacierModuleUnderwaterWarning(),
-                                            showIceAgePlantPuzzleWarning:
-                                                _showIceAgePlantPuzzleWarning(),
+                                            warnings: WarningRegistry.forLevel(
+                                              context,
+                                              _ec.state.levelFile!,
+                                              parsed: _ec.state.parsedData,
+                                              editorOnly: true,
+                                            ),
                                             onEditBasicInfo:
                                                 _handleEditBasicInfo,
                                             onEditModule: _handleEditModule,
@@ -4462,7 +4369,9 @@ class _CustomStageAliasPromptDialogState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final available = MediaQuery.sizeOf(context).width - 48;
-    final dialogW = available < 420 ? (available < 1 ? 1.0 : available) : 420.0;
+    final dialogW = available < 420
+        ? (available < 1 ? 1.0 : available)
+        : 420.0;
 
     return EscapeClosesModal(
       child: Dialog(

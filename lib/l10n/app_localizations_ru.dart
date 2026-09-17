@@ -1289,9 +1289,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get templateCustomLawnExample => 'Пример пользовательской лужайки';
 
   @override
-  String get templateMoonGrappleExample => 'Пример уровня «Лунный крюк»';
-
-  @override
   String get unsavedChanges => 'Несохранённые изменения';
 
   @override
@@ -1305,123 +1302,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get saved => 'Сохранено';
-
-  @override
-  String get moonGrappleSaveBlockedTitle =>
-      'Невозможно сохранить уровень «Лунный крюк»';
-
-  @override
-  String get moonGrappleSaveBlockedMessage =>
-      'Для сохранения уровня «Лунный крюк» необходимо как минимум 3 раунда.';
-
-  @override
-  String moonGrappleRound(int round) {
-    return 'Раунд $round';
-  }
-
-  @override
-  String get moonGrappleTargetScore => 'Целевой счёт';
-
-  @override
-  String get moonGrappleSpawnThreshold => 'Порог появления';
-
-  @override
-  String get moonGrappleSpawnInterval => 'Интервал появления';
-
-  @override
-  String get moonGrappleMinimumSpeed => 'Минимальная скорость';
-
-  @override
-  String get moonGrappleMaximumSpeed => 'Максимальная скорость';
-
-  @override
-  String get moonGrappleRenderingFixed => 'Определение отображения фиксировано';
-
-  @override
-  String get moonGrappleRemoveSpawnObject => 'Удалить объект появления';
-
-  @override
-  String get moonGrappleSpawnWeight => 'Вес появления';
-
-  @override
-  String get moonGrappleReturnSpeedFactor => 'Множитель скорости возврата';
-
-  @override
-  String get moonGrappleScore => 'Счёт';
-
-  @override
-  String get moonGrappleExperience => 'Опыт';
-
-  @override
-  String get moonGrappleCollisionRadius => 'Радиус столкновения';
-
-  @override
-  String get moonGrappleRemoveRound => 'Удалить раунд';
-
-  @override
-  String get moonGrappleAddSpawnObject => 'Добавить объект появления';
-
-  @override
-  String get moonGrappleBackgroundObjects => 'Фоновые объекты';
-
-  @override
-  String get moonGrappleRemoveBackgroundObject => 'Удалить фоновый объект';
-
-  @override
-  String get moonGrappleAnimationArtCenterFixed =>
-      'Анимация и центр изображения фиксированы';
-
-  @override
-  String get moonGrappleSpeed => 'Скорость';
-
-  @override
-  String get moonGrappleAddBackgroundObject => 'Добавить фоновый объект';
-
-  @override
-  String get moonGrappleHookGameplay => 'Игровой процесс с крюком';
-
-  @override
-  String get moonGrappleShipPosition => 'Позиция корабля';
-
-  @override
-  String get moonGrappleMinimumHookDistance => 'Минимальная дальность крюка';
-
-  @override
-  String get moonGrappleMaximumHookDistance => 'Максимальная дальность крюка';
-
-  @override
-  String get moonGrappleFiringArcDegrees => 'Угол запуска';
-
-  @override
-  String get moonGrappleLaunchSpeed => 'Скорость запуска';
-
-  @override
-  String get moonGrappleEmptyReturnSpeed => 'Скорость возврата без груза';
-
-  @override
-  String get moonGrappleLoadedReturnSpeed => 'Скорость возврата с грузом';
-
-  @override
-  String get moonGrappleHookCollisionRadius => 'Радиус столкновения крюка';
-
-  @override
-  String get moonGrappleSpawnLayout => 'Расположение появления';
-
-  @override
-  String get moonGrappleFormationSpacing => 'Интервал построения';
-
-  @override
-  String get moonGrappleFormationYOffset => 'Смещение построения по Y';
-
-  @override
-  String get moonGrappleAddRound => 'Добавить раунд';
-
-  @override
-  String get moduleDesc_MoonGrappleModuleProperties =>
-      'Настройка игры «Лунный крюк» на Лунной базе.';
-
-  @override
-  String get moduleTitle_MoonGrappleModuleProperties => 'Лунный крюк';
 
   @override
   String get failedToLoadLevel =>
@@ -7588,6 +7468,72 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pvz1CopycatsAddZombie => 'Добавить зомби в белый список';
+
+  @override
+  String get moduleTitle_PVZ1SeeingStarsModuleProperties => 'Звёздный узор';
+
+  @override
+  String get moduleDesc_PVZ1SeeingStarsModuleProperties =>
+      'Победа — посадить нужные растения на отмеченные клетки; волны зомби идут по кругу, пока узор не собран';
+
+  @override
+  String get pvz1SeeingStarsModuleTitle => 'Звёздный узор';
+
+  @override
+  String get pvz1SeeingStarsSectionParams => 'Параметры';
+
+  @override
+  String get pvz1SeeingStarsSectionMatchPlants => 'Клетки узора (MatchPlants)';
+
+  @override
+  String get pvz1SeeingStarsHelpMatchPlants =>
+      'Каждая запись — клетка газона и растение, которое на ней должно стоять. Выберите клетку на сетке и добавьте растение; добавление на занятую клетку заменяет её. Уровень выигран, когда на всех клетках стоят нужные растения.';
+
+  @override
+  String get pvz1SeeingStarsFieldCycleIndexLabel => 'Волна цикла (CycleIndex)';
+
+  @override
+  String get pvz1SeeingStarsHelpCycleIndex =>
+      'Волна, к которой спавн возвращается после последней. При 15 волнах и значении 5 после 15-й волны идёт 6-я, и цикл повторяется, пока узор не собран.';
+
+  @override
+  String get pvz1SeeingStarsFieldSettlementDurationLabel =>
+      'Задержка засчёта (SettlementDuration)';
+
+  @override
+  String get pvz1SeeingStarsHelpSettlementDuration =>
+      'Сколько секунд ждать после сборки узора до засчёта победы. Таймер работает сам по себе только без модуля «Полная зачистка» (ZombiesDeadWinCon).';
+
+  @override
+  String get pvz1SeeingStarsHelpOverview =>
+      'Воссоздаёт мини-игру Аллеи воспоминаний «Звёздный узор». Зомби идут по кругу волн, а игрок должен посадить требуемые растения (классически — карамболы) на отмеченные клетки. Модуль содержит собственное условие победы и заменяет модуль «Полная зачистка» (ZombiesDeadWinCon).';
+
+  @override
+  String get pvz1SeeingStarsHelpFieldsTitle => 'Описание полей';
+
+  @override
+  String get pvz1SeeingStarsHelpWinCon =>
+      'Не сочетайте этот модуль с «Полной зачисткой» (ZombiesDeadWinCon). При обоих модулях уровень может завершиться по смерти зомби вместо сборки узора, а задержка засчёта будет проигнорирована.';
+
+  @override
+  String get pvz1SeeingStarsMatchPlantsEmpty =>
+      'Клеток узора пока нет. Выберите клетку на сетке и добавьте растение.';
+
+  @override
+  String get seeingStarsWinConWarningTitle => 'Дублирующееся условие победы';
+
+  @override
+  String get seeingStarsWinConWarning =>
+      '«Звёздный узор» сам засчитывает победу после сборки узора. В уровне также есть «Полная зачистка» (ZombiesDeadWinCon), поэтому уровень может закончиться по смерти всех зомби, а задержка засчёта будет проигнорирована. Удалите один из двух модулей.';
+
+  @override
+  String get seeingStarsCycleWaveLabel => 'Волна цикла';
+
+  @override
+  String get seeingStarsSettlementLabel => 'Задержка засчёта';
+
+  @override
+  String get seeingStarsPatternCells => 'Клетки узора';
 
   @override
   String get magicHatSpawnPreviewTitle => 'Шляпа — возможные растения';

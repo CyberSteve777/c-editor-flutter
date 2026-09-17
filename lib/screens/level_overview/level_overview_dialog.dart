@@ -149,6 +149,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
   bool _copycatBlackListExpanded = false;
   bool _copycatWhiteListExpanded = false;
   bool _seedRainExpanded = false;
+  bool _seeingStarsPlantsExpanded = false;
 
   bool _encounterZombiesExpanded = false;
   bool _encounterGridItemsExpanded = false;
@@ -301,6 +302,8 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         return l10n.moduleTitle_DropShipProperties;
       case GridPreviewModuleKind.protectPlants:
         return l10n.moduleTitle_ProtectThePlantChallengeProperties;
+      case GridPreviewModuleKind.seeingStars:
+        return l10n.moduleTitle_PVZ1SeeingStarsModuleProperties;
       case GridPreviewModuleKind.protectItems:
         return l10n.moduleTitle_ProtectTheGridItemChallengeProperties;
       case GridPreviewModuleKind.flowers:
@@ -322,6 +325,13 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
       return LevelParser.extractAlias(id);
     }
     return id;
+  }
+
+  bool _isChallengeKind(GridPreviewModuleKind kind) {
+    return kind == GridPreviewModuleKind.protectPlants ||
+        kind == GridPreviewModuleKind.protectItems ||
+        kind == GridPreviewModuleKind.flowers ||
+        kind == GridPreviewModuleKind.seeingStars;
   }
 
   int _parseCoord(dynamic val) {
@@ -385,6 +395,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           _buildSeedBankCard(context, theme, l10n),
           _buildConveyorCard(context, theme, l10n),
           _buildCopycatCard(context, theme, l10n),
+          _buildSeeingStarsCard(context, theme, l10n),
           _buildSingleHandedCard(context, theme, l10n),
           _buildSeedRainCard(context, theme, l10n),
           _buildHeianWindCard(context, theme, l10n),
@@ -1758,9 +1769,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                 c.kind != GridPreviewModuleKind.plants &&
                 c.kind != GridPreviewModuleKind.zombossMech &&
                 c.kind != GridPreviewModuleKind.zomboss &&
-                c.kind != GridPreviewModuleKind.protectPlants &&
-                c.kind != GridPreviewModuleKind.protectItems &&
-                c.kind != GridPreviewModuleKind.flowers,
+                !_isChallengeKind(c.kind),
           )
           .toList();
     } else if (activeTabIndex == 3) {
@@ -1773,12 +1782,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           .toList();
     } else if (activeTabIndex == 5) {
       gridCategories = allGridCategories
-          .where(
-            (c) =>
-                c.kind == GridPreviewModuleKind.protectPlants ||
-                c.kind == GridPreviewModuleKind.protectItems ||
-                c.kind == GridPreviewModuleKind.flowers,
-          )
+          .where((c) => _isChallengeKind(c.kind))
           .toList();
     } else {
       gridCategories = allGridCategories
@@ -2037,8 +2041,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           c.kind != GridPreviewModuleKind.dropShip &&
           c.kind != GridPreviewModuleKind.zombossMech &&
           c.kind != GridPreviewModuleKind.zomboss &&
-          c.kind != GridPreviewModuleKind.protectPlants &&
-          c.kind != GridPreviewModuleKind.protectItems,
+          !_isChallengeKind(c.kind),
     );
     final hasZomboss = allCategories.any(
       (c) => c.kind == GridPreviewModuleKind.zombossMech,
@@ -2047,10 +2050,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
       (c) => c.kind == GridPreviewModuleKind.zomboss,
     );
     final hasChallenges = allCategories.any(
-      (c) =>
-          c.kind == GridPreviewModuleKind.protectPlants ||
-          c.kind == GridPreviewModuleKind.protectItems ||
-          c.kind == GridPreviewModuleKind.flowers,
+      (c) => _isChallengeKind(c.kind),
     );
 
     final theme = Theme.of(context);
@@ -2326,8 +2326,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             selectedKind == GridPreviewModuleKind.dropShip
         ? const Color(0xFF42A5F5)
         : (selectedKind == GridPreviewModuleKind.plants ||
-                  selectedKind == GridPreviewModuleKind.protectPlants ||
-                  selectedKind == GridPreviewModuleKind.protectItems
+                  _isChallengeKind(selectedKind)
               ? const Color(0xFF2E7D32)
               : const Color(0xFFFFA726));
 
@@ -2894,6 +2893,38 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     );
   }
 
+  Widget _buildSeeingStarsGrid(
+    int rows,
+    int cols,
+    LevelPreviewGridStyle style,
+  ) {
+    final sData = readSeeingStarsModuleData(widget.levelFile);
+    if (sData == null) {
+      return _buildCompositeLawnGrid(
+        rows: rows,
+        cols: cols,
+        style: style,
+        cellBuilder: (col, row) => null,
+      );
+    }
+
+    final data = <String, List<String>>{};
+    for (final p in sData.matchPlants) {
+      final key = '${p.gridX},${p.gridY}';
+      data[key] ??= [];
+      data[key]!.add(_cleanId(p.matchTypeName));
+    }
+
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      moduleData: data,
+      activeTabIndex: 0,
+      cellBuilder: (col, row) => null,
+    );
+  }
+
   Widget _buildProtectItemsGrid(
     int rows,
     int cols,
@@ -3159,6 +3190,8 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         return _buildGulliverGrid(rows, cols, style);
       case GridPreviewModuleKind.protectPlants:
         return _buildProtectPlantsGrid(rows, cols, style);
+      case GridPreviewModuleKind.seeingStars:
+        return _buildSeeingStarsGrid(rows, cols, style);
       case GridPreviewModuleKind.protectItems:
         return _buildProtectItemsGrid(rows, cols, style);
       case GridPreviewModuleKind.flowers:
@@ -3657,6 +3690,89 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                 ),
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSeeingStarsCard(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
+    final data = readSeeingStarsModuleData(widget.levelFile);
+    if (data == null) return const SizedBox.shrink();
+
+    const accent = Color(0xFFD5A021);
+    final plantIds = data.matchPlants
+        .map((p) => _cleanId(p.matchTypeName))
+        .where((id) => id.isNotEmpty)
+        .toList();
+    final settlement = data.settlementDuration ==
+            data.settlementDuration.roundToDouble()
+        ? data.settlementDuration.toInt().toString()
+        : data.settlementDuration.toString();
+
+    return Container(
+      key: const ValueKey('overviewSeeingStarsCard'),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+        ),
+      ),
+      child: _OverviewCardPadding(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
+                children: [
+                  const Icon(Icons.star, size: 20, color: accent),
+                  _buildSectionTitle(
+                    l10n.moduleTitle_PVZ1SeeingStarsModuleProperties,
+                    theme,
+                    color: accent,
+                  ),
+                ],
+              ),
+            ),
+            Wrap(
+              spacing: 12,
+              runSpacing: 10,
+              children: [
+                _buildInfoChip(
+                  icon: Icons.loop,
+                  label:
+                      '${l10n.seeingStarsCycleWaveLabel}: ${data.cycleIndex}',
+                  color: accent,
+                  theme: theme,
+                ),
+                _buildInfoChip(
+                  icon: Icons.timer_outlined,
+                  label: '${l10n.seeingStarsSettlementLabel}: ${settlement}s',
+                  color: accent,
+                  theme: theme,
+                ),
+              ],
+            ),
+            if (plantIds.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildPlantListSection(
+                l10n.seeingStarsPatternCells,
+                plantIds,
+                _seeingStarsPlantsExpanded,
+                onToggle: () => setState(
+                  () =>
+                      _seeingStarsPlantsExpanded = !_seeingStarsPlantsExpanded,
+                ),
+              ),
+            ],
           ],
         ),
       ),

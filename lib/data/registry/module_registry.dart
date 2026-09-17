@@ -124,8 +124,6 @@ class ModuleRegistry {
         return l10n.moduleTitle_SunDropperProperties;
       case 'moduleTitle_MoonExpertProperties':
         return l10n.moduleTitle_MoonExpertProperties;
-      case 'moduleTitle_MoonGrappleModuleProperties':
-        return l10n.moduleTitle_MoonGrappleModuleProperties;
       case 'moduleTitle_MoonLifeSupportSystemProperties':
         return l10n.moduleTitle_MoonLifeSupportSystemProperties;
       case 'moduleTitle_LunarTerminalModuleProperties':
@@ -262,6 +260,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_PVZ1PassageModuleProperties;
       case 'moduleTitle_PVZ1CopycatsModuleProperties':
         return l10n.moduleTitle_PVZ1CopycatsModuleProperties;
+      case 'moduleTitle_PVZ1SeeingStarsModuleProperties':
+        return l10n.moduleTitle_PVZ1SeeingStarsModuleProperties;
       default:
         return key;
     }
@@ -296,8 +296,6 @@ class ModuleRegistry {
         return l10n.moduleDesc_SunDropperProperties;
       case 'moduleDesc_MoonExpertProperties':
         return l10n.moduleDesc_MoonExpertProperties;
-      case 'moduleDesc_MoonGrappleModuleProperties':
-        return l10n.moduleDesc_MoonGrappleModuleProperties;
       case 'moduleDesc_MoonLifeSupportSystemProperties':
         return l10n.moduleDesc_MoonLifeSupportSystemProperties;
       case 'moduleDesc_LunarTerminalModuleProperties':
@@ -434,6 +432,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_PVZ1PassageModuleProperties;
       case 'moduleDesc_PVZ1CopycatsModuleProperties':
         return l10n.moduleDesc_PVZ1CopycatsModuleProperties;
+      case 'moduleDesc_PVZ1SeeingStarsModuleProperties':
+        return l10n.moduleDesc_PVZ1SeeingStarsModuleProperties;
       default:
         return key;
     }
@@ -834,6 +834,17 @@ class ModuleRegistry {
       defaultAlias: 'PVZ1CopycatsModule',
       initialDataFactory: () => PVZ1CopycatsModulePropertiesData(),
       routeId: 'PVZ1CopycatsModule',
+    ),
+    'PVZ1SeeingStarsModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_PVZ1SeeingStarsModuleProperties',
+      descriptionKey: 'moduleDesc_PVZ1SeeingStarsModuleProperties',
+      icon: Icons.star_outline,
+      isCore: false,
+      allowMultiple: false,
+      category: ModuleCategory.mode,
+      defaultAlias: 'PVZ1SeeingStars',
+      initialDataFactory: () => PVZ1SeeingStarsModulePropertiesData(),
+      routeId: 'PVZ1SeeingStarsModule',
     ),
     'IncreasedCostModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_IncreasedCostModuleProperties',
@@ -1255,18 +1266,6 @@ class ModuleRegistry {
       defaultAlias: 'MoonLifeSupportSystemModule',
       defaultSource: 'LevelModules',
       routeId: 'MoonLifeSupportSystem',
-    ),
-    'MoonGrappleModuleProperties': ModuleMetadata(
-      titleKey: 'moduleTitle_MoonGrappleModuleProperties',
-      descriptionKey: 'moduleDesc_MoonGrappleModuleProperties',
-      icon: Icons.anchor,
-      isCore: true,
-      allowMultiple: false,
-      category: ModuleCategory.gimmick,
-      defaultAlias: 'MoonGrappleDefault',
-      defaultSource: 'CurrentLevel',
-      initialDataFactory: () => MoonGrappleModulePropertiesData.createDefault(),
-      routeId: 'MoonGrappleModule',
     ),
     'LunarTerminalModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_LunarTerminalModuleProperties',

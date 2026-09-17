@@ -1275,9 +1275,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templateCustomLawnExample => 'Custom lawn level template';
 
   @override
-  String get templateMoonGrappleExample => 'Moon Grapple level template';
-
-  @override
   String get unsavedChanges => 'Unsaved changes';
 
   @override
@@ -1291,122 +1288,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saved => 'Saved';
-
-  @override
-  String get moonGrappleSaveBlockedTitle => 'Cannot save Moon Grapple level';
-
-  @override
-  String get moonGrappleSaveBlockedMessage =>
-      'Moon Grapple levels must contain at least 3 rounds before they can be saved.';
-
-  @override
-  String moonGrappleRound(int round) {
-    return 'Round $round';
-  }
-
-  @override
-  String get moonGrappleTargetScore => 'Target score';
-
-  @override
-  String get moonGrappleSpawnThreshold => 'Spawn threshold';
-
-  @override
-  String get moonGrappleSpawnInterval => 'Spawn interval';
-
-  @override
-  String get moonGrappleMinimumSpeed => 'Minimum speed';
-
-  @override
-  String get moonGrappleMaximumSpeed => 'Maximum speed';
-
-  @override
-  String get moonGrappleRenderingFixed => 'Rendering definition is fixed';
-
-  @override
-  String get moonGrappleRemoveSpawnObject => 'Remove spawn object';
-
-  @override
-  String get moonGrappleSpawnWeight => 'Spawn weight';
-
-  @override
-  String get moonGrappleReturnSpeedFactor => 'Return speed factor';
-
-  @override
-  String get moonGrappleScore => 'Score';
-
-  @override
-  String get moonGrappleExperience => 'Experience';
-
-  @override
-  String get moonGrappleCollisionRadius => 'Collision radius';
-
-  @override
-  String get moonGrappleRemoveRound => 'Remove round';
-
-  @override
-  String get moonGrappleAddSpawnObject => 'Add spawn object';
-
-  @override
-  String get moonGrappleBackgroundObjects => 'Background objects';
-
-  @override
-  String get moonGrappleRemoveBackgroundObject => 'Remove background object';
-
-  @override
-  String get moonGrappleAnimationArtCenterFixed =>
-      'Animation and art center are fixed';
-
-  @override
-  String get moonGrappleSpeed => 'Speed';
-
-  @override
-  String get moonGrappleAddBackgroundObject => 'Add background object';
-
-  @override
-  String get moonGrappleHookGameplay => 'Hook gameplay';
-
-  @override
-  String get moonGrappleShipPosition => 'Ship position';
-
-  @override
-  String get moonGrappleMinimumHookDistance => 'Minimum hook distance';
-
-  @override
-  String get moonGrappleMaximumHookDistance => 'Maximum hook distance';
-
-  @override
-  String get moonGrappleFiringArcDegrees => 'Firing arc degrees';
-
-  @override
-  String get moonGrappleLaunchSpeed => 'Launch speed';
-
-  @override
-  String get moonGrappleEmptyReturnSpeed => 'Empty return speed';
-
-  @override
-  String get moonGrappleLoadedReturnSpeed => 'Loaded return speed';
-
-  @override
-  String get moonGrappleHookCollisionRadius => 'Hook collision radius';
-
-  @override
-  String get moonGrappleSpawnLayout => 'Spawn layout';
-
-  @override
-  String get moonGrappleFormationSpacing => 'Formation spacing';
-
-  @override
-  String get moonGrappleFormationYOffset => 'Formation Y offset';
-
-  @override
-  String get moonGrappleAddRound => 'Add round';
-
-  @override
-  String get moduleDesc_MoonGrappleModuleProperties =>
-      'Configure the Moon BaseZ grappling game.';
-
-  @override
-  String get moduleTitle_MoonGrappleModuleProperties => 'Moon Grapple';
 
   @override
   String get failedToLoadLevel =>
@@ -7620,6 +7501,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pvz1CopycatsAddZombie => 'Add zombie to whitelist';
+
+  @override
+  String get moduleTitle_PVZ1SeeingStarsModuleProperties => 'Seeing Stars';
+
+  @override
+  String get moduleDesc_PVZ1SeeingStarsModuleProperties =>
+      'Win by planting the requested plants on marked cells; zombies loop until the pattern is complete';
+
+  @override
+  String get pvz1SeeingStarsModuleTitle => 'Seeing Stars';
+
+  @override
+  String get pvz1SeeingStarsSectionParams => 'Parameters';
+
+  @override
+  String get pvz1SeeingStarsSectionMatchPlants => 'Pattern cells (MatchPlants)';
+
+  @override
+  String get pvz1SeeingStarsHelpMatchPlants =>
+      'Each entry is a lawn cell and the plant that must be planted there. Select a cell on the grid, then add a plant; adding to an occupied cell replaces it. The level is won once every cell holds its plant.';
+
+  @override
+  String get pvz1SeeingStarsFieldCycleIndexLabel => 'Cycle wave (CycleIndex)';
+
+  @override
+  String get pvz1SeeingStarsHelpCycleIndex =>
+      'Wave to loop back to after the final wave. In a 15-wave level with a value of 5, wave 15 is followed by wave 6, and the loop repeats until the pattern is complete.';
+
+  @override
+  String get pvz1SeeingStarsFieldSettlementDurationLabel =>
+      'Settlement delay (SettlementDuration)';
+
+  @override
+  String get pvz1SeeingStarsHelpSettlementDuration =>
+      'Seconds to wait after the pattern is complete before the level is won. This only settles the level on its own when the Loot Drop (ZombiesDeadWinCon) module is absent.';
+
+  @override
+  String get pvz1SeeingStarsHelpOverview =>
+      'Recreates the Memory Lane minigame \"Seeing Stars\". Zombies keep arriving in a wave loop while the player tries to plant the requested plants (classically Starfruit) on the marked cells. This module carries its own win condition, so it replaces the Loot Drop (ZombiesDeadWinCon) module.';
+
+  @override
+  String get pvz1SeeingStarsHelpFieldsTitle => 'Parameter details';
+
+  @override
+  String get pvz1SeeingStarsHelpWinCon =>
+      'Do not combine this module with Loot Drop (ZombiesDeadWinCon). With both present the level can end when the zombies die instead of when the pattern is complete, and the settlement delay is ignored.';
+
+  @override
+  String get pvz1SeeingStarsMatchPlantsEmpty =>
+      'No pattern cells yet. Select a cell on the grid and add a plant.';
+
+  @override
+  String get seeingStarsWinConWarningTitle => 'Duplicate win condition';
+
+  @override
+  String get seeingStarsWinConWarning =>
+      'Seeing Stars settles the level by itself once the pattern is complete. Loot Drop (ZombiesDeadWinCon) is also present, so the level may end when all zombies die instead, and the settlement delay will be ignored. Remove one of the two modules.';
+
+  @override
+  String get seeingStarsCycleWaveLabel => 'Cycle wave';
+
+  @override
+  String get seeingStarsSettlementLabel => 'Settlement delay';
+
+  @override
+  String get seeingStarsPatternCells => 'Pattern cells';
 
   @override
   String get magicHatSpawnPreviewTitle => 'Possible plants from Magic Hat';
