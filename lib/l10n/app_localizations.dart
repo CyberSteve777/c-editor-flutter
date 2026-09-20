@@ -13326,7 +13326,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1SeeingStarsHelpWinCon.
   ///
   /// In en, this message translates to:
-  /// **'Do not combine this module with Loot Drop (ZombiesDeadWinCon). With both present the level can end when the zombies die instead of when the pattern is complete, and the settlement delay is ignored.'**
+  /// **'Do not combine this module with Loot Drop (ZombiesDeadWinCon) or Bronze Matrix Loot Drop (BronzeDeadWinCon). With either present the level can end when those win conditions fire instead of when the pattern is complete, and the settlement delay is ignored.'**
   String get pvz1SeeingStarsHelpWinCon;
 
   /// No description provided for @pvz1SeeingStarsMatchPlantsEmpty.
@@ -13344,7 +13344,7 @@ abstract class AppLocalizations {
   /// No description provided for @seeingStarsWinConWarning.
   ///
   /// In en, this message translates to:
-  /// **'Seeing Stars settles the level by itself once the pattern is complete. Loot Drop (ZombiesDeadWinCon) is also present, so the level may end when all zombies die instead, and the settlement delay will be ignored. Remove one of the two modules.'**
+  /// **'Seeing Stars settles the level by itself once the pattern is complete. Loot Drop (ZombiesDeadWinCon) or Bronze Matrix Loot Drop (BronzeDeadWinCon) is also present, so the level may end when that win condition fires instead, and the settlement delay will be ignored. Remove Seeing Stars or the other win condition.'**
   String get seeingStarsWinConWarning;
 
   /// No description provided for @seeingStarsCycleWaveLabel.

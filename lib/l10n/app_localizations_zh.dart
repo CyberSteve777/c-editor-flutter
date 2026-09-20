@@ -7168,7 +7168,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pvz1SeeingStarsHelpWinCon =>
-      '请勿与「战利品掉落」(ZombiesDeadWinCon) 同时使用。两者并存时，关卡可能在僵尸清场时结束而非图案完成时结束，结算延迟也会被忽略。';
+      '请勿与「战利品掉落」(ZombiesDeadWinCon) 或「铜人阵死亡结算」(BronzeDeadWinCon) 同时使用。与任一并存时，关卡可能在对方胜利条件触发时结束而非图案完成时结束，结算延迟也会被忽略。';
 
   @override
   String get pvz1SeeingStarsMatchPlantsEmpty => '尚未添加图案格子。请在网格上选中格子并添加植物。';
@@ -7178,7 +7178,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get seeingStarsWinConWarning =>
-      '「观星」会在图案完成后自行结算关卡。关卡中同时存在「战利品掉落」(ZombiesDeadWinCon)，因此可能在僵尸全部死亡时结束，结算延迟也会被忽略。请移除其中一个模块。';
+      '「观星」会在图案完成后自行结算关卡。关卡中同时存在「战利品掉落」(ZombiesDeadWinCon) 或「铜人阵死亡结算」(BronzeDeadWinCon)，因此可能在对方胜利条件触发时结束，结算延迟也会被忽略。请移除「观星」或另一个胜利条件。';
 
   @override
   String get seeingStarsCycleWaveLabel => '循环波数';
