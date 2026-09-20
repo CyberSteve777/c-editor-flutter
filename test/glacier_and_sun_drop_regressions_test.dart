@@ -159,8 +159,7 @@ void main() {
               body: LevelSettingsTab(
                 levelDef: LevelDefinitionData(),
                 objectMap: const {},
-                missingModules: const [],
-                warnings: [
+                issues: [
                   LevelWarning(
                     id: 'glacierModuleCompatibilityWarning',
                     severity: LevelWarningSeverity.warning,

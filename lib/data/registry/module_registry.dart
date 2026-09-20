@@ -839,7 +839,7 @@ class ModuleRegistry {
       titleKey: 'moduleTitle_PVZ1SeeingStarsModuleProperties',
       descriptionKey: 'moduleDesc_PVZ1SeeingStarsModuleProperties',
       icon: Icons.star_outline,
-      isCore: false,
+      isCore: true,
       allowMultiple: false,
       category: ModuleCategory.mode,
       defaultAlias: 'PVZ1SeeingStars',

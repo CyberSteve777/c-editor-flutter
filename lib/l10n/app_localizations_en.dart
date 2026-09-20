@@ -7546,7 +7546,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pvz1SeeingStarsHelpWinCon =>
-      'Do not combine this module with Loot Drop (ZombiesDeadWinCon). With both present the level can end when the zombies die instead of when the pattern is complete, and the settlement delay is ignored.';
+      'Do not combine this module with Loot Drop (ZombiesDeadWinCon) or Bronze Matrix Loot Drop (BronzeDeadWinCon). With either present the level can end when those win conditions fire instead of when the pattern is complete, and the settlement delay is ignored.';
 
   @override
   String get pvz1SeeingStarsMatchPlantsEmpty =>
@@ -7557,7 +7557,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get seeingStarsWinConWarning =>
-      'Seeing Stars settles the level by itself once the pattern is complete. Loot Drop (ZombiesDeadWinCon) is also present, so the level may end when all zombies die instead, and the settlement delay will be ignored. Remove one of the two modules.';
+      'Seeing Stars settles the level by itself once the pattern is complete. Loot Drop (ZombiesDeadWinCon) or Bronze Matrix Loot Drop (BronzeDeadWinCon) is also present, so the level may end when that win condition fires instead, and the settlement delay will be ignored. Remove Seeing Stars or the other win condition.';
 
   @override
   String get seeingStarsCycleWaveLabel => 'Cycle wave';

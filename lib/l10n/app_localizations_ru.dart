@@ -7513,7 +7513,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pvz1SeeingStarsHelpWinCon =>
-      'Не сочетайте этот модуль с «Полной зачисткой» (ZombiesDeadWinCon). При обоих модулях уровень может завершиться по смерти зомби вместо сборки узора, а задержка засчёта будет проигнорирована.';
+      'Не сочетайте этот модуль с «Полной зачисткой» (ZombiesDeadWinCon) или «Разгромом Бронзы» (BronzeDeadWinCon). При любом из них уровень может завершиться по чужому условию победы вместо сборки узора, а задержка засчёта будет проигнорирована.';
 
   @override
   String get pvz1SeeingStarsMatchPlantsEmpty =>
@@ -7524,7 +7524,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get seeingStarsWinConWarning =>
-      '«Звёздный узор» сам засчитывает победу после сборки узора. В уровне также есть «Полная зачистка» (ZombiesDeadWinCon), поэтому уровень может закончиться по смерти всех зомби, а задержка засчёта будет проигнорирована. Удалите один из двух модулей.';
+      '«Звёздный узор» сам засчитывает победу после сборки узора. В уровне также есть «Полная зачистка» (ZombiesDeadWinCon) или «Разгром Бронзы» (BronzeDeadWinCon), поэтому уровень может закончиться по чужому условию победы, а задержка засчёта будет проигнорирована. Удалите «Звёздный узор» или другое условие победы.';
 
   @override
   String get seeingStarsCycleWaveLabel => 'Волна цикла';
