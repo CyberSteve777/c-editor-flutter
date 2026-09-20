@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
-import 'package:c_editor/data/registry/warning_registry.dart';
+import 'package:c_editor/data/registry/issue_registry.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
@@ -44,7 +44,7 @@ class PVZ1SeeingStarsModuleScreen extends StatefulWidget {
 
 class _PVZ1SeeingStarsModuleScreenState
     extends State<PVZ1SeeingStarsModuleScreen> {
-  static const _objClass = WarningRegistry.seeingStarsModule;
+  static const _objClass = LevelIssueRegistry.seeingStarsModule;
 
   late String _alias;
   late PvzObject _moduleObj;
@@ -219,7 +219,7 @@ class _PVZ1SeeingStarsModuleScreenState
         final c = a.gridY.compareTo(b.gridY);
         return c != 0 ? c : a.gridX.compareTo(b.gridX);
       });
-    final winConWarning = WarningRegistry.forLevel(
+    final winConWarning = LevelIssueRegistry.forLevel(
       context,
       widget.levelFile,
     ).firstWhereOrNull((w) => w.id == 'seeingStarsWinConWarning');
