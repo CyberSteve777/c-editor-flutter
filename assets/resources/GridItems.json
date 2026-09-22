@@ -112,6 +112,8 @@
   { "typeName": "cavalrygun", "category": "spawnableObjects", "icon": "cavalrygun.webp" },
   { "typeName": "surfboard", "category": "spawnableObjects", "icon": "surfboard.webp" },
   { "typeName": "backpack", "category": "spawnableObjects", "icon": "backpack.webp" },
+  { "typeName": "zombie_tent", "category": "spawnableObjects", "icon": "ZombieTent.png" },
+  { "typeName": "zombie_festival_tent", "category": "spawnableObjects", "icon": "ZombieFestivalTent.png" },
   { "typeName": "eightiesarcadecabinet", "category": "spawnableObjects", "icon": "eightiesarcadecabinet.webp" },
   { "typeName": "gridItem_sushi", "category": "spawnableObjects", "icon": "griditem_sushi.webp" },
   { "typeName": "dinoegg_zomshell", "category": "spawnableObjects", "icon": "dinoegg_zomshell.webp" },

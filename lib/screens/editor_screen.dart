@@ -134,6 +134,7 @@ import 'package:c_editor/screens/editor/events/tidal_change_event_screen.dart';
 import 'package:c_editor/screens/editor/events/zombie_potion_event_screen.dart';
 import 'package:c_editor/screens/editor/events/shell_event_screen.dart';
 import 'package:c_editor/screens/editor/events/pumpkin_house_event_screen.dart';
+import 'package:c_editor/screens/editor/events/zombie_tent_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/rocket_landing_event_screen.dart';
 import 'package:c_editor/screens/editor/events/jittered_event_screen.dart';
 import 'package:c_editor/screens/editor/events/ground_spawn_event_screen.dart';
@@ -1774,6 +1775,39 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (objClass == 'WaveActionZombieTentProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ZombieTentWaveEventScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+            onRequestZombieSelection: (onSelected) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
+                    editorCubit: _ec,
+                    multiSelect: false,
+                    onZombieSelected: (id) {
+                      Navigator.pop(context);
+                      onSelected(id);
+                    },
+                    onMultiZombieSelected: (_) {},
+                    onBack: () => Navigator.pop(context),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       );

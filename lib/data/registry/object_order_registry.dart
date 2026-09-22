@@ -135,6 +135,7 @@ class ObjectOrderRegistry {
     'ZombieAtlantisShellActionProps',
     'SpawnRocketLandingWaveActionProps',
     'PumpkinHouseActionProps',
+    'WaveActionZombieTentProps',
     'SchoolBusWaveActionProps',
     'HamsterZombieSpawnerProps',
     'BarrelWaveActionProps',

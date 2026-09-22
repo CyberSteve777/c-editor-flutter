@@ -3182,6 +3182,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Spawns pumpkin houses on the lawn at set positions';
 
   @override
+  String get eventTitle_WaveActionZombieTentProps => 'Zombie Tent Spawn';
+
+  @override
+  String get eventDesc_WaveActionZombieTentProps =>
+      'Places zombie tents that periodically summon zombies from a weighted pool';
+
+  @override
   String get eventTitle_SpawnGravestonesWaveActionProps => 'Grid Item Spawn';
 
   @override
@@ -4389,6 +4396,57 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventHelpPumpkinHouseUsage =>
       'Select a tile, then tap \"+\" to place a pumpkin house. Lawn size varies by level: 6 rows × 10 columns in Underwater World, and 5 rows × 9 columns in other levels.';
+
+  @override
+  String get eventHelpZombieTentBody =>
+      'Spawns zombie tents on selected tiles. Each tent has its own hitpoints and periodically summons zombies from its weighted pool (ZombieTypesToSpawn). Use TentType zombie_festival_tent for Spring Festival tents, or zombie_tent for the standard tent.';
+
+  @override
+  String get eventHelpZombieTentUsage =>
+      'Select a tile, then tap \"+\" to place a tent. Configure tent type, hitpoints, production interval, and add zombies with spawn weight and level. Column and Row in the level JSON are 1-based.';
+
+  @override
+  String get eventHelpZombieTentFields =>
+      'TentType: zombie_tent or zombie_festival_tent.\nHitpoints: tent durability.\nProductionInterval: seconds between spawn attempts.\nZombieTypesToSpawn: ZombieTypeName, Weight (relative chance), Level (0 = lawn default).';
+
+  @override
+  String get eventZombieTentSpawn => 'Event: Zombie Tent Spawn';
+
+  @override
+  String get zombieTentSectionTitle => 'Tents at selected tile';
+
+  @override
+  String get zombieTentTypeLabel => 'Tent type (TentType)';
+
+  @override
+  String get zombieTentTypeNormal => 'Zombie tent';
+
+  @override
+  String get zombieTentTypeFestival => 'Festival tent';
+
+  @override
+  String get zombieTentHitpoints => 'Hitpoints';
+
+  @override
+  String get zombieTentProductionInterval => 'Production interval (s)';
+
+  @override
+  String get zombieTentZombiesSection => 'Zombies to spawn';
+
+  @override
+  String get zombieTentWeight => 'Weight';
+
+  @override
+  String get zombieTentAddZombie => 'Add zombie';
+
+  @override
+  String get zombieTentAddTent => 'Add tent';
+
+  @override
+  String get zombieTentDeleteTitle => 'Delete tent';
+
+  @override
+  String get zombieTentDeleteConfirm => 'Delete this tent?';
 
   @override
   String get eventHelpFairyFogBody =>
