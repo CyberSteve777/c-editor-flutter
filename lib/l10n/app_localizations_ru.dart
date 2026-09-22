@@ -3182,6 +3182,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Размещает тыквенные домики в указанных клетках';
 
   @override
+  String get eventTitle_WaveActionZombieTentProps => 'Появление палаток зомби';
+
+  @override
+  String get eventDesc_WaveActionZombieTentProps =>
+      'Размещает палатки зомби, периодически призывающие зомби из взвешенного пула';
+
+  @override
   String get eventTitle_SpawnGravestonesWaveActionProps => 'Появление могил';
 
   @override
@@ -4363,6 +4370,57 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get eventHelpPumpkinHouseUsage =>
       'Выберите клетку и нажмите «+», чтобы разместить тыквенный домик (5×9 или 6×10 в зависимости от этапа).';
+
+  @override
+  String get eventHelpZombieTentBody =>
+      'Размещает палатки зомби на выбранных клетках. У каждой палатки своё здоровье; она периодически призывает зомби из взвешенного пула (ZombieTypesToSpawn). Для праздничной палатки используйте TentType=zombie_festival_tent, для обычной — zombie_tent.';
+
+  @override
+  String get eventHelpZombieTentUsage =>
+      'Выберите клетку и нажмите «+», затем настройте тип палатки, здоровье, интервал производства и добавьте зомби с весом и уровнем. В JSON уровня Column и Row нумеруются с 1.';
+
+  @override
+  String get eventHelpZombieTentFields =>
+      'TentType: zombie_tent или zombie_festival_tent.\nHitpoints: прочность палатки.\nProductionInterval: секунды между попытками призыва.\nZombieTypesToSpawn: ZombieTypeName, Weight (относительный шанс), Level (0 = уровень лужайки по умолчанию).';
+
+  @override
+  String get eventZombieTentSpawn => 'Событие: появление палаток зомби';
+
+  @override
+  String get zombieTentSectionTitle => 'Палатки на выбранной клетке';
+
+  @override
+  String get zombieTentTypeLabel => 'Тип палатки (TentType)';
+
+  @override
+  String get zombieTentTypeNormal => 'Обычная палатка';
+
+  @override
+  String get zombieTentTypeFestival => 'Праздничная палатка';
+
+  @override
+  String get zombieTentHitpoints => 'Прочность';
+
+  @override
+  String get zombieTentProductionInterval => 'Интервал производства (с)';
+
+  @override
+  String get zombieTentZombiesSection => 'Зомби для призыва';
+
+  @override
+  String get zombieTentWeight => 'Вес';
+
+  @override
+  String get zombieTentAddZombie => 'Добавить зомби';
+
+  @override
+  String get zombieTentAddTent => 'Добавить палатку';
+
+  @override
+  String get zombieTentDeleteTitle => 'Удалить палатку';
+
+  @override
+  String get zombieTentDeleteConfirm => 'Удалить эту палатку?';
 
   @override
   String get eventHelpFairyFogBody =>

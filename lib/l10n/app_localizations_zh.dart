@@ -3016,6 +3016,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get eventDesc_PumpkinHouseActionProps => '在指定位置生成南瓜屋';
 
   @override
+  String get eventTitle_WaveActionZombieTentProps => '帐篷生成';
+
+  @override
+  String get eventDesc_WaveActionZombieTentProps => '在草坪上生成僵尸帐篷，并按权重池周期性召唤僵尸';
+
+  @override
   String get eventTitle_SpawnGravestonesWaveActionProps => '障碍物生成';
 
   @override
@@ -4164,6 +4170,57 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get eventHelpPumpkinHouseUsage =>
       '选中格子后，点击“+”放置南瓜屋。场地大小因关卡地图而异，共有5×9和6×10两种规格。';
+
+  @override
+  String get eventHelpZombieTentBody =>
+      '在指定格子生成僵尸帐篷。每顶帐篷有独立生命值，并按设定的生产间隔从其权重池（ZombieTypesToSpawn）召唤僵尸。春节帐篷请使用 TentType=zombie_festival_tent，普通帐篷使用 zombie_tent。';
+
+  @override
+  String get eventHelpZombieTentUsage =>
+      '选中格子后点击“+”放置帐篷，再配置帐篷类型、生命值、生产间隔，并添加带权重与等级的召唤僵尸。关卡 JSON 中的 Column / Row 为从 1 开始的行列号。';
+
+  @override
+  String get eventHelpZombieTentFields =>
+      'TentType：zombie_tent 或 zombie_festival_tent。\nHitpoints：帐篷生命值。\nProductionInterval：召唤间隔（秒）。\nZombieTypesToSpawn：ZombieTypeName、Weight（相对权重）、Level（0 表示跟随场地默认等级）。';
+
+  @override
+  String get eventZombieTentSpawn => '事件：帐篷生成';
+
+  @override
+  String get zombieTentSectionTitle => '当前格子的帐篷';
+
+  @override
+  String get zombieTentTypeLabel => '帐篷类型 (TentType)';
+
+  @override
+  String get zombieTentTypeNormal => '普通帐篷';
+
+  @override
+  String get zombieTentTypeFestival => '春节帐篷';
+
+  @override
+  String get zombieTentHitpoints => '生命值';
+
+  @override
+  String get zombieTentProductionInterval => '生产间隔（秒）';
+
+  @override
+  String get zombieTentZombiesSection => '召唤僵尸';
+
+  @override
+  String get zombieTentWeight => '权重';
+
+  @override
+  String get zombieTentAddZombie => '添加僵尸';
+
+  @override
+  String get zombieTentAddTent => '添加帐篷';
+
+  @override
+  String get zombieTentDeleteTitle => '删除帐篷';
+
+  @override
+  String get zombieTentDeleteConfirm => '删除这顶帐篷？';
 
   @override
   String get eventHelpFairyFogBody =>

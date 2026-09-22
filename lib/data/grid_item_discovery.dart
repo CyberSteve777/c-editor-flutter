@@ -190,6 +190,17 @@ class GridItemDiscovery {
       if (obj.objClass == 'PumpkinHouseActionProps') {
         addItem('pumpkin_house');
       }
+      if (obj.objClass == 'WaveActionZombieTentProps' && obj.objData is Map) {
+        final tents = (obj.objData as Map)['ZombieTents'];
+        if (tents is List) {
+          for (final entry in tents.whereType<Map>()) {
+            final type = entry['TentType'];
+            if (type is String && type.isNotEmpty) {
+              addItem(type);
+            }
+          }
+        }
+      }
     }
 
     return items.values.toList(growable: false);

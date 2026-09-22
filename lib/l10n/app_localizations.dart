@@ -5722,6 +5722,18 @@ abstract class AppLocalizations {
   /// **'Spawns pumpkin houses on the lawn at set positions'**
   String get eventDesc_PumpkinHouseActionProps;
 
+  /// No description provided for @eventTitle_WaveActionZombieTentProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Tent Spawn'**
+  String get eventTitle_WaveActionZombieTentProps;
+
+  /// No description provided for @eventDesc_WaveActionZombieTentProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Places zombie tents that periodically summon zombies from a weighted pool'**
+  String get eventDesc_WaveActionZombieTentProps;
+
   /// No description provided for @eventTitle_SpawnGravestonesWaveActionProps.
   ///
   /// In en, this message translates to:
@@ -7851,6 +7863,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select a tile, then tap \"+\" to place a pumpkin house. Lawn size varies by level: 6 rows × 10 columns in Underwater World, and 5 rows × 9 columns in other levels.'**
   String get eventHelpPumpkinHouseUsage;
+
+  /// No description provided for @eventHelpZombieTentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawns zombie tents on selected tiles. Each tent has its own hitpoints and periodically summons zombies from its weighted pool (ZombieTypesToSpawn). Use TentType zombie_festival_tent for Spring Festival tents, or zombie_tent for the standard tent.'**
+  String get eventHelpZombieTentBody;
+
+  /// No description provided for @eventHelpZombieTentUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a tile, then tap \"+\" to place a tent. Configure tent type, hitpoints, production interval, and add zombies with spawn weight and level. Column and Row in the level JSON are 1-based.'**
+  String get eventHelpZombieTentUsage;
+
+  /// No description provided for @eventHelpZombieTentFields.
+  ///
+  /// In en, this message translates to:
+  /// **'TentType: zombie_tent or zombie_festival_tent.\nHitpoints: tent durability.\nProductionInterval: seconds between spawn attempts.\nZombieTypesToSpawn: ZombieTypeName, Weight (relative chance), Level (0 = lawn default).'**
+  String get eventHelpZombieTentFields;
+
+  /// No description provided for @eventZombieTentSpawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Event: Zombie Tent Spawn'**
+  String get eventZombieTentSpawn;
+
+  /// No description provided for @zombieTentSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tents at selected tile'**
+  String get zombieTentSectionTitle;
+
+  /// No description provided for @zombieTentTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tent type (TentType)'**
+  String get zombieTentTypeLabel;
+
+  /// No description provided for @zombieTentTypeNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie tent'**
+  String get zombieTentTypeNormal;
+
+  /// No description provided for @zombieTentTypeFestival.
+  ///
+  /// In en, this message translates to:
+  /// **'Festival tent'**
+  String get zombieTentTypeFestival;
+
+  /// No description provided for @zombieTentHitpoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Hitpoints'**
+  String get zombieTentHitpoints;
+
+  /// No description provided for @zombieTentProductionInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Production interval (s)'**
+  String get zombieTentProductionInterval;
+
+  /// No description provided for @zombieTentZombiesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombies to spawn'**
+  String get zombieTentZombiesSection;
+
+  /// No description provided for @zombieTentWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get zombieTentWeight;
+
+  /// No description provided for @zombieTentAddZombie.
+  ///
+  /// In en, this message translates to:
+  /// **'Add zombie'**
+  String get zombieTentAddZombie;
+
+  /// No description provided for @zombieTentAddTent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add tent'**
+  String get zombieTentAddTent;
+
+  /// No description provided for @zombieTentDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete tent'**
+  String get zombieTentDeleteTitle;
+
+  /// No description provided for @zombieTentDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this tent?'**
+  String get zombieTentDeleteConfirm;
 
   /// No description provided for @eventHelpFairyFogBody.
   ///
