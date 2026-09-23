@@ -522,10 +522,17 @@ class LevelIssueRegistry {
       id: 'seeingStarsWinConWarning',
       isActive: (ctx) =>
           ctx.hasModule(seeingStarsModule) &&
-          (ctx.hasModule(zombiesDeadWinCon) ||
-              ctx.hasModule(bronzeDeadWinCon)),
+          (ctx.hasModule(zombiesDeadWinCon) || ctx.hasModule(bronzeDeadWinCon)),
       title: (_, l10n) => l10n.seeingStarsWinConWarningTitle,
       message: (_, l10n) => l10n.seeingStarsWinConWarning,
+    ),
+    LevelIssueRule(
+      id: 'seeingStarsCompatibilityWarning',
+      isActive: (ctx) =>
+          ctx.hasModule(seeingStarsModule) &&
+          ctx.hasModule('WaveGeneratorProperties'),
+      title: (_, l10n) => l10n.seeingStarsCompatibilityWarningTitle,
+      message: (_, l10n) => l10n.seeingStarsCompatibilityWarning,
     ),
     LevelIssueRule(
       id: 'glacierModuleCompatibilityWarning',
@@ -593,6 +600,14 @@ class LevelIssueRegistry {
           LevelParser.isUnderwaterWorldSixRowLawn(ctx.levelDef, ctx.levelFile),
       title: (_, l10n) => l10n.stageMismatch,
       message: (_, l10n) => l10n.expeditionTilesUnderwaterMismatchWarning,
+    ),
+    LevelIssueRule(
+      id: 'gladiatorRowUnderwaterMismatch',
+      isActive: (ctx) =>
+          ctx.hasModule('GladiatorRowModuleProperties') &&
+          LevelParser.isUnderwaterWorldSixRowLawn(ctx.levelDef, ctx.levelFile),
+      title: (_, l10n) => l10n.stageMismatch,
+      message: (_, l10n) => l10n.gladiatorUnderwaterMismatchWarning,
     ),
     LevelIssueRule(
       id: 'sixRowDataInFiveRowStage',

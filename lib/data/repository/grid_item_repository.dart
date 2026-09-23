@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:c_editor/data/asset_loader.dart';
+import 'package:c_editor/data/lunar_mine_vein_type_catalog.dart';
 import 'package:c_editor/data/pvz_models/PvzLevelFile.dart';
 import 'package:c_editor/data/pvz_models/PvzObject.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
@@ -73,7 +74,6 @@ class GridItemRepository {
     'ArmrackNunchaku': 'ArmrackNunchaku.webp',
     'ArmrackTorch': 'ArmrackTorch.webp',
     'energyGrid': 'energyGrid.webp',
-    'lunar_mine_vein': 'lunar_mine_vein.webp',
     'radiation_meteor_ore': 'radiation_meteor_ore.webp',
     'SmokeManhole': 'SmokeManhole.webp',
     'steam_down': 'steam_down.webp',
@@ -140,6 +140,8 @@ class GridItemRepository {
 
   /// Returns asset path for icon, or unknown placeholder if no icon.
   static String getIconPath(String aliases) {
+    final vein = lunarMineVeinTypeInfo(aliases);
+    if (vein != null) return vein.iconAsset;
     final moduleIcon = _moduleGridItemIcons[aliases];
     if (moduleIcon != null) {
       return 'assets/images/griditems/$moduleIcon';

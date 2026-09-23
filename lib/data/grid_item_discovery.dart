@@ -120,8 +120,10 @@ class GridItemDiscovery {
     }
 
     final lunarMineData = readLunarMineVeinModuleData(levelFile);
-    if (lunarMineData != null && lunarMineData.placements.isNotEmpty) {
-      addItem('lunar_mine_vein');
+    if (lunarMineData != null) {
+      for (final placement in lunarMineData.placements) {
+        addItem(placement.typeName);
+      }
     }
 
     final radiationMeteorData = readRadiationMeteorModuleData(levelFile);
@@ -186,6 +188,18 @@ class GridItemDiscovery {
       }
       if (obj.objClass == 'ZombieAtlantisShellActionProps') {
         addItem('atlantis_shell');
+      }
+      if (obj.objClass == 'SpawnEagleFlagsWaveActionProps' &&
+          obj.objData is Map) {
+        final flags = (obj.objData as Map)['Flags'];
+        if (flags is List) {
+          for (final entry in flags.whereType<Map>()) {
+            final type = entry['Type'];
+            if (type is String && type.isNotEmpty) {
+              addItem(type);
+            }
+          }
+        }
       }
       if (obj.objClass == 'PumpkinHouseActionProps') {
         addItem('pumpkin_house');

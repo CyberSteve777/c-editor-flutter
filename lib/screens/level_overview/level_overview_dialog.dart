@@ -4,6 +4,7 @@ import 'package:c_editor/widgets/editor_components.dart'
     show HorizontalTagScroller, isDesktopPlatform;
 import 'package:c_editor/data/zombie_conditions.dart';
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/lunar_mine_vein_type_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/rtid_parser.dart';
@@ -235,6 +236,8 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           _prePlacedTabIndex = 3;
         } else if (cats.any((c) => c.kind == GridPreviewModuleKind.zomboss)) {
           _prePlacedTabIndex = 4;
+        } else if (cats.every((c) => _isChallengeKind(c.kind))) {
+          _prePlacedTabIndex = 5;
         } else {
           _prePlacedTabIndex = 2;
         }
@@ -369,10 +372,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                widget.fileName,
-                style: theme.textTheme.titleLarge,
-              ),
+              Text(widget.fileName, style: theme.textTheme.titleLarge),
               const SizedBox(height: 12),
               Text(l10n.noLevelDefinitionHint),
               const SizedBox(height: 16),
@@ -436,8 +436,10 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         );
         // Keep a non-zero tight height so Expanded children always get a size
         // (loose/zero maxHeight under UI scale / keyboard can break hit-testing).
-        final contentMaxHeight = (usableHeight - verticalInset * 2)
-            .clamp(1.0, math.max(1.0, usableHeight * 0.9));
+        final contentMaxHeight = (usableHeight - verticalInset * 2).clamp(
+          1.0,
+          math.max(1.0, usableHeight * 0.9),
+        );
         return Dialog(
           backgroundColor: theme.colorScheme.surface,
           constraints: const BoxConstraints(minWidth: 0),
@@ -2049,9 +2051,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     final hasBoss = allCategories.any(
       (c) => c.kind == GridPreviewModuleKind.zomboss,
     );
-    final hasChallenges = allCategories.any(
-      (c) => _isChallengeKind(c.kind),
-    );
+    final hasChallenges = allCategories.any((c) => _isChallengeKind(c.kind));
 
     final theme = Theme.of(context);
 
@@ -3703,14 +3703,15 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
   ) {
     final data = readSeeingStarsModuleData(widget.levelFile);
     if (data == null) return const SizedBox.shrink();
+    final (rows, cols) = getGridDimensions(widget.levelFile);
 
     const accent = Color(0xFFD5A021);
     final plantIds = data.matchPlants
         .map((p) => _cleanId(p.matchTypeName))
         .where((id) => id.isNotEmpty)
         .toList();
-    final settlement = data.settlementDuration ==
-            data.settlementDuration.roundToDouble()
+    final settlement =
+        data.settlementDuration == data.settlementDuration.roundToDouble()
         ? data.settlementDuration.toInt().toString()
         : data.settlementDuration.toString();
 
@@ -3764,7 +3765,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             if (plantIds.isNotEmpty) ...[
               const SizedBox(height: 16),
               _buildPlantListSection(
-                l10n.seeingStarsPatternCells,
+                l10n.seeingStarsMatchPlants,
                 plantIds,
                 _seeingStarsPlantsExpanded,
                 onToggle: () => setState(
@@ -3773,6 +3774,15 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                 ),
               ),
             ],
+            const SizedBox(height: 16),
+            KeyedSubtree(
+              key: const ValueKey('overviewSeeingStarsGrid'),
+              child: _buildSeeingStarsGrid(
+                rows,
+                cols,
+                resolveGridStyle(context, GridPreviewModuleKind.seeingStars),
+              ),
+            ),
           ],
         ),
       ),
@@ -4884,7 +4894,10 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     showDialog(
       context: context,
       builder: (dialogContext) {
-        final maxW = math.min(500.0, MediaQuery.sizeOf(dialogContext).width - 48);
+        final maxW = math.min(
+          500.0,
+          MediaQuery.sizeOf(dialogContext).width - 48,
+        );
         final maxH = MediaQuery.sizeOf(dialogContext).height * 0.75;
         // Avoid AlertDialog: its IntrinsicWidth + Flexible layout can leave
         // ConstrainedBoxes with size MISSING under the app UI scaler.
@@ -4898,7 +4911,9 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
             child: SizedBox(
               width: maxW.clamp(1.0, 500.0),
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: maxH.clamp(1.0, double.infinity)),
+                constraints: BoxConstraints(
+                  maxHeight: maxH.clamp(1.0, double.infinity),
+                ),
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
                   child: Column(
@@ -6155,16 +6170,18 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     int wave,
   ) {
     // Emerging veins on this wave use the ore (active) art.
-    const asset = 'assets/images/griditems/lunar_mine_ore.webp';
     final placements =
         readLunarMineVeinModuleData(
           widget.levelFile,
         )?.placements.where((placement) => placement.emergenceWave == wave) ??
         const <LunarMineVeinPlacementData>[];
-    final cells = placements
-        .map((placement) => '${placement.gridX},${placement.gridY}')
-        .toSet();
-    return _buildMoonGridItemPreview(rows, cols, style, asset, cells);
+    final cellAssets = {
+      for (final placement in placements)
+        '${placement.gridX},${placement.gridY}': lunarMineVeinOreIconAsset(
+          placement.typeName,
+        ),
+    };
+    return _buildMoonGridItemPreview(rows, cols, style, cellAssets);
   }
 
   Widget _buildRadiationMeteorGrid(
@@ -6179,25 +6196,25 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           widget.levelFile,
         )?.spawnSchedule.where((spawn) => spawn.wave == wave) ??
         const <RadiationMeteorSpawnData>[];
-    final cells = placements
-        .map((spawn) => '${spawn.gridX},${spawn.gridY}')
-        .toSet();
-    return _buildMoonGridItemPreview(rows, cols, style, asset, cells);
+    final cellAssets = {
+      for (final spawn in placements) '${spawn.gridX},${spawn.gridY}': asset,
+    };
+    return _buildMoonGridItemPreview(rows, cols, style, cellAssets);
   }
 
   Widget _buildMoonGridItemPreview(
     int rows,
     int cols,
     LevelPreviewGridStyle style,
-    String asset,
-    Set<String> cells,
+    Map<String, String> cellAssets,
   ) {
     return _buildCompositeLawnGrid(
       rows: rows,
       cols: cols,
       style: style,
       cellBuilder: (col, row) {
-        if (!cells.contains('$col,$row')) return null;
+        final asset = cellAssets['$col,$row'];
+        if (asset == null) return null;
         return LayoutBuilder(
           builder: (context, constraints) {
             final width = constraints.maxWidth * 0.92;
@@ -6241,7 +6258,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
       for (final placement in lunarMineData.placements) {
         final key = '${placement.gridX},${placement.gridY}';
         result[key] ??= [];
-        result[key]!.add('lunar_mine_vein');
+        result[key]!.add(placement.typeName);
       }
     }
     return result;

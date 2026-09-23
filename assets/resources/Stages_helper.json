@@ -169,6 +169,12 @@
       "nameKey": "stage_NewYearNightStage"
     }
   },
+  "DelayLoad_Background_Moon_Grapple": {
+    "IMAGE_BACKGROUNDS_MOON_GRAPPLE": {
+      "image": "Stage_MoonGrappleStage.webp",
+      "nameKey": "stage_MoonGrappleStage"
+    }
+  },
   "DelayLoad_Background_New_PVP": {
     "IMAGE_BACKGROUNDS_PVP": {
       "image": "unknown.webp",

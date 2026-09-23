@@ -4605,6 +4605,56 @@
     "icon": "zombie_supernova_gargantuar_beacon.webp"
   },
   {
+    "id": "zombie_moon_blade",
+    "name": "zombie_moon_blade",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_blade.webp"
+  },
+  {
+    "id": "zombie_moon_illusionist",
+    "name": "zombie_moon_illusionist",
+    "tags": [
+      "Moon",
+      "Basic",
+      "Chinese"
+    ],
+    "icon": "zombie_moon_illusionist.webp"
+  },
+  {
+    "id": "supernova_gargantuar_gemini",
+    "name": "zombie_supernova_gargantuar_gemini",
+    "tags": [
+      "Moon",
+      "Gargantuar",
+      "Chinese"
+    ],
+    "icon": "zombie_supernova_gargantuar_gemini.webp"
+  },
+  {
+    "id": "zombie_supernova_imp",
+    "name": "zombie_supernova_imp",
+    "tags": [
+      "Moon",
+      "Imp",
+      "Chinese"
+    ],
+    "icon": "zombie_supernova_imp.webp"
+  },
+  {
+    "id": "lunar_radiation_gargantuar",
+    "name": "zombie_lunar_radiation_gargantuar",
+    "tags": [
+      "Moon",
+      "Gargantuar",
+      "Chinese"
+    ],
+    "icon": "zombie_lunar_radiation_gargantuar.webp"
+  },
+  {
     "id": "fairy_tale",
     "name": "zombie_fairy_tale",
     "tags": [
@@ -7652,8 +7702,7 @@
     "id": "stay_tuned",
     "name": "zombie_stay_tuned",
     "tags": [
-      "Tale_ZCorp",
-      "Moon"
+      "Tale_ZCorp"
     ],
     "icon": "to_be_continued.webp"
   }

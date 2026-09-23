@@ -1213,6 +1213,7 @@ String? findLawnMowerAlias(LevelDefinitionData def) {
     'SteamMowers',
     'RenaiMowers',
     'HeianMowers',
+    'RomanMowers2',
     'MoonMowers',
     'FairyTaleMowers',
     'ZCorpMowers',

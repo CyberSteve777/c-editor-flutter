@@ -132,6 +132,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_LunarMineVeinModuleProperties;
       case 'moduleTitle_RadiationMeteorModuleProperties':
         return l10n.moduleTitle_RadiationMeteorModuleProperties;
+      case 'moduleTitle_GladiatorRowModuleProperties':
+        return l10n.moduleTitle_GladiatorRowModuleProperties;
       case 'moduleTitle_LevelMutatorMaxSunProps':
         return l10n.moduleTitle_LevelMutatorMaxSunProps;
       case 'moduleTitle_LevelMutatorStartingPlantfoodProps':
@@ -304,6 +306,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_LunarMineVeinModuleProperties;
       case 'moduleDesc_RadiationMeteorModuleProperties':
         return l10n.moduleDesc_RadiationMeteorModuleProperties;
+      case 'moduleDesc_GladiatorRowModuleProperties':
+        return l10n.moduleDesc_GladiatorRowModuleProperties;
       case 'moduleDesc_LevelMutatorMaxSunProps':
         return l10n.moduleDesc_LevelMutatorMaxSunProps;
       case 'moduleDesc_LevelMutatorStartingPlantfoodProps':
@@ -1288,6 +1292,17 @@ class ModuleRegistry {
       defaultAlias: 'RadiationMeteorModule',
       initialDataFactory: () => RadiationMeteorModulePropertiesData(),
       routeId: 'RadiationMeteorModule',
+    ),
+    'GladiatorRowModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_GladiatorRowModuleProperties',
+      descriptionKey: 'moduleDesc_GladiatorRowModuleProperties',
+      icon: Icons.emoji_events,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.gimmick,
+      defaultAlias: 'GladiatorRowModule',
+      initialDataFactory: () => GladiatorRowModulePropertiesData(),
+      routeId: 'GladiatorRowModule',
     ),
     'WitchModuleProperties': const ModuleMetadata(
       titleKey: 'moduleTitle_WitchModuleProperties',

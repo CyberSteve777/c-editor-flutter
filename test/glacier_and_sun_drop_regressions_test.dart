@@ -69,7 +69,7 @@ void main() {
         findsNothing,
       );
 
-      final weight = find.byKey(const ValueKey('w_mummy_2'));
+      final weight = find.byKey(const ValueKey('glacierZombieWeight'));
       final levelField = find.byKey(const ValueKey('lv_mummy_4'));
       expect(weight, findsOneWidget);
       expect(levelField, findsOneWidget);

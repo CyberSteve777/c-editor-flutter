@@ -407,6 +407,17 @@ class EventRegistry {
         }
       },
     ),
+    'GravityGeneratorWaveActionProps': EventMetadata(
+      titleKey: 'eventTitle_GravityGeneratorWaveActionProps',
+      descriptionKey: 'eventDesc_GravityGeneratorWaveActionProps',
+      icon: Icons.vertical_align_center,
+      color: const Color(0xFF7B1FA2),
+      darkColor: const Color(0xFFCE93D8),
+      category: EventCategory.environmental,
+      defaultAlias: 'Gravity',
+      defaultObjClass: 'GravityGeneratorWaveActionProps',
+      initialDataFactory: () => GravityGeneratorWaveActionPropsData(),
+    ),
     'FairyTaleFogWaveActionProps': EventMetadata(
       titleKey: 'eventTitle_FairyTaleFogWaveActionProps',
       descriptionKey: 'eventDesc_FairyTaleFogWaveActionProps',
@@ -439,6 +450,27 @@ class EventRegistry {
       defaultAlias: 'MagicMirrorEvent',
       defaultObjClass: 'WaveActionMagicMirrorTeleportationArrayProps',
       initialDataFactory: () => MagicMirrorWaveActionData(),
+    ),
+    'SpawnEagleFlagsWaveActionProps': EventMetadata(
+      titleKey: 'eventTitle_SpawnEagleFlagsWaveActionProps',
+      descriptionKey: 'eventDesc_SpawnEagleFlagsWaveActionProps',
+      icon: Icons.flag,
+      color: const Color(0xFFB78921),
+      darkColor: const Color(0xFFFFD54F),
+      category: EventCategory.gridItemSpawn,
+      defaultAlias: 'EagleFlagEvent',
+      defaultObjClass: 'SpawnEagleFlagsWaveActionProps',
+      initialDataFactory: () => SpawnEagleFlagsWaveActionPropsData(),
+      summaryProvider: (obj) {
+        try {
+          final data = SpawnEagleFlagsWaveActionPropsData.fromJson(
+            obj.objData as Map<String, dynamic>,
+          );
+          return '${data.flags.length}';
+        } catch (_) {
+          return '';
+        }
+      },
     ),
     'BarrelWaveActionProps': EventMetadata(
       titleKey: 'eventTitle_BarrelWaveActionProps',

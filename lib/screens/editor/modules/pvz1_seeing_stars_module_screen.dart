@@ -197,7 +197,7 @@ class _PVZ1SeeingStarsModuleScreenState
               '${l10n.pvz1SeeingStarsHelpSettlementDuration}',
         ),
         HelpSectionData(
-          title: l10n.seeingStarsWinConWarningTitle,
+          title: l10n.pvz1SeeingStarsHelpTipsTitle,
           body: l10n.pvz1SeeingStarsHelpWinCon,
         ),
       ],
@@ -219,10 +219,12 @@ class _PVZ1SeeingStarsModuleScreenState
         final c = a.gridY.compareTo(b.gridY);
         return c != 0 ? c : a.gridX.compareTo(b.gridX);
       });
-    final winConWarning = LevelIssueRegistry.forLevel(
-      context,
-      widget.levelFile,
-    ).firstWhereOrNull((w) => w.id == 'seeingStarsWinConWarning');
+    final warnings = LevelIssueRegistry.forLevel(context, widget.levelFile)
+        .where(
+          (w) =>
+              w.id == 'seeingStarsWinConWarning' ||
+              w.id == 'seeingStarsCompatibilityWarning',
+        );
 
     return Scaffold(
       appBar: AppBar(
@@ -261,13 +263,13 @@ class _PVZ1SeeingStarsModuleScreenState
               onAliasChanged: _handleAliasChanged,
               onChanged: widget.onChanged,
             ),
-            if (winConWarning != null) ...[
+            for (final warning in warnings) ...[
               const SizedBox(height: 16),
               EditorWarningBanner(
-                key: const ValueKey('seeingStarsWinConWarning'),
+                key: ValueKey(warning.id),
                 margin: EdgeInsets.zero,
-                title: winConWarning.title,
-                message: winConWarning.message,
+                title: warning.title,
+                message: warning.message,
               ),
             ],
             const SizedBox(height: 16),
@@ -280,14 +282,6 @@ class _PVZ1SeeingStarsModuleScreenState
                       content: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            l10n.pvz1SeeingStarsSectionMatchPlants,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: accent,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
                           Text(
                             l10n.selectedPosition,
                             style: theme.textTheme.bodySmall?.copyWith(
@@ -337,7 +331,7 @@ class _PVZ1SeeingStarsModuleScreenState
                     Tooltip(
                       message: l10n.pvz1SeeingStarsHelpCycleIndex,
                       child: EditorResponsiveInputField(
-                        label: l10n.pvz1SeeingStarsFieldCycleIndexLabel,
+                        label: l10n.seeingStarsCycleWaveLabel,
                         decoration: editorInputDecoration(
                           context,
                           focusColor: accent,
@@ -363,7 +357,7 @@ class _PVZ1SeeingStarsModuleScreenState
                     Tooltip(
                       message: l10n.pvz1SeeingStarsHelpSettlementDuration,
                       child: EditorResponsiveInputField(
-                        label: l10n.pvz1SeeingStarsFieldSettlementDurationLabel,
+                        label: l10n.seeingStarsSettlementLabel,
                         decoration: editorInputDecoration(
                           context,
                           focusColor: accent,

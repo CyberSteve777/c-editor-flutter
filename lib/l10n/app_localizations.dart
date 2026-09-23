@@ -3109,7 +3109,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveTimelineGuideBody.
   ///
   /// In en, this message translates to:
-  /// **'Swipe right: Manage wave events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations'**
+  /// **'Tap a wave: Manage events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations'**
   String get waveTimelineGuideBody;
 
   /// No description provided for @waveTimelineGuideBodyDesktop.
@@ -3121,7 +3121,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveTimelineGuideBodyMobile.
   ///
   /// In en, this message translates to:
-  /// **'Swipe right: Manage wave events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations'**
+  /// **'Tap a wave: Manage events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations'**
   String get waveTimelineGuideBodyMobile;
 
   /// No description provided for @waveDeadLinksTitle.
@@ -3313,7 +3313,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveEmptyRowHint.
   ///
   /// In en, this message translates to:
-  /// **'Empty wave (swipe to manage, drop events here)'**
+  /// **'Empty wave (tap to manage, drop events here)'**
   String get waveEmptyRowHint;
 
   /// No description provided for @waveEmptyRowHintDesktop.
@@ -3325,7 +3325,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveEmptyRowHintMobile.
   ///
   /// In en, this message translates to:
-  /// **'Empty wave (swipe to manage, drop events here)'**
+  /// **'Empty wave (tap to manage, drop events here)'**
   String get waveEmptyRowHintMobile;
 
   /// No description provided for @removeFromWave.
@@ -4389,36 +4389,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The plants are still growing strong. Stay tuned for future updates!'**
   String get comingSoonPlantBlockedMessage;
-
-  /// No description provided for @stayTunedMoonPlantBlockedTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'A Message from Space'**
-  String get stayTunedMoonPlantBlockedTitle;
-
-  /// No description provided for @stayTunedMoonPlantBlockedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Moon BaseZ Part 2 is coming soon. Keep a lookout!'**
-  String get stayTunedMoonPlantBlockedMessage;
-
-  /// No description provided for @stayTunedMoonZombieBlockedLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'A Message from Space'**
-  String get stayTunedMoonZombieBlockedLabel;
-
-  /// No description provided for @stayTunedMoonZombieBlockedTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'A Message from Space'**
-  String get stayTunedMoonZombieBlockedTitle;
-
-  /// No description provided for @stayTunedMoonZombieBlockedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Moon BaseZ Part 2 is coming soon. Keep a lookout!'**
-  String get stayTunedMoonZombieBlockedMessage;
 
   /// No description provided for @stayTunedTaleZCorpZombieBlockedLabel.
   ///
@@ -5710,6 +5680,30 @@ abstract class AppLocalizations {
   /// **'Spawns atlantis seashells at set positions'**
   String get eventDesc_ZombieAtlantisShellActionProps;
 
+  /// No description provided for @eventTitle_SpawnEagleFlagsWaveActionProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Eagle Standard Spawn'**
+  String get eventTitle_SpawnEagleFlagsWaveActionProps;
+
+  /// No description provided for @eventDesc_SpawnEagleFlagsWaveActionProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn Eagle Standards at specified positions'**
+  String get eventDesc_SpawnEagleFlagsWaveActionProps;
+
+  /// No description provided for @eventHelpEagleStandardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This event spawns Eagle Standards at specified positions. Zombies that pass by can pick up the Eagle Standard. When the carrier is defeated, the standard drops to the ground, allowing subsequent zombies to pick it up again repeatedly. A zombie carrying the Eagle Standard grants zombies within a 3×3 area damage reduction and immunity to control effects.\nRegular plants cannot attack the Eagle Standard. Once it has been dropped, Magnet-shroom and Gold Magnet can destroy it.'**
+  String get eventHelpEagleStandardBody;
+
+  /// No description provided for @eventHelpEagleStandardUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a grid cell and tap “+” to add an Eagle Standard. Multiple standards can be placed on the same tile and removed using the cards below. The grid adapts to the current lawn, and standards outside the lawn are listed separately.'**
+  String get eventHelpEagleStandardUsage;
+
   /// No description provided for @eventTitle_PumpkinHouseActionProps.
   ///
   /// In en, this message translates to:
@@ -5731,7 +5725,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventDesc_WaveActionZombieTentProps.
   ///
   /// In en, this message translates to:
-  /// **'Places zombie tents that periodically summon zombies from a weighted pool'**
+  /// **'Spawn zombie tents at specified positions and configure the zombies they summon'**
   String get eventDesc_WaveActionZombieTentProps;
 
   /// No description provided for @eventTitle_SpawnGravestonesWaveActionProps.
@@ -6451,7 +6445,7 @@ abstract class AppLocalizations {
   /// No description provided for @resilienceCodename.
   ///
   /// In en, this message translates to:
-  /// **'Resilience codename (aliases; English letters only)'**
+  /// **'Resilience codename (aliases; English letters only; no spaces)'**
   String get resilienceCodename;
 
   /// No description provided for @resilienceCodenameHint.
@@ -6763,7 +6757,7 @@ abstract class AppLocalizations {
   /// No description provided for @aliasLabel.
   ///
   /// In en, this message translates to:
-  /// **'Alias (English letters only)'**
+  /// **'Alias (English letters only; no spaces)'**
   String get aliasLabel;
 
   /// No description provided for @add.
@@ -7867,19 +7861,25 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpZombieTentBody.
   ///
   /// In en, this message translates to:
-  /// **'Spawns zombie tents on selected tiles. Each tent has its own hitpoints and periodically summons zombies from its weighted pool (ZombieTypesToSpawn). Use TentType zombie_festival_tent for Spring Festival tents, or zombie_tent for the standard tent.'**
+  /// **'This event spawns zombie tents from Memory Lane directly on the lawn. Unlike the tents carried by Imp Porters, these tents do not require Gold Tiles. They appear at the specified positions and continually summon zombies until destroyed. The level can only be won after every zombie tent on the lawn has been destroyed.'**
   String get eventHelpZombieTentBody;
 
   /// No description provided for @eventHelpZombieTentUsage.
   ///
   /// In en, this message translates to:
-  /// **'Select a tile, then tap \"+\" to place a tent. Configure tent type, hitpoints, production interval, and add zombies with spawn weight and level. Column and Row in the level JSON are 1-based.'**
+  /// **'Select a grid cell and tap \"+\" to place a tent. You can then configure each tent’s type, hitpoints, zombie spawn weights, and spawn interval individually.'**
   String get eventHelpZombieTentUsage;
+
+  /// No description provided for @eventHelpZombieTentFieldsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parameter Description'**
+  String get eventHelpZombieTentFieldsTitle;
 
   /// No description provided for @eventHelpZombieTentFields.
   ///
   /// In en, this message translates to:
-  /// **'TentType: zombie_tent or zombie_festival_tent.\nHitpoints: tent durability.\nProductionInterval: seconds between spawn attempts.\nZombieTypesToSpawn: ZombieTypeName, Weight (relative chance), Level (0 = lawn default).'**
+  /// **'Regular tents and New Year tents function identically; only their appearance differs.\nA higher weight gives a zombie a greater chance of being selected. For example, weights of 10 and 30 give the two zombies an approximately 1:3 chance ratio.\nZombie level 0 uses the lawn’s default level, which is level 1 in Creative Courtyard.\nWhen editing the JSON manually, note that tent columns (Column) and rows (Row) are numbered from 1. For example, \"Column\": 7 means the seventh column.'**
   String get eventHelpZombieTentFields;
 
   /// No description provided for @eventZombieTentSpawn.
@@ -7903,37 +7903,37 @@ abstract class AppLocalizations {
   /// No description provided for @zombieTentTypeNormal.
   ///
   /// In en, this message translates to:
-  /// **'Zombie tent'**
+  /// **'Regular tent'**
   String get zombieTentTypeNormal;
 
   /// No description provided for @zombieTentTypeFestival.
   ///
   /// In en, this message translates to:
-  /// **'Festival tent'**
+  /// **'New Year tent'**
   String get zombieTentTypeFestival;
 
   /// No description provided for @zombieTentHitpoints.
   ///
   /// In en, this message translates to:
-  /// **'Hitpoints'**
+  /// **'Tent hitpoints (Hitpoints)'**
   String get zombieTentHitpoints;
 
   /// No description provided for @zombieTentProductionInterval.
   ///
   /// In en, this message translates to:
-  /// **'Production interval (s)'**
+  /// **'Production interval (ProductionInterval, seconds)'**
   String get zombieTentProductionInterval;
 
   /// No description provided for @zombieTentZombiesSection.
   ///
   /// In en, this message translates to:
-  /// **'Zombies to spawn'**
+  /// **'Possible zombie spawns (ZombieTypesToSpawn)'**
   String get zombieTentZombiesSection;
 
   /// No description provided for @zombieTentWeight.
   ///
   /// In en, this message translates to:
-  /// **'Weight'**
+  /// **'Spawn weight (Weight)'**
   String get zombieTentWeight;
 
   /// No description provided for @zombieTentAddZombie.
@@ -7957,7 +7957,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombieTentDeleteConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Delete this tent?'**
+  /// **'Are you sure you want to delete this tent?'**
   String get zombieTentDeleteConfirm;
 
   /// No description provided for @eventHelpFairyFogBody.
@@ -13368,7 +13368,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleDesc_PVZ1SeeingStarsModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Win by planting the requested plants on marked cells; zombies loop until the pattern is complete'**
+  /// **'Configures target plants and wave loop for the Seeing Stars minigame'**
   String get moduleDesc_PVZ1SeeingStarsModuleProperties;
 
   /// No description provided for @pvz1SeeingStarsModuleTitle.
@@ -13386,13 +13386,13 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1SeeingStarsSectionMatchPlants.
   ///
   /// In en, this message translates to:
-  /// **'Pattern cells (MatchPlants)'**
+  /// **'Target plants (MatchPlants)'**
   String get pvz1SeeingStarsSectionMatchPlants;
 
   /// No description provided for @pvz1SeeingStarsHelpMatchPlants.
   ///
   /// In en, this message translates to:
-  /// **'Each entry is a lawn cell and the plant that must be planted there. Select a cell on the grid, then add a plant; adding to an occupied cell replaces it. The level is won once every cell holds its plant.'**
+  /// **'Select a cell on the grid and add a plant. If the cell already has a plant, the new one replaces it. These plants appear as transparent guides in the level. The level is won when every target cell contains the matching plant.'**
   String get pvz1SeeingStarsHelpMatchPlants;
 
   /// No description provided for @pvz1SeeingStarsFieldCycleIndexLabel.
@@ -13404,7 +13404,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1SeeingStarsHelpCycleIndex.
   ///
   /// In en, this message translates to:
-  /// **'Wave to loop back to after the final wave. In a 15-wave level with a value of 5, wave 15 is followed by wave 6, and the loop repeats until the pattern is complete.'**
+  /// **'The zero-based index of the first wave to repeat after the final wave. For example, in a 15-wave level with a value of 5, wave 15 is followed by wave 6. Waves keep looping until the pattern is complete.'**
   String get pvz1SeeingStarsHelpCycleIndex;
 
   /// No description provided for @pvz1SeeingStarsFieldSettlementDurationLabel.
@@ -13416,13 +13416,13 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1SeeingStarsHelpSettlementDuration.
   ///
   /// In en, this message translates to:
-  /// **'Seconds to wait after the pattern is complete before the level is won. This only settles the level on its own when the Loot Drop (ZombiesDeadWinCon) module is absent.'**
+  /// **'After the pattern is complete, the specified delay begins. When it ends, the level is won even if the target cells no longer contain the matching plants. The delay only applies when neither Loot Drop nor Bronze Matrix Loot Drop is present.'**
   String get pvz1SeeingStarsHelpSettlementDuration;
 
   /// No description provided for @pvz1SeeingStarsHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'Recreates the Memory Lane minigame \"Seeing Stars\". Zombies keep arriving in a wave loop while the player tries to plant the requested plants (classically Starfruit) on the marked cells. This module carries its own win condition, so it replaces the Loot Drop (ZombiesDeadWinCon) module.'**
+  /// **'Configures the Memory Lane minigame Seeing Stars. The name comes from the original game\'s level, where players had to plant Starfruit in a star-shaped pattern. Follow the guides on the lawn and plant the matching plants in the indicated cells to win. Meanwhile, the configured zombie waves repeat, disrupting the player\'s planting.'**
   String get pvz1SeeingStarsHelpOverview;
 
   /// No description provided for @pvz1SeeingStarsHelpFieldsTitle.
@@ -13434,44 +13434,74 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1SeeingStarsHelpWinCon.
   ///
   /// In en, this message translates to:
-  /// **'Do not combine this module with Loot Drop (ZombiesDeadWinCon) or Bronze Matrix Loot Drop (BronzeDeadWinCon). With either present the level can end when those win conditions fire instead of when the pattern is complete, and the settlement delay is ignored.'**
+  /// **'Do not use this module together with Loot Drop or Bronze Matrix Loot Drop. If either is present, its win condition takes priority and the settlement delay is ignored, affecting the minigame experience.\nAlso, Seeing Stars is incompatible with Wave Generator and will cause the level to crash. Use with caution.'**
   String get pvz1SeeingStarsHelpWinCon;
 
   /// No description provided for @pvz1SeeingStarsMatchPlantsEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No pattern cells yet. Select a cell on the grid and add a plant.'**
+  /// **'No pattern configured yet. Select any cell on the grid and add a plant.'**
   String get pvz1SeeingStarsMatchPlantsEmpty;
 
   /// No description provided for @seeingStarsWinConWarningTitle.
   ///
   /// In en, this message translates to:
-  /// **'Duplicate win condition'**
+  /// **'Conflicting win conditions'**
   String get seeingStarsWinConWarningTitle;
 
   /// No description provided for @seeingStarsWinConWarning.
   ///
   /// In en, this message translates to:
-  /// **'Seeing Stars settles the level by itself once the pattern is complete. Loot Drop (ZombiesDeadWinCon) or Bronze Matrix Loot Drop (BronzeDeadWinCon) is also present, so the level may end when that win condition fires instead, and the settlement delay will be ignored. Remove Seeing Stars or the other win condition.'**
+  /// **'Seeing Stars has its own win condition and ends the level when the pattern is complete. Loot Drop or Bronze Matrix Loot Drop overrides this behavior. Remove the Loot Drop or Bronze Matrix Loot Drop module.'**
   String get seeingStarsWinConWarning;
 
   /// No description provided for @seeingStarsCycleWaveLabel.
   ///
   /// In en, this message translates to:
-  /// **'Cycle wave'**
+  /// **'Cycle wave (CycleIndex, 0-based)'**
   String get seeingStarsCycleWaveLabel;
 
   /// No description provided for @seeingStarsSettlementLabel.
   ///
   /// In en, this message translates to:
-  /// **'Settlement delay'**
+  /// **'Settlement delay (SettlementDuration, seconds)'**
   String get seeingStarsSettlementLabel;
 
-  /// No description provided for @seeingStarsPatternCells.
+  /// No description provided for @pvz1SeeingStarsHelpTipsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Pattern cells'**
-  String get seeingStarsPatternCells;
+  /// **'Friendly Reminder'**
+  String get pvz1SeeingStarsHelpTipsTitle;
+
+  /// No description provided for @seeingStarsCompatibilityWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Module compatibility warning'**
+  String get seeingStarsCompatibilityWarningTitle;
+
+  /// No description provided for @seeingStarsCompatibilityWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Seeing Stars is incompatible with Wave Generator and will cause the level to crash. Use with caution.'**
+  String get seeingStarsCompatibilityWarning;
+
+  /// No description provided for @seeingStarsCycleWaveBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave loop'**
+  String get seeingStarsCycleWaveBadge;
+
+  /// No description provided for @seeingStarsCycleWaveInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'After the final wave, zombies start spawning again from wave {wave}. Waves repeat until every target cell contains the matching plant.'**
+  String seeingStarsCycleWaveInfo(int wave);
+
+  /// No description provided for @seeingStarsMatchPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Target plants'**
+  String get seeingStarsMatchPlants;
 
   /// No description provided for @magicHatSpawnPreviewTitle.
   ///
@@ -14142,7 +14172,7 @@ abstract class AppLocalizations {
   /// No description provided for @glacierModuleLevelTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Sets the zombie\'s level, from 0 to 4. Level 0 follows the lawn’s default level, which is Level 1 in Creative Courtyard.'**
+  /// **'Sets the zombie\'s level, 0-based to 4. Level 0 follows the lawn’s default level, which is Level 1 in Creative Courtyard.'**
   String get glacierModuleLevelTooltip;
 
   /// No description provided for @moduleTitle_HeianWindModuleProperties.
@@ -14898,7 +14928,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombossMechAliasLabel.
   ///
   /// In en, this message translates to:
-  /// **'Alias'**
+  /// **'Alias (English letters only; no spaces)'**
   String get zombossMechAliasLabel;
 
   /// No description provided for @zombossMechDeletePhase.
@@ -15008,6 +15038,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select action'**
   String get zombossMechSelectAction;
+
+  /// No description provided for @zombossMechSummonJump.
+  ///
+  /// In en, this message translates to:
+  /// **'Summon jump'**
+  String get zombossMechSummonJump;
 
   /// No description provided for @zombossMechSelectRetreatAction.
   ///
@@ -16044,7 +16080,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorModuleHelpIncompatBody.
   ///
   /// In en, this message translates to:
-  /// **'May be incompatible with some modules and cause the level to crash. Use with caution.'**
+  /// **'Wave Generator may be incompatible with modules such as Seeing Stars and cause the level to crash. Use with caution.'**
   String get waveGeneratorModuleHelpIncompatBody;
 
   /// No description provided for @waveGeneratorModuleHelpRow.
@@ -16668,7 +16704,7 @@ abstract class AppLocalizations {
   /// No description provided for @customStageAlias.
   ///
   /// In en, this message translates to:
-  /// **'Stage alias (English letters only)'**
+  /// **'Stage alias (English letters only; no spaces)'**
   String get customStageAlias;
 
   /// No description provided for @customStageNoResourceGroups.
@@ -17532,8 +17568,32 @@ abstract class AppLocalizations {
   /// No description provided for @lunarMineVeinHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'Places Lunar Energy Crystal Veins on the lawn at the start of the level, as commonly seen in Moon Base. Veins initially provide no energy. Once the configured wave begins, a Lunar Energy Crystal grows at the same position and can then be harvested normally to supply power.'**
+  /// **'Places Lunar Energy Crystal Veins on the lawn at the start of the level, as commonly seen in Moon Base. Veins initially provide no energy. Once the configured wave begins, a crystal of the corresponding type grows at the same position and can be mined according to its properties. Select a vein type, then tap a grid cell to place it. Right-click on desktop or long-press on mobile to remove it.'**
   String get lunarMineVeinHelpOverview;
+
+  /// No description provided for @lunarMineVeinTypePalette.
+  ///
+  /// In en, this message translates to:
+  /// **'Crystal vein type'**
+  String get lunarMineVeinTypePalette;
+
+  /// No description provided for @lunarMineVeinHelpHardened.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected by a sturdy outer layer of rock. The shell must first be destroyed by plant attacks before the crystal can be mined normally. Hard-Shell Crystal Veins always grow the 3,000 HP version of the Hard-Shell Crystal.'**
+  String get lunarMineVeinHelpHardened;
+
+  /// No description provided for @lunarMineVeinHelpFragile.
+  ///
+  /// In en, this message translates to:
+  /// **'Mining continuously consumes its durability until the crystal shatters. Special Fragile Crystal Veins containing Cosmic Plant Food can also be placed.'**
+  String get lunarMineVeinHelpFragile;
+
+  /// No description provided for @lunarMineVeinHelpRadiation.
+  ///
+  /// In en, this message translates to:
+  /// **'Periodically releases radiation in all directions. Plants exposed to the radiation will randomly transform into other plants, while irradiated zombies will either take damage or mutate into a Cosmic Radiation Gargantuar. Cosmic Radiation Gargantuars have extremely high health and will also irradiate nearby plants and zombies when defeated.'**
+  String get lunarMineVeinHelpRadiation;
 
   /// No description provided for @lunarMineVeinHelpWaveTitle.
   ///
@@ -17576,6 +17636,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap an empty tile to add an entry. Right-click or long-press an occupied tile to remove it.'**
   String get moonPlacementGestureHint;
+
+  /// No description provided for @moduleTitle_GladiatorRowModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Gladiatorial Row'**
+  String get moduleTitle_GladiatorRowModuleProperties;
+
+  /// No description provided for @moduleDesc_GladiatorRowModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporarily seal off five tiles in a row, with rewards or penalties based on the duel’s outcome'**
+  String get moduleDesc_GladiatorRowModuleProperties;
+
+  /// No description provided for @gladiatorSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Global duel, reward and penalty settings'**
+  String get gladiatorSettings;
+
+  /// No description provided for @gladiatorArenaDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duel duration (ArenaDuration, seconds)'**
+  String get gladiatorArenaDuration;
+
+  /// No description provided for @gladiatorRewardCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant Food reward (PlantWinPlantfoodCount)'**
+  String get gladiatorRewardCount;
+
+  /// No description provided for @gladiatorPunishmentCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Penalty cage count (ZombieWinPunishmentCageCount)'**
+  String get gladiatorPunishmentCount;
+
+  /// No description provided for @gladiatorPunishmentDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Penalty drop duration (ZombieWinPunishmentDuration, seconds)'**
+  String get gladiatorPunishmentDuration;
+
+  /// No description provided for @gladiatorPunishmentLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Penalty zombie level (ZombieWinPunishmentZombieLevel)'**
+  String get gladiatorPunishmentLevel;
+
+  /// No description provided for @gladiatorEncounters.
+  ///
+  /// In en, this message translates to:
+  /// **'Duel schedule (Encounters)'**
+  String get gladiatorEncounters;
+
+  /// No description provided for @gladiatorAddEncounter.
+  ///
+  /// In en, this message translates to:
+  /// **'Add duel'**
+  String get gladiatorAddEncounter;
+
+  /// No description provided for @gladiatorRemoveEncounter.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove current duel'**
+  String get gladiatorRemoveEncounter;
+
+  /// No description provided for @gladiatorWave.
+  ///
+  /// In en, this message translates to:
+  /// **'Trigger wave (Wave, starts at 0)'**
+  String get gladiatorWave;
+
+  /// No description provided for @gladiatorRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Row (Row, starts at 0)'**
+  String get gladiatorRow;
+
+  /// No description provided for @gladiatorWarningDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Zomboss arrival warning time (WarningDuration, seconds)'**
+  String get gladiatorWarningDuration;
+
+  /// No description provided for @gladiatorFirstCageDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'First cage drop delay (FirstCageDelay, seconds)'**
+  String get gladiatorFirstCageDelay;
+
+  /// No description provided for @gladiatorPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Gladiatorial Row area preview'**
+  String get gladiatorPreviewTitle;
+
+  /// No description provided for @gladiatorPreviewLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'The green tile marks the trophy fixed in column 5; red tiles mark the rest of the arena. Zombie icons show cage spawn positions, and each tile’s number shows the zombie count. Tap the grid to select a row.'**
+  String get gladiatorPreviewLegend;
+
+  /// No description provided for @gladiatorSpawns.
+  ///
+  /// In en, this message translates to:
+  /// **'Cage spawn schedule (Spawns)'**
+  String get gladiatorSpawns;
+
+  /// No description provided for @gladiatorAddSpawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Add cage spawn'**
+  String get gladiatorAddSpawn;
+
+  /// No description provided for @gladiatorSpawnTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn delay after the duel begins (Time, seconds)'**
+  String get gladiatorSpawnTime;
+
+  /// No description provided for @gladiatorSpawnColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn column (GridX, starts at 0)'**
+  String get gladiatorSpawnColumn;
+
+  /// No description provided for @gladiatorSpawnCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn count (Count)'**
+  String get gladiatorSpawnCount;
+
+  /// No description provided for @gladiatorSpawnInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn interval (Interval, seconds)'**
+  String get gladiatorSpawnInterval;
+
+  /// No description provided for @gladiatorSpawnLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie level (Level)'**
+  String get gladiatorSpawnLevel;
+
+  /// No description provided for @gladiatorPunishmentPool.
+  ///
+  /// In en, this message translates to:
+  /// **'Defeat penalty zombie pool (ZombieWinPunishmentZombiePool)'**
+  String get gladiatorPunishmentPool;
+
+  /// No description provided for @gladiatorPunishmentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'After a defeat, penalty cages select zombies from this list by weight. Higher weights increase the chance of being chosen.'**
+  String get gladiatorPunishmentHint;
+
+  /// No description provided for @gladiatorAddPunishment.
+  ///
+  /// In en, this message translates to:
+  /// **'Add penalty zombie'**
+  String get gladiatorAddPunishment;
+
+  /// No description provided for @gladiatorWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn weight (Weight)'**
+  String get gladiatorWeight;
+
+  /// No description provided for @gladiatorUnderwaterMismatchWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'The current lawn uses a six-row Underwater World appearance. Gladiatorial Rows will not appear on this lawn. Use a five-row lawn instead.'**
+  String get gladiatorUnderwaterMismatchWarning;
+
+  /// No description provided for @gladiatorLegacyModeWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This module does not explicitly enable trophy duel mode (GameplayVersion: 1). Version 0 is the retired duel mode. The area preview supports trophy mode only; you can switch modes in the module editor.'**
+  String get gladiatorLegacyModeWarning;
+
+  /// No description provided for @gladiatorUseTrophyMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Use trophy duel mode'**
+  String get gladiatorUseTrophyMode;
+
+  /// No description provided for @gladiatorHelpTipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Friendly Reminder'**
+  String get gladiatorHelpTipsTitle;
+
+  /// No description provided for @gladiatorHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'This module configures the wave-triggered Gladiatorial Row mechanic commonly seen in the Roman Glory Secret Realm. On the specified wave, Roman Zomboss appears in the selected row and temporarily seals off five consecutive tiles. Existing plants and zombies inside those tiles are destroyed, while plants and zombies outside them stop moving and acting.\nA trophy rises in the center of the arena. Zombies arrive in cages airdropped on the right. Protect the trophy until the timer expires to win. Winning grants a large Plant Food reward; losing causes cages to drop across the lawn and release many zombies. After the duel, all plants and zombies remaining inside the arena are destroyed.'**
+  String get gladiatorHelpOverview;
+
+  /// No description provided for @gladiatorHelpUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'The duel duration, Plant Food reward and penalty drop settings above, along with the penalty zombie pool and weights below, are global settings shared by every duel in this module. Select “Add duel” to configure an individual duel. Wave, Row and GridX all start at 0: Wave 0 corresponds to timeline wave 1, and Wave 4 to wave 5.'**
+  String get gladiatorHelpUsage;
+
+  /// No description provided for @gladiatorHelpTips.
+  ///
+  /// In en, this message translates to:
+  /// **'During a duel, planting no longer costs sun, but still consumes energy.\nInstant-kill attacks from Gargantuars and similar zombies cannot damage the trophy.\nPlant projectiles leaving the arena are blocked by its fences. Zombies that leave the arena, and zombies using certain abilities aimed outside the arena, become frozen in place. They are released when the duel timer ends and resume attacking.\nGladiatorial Rows do not appear on six-row lawns with an Underwater World appearance, such as 20,000 Leagues Under the Sea or Atlantis.\nNew modules use trophy duel mode (GameplayVersion 1). Version 0 is the retired duel mode.'**
+  String get gladiatorHelpTips;
 
   /// No description provided for @radiationMeteorHelpTitle.
   ///
@@ -17666,6 +17936,258 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Meteorites landing this wave:'**
   String get radiationMeteorModulePreviewLanding;
+
+  /// No description provided for @eventTitle_GravityGeneratorWaveActionProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Gravity Generator'**
+  String get eventTitle_GravityGeneratorWaveActionProps;
+
+  /// No description provided for @eventDesc_GravityGeneratorWaveActionProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies different Gravity states to plants or grid cells'**
+  String get eventDesc_GravityGeneratorWaveActionProps;
+
+  /// No description provided for @gravityLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Gravity state (GravityLevel)'**
+  String get gravityLevel;
+
+  /// No description provided for @gravityAnti.
+  ///
+  /// In en, this message translates to:
+  /// **'Anti-Gravity'**
+  String get gravityAnti;
+
+  /// No description provided for @gravityHeavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Hypergravity'**
+  String get gravityHeavy;
+
+  /// No description provided for @gravityTargetType.
+  ///
+  /// In en, this message translates to:
+  /// **'Target type (TargetType)'**
+  String get gravityTargetType;
+
+  /// No description provided for @gravityTargetPlant.
+  ///
+  /// In en, this message translates to:
+  /// **'Random plant'**
+  String get gravityTargetPlant;
+
+  /// No description provided for @gravityTargetGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed grid cell'**
+  String get gravityTargetGrid;
+
+  /// No description provided for @gravityRangeX.
+  ///
+  /// In en, this message translates to:
+  /// **'Horizontal offset (Range.mX)'**
+  String get gravityRangeX;
+
+  /// No description provided for @gravityRangeY.
+  ///
+  /// In en, this message translates to:
+  /// **'Vertical offset (Range.mY)'**
+  String get gravityRangeY;
+
+  /// No description provided for @gravityRangeWidth.
+  ///
+  /// In en, this message translates to:
+  /// **'Range width (Range.mWidth, cells)'**
+  String get gravityRangeWidth;
+
+  /// No description provided for @gravityRangeHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Range height (Range.mHeight, cells)'**
+  String get gravityRangeHeight;
+
+  /// No description provided for @gravityTargetX.
+  ///
+  /// In en, this message translates to:
+  /// **'Target column (TargetGrid.mX, 0-based)'**
+  String get gravityTargetX;
+
+  /// No description provided for @gravityTargetY.
+  ///
+  /// In en, this message translates to:
+  /// **'Target row (TargetGrid.mY, 0-based)'**
+  String get gravityTargetY;
+
+  /// No description provided for @gravityPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Gravity field range preview'**
+  String get gravityPreviewTitle;
+
+  /// No description provided for @gravityPlantRangeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a random plant on the lawn as the reference point and affect plants and zombies within the range. The cross marks the chosen plant. The range extends right and down from its offset position, including the starting tile. Negative offsets move the range origin left or up.'**
+  String get gravityPlantRangeHint;
+
+  /// No description provided for @gravityGridRangeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Rows and columns start at 0. Tap the grid to select the reference tile. Add the horizontal and vertical offsets to that tile to find the range origin, then extend right and down. Width and height include the starting tile. With zero offsets, a width of 3 and height of 1 cover the target tile and the two tiles to its right.'**
+  String get gravityGridRangeHint;
+
+  /// No description provided for @gravityCenterLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross: reference point'**
+  String get gravityCenterLegend;
+
+  /// No description provided for @gravityRestrictions.
+  ///
+  /// In en, this message translates to:
+  /// **'Unaffected plants and zombies (TargetRestriction)'**
+  String get gravityRestrictions;
+
+  /// No description provided for @gravityRestrictionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Plants and zombies in this list are unaffected by the gravity field. Leave it empty to exclude no additional types.'**
+  String get gravityRestrictionHint;
+
+  /// No description provided for @gravityAddPlantRestriction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add unaffected plants'**
+  String get gravityAddPlantRestriction;
+
+  /// No description provided for @gravityAddZombieRestriction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add unaffected zombies'**
+  String get gravityAddZombieRestriction;
+
+  /// No description provided for @gravityAdvancedSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Action and timing parameters'**
+  String get gravityAdvancedSettings;
+
+  /// No description provided for @gravityActivationDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Activation delay (ActivationDelay, seconds)'**
+  String get gravityActivationDelay;
+
+  /// No description provided for @gravityDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Gravity state duration (Duration, seconds)'**
+  String get gravityDuration;
+
+  /// No description provided for @gravityDeployDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Device deployment time (DeployDuration, seconds)'**
+  String get gravityDeployDuration;
+
+  /// No description provided for @gravityChargeDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Charge time before applying gravity (ChargeDuration, seconds)'**
+  String get gravityChargeDuration;
+
+  /// No description provided for @gravityRetractDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Device retraction cooldown (RetractDuration, seconds)'**
+  String get gravityRetractDuration;
+
+  /// No description provided for @gravityPlantExitDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Time until a floating plant disappears (PlantExitDelay, seconds)'**
+  String get gravityPlantExitDelay;
+
+  /// No description provided for @gravityZombieRiseDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie ascent time (ZombieRiseDuration, seconds)'**
+  String get gravityZombieRiseDuration;
+
+  /// No description provided for @gravityZombieTranslateDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Airborne zombie travel time (ZombieTranslateDuration, seconds)'**
+  String get gravityZombieTranslateDuration;
+
+  /// No description provided for @gravityZombieFallDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie landing time at its destination (ZombieFallDuration, seconds)'**
+  String get gravityZombieFallDuration;
+
+  /// No description provided for @gravityZombieLiftHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie lift height (ZombieLiftHeight)'**
+  String get gravityZombieLiftHeight;
+
+  /// No description provided for @gravityZombieForwardDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie forward distance (ZombieForwardDistance, 64 pixels = 1 tile)'**
+  String get gravityZombieForwardDistance;
+
+  /// No description provided for @gravityHeavyPlantSinkDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Plant sinking duration (HeavyPlantSinkDuration, seconds)'**
+  String get gravityHeavyPlantSinkDuration;
+
+  /// No description provided for @gravityHelpParametersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parameter Description'**
+  String get gravityHelpParametersTitle;
+
+  /// No description provided for @gravityHelpParameters.
+  ///
+  /// In en, this message translates to:
+  /// **'By default, this event includes all parameters for both Anti-Gravity and Hypergravity. The action settings show only the parameters used by the selected state. Values entered for the other mode are retained when switching.'**
+  String get gravityHelpParameters;
+
+  /// No description provided for @gravityHelpTipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Friendly Reminder'**
+  String get gravityHelpTipsTitle;
+
+  /// No description provided for @gravitySequentialNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Gravity Generator events cannot run simultaneously. The previous Anti-Gravity or Hypergravity sequence must finish before the next one can run. Space out their trigger times.'**
+  String get gravitySequentialNotice;
+
+  /// No description provided for @gravityHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'A device located at the zombie base that triggers as a preset battlefield event during designated waves. Once it emerges from the base, it locks onto plants or zombies within a fixed area on the lawn and fires a gravitational beam, applying different Gravity states and disrupting plants’ attack rhythm and zombies’ movement patterns.'**
+  String get gravityHelpOverview;
+
+  /// No description provided for @gravityHelpAnti.
+  ///
+  /// In en, this message translates to:
+  /// **'Targeted plants slowly float upward and eventually drift off the battlefield and disappear. Targeted zombies rise and move forward, becoming immune to straight-shot attacks while airborne. ZombieForwardDistance sets their travel distance: 64 pixels equal one tile, so 64 moves one tile and 128 moves two.\nWhen a plant under Anti-Gravity is within Gravitree’s attack range, Gravitree attacks and clears Anti-Gravity from plants within its range. Gravitree itself is immune to the Gravity Generator: it cannot be lifted into the air or pressed into the ground.'**
+  String get gravityHelpAnti;
+
+  /// No description provided for @gravityHelpHeavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Targeted plants are pressed halfway into the ground. While in this state, they cannot attack but can still be eaten by zombies. Targeted zombies advance steadily and become immune to knockback effects.\nCosmic Saucer can remove Hypergravity from zombies and put them into the Floating state instead. It can also remove Hypergravity from plants, restoring them to normal.'**
+  String get gravityHelpHeavy;
 
   /// No description provided for @rocketLandingHelpTitle.
   ///
