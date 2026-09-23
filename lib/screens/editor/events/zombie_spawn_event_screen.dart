@@ -924,6 +924,10 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
         levelDisplay: isElite ? 'E' : (z.level == null ? '0' : '${z.level}'),
         isElite: isElite,
         isCustom: _isCustomZombie(z),
+        isMissingCustomZombie: CustomZombieLevelUtils.isMissingCustomZombie(
+          widget.levelFile,
+          z.type,
+        ),
       );
     }).toList();
 

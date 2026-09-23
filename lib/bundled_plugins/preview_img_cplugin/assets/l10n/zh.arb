@@ -128,7 +128,7 @@
   "previewGenEnergyTileCount": "{count}块太极地砖",
   "previewGenGridItemCount": "{count}个障碍物",
   "previewGenMustProtect": "需保护：{count}个目标",
-  "previewGenSeeingStarsCells": "匹配格子：{count}个",
+  "previewGenSeeingStarsCells": "目标植物：{count}株",
   "previewGenSeeingStarsCycle": "波数循环回到第{wave}波",
   "previewGenSeeingStarsSettlement": "图案完成后{n}秒结算胜利",
   "previewGenProtectPlantCount": "{count}株植物",
