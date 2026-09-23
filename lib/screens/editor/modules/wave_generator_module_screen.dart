@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/registry/issue_registry.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/wave_generator_level_utils.dart';
@@ -301,6 +302,12 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final compatibilityWarnings =
+        LevelIssueRegistry.forLevel(context, widget.levelFile).where(
+          (issue) =>
+              issue.id == 'seeingStarsCompatibilityWarning' ||
+              issue.id == 'gladiatorWaveGeneratorCompatibilityWarning',
+        );
     final sectionTitleColor = theme.brightness == Brightness.dark
         ? pvzPurpleDark
         : pvzPurpleLight;
@@ -365,7 +372,7 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
                       'Incompatibilities',
                   body:
                       l10n?.waveGeneratorModuleHelpIncompatBody ??
-                      'May be incompatible with some modules and cause the level to crash. Use with caution.',
+                      'Wave Generator may be incompatible with modules such as Seeing Stars and cause the level to crash. Use with caution.',
                 ),
               ],
             ),
@@ -386,6 +393,15 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
               accentColor: sectionTitleColor,
             ),
             const SizedBox(height: 16),
+            for (final warning in compatibilityWarnings) ...[
+              EditorWarningBanner(
+                key: ValueKey(warning.id),
+                margin: EdgeInsets.zero,
+                title: warning.title,
+                message: warning.message,
+              ),
+              const SizedBox(height: 16),
+            ],
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),

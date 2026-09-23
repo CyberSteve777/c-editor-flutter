@@ -135,7 +135,7 @@
   "previewGenGridItemCount": "{count} grid items",
   "previewGenMustProtect": "Targets to protect: {count}",
   "previewGenProtectPlantCount": "{count} plants",
-  "previewGenSeeingStarsCells": "Pattern cells: {count}",
+  "previewGenSeeingStarsCells": "Target plants: {count}",
   "previewGenSeeingStarsCycle": "Waves loop back to wave {wave}",
   "previewGenSeeingStarsSettlement": "Win settles {n}s after the pattern is complete",
   "previewGenInitialZombieCount": "{count} zombies",

@@ -312,7 +312,7 @@ class _CustomFishPropertiesScreenState
     required double value,
   }) {
     return _DoubleInputField(
-      key: ValueKey('$key-$value'),
+      key: ValueKey(key),
       label: label,
       value: value,
       onChanged: (v) => _updateProps(key, v),

@@ -49,6 +49,7 @@ import 'package:c_editor/screens/editor/modules/lunar_terminal_module_screen.dar
 import 'package:c_editor/screens/editor/modules/level_powerup_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/lunar_mine_vein_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/radiation_meteor_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/gladiator_row_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/witch_module_properties_screen.dart';
 import 'package:c_editor/data/final_stage_time_limited_module_utils.dart';
 import 'package:c_editor/screens/editor/modules/starting_plantfood_module_screen.dart';
@@ -134,8 +135,10 @@ import 'package:c_editor/screens/editor/events/tidal_change_event_screen.dart';
 import 'package:c_editor/screens/editor/events/zombie_potion_event_screen.dart';
 import 'package:c_editor/screens/editor/events/shell_event_screen.dart';
 import 'package:c_editor/screens/editor/events/pumpkin_house_event_screen.dart';
+import 'package:c_editor/screens/editor/events/eagle_standard_event_screen.dart';
 import 'package:c_editor/screens/editor/events/zombie_tent_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/rocket_landing_event_screen.dart';
+import 'package:c_editor/screens/editor/events/gravity_generator_event_screen.dart';
 import 'package:c_editor/screens/editor/events/jittered_event_screen.dart';
 import 'package:c_editor/screens/editor/events/ground_spawn_event_screen.dart';
 import 'package:c_editor/data/pvz_alias_utils.dart';
@@ -1766,6 +1769,21 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
 
+    if (objClass == 'SpawnEagleFlagsWaveActionProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EagleStandardEventScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+
     if (objClass == 'PumpkinHouseActionProps') {
       await Navigator.push(
         context,
@@ -1865,6 +1883,21 @@ class _EditorScreenState extends State<EditorScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => ModernPortalsEventScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (objClass == 'GravityGeneratorWaveActionProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GravityGeneratorEventScreen(
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
@@ -3356,6 +3389,22 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
     if (info.source == 'CurrentLevel' &&
+        objClass == 'GladiatorRowModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GladiatorRowModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+            initialWave: hint?.gladiatorWave,
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
         objClass == 'RadiationMeteorModuleProperties') {
       Navigator.push(
         context,
@@ -4155,9 +4204,7 @@ class _CustomStageAliasPromptDialogState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final available = MediaQuery.sizeOf(context).width - 48;
-    final dialogW = available < 420
-        ? (available < 1 ? 1.0 : available)
-        : 420.0;
+    final dialogW = available < 420 ? (available < 1 ? 1.0 : available) : 420.0;
 
     return EscapeClosesModal(
       child: Dialog(

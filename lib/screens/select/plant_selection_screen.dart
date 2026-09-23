@@ -399,23 +399,15 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
 
   Future<void> _showComingSoonPlantBlockedDialog(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
-    final isMoonTag = _selectedTag == PlantTag.worldMoon;
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         scrollable: true,
-        title: Text(
-          isMoonTag
-              ? (l10n?.stayTunedMoonPlantBlockedTitle ?? 'A Message from Space')
-              : (l10n?.comingSoonPlantBlockedTitle ?? 'To Be Continued'),
-        ),
+        title: Text(l10n?.comingSoonPlantBlockedTitle ?? 'To Be Continued'),
         content: Text(
-          isMoonTag
-              ? (l10n?.stayTunedMoonPlantBlockedMessage ??
-                    'Moon BaseZ Part 2 is coming soon. Keep a lookout!')
-              : (l10n?.comingSoonPlantBlockedMessage ??
-                    'The plants are still growing strong. Stay tuned for '
-                        'future updates!'),
+          l10n?.comingSoonPlantBlockedMessage ??
+              'The plants are still growing strong. Stay tuned for '
+                  'future updates!',
         ),
         actions: [
           TextButton(

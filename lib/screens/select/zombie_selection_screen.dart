@@ -20,11 +20,7 @@ import 'package:c_editor/widgets/editor_components.dart'
 const String _kUnknownIconPath = 'assets/images/others/unknown.webp';
 const String _kStayTunedZombieId = 'stay_tuned';
 
-enum _ZombieBlockedReason {
-  stayTunedMoon,
-  stayTunedTaleZCorp,
-  stayTunedFallback,
-}
+enum _ZombieBlockedReason { stayTunedTaleZCorp, stayTunedFallback }
 
 class _ZombieSelectionViewState {
   _ZombieSelectionViewState({required this.category, required this.tag})
@@ -262,12 +258,8 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
 
   _ZombieBlockedReason? _zombieBlockedReason(ZombieInfo zombie) {
     if (zombie.id != _kStayTunedZombieId) return null;
-    final hasMoon = zombie.tags.contains(ZombieTag.moon);
     final hasTaleZCorp = zombie.tags.contains(ZombieTag.taleZCorp);
     // The shared stay_tuned entry uses generic copy on the all-zombies tab.
-    if (hasMoon && _selectedTag == ZombieTag.moon) {
-      return _ZombieBlockedReason.stayTunedMoon;
-    }
     if (hasTaleZCorp && _selectedTag == ZombieTag.taleZCorp) {
       return _ZombieBlockedReason.stayTunedTaleZCorp;
     }
@@ -297,12 +289,6 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
   ) async {
     final l10n = AppLocalizations.of(context);
     final (title, message) = switch (reason) {
-      _ZombieBlockedReason.stayTunedMoon => (
-        l10n?.stayTunedMoonZombieBlockedTitle ?? 'A Message from Space',
-        l10n?.stayTunedMoonZombieBlockedMessage ??
-            'The brand-new world, Moon Base, is coming in the '
-                'not-too-distant future. Stay tuned!',
-      ),
       _ZombieBlockedReason.stayTunedTaleZCorp => (
         l10n?.stayTunedTaleZCorpZombieBlockedTitle ?? 'To be continued',
         l10n?.stayTunedTaleZCorpZombieBlockedMessage ??

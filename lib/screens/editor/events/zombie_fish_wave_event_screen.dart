@@ -306,6 +306,11 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
                     levelDisplay: isElite ? 'E' : '${z.level ?? 1}',
                     isElite: isElite,
                     isCustom: _isCustomZombie(z),
+                    isMissingCustomZombie:
+                        CustomZombieLevelUtils.isMissingCustomZombie(
+                          widget.levelFile,
+                          z.type,
+                        ),
                   );
                 }).toList(),
                 onTap: (index) =>

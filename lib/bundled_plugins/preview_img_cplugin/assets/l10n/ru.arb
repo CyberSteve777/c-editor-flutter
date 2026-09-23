@@ -128,7 +128,7 @@
   "previewGenEnergyTileCount": "{count} клеток",
   "previewGenGridItemCount": "{count} предметов",
   "previewGenMustProtect": "Нужно защитить {count}",
-  "previewGenSeeingStarsCells": "Клеток узора: {count}",
+  "previewGenSeeingStarsCells": "Целевых растений: {count}",
   "previewGenSeeingStarsCycle": "Волны зацикливаются на волну {wave}",
   "previewGenSeeingStarsSettlement": "Победа засчитывается через {n} с после сборки узора",
   "previewGenProtectPlantCount": "{count} растений",

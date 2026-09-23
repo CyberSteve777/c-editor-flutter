@@ -10,6 +10,7 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_numeric_text_field.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 /// Wave event editor for `WaveActionZombieTentProps` (zombie / festival tents).
@@ -253,7 +254,9 @@ class _ZombieTentWaveEventScreenState extends State<ZombieTentWaveEventScreen> {
                   body: l10n?.eventHelpZombieTentUsage ?? '',
                 ),
                 HelpSectionData(
-                  title: l10n?.parameters ?? 'Parameters',
+                  title:
+                      l10n?.eventHelpZombieTentFieldsTitle ??
+                      'Parameter Description',
                   body: l10n?.eventHelpZombieTentFields ?? '',
                 ),
               ],
@@ -313,6 +316,9 @@ class _ZombieTentWaveEventScreenState extends State<ZombieTentWaveEventScreen> {
                   const SizedBox(height: 8),
                   ...tentsAtPosition.map(
                     (e) => Padding(
+                      key: ValueKey(
+                        'tent_${_data.zombieTents.length}_${e.index}',
+                      ),
                       padding: const EdgeInsets.only(bottom: 12),
                       child: _TentEditorCard(
                         tent: e.tent,
@@ -348,6 +354,9 @@ class _ZombieTentWaveEventScreenState extends State<ZombieTentWaveEventScreen> {
                     const SizedBox(height: 8),
                     ...tentsOutside.map(
                       (e) => Padding(
+                        key: ValueKey(
+                          'tent_${_data.zombieTents.length}_${e.index}',
+                        ),
                         padding: const EdgeInsets.only(bottom: 12),
                         child: _TentEditorCard(
                           tent: e.tent,
@@ -416,12 +425,9 @@ class _ZombieTentWaveEventScreenState extends State<ZombieTentWaveEventScreen> {
                 return Expanded(
                   child: Row(
                     children: List.generate(_gridCols, (col) {
-                      final isSelected =
-                          row == _selectedY && col == _selectedX;
+                      final isSelected = row == _selectedY && col == _selectedX;
                       final cellTents = _data.zombieTents
-                          .where(
-                            (t) => t.column - 1 == col && t.row - 1 == row,
-                          )
+                          .where((t) => t.column - 1 == col && t.row - 1 == row)
                           .toList();
                       final count = cellTents.length;
                       return Expanded(
@@ -441,9 +447,9 @@ class _ZombieTentWaveEventScreenState extends State<ZombieTentWaveEventScreen> {
                               border: Border.all(
                                 color: isSelected
                                     ? theme.colorScheme.primary
-                                    : const Color(0xFF6B899A).withValues(
-                                        alpha: 0.35,
-                                      ),
+                                    : const Color(
+                                        0xFF6B899A,
+                                      ).withValues(alpha: 0.35),
                               ),
                             ),
                             child: count == 0
@@ -568,10 +574,9 @@ class _TentEditorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final typeName =
-        typeNameIsKnown(tent.tentType)
-            ? tent.tentType
-            : ZombieTentData.zombieTentTypeNormal;
+    final typeName = typeNameIsKnown(tent.tentType)
+        ? tent.tentType
+        : ZombieTentData.zombieTentTypeNormal;
     const tentTypes = [
       ZombieTentData.zombieTentTypeNormal,
       ZombieTentData.zombieTentTypeFestival,
@@ -636,11 +641,9 @@ class _TentEditorCard extends StatelessWidget {
                 final hpField = EditorResponsiveInputField(
                   label: l10n?.zombieTentHitpoints ?? 'Hitpoints',
                   decoration: _decoration(theme),
-                  builder: (context, decoration) => TextFormField(
-                    key: ValueKey(
-                      'hp_${tent.column}_${tent.row}_${tent.hitpoints}',
-                    ),
-                    initialValue: '${tent.hitpoints}',
+                  builder: (context, decoration) => EditorNumericTextField(
+                    key: const ValueKey('tentHitpoints'),
+                    value: tent.hitpoints,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: decoration,
@@ -656,15 +659,9 @@ class _TentEditorCard extends StatelessWidget {
                       l10n?.zombieTentProductionInterval ??
                       'Production interval (s)',
                   decoration: _decoration(theme),
-                  builder: (context, decoration) => TextFormField(
-                    key: ValueKey(
-                      'pi_${tent.column}_${tent.row}_${tent.productionInterval}',
-                    ),
-                    initialValue:
-                        tent.productionInterval ==
-                            tent.productionInterval.roundToDouble()
-                        ? '${tent.productionInterval.toInt()}'
-                        : tent.productionInterval.toString(),
+                  builder: (context, decoration) => EditorNumericTextField(
+                    key: const ValueKey('tentProductionInterval'),
+                    value: tent.productionInterval,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
@@ -708,6 +705,9 @@ class _TentEditorCard extends StatelessWidget {
               final i = entry.key;
               final z = entry.value;
               return Padding(
+                key: ValueKey(
+                  'spawn_${tent.zombieTypesToSpawn.length}_${i}_${z.zombieTypeName}',
+                ),
                 padding: const EdgeInsets.only(bottom: 8),
                 child: _SpawnEntryRow(
                   entry: z,
@@ -870,10 +870,12 @@ class _SpawnEntryRow extends StatelessWidget {
                     border: OutlineInputBorder(),
                     isDense: true,
                   ),
-                  builder: (context, decoration) => TextFormField(
-                    key: ValueKey('w_${typeName}_${entry.weight}'),
-                    initialValue: '${entry.weight}',
-                    keyboardType: TextInputType.number,
+                  builder: (context, decoration) => EditorNumericTextField(
+                    key: const ValueKey('tentZombieWeight'),
+                    value: entry.weight,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: decoration,
                     onChanged: (v) {
                       final n = num.tryParse(v);
@@ -894,24 +896,30 @@ class _SpawnEntryRow extends StatelessWidget {
                     border: OutlineInputBorder(),
                     isDense: true,
                   ),
-                  builder: (context, decoration) => TextFormField(
-                    key: ValueKey('l_${typeName}_${entry.level}'),
-                    initialValue: '${entry.level}',
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: decoration,
-                    onChanged: (v) {
-                      final n = int.tryParse(v);
-                      if (n == null) return;
-                      onUpdate(
-                        ZombieTentSpawnEntryData(
-                          zombieTypeName: entry.zombieTypeName,
-                          weight: entry.weight,
-                          level: n.clamp(levelMin, levelMax),
-                        ),
-                      );
-                    },
-                  ),
+                  builder: (context, decoration) =>
+                      DropdownButtonFormField<int>(
+                        key: const ValueKey('tentZombieLevel'),
+                        initialValue: entry.level.clamp(levelMin, levelMax),
+                        isExpanded: true,
+                        items: [
+                          for (var level = levelMin; level <= levelMax; level++)
+                            DropdownMenuItem(
+                              value: level,
+                              child: Text('$level'),
+                            ),
+                        ],
+                        decoration: decoration,
+                        onChanged: (level) {
+                          if (level == null) return;
+                          onUpdate(
+                            ZombieTentSpawnEntryData(
+                              zombieTypeName: entry.zombieTypeName,
+                              weight: entry.weight,
+                              level: level,
+                            ),
+                          );
+                        },
+                      ),
                 );
                 if (constraints.maxWidth < 360) {
                   return Column(
