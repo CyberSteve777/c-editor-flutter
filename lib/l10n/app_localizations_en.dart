@@ -216,6 +216,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearCache => 'Clear cache';
 
   @override
+  String get autosave => 'Autosave';
+
+  @override
+  String get autosaveOn => 'Autosave: on';
+
+  @override
+  String get autosaveOff => 'Autosave: off';
+
+  @override
+  String get autosaveSubtitle => 'Save automatically when leaving the editor';
+
+  @override
   String get ultra => 'Ultra';
 
   @override

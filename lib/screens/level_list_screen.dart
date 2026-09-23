@@ -25,6 +25,7 @@ import 'package:c_editor/screens/level_list_platform.dart';
 import 'package:c_editor/screens/image_viewer_screen.dart';
 import 'package:c_editor/screens/level_overview/level_overview.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/autosave_settings_dialog.dart';
 import 'package:c_editor/widgets/editor_components.dart'
     show
         EditorChoiceDialogOption,
@@ -1847,6 +1848,16 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 ),
               ),
               PopupMenuItem(
+                value: 'autosave',
+                child: EditorPopupMenuTile(
+                  leading: const Icon(Icons.save_outlined),
+                  title: Text(
+                    settings.autosave ? l10n.autosaveOn : l10n.autosaveOff,
+                  ),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              PopupMenuItem(
                 value: 'ui',
                 child: EditorPopupMenuTile(
                   leading: const Icon(Icons.aspect_ratio),
@@ -1902,6 +1913,11 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 if (context.mounted) {
                   _showMessage(l10n.cacheCleared(count));
                 }
+              } else if (value == 'autosave') {
+                Future.microtask(() {
+                  if (!context.mounted) return;
+                  showAutosaveSettingsDialog(context);
+                });
               } else if (value == 'ui') {
                 setState(() => _showUiScaleDialog = true);
                 WidgetsBinding.instance.addPostFrameCallback(

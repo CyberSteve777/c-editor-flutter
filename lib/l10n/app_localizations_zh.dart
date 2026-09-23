@@ -215,6 +215,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clearCache => '释放缓存';
 
   @override
+  String get autosave => '自动保存';
+
+  @override
+  String get autosaveOn => '自动保存：开';
+
+  @override
+  String get autosaveOff => '自动保存：关';
+
+  @override
+  String get autosaveSubtitle => '离开编辑器时自动保存更改';
+
+  @override
   String get ultra => '超大';
 
   @override
