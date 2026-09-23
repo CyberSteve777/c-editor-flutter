@@ -602,6 +602,14 @@ class LevelIssueRegistry {
       message: (_, l10n) => l10n.expeditionTilesUnderwaterMismatchWarning,
     ),
     LevelIssueRule(
+      id: 'gladiatorWaveGeneratorCompatibilityWarning',
+      isActive: (ctx) =>
+          ctx.hasModule('GladiatorRowModuleProperties') &&
+          ctx.hasModule('WaveGeneratorProperties'),
+      title: (_, l10n) => l10n.gladiatorCompatibilityWarningTitle,
+      message: (_, l10n) => l10n.gladiatorWaveGeneratorCompatibilityWarning,
+    ),
+    LevelIssueRule(
       id: 'gladiatorRowUnderwaterMismatch',
       isActive: (ctx) =>
           ctx.hasModule('GladiatorRowModuleProperties') &&

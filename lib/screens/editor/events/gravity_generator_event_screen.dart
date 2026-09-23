@@ -245,6 +245,7 @@ class _GravityGeneratorEventScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final targetSeparator = l10n.localeName.startsWith('zh') ? '：' : ': ';
     final gridMode = _data.targetType == 'grid';
     final (rows, cols) = LevelParser.getGridDimensionsFromFile(
       widget.levelFile,
@@ -304,7 +305,7 @@ class _GravityGeneratorEventScreenState
                 HelpSectionData(
                   title: l10n.gravityTargetType,
                   body:
-                      '${l10n.gravityPlantRangeHint}\n\n${l10n.gravityGridRangeHint}',
+                      '${l10n.gravityTargetPlant}$targetSeparator${l10n.gravityPlantRangeHint}\n${l10n.gravityTargetGrid}$targetSeparator${l10n.gravityGridRangeHint}',
                 ),
                 HelpSectionData(
                   title: l10n.gravityRestrictions,
@@ -341,13 +342,6 @@ class _GravityGeneratorEventScreenState
                 setState(() => _alias = value);
               },
               onChanged: widget.onChanged,
-            ),
-            const SizedBox(height: 12),
-            EditorWarningBanner(
-              key: const ValueKey('gravitySequentialNotice'),
-              margin: EdgeInsets.zero,
-              title: l10n.gravityHelpTipsTitle,
-              message: l10n.gravitySequentialNotice,
             ),
             const SizedBox(height: 12),
             _card([
@@ -477,7 +471,7 @@ class _GravityGeneratorEventScreenState
             Card(
               child: ExpansionTile(
                 key: const ValueKey('gravity-advanced-settings'),
-                title: Text(l10n.gravityAdvancedSettings),
+                title: _heading(l10n.gravityAdvancedSettings),
                 childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 children: [
                   for (final key in [

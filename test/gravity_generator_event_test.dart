@@ -272,11 +272,25 @@ void main() {
       expect(object.objData['ZombieForwardDistance'], 128);
       expect(object.objData['WarningMessage'], '');
       final l10n = lookupAppLocalizations(const Locale('en'));
-      expect(find.text(l10n.gravitySequentialNotice), findsOneWidget);
+      expect(
+        tester
+            .widget<Text>(find.text(l10n.gravityAdvancedSettings))
+            .style
+            ?.fontWeight,
+        FontWeight.bold,
+      );
+      expect(find.text(l10n.gravitySequentialNotice), findsNothing);
       await tester.tap(find.byIcon(Icons.help_outline));
       await tester.pumpAndSettle();
       expect(find.text(l10n.gravityHelpParameters), findsOneWidget);
-      expect(find.text(l10n.gravitySequentialNotice), findsNWidgets(2));
+      expect(find.text(l10n.gravitySequentialNotice), findsOneWidget);
+      expect(
+        find.text(
+          '${l10n.gravityTargetPlant}: ${l10n.gravityPlantRangeHint}\n${l10n.gravityTargetGrid}: ${l10n.gravityGridRangeHint}',
+        ),
+        findsOneWidget,
+      );
+      expect(l10n.gravityHelpAnti, isNot(contains('ZombieForwardDistance')));
       expect(tester.takeException(), isNull);
     },
   );

@@ -43,8 +43,12 @@ PvzObject _moon14Object() => PvzObject.fromJson(
   jsonDecode(jsonEncode(_moon14Module)) as Map<String, dynamic>,
 );
 
-Widget _localizedApp(Widget child, {double textScale = 1}) => MaterialApp(
-  locale: const Locale('en'),
+Widget _localizedApp(
+  Widget child, {
+  double textScale = 1,
+  String locale = 'en',
+}) => MaterialApp(
+  locale: Locale(locale),
   supportedLocales: AppLocalizations.supportedLocales,
   localizationsDelegates: AppLocalizations.localizationsDelegates,
   builder: (context, child) => MediaQuery(
@@ -168,6 +172,57 @@ void main() {
     ]);
     expect(jsonEncode(level.toJson()), original);
   });
+
+  for (final locale in ['zh', 'en', 'ru']) {
+    testWidgets('vein cards share each row height while resizing in $locale', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(760, 1000);
+      addTearDown(tester.view.reset);
+      final object = _moon14Object();
+      final original = jsonEncode(object.toJson());
+      await tester.pumpWidget(
+        _localizedApp(
+          LunarMineVeinModuleScreen(
+            rtid: 'RTID(LunarMineVeins@CurrentLevel)',
+            levelFile: PvzLevelFile(objects: [object]),
+            onChanged: () {},
+            onBack: () {},
+          ),
+          textScale: 1.8,
+          locale: locale,
+        ),
+      );
+      await tester.pumpAndSettle();
+      for (final width in [760.0, 380.0, 220.0, 760.0]) {
+        tester.view.physicalSize = Size(width, 1000);
+        await tester.pumpAndSettle();
+        final rows = <double, List<Rect>>{};
+        for (final info in kLunarMineVeinTypes) {
+          final card = find.byKey(ValueKey('lunar-vein-type-${info.type}'));
+          final rect = tester.getRect(card);
+          rows.putIfAbsent(rect.top, () => []).add(rect);
+          expect(rect.left, greaterThanOrEqualTo(0));
+          expect(rect.right, lessThanOrEqualTo(width));
+          final context = tester.element(card);
+          final label = ResourceNames.lookup(context, 'griditem_${info.type}');
+          expect(
+            find.descendant(of: card, matching: find.byTooltip(label)),
+            findsOneWidget,
+          );
+        }
+        if (width == 760) expect(rows, hasLength(1));
+        for (final row in rows.values) {
+          for (final rect in row) {
+            expect(rect.height, closeTo(row.first.height, 0.1));
+          }
+        }
+        expect(tester.takeException(), isNull);
+      }
+      expect(jsonEncode(object.toJson()), original);
+    });
+  }
 
   testWidgets('vein picker edits types and waves without losing MOON14 data', (
     tester,

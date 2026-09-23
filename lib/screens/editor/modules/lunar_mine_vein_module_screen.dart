@@ -127,6 +127,123 @@ class _LunarMineVeinModuleScreenState extends State<LunarMineVeinModuleScreen> {
     setState(() => _alias = value);
   }
 
+  Widget _buildTypePalette(BuildContext context) {
+    final theme = Theme.of(context);
+    const preferredWidth = 112.0;
+    const spacing = 8.0;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardWidth = constraints.maxWidth.clamp(0.0, preferredWidth);
+        final columns =
+            ((constraints.maxWidth + spacing) / (preferredWidth + spacing))
+                .floor()
+                .clamp(1, kLunarMineVeinTypes.length);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (
+              var start = 0;
+              start < kLunarMineVeinTypes.length;
+              start += columns
+            ) ...[
+              if (start > 0) const SizedBox(height: spacing),
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (
+                      var i = start;
+                      i < start + columns && i < kLunarMineVeinTypes.length;
+                      i++
+                    ) ...[
+                      if (i > start) const SizedBox(width: spacing),
+                      SizedBox(
+                        width: cardWidth,
+                        child: _buildTypeCard(
+                          context,
+                          theme,
+                          kLunarMineVeinTypes[i],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildTypeCard(
+    BuildContext context,
+    ThemeData theme,
+    LunarMineVeinTypeInfo info,
+  ) {
+    final typeSelected = _selectedType == info.type;
+    final label = ResourceNames.lookup(context, 'griditem_${info.type}');
+    return InkWell(
+      key: ValueKey('lunar-vein-type-${info.type}'),
+      onTap: () => setState(() => _selectedType = info.type),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        width: 112,
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: typeSelected
+              ? theme.colorScheme.primaryContainer
+              : theme.colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: typeSelected
+                ? theme.colorScheme.primary
+                : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 48,
+              child: AssetImageWidget(
+                assetPath: info.iconAsset,
+                fit: BoxFit.contain,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Tooltip(
+              message: label,
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Tooltip(
+              message: info.type,
+              child: Text(
+                info.type,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -227,75 +344,7 @@ class _LunarMineVeinModuleScreenState extends State<LunarMineVeinModuleScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: kLunarMineVeinTypes.map((info) {
-                        final typeSelected = _selectedType == info.type;
-                        final label = ResourceNames.lookup(
-                          context,
-                          'griditem_${info.type}',
-                        );
-                        return InkWell(
-                          key: ValueKey('lunar-vein-type-${info.type}'),
-                          onTap: () =>
-                              setState(() => _selectedType = info.type),
-                          borderRadius: BorderRadius.circular(8),
-                          child: Container(
-                            width: 112,
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: typeSelected
-                                  ? theme.colorScheme.primaryContainer
-                                  : theme.colorScheme.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: typeSelected
-                                    ? theme.colorScheme.primary
-                                    : Colors.transparent,
-                                width: 2,
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 48,
-                                  child: AssetImageWidget(
-                                    assetPath: info.iconAsset,
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Tooltip(
-                                  message: label,
-                                  child: Text(
-                                    label,
-                                    textAlign: TextAlign.center,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.labelMedium
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Tooltip(
-                                  message: info.type,
-                                  child: Text(
-                                    info.type,
-                                    textAlign: TextAlign.center,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
+                    _buildTypePalette(context),
                     const SizedBox(height: 16),
                     Text(
                       '${l10n?.selectedPosition ?? 'Selected position'}: '

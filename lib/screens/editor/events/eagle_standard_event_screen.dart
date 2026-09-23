@@ -7,7 +7,6 @@ import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
-const _eagleStandardAsset = 'assets/images/griditems/roman_eagle_flag.webp';
 const _eagleStandardType = 'roman_eagle_flag';
 
 /// Eagle Standard wave event editor (`SpawnEagleFlagsWaveActionProps`).
@@ -343,11 +342,10 @@ class _EagleStandardEventScreenState extends State<EagleStandardEventScreen> {
                                               padding: const EdgeInsets.all(2),
                                               child: FittedBox(
                                                 fit: BoxFit.contain,
-                                                child: Image.asset(
-                                                  _eagleStandardAsset,
+                                                child: GridItemIcon(
+                                                  typeName: firstItem.type,
                                                   fit: BoxFit.contain,
-                                                  filterQuality:
-                                                      FilterQuality.medium,
+                                                  borderRadius: 0,
                                                 ),
                                               ),
                                             ),
@@ -449,10 +447,11 @@ class _EagleStandardItemCard extends StatelessWidget {
               deleteTooltip: deleteTooltip,
               icon: SizedBox(
                 height: 64,
-                child: Image.asset(
-                  _eagleStandardAsset,
+                child: GridItemIcon(
+                  typeName: item.type,
+                  size: 64,
                   fit: BoxFit.contain,
-                  filterQuality: FilterQuality.medium,
+                  borderRadius: 0,
                 ),
               ),
             ),

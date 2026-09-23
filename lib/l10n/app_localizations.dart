@@ -7861,7 +7861,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpZombieTentBody.
   ///
   /// In en, this message translates to:
-  /// **'This event spawns zombie tents from Memory Lane directly on the lawn. Unlike the tents carried by Imp Porters, these tents do not require Gold Tiles. They appear at the specified positions and continually summon zombies until destroyed. The level can only be won after every zombie tent on the lawn has been destroyed.'**
+  /// **'This event force spawns zombie tents from Memory Lane directly on the lawn. Unlike the tents carried by Imp Porters, these tents do not require Gold Tiles. They appear at the specified positions and continually summon zombies until destroyed. The level can only be won after every zombie tent on the lawn has been destroyed.'**
   String get eventHelpZombieTentBody;
 
   /// No description provided for @eventHelpZombieTentUsage.
@@ -13392,7 +13392,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1SeeingStarsHelpMatchPlants.
   ///
   /// In en, this message translates to:
-  /// **'Select a cell on the grid and add a plant. If the cell already has a plant, the new one replaces it. These plants appear as transparent guides in the level. The level is won when every target cell contains the matching plant.'**
+  /// **'Select a cell on the grid and add a plant. If the cell already has a plant, the new one replaces it. These plants appear as transparent guides in the level. The level is won when every target cell contains the matching plant. Target cells only allow the matching target plant and vine plants; other plants cannot be planted there.'**
   String get pvz1SeeingStarsHelpMatchPlants;
 
   /// No description provided for @pvz1SeeingStarsFieldCycleIndexLabel.
@@ -16080,7 +16080,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveGeneratorModuleHelpIncompatBody.
   ///
   /// In en, this message translates to:
-  /// **'Wave Generator may be incompatible with modules such as Seeing Stars and cause the level to crash. Use with caution.'**
+  /// **'Wave Generator may be incompatible with modules such as Seeing Stars and cause the level to crash. Use with caution.\nGladiatorial Row does not work with Wave Generator. Use Wave Manager instead.'**
   String get waveGeneratorModuleHelpIncompatBody;
 
   /// No description provided for @waveGeneratorModuleHelpRow.
@@ -17805,6 +17805,18 @@ abstract class AppLocalizations {
   /// **'Spawn weight (Weight)'**
   String get gladiatorWeight;
 
+  /// No description provided for @gladiatorCompatibilityWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Module compatibility warning'**
+  String get gladiatorCompatibilityWarningTitle;
+
+  /// No description provided for @gladiatorWaveGeneratorCompatibilityWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Gladiatorial Row does not work with Wave Generator. Use Wave Manager instead.'**
+  String get gladiatorWaveGeneratorCompatibilityWarning;
+
   /// No description provided for @gladiatorUnderwaterMismatchWarning.
   ///
   /// In en, this message translates to:
@@ -17844,7 +17856,7 @@ abstract class AppLocalizations {
   /// No description provided for @gladiatorHelpTips.
   ///
   /// In en, this message translates to:
-  /// **'During a duel, planting no longer costs sun, but still consumes energy.\nInstant-kill attacks from Gargantuars and similar zombies cannot damage the trophy.\nPlant projectiles leaving the arena are blocked by its fences. Zombies that leave the arena, and zombies using certain abilities aimed outside the arena, become frozen in place. They are released when the duel timer ends and resume attacking.\nGladiatorial Rows do not appear on six-row lawns with an Underwater World appearance, such as 20,000 Leagues Under the Sea or Atlantis.\nNew modules use trophy duel mode (GameplayVersion 1). Version 0 is the retired duel mode.'**
+  /// **'During a duel, planting no longer costs sun, but still consumes energy.\nInstant-kill attacks from Gargantuars and similar zombies cannot damage the trophy.\nPlant projectiles leaving the arena are blocked by its fences. Zombies that leave the arena, and zombies using certain abilities aimed outside the arena, become frozen in place. They are released when the duel timer ends and resume attacking.\nGladiatorial Rows do not appear on six-row lawns with an Underwater World appearance, such as 20,000 Leagues Under the Sea or Atlantis.\nNew modules use trophy duel mode (GameplayVersion 1). Version 0 is the retired duel mode.\nGladiatorial Row does not work with Wave Generator. Use Wave Manager instead.'**
   String get gladiatorHelpTips;
 
   /// No description provided for @radiationMeteorHelpTitle.
@@ -18180,7 +18192,7 @@ abstract class AppLocalizations {
   /// No description provided for @gravityHelpAnti.
   ///
   /// In en, this message translates to:
-  /// **'Targeted plants slowly float upward and eventually drift off the battlefield and disappear. Targeted zombies rise and move forward, becoming immune to straight-shot attacks while airborne. ZombieForwardDistance sets their travel distance: 64 pixels equal one tile, so 64 moves one tile and 128 moves two.\nWhen a plant under Anti-Gravity is within Gravitree’s attack range, Gravitree attacks and clears Anti-Gravity from plants within its range. Gravitree itself is immune to the Gravity Generator: it cannot be lifted into the air or pressed into the ground.'**
+  /// **'Targeted plants slowly float upward and eventually drift off the battlefield and disappear. Targeted zombies rise and move forward, becoming immune to straight-shot attacks while airborne.\nWhen a plant under Anti-Gravity is within Gravitree’s attack range, Gravitree attacks and clears Anti-Gravity from plants within its range. Gravitree itself is immune to the Gravity Generator: it cannot be lifted into the air or pressed into the ground.'**
   String get gravityHelpAnti;
 
   /// No description provided for @gravityHelpHeavy.

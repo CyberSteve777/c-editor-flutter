@@ -1,3 +1,5 @@
+import 'package:c_editor/data/gladiator_row_utils.dart';
+import 'package:c_editor/widgets/gladiator_row_preview.dart';
 import 'dart:math' as math;
 
 import 'package:c_editor/widgets/editor_components.dart'
@@ -269,6 +271,8 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         return l10n.moduleTitle_LunarMineVeinModuleProperties;
       case GridPreviewModuleKind.radiationMeteor:
         return l10n.moduleTitle_RadiationMeteorModuleProperties;
+      case GridPreviewModuleKind.gladiatorRow:
+        return l10n.moduleTitle_GladiatorRowModuleProperties;
       case GridPreviewModuleKind.bronzeStatue:
         return l10n.moduleTitle_BronzeProperties;
       case GridPreviewModuleKind.powerTile:
@@ -3166,6 +3170,8 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           style,
           category?.wave ?? 1,
         );
+      case GridPreviewModuleKind.gladiatorRow:
+        return _buildGladiatorGrid(rows, cols, style, category?.index ?? 0);
       case GridPreviewModuleKind.bronzeStatue:
         return _buildBronzeStatueGrid(rows, cols, style);
       case GridPreviewModuleKind.powerTile:
@@ -6200,6 +6206,63 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
       for (final spawn in placements) '${spawn.gridX},${spawn.gridY}': asset,
     };
     return _buildMoonGridItemPreview(rows, cols, style, cellAssets);
+  }
+
+  Widget _buildGladiatorGrid(
+    int rows,
+    int cols,
+    LevelPreviewGridStyle style,
+    int index,
+  ) {
+    final data = readGladiatorRowModuleData(widget.levelFile);
+    final encounter = data?.encounters.elementAtOrNull(index);
+    return _buildCompositeLawnGrid(
+      rows: rows,
+      cols: cols,
+      style: style,
+      cellBuilder: (col, row) {
+        if (encounter == null || data?.usesTrophyMode != true) return null;
+        final active = row == encounter.row && col >= 2 && col <= 6;
+        final trophy = active && col == 4;
+        final spawns = encounter.spawns
+            .where((s) => row == encounter.row && col == s.gridX && s.count > 0)
+            .toList();
+        if (!active && spawns.isEmpty) return null;
+        return ColoredBox(
+          key: ValueKey('overview-gladiator-cell-$col-$row'),
+          color: active
+              ? (trophy ? Colors.green : Colors.red).withValues(alpha: 0.45)
+              : Colors.transparent,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (trophy)
+                const Padding(
+                  padding: EdgeInsets.all(3),
+                  child: FittedBox(
+                    child: Icon(Icons.emoji_events, color: Colors.white),
+                  ),
+                ),
+              if (spawns.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: Row(
+                    children: [
+                      for (final spawn in spawns)
+                        Expanded(
+                          child: GladiatorZombieIcon(
+                            type: spawn.zombieType,
+                            levelFile: widget.levelFile,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildMoonGridItemPreview(

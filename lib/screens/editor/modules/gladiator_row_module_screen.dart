@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/registry/issue_registry.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
@@ -9,6 +10,7 @@ import 'package:c_editor/screens/select/zombie_selection_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/widgets/gladiator_row_preview.dart';
+import 'package:c_editor/widgets/grid_override_wave_groups_bar.dart';
 
 class GladiatorRowModuleScreen extends StatefulWidget {
   const GladiatorRowModuleScreen({
@@ -169,7 +171,63 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
     );
   }
 
+  Widget _level(
+    String scope,
+    String label,
+    int value,
+    ValueChanged<int> change,
+  ) => Padding(
+    padding: const EdgeInsets.only(top: 12),
+    child: EditorResponsiveInputField(
+      key: ObjectKey(scope == 'global' ? _data : _encounter),
+      label: label,
+      builder: (context, decoration) => DropdownButtonFormField<int>(
+        key: ValueKey('gladiator-$scope-Level'),
+        initialValue: value >= 0 && value <= 10 ? value : null,
+        isExpanded: true,
+        decoration: decoration,
+        items: [
+          for (var level = 0; level <= 10; level++)
+            DropdownMenuItem(value: level, child: Text('$level')),
+        ],
+        onChanged: (level) {
+          if (level == null) return;
+          change(level);
+          _sync();
+        },
+      ),
+    ),
+  );
+
+  void _addEncounter() {
+    final next = _data.encounters.isEmpty
+        ? 0
+        : _data.encounters.map((e) => e.wave).reduce((a, b) => a > b ? a : b) +
+              1;
+    _data.encounters.add(GladiatorEncounterData(wave: next));
+    _selected = _data.encounters.length - 1;
+    _sync();
+  }
+
+  Future<void> _removeEncounter(int index) async {
+    final encounter = _data.encounters[index];
+    if (!await _confirmRemove(
+          AppLocalizations.of(context)!.groupN(index + 1),
+        ) ||
+        !mounted) {
+      return;
+    }
+    _data.encounters.remove(encounter);
+    if (index < _selected) _selected--;
+    _selected = _selected.clamp(
+      0,
+      _data.encounters.isEmpty ? 0 : _data.encounters.length - 1,
+    );
+    _sync();
+  }
+
   Widget _card(List<Widget> children) => Card(
+    margin: const EdgeInsets.only(bottom: 16),
     child: Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -193,42 +251,69 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
   ) {
     final l10n = AppLocalizations.of(context)!;
     final display = gladiatorZombieDisplayType(type, widget.levelFile);
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            SizedBox(
-              width: 48,
-              height: 48,
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final identity = Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  ResourceNames.lookupOrFallback(
+                    context,
+                    'zombie_$display',
+                    type,
+                  ),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  type,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            );
+            final icon = SizedBox(
+              width: 64,
+              height: 64,
               child: GladiatorZombieIcon(
                 type: type,
                 levelFile: widget.levelFile,
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    ResourceNames.lookupOrFallback(
-                      context,
-                      'zombie_$display',
-                      type,
-                    ),
-                  ),
-                  Text(type, style: Theme.of(context).textTheme.bodySmall),
-                ],
-              ),
-            ),
-            IconButton(
+            );
+            final actions = IconButton(
               tooltip: l10n.remove,
-              icon: const Icon(Icons.close),
+              icon: const Icon(Icons.delete_outline),
               onPressed: remove,
-            ),
-          ],
+            );
+            if (constraints.maxWidth < 520 ||
+                MediaQuery.textScalerOf(context).scale(16) > 20.8) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(children: [icon, const Spacer(), actions]),
+                  const SizedBox(height: 12),
+                  identity,
+                ],
+              );
+            }
+            return Row(
+              children: [
+                icon,
+                const SizedBox(width: 12),
+                Expanded(child: identity),
+                const SizedBox(width: 8),
+                actions,
+              ],
+            );
+          },
         ),
+        const Divider(height: 28),
         OutlinedButton.icon(
           onPressed: () => _pickZombie(replace),
           icon: const Icon(Icons.swap_horiz),
@@ -242,6 +327,10 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final encounter = _encounter;
+    final compatibilityWarnings =
+        LevelIssueRegistry.forLevel(context, widget.levelFile).where(
+          (issue) => issue.id == 'gladiatorWaveGeneratorCompatibilityWarning',
+        );
     final levelDef = LevelParser.parseLevel(widget.levelFile).levelDef;
     final (rows, cols) = LevelParser.getGridDimensions(
       levelDef,
@@ -256,7 +345,6 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
       'PlantWinPlantfoodCount': l10n.gladiatorRewardCount,
       'ZombieWinPunishmentCageCount': l10n.gladiatorPunishmentCount,
       'ZombieWinPunishmentDuration': l10n.gladiatorPunishmentDuration,
-      'ZombieWinPunishmentZombieLevel': l10n.gladiatorPunishmentLevel,
     };
     return Scaffold(
       appBar: AppBar(
@@ -316,6 +404,15 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
               onChanged: widget.onChanged,
             ),
             const SizedBox(height: 12),
+            for (final warning in compatibilityWarnings) ...[
+              EditorWarningBanner(
+                key: ValueKey(warning.id),
+                margin: EdgeInsets.zero,
+                title: warning.title,
+                message: warning.message,
+              ),
+              const SizedBox(height: 12),
+            ],
             if (!_data.usesTrophyMode) ...[
               EditorWarningBanner(
                 key: const ValueKey('gladiatorLegacyModeWarning'),
@@ -353,47 +450,27 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
                   _data.option(option.key),
                   (n) => _data.values[option.key] = n,
                   integer: !option.key.endsWith('Duration'),
-                  maximum: option.key.endsWith('Level') ? 10 : null,
                 ),
+              _level(
+                'global',
+                l10n.gladiatorPunishmentLevel,
+                _data.option('ZombieWinPunishmentZombieLevel').toInt(),
+                (level) =>
+                    _data.values['ZombieWinPunishmentZombieLevel'] = level,
+              ),
             ]),
             _card([
               _heading(l10n.gladiatorEncounters),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (var i = 0; i < _data.encounters.length; i++)
-                    OutlinedButton(
-                      key: ValueKey('gladiator-encounter-$i'),
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: i == _selected
-                            ? Theme.of(context).colorScheme.primaryContainer
-                            : null,
-                      ),
-                      onPressed: () => setState(() => _selected = i),
-                      child: Text(
-                        '${l10n.groupN(i + 1)} · ${l10n.waveLabel} ${_data.encounters[i].wave + 1}',
-                      ),
-                    ),
-                ],
+              GridOverrideWaveGroupsBar(
+                itemCount: _data.encounters.length,
+                selectedIndex: _selected,
+                onSelected: (index) => setState(() => _selected = index),
+                onDeleteAt: _removeEncounter,
+                onAdd: _addEncounter,
+                groupLabel: (index) => l10n.groupN(index + 1),
               ),
-              OutlinedButton.icon(
-                key: const ValueKey('gladiator-add-encounter'),
-                onPressed: () {
-                  final next = _data.encounters.isEmpty
-                      ? 0
-                      : _data.encounters
-                                .map((e) => e.wave)
-                                .reduce((a, b) => a > b ? a : b) +
-                            1;
-                  _data.encounters.add(GladiatorEncounterData(wave: next));
-                  _selected = _data.encounters.length - 1;
-                  _sync();
-                },
-                icon: const Icon(Icons.add),
-                label: Text(l10n.gladiatorAddEncounter),
-              ),
+              const SizedBox(height: 4),
               if (encounter != null) ...[
                 _number(
                   encounter,
@@ -430,26 +507,6 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
                   encounter.firstCageDelay,
                   (n) => encounter.values['FirstCageDelay'] = n,
                 ),
-                const SizedBox(height: 8),
-                OutlinedButton.icon(
-                  key: const ValueKey('gladiator-remove-encounter'),
-                  onPressed: () async {
-                    if (!await _confirmRemove(l10n.groupN(_selected + 1)) ||
-                        !mounted) {
-                      return;
-                    }
-                    _data.encounters.remove(encounter);
-                    _selected = _selected.clamp(
-                      0,
-                      _data.encounters.isEmpty
-                          ? 0
-                          : _data.encounters.length - 1,
-                    );
-                    _sync();
-                  },
-                  icon: const Icon(Icons.delete_outline),
-                  label: Text(l10n.gladiatorRemoveEncounter),
-                ),
               ],
             ]),
             if (encounter != null) ...[
@@ -473,6 +530,7 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
                 ]),
               _card([
                 _heading(l10n.gladiatorSpawns),
+                const SizedBox(height: 12),
                 for (var i = 0; i < encounter.spawns.length; i++)
                   _spawnCard(encounter, encounter.spawns[i], i, cols, l10n),
                 OutlinedButton.icon(
@@ -489,7 +547,9 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
             ],
             _card([
               _heading(l10n.gladiatorPunishmentPool),
+              const SizedBox(height: 8),
               Text(l10n.gladiatorPunishmentHint),
+              const SizedBox(height: 12),
               for (var i = 0; i < _data.punishmentPool.length; i++)
                 _punishmentCard(_data.punishmentPool[i], i, l10n),
               OutlinedButton.icon(
@@ -556,15 +616,11 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
       spawn.interval,
       (n) => spawn.values['Interval'] = n,
     ),
-    _number(
-      spawn,
-      'Level',
+    _level(
       'spawn-$index',
       l10n.gladiatorSpawnLevel,
       spawn.level,
-      (n) => spawn.values['Level'] = n,
-      integer: true,
-      maximum: 10,
+      (level) => spawn.values['Level'] = level,
     ),
   ]);
 

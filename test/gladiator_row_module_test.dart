@@ -17,6 +17,7 @@ import 'package:c_editor/screens/editor/modules/gladiator_row_module_screen.dart
 import 'package:c_editor/screens/editor/tabs/wave_timeline_tab.dart';
 import 'package:c_editor/screens/select/zombie_selection_screen.dart';
 import 'package:c_editor/widgets/gladiator_row_preview.dart';
+import 'package:c_editor/widgets/grid_override_wave_groups_bar.dart';
 import 'package:c_editor/widgets/wave_module_preview_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -95,6 +96,21 @@ Future<void> _enter(WidgetTester tester, String field, String text) async {
   await tester.enterText(finder, text);
   tester.testTextInput.hide();
   await tester.pumpAndSettle();
+}
+
+Future<void> _selectLevel(WidgetTester tester, String scope, int value) async {
+  final field = find.byKey(ValueKey('gladiator-$scope-Level'));
+  final dropdown = find.descendant(
+    of: field,
+    matching: find.byType(DropdownButton<int>),
+  );
+  expect(
+    tester.widget<DropdownButton<int>>(dropdown).items!.map((e) => e.value),
+    List.generate(11, (i) => i),
+  );
+  await _tap(tester, field);
+  final item = find.text('$value').last;
+  await _tap(tester, item);
 }
 
 void main() {
@@ -463,7 +479,24 @@ void main() {
       await _enter(tester, 'spawn-0-GridX', '5');
       await _enter(tester, 'spawn-0-Count', '3');
       await _enter(tester, 'spawn-0-Interval', '2.0');
-      await _enter(tester, 'spawn-0-Level', '4');
+      await _selectLevel(tester, 'spawn-0', 0);
+      expect(
+        readGladiatorRowModuleData(level)!.encounters.last.spawns.first.level,
+        0,
+      );
+      await _selectLevel(tester, 'spawn-0', 10);
+      expect(
+        readGladiatorRowModuleData(level)!.encounters.last.spawns.first.level,
+        10,
+      );
+      await _selectLevel(tester, 'spawn-0', 4);
+      await _selectLevel(tester, 'global', 10);
+      expect(
+        readGladiatorRowModuleData(
+          level,
+        )!.option('ZombieWinPunishmentZombieLevel'),
+        10,
+      );
       await _enter(tester, 'punishment-0-Weight', '15');
       final data = readGladiatorRowModuleData(level)!;
       expect(
@@ -504,7 +537,10 @@ void main() {
       await tester.pumpWidget(_app(_editor(level)));
       await tester.pumpAndSettle();
       expect(level.objects.single.objClass, _class);
-      await _tap(tester, find.byKey(const ValueKey('gladiator-add-encounter')));
+      await _tap(
+        tester,
+        find.byKey(const ValueKey('addGridOverrideWaveGroup')),
+      );
       expect(readGladiatorRowModuleData(level)!.encounters.single.wave, 0);
       await _tap(tester, find.byKey(const ValueKey('gladiator-add-spawn')));
       tester
@@ -539,7 +575,12 @@ void main() {
       );
       await _tap(
         tester,
-        find.byKey(const ValueKey('gladiator-remove-encounter')),
+        find
+            .descendant(
+              of: find.byType(GridOverrideWaveGroupsBar),
+              matching: find.byIcon(Icons.delete_outline),
+            )
+            .first,
       );
       await tester.tap(
         find.widgetWithText(
@@ -619,7 +660,13 @@ void main() {
         final l10n = lookupAppLocalizations(Locale(locale));
         await tester.pumpWidget(_app(_editor(level), locale: locale, scale: 2));
         await tester.pumpAndSettle();
-        await _tap(tester, find.byKey(const ValueKey('gladiator-encounter-1')));
+        await _tap(
+          tester,
+          find.descendant(
+            of: find.byType(GridOverrideWaveGroupsBar),
+            matching: find.text(l10n.groupN(2)),
+          ),
+        );
         await tester.ensureVisible(find.byType(GladiatorRowPreview));
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);

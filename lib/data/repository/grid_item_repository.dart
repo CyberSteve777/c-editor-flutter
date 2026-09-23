@@ -85,6 +85,7 @@ class GridItemRepository {
   static Future<void> init() async {
     if (_isLoaded) return;
     try {
+      await ReferenceRepository.init();
       final jsonString = await loadJsonString(_resourcePath);
       final List<dynamic> jsonList = json.decode(jsonString) as List<dynamic>;
       staticItems
@@ -429,7 +430,32 @@ class GridItemRepository {
     return templates.isNotEmpty &&
         templates.every(
           (template) =>
-              _findMatchingTemplateObject(levelFile, template) != null,
+              _findMatchingTemplateObject(levelFile, template) != null ||
+              _matchesBuiltInGridItemType(levelFile, template),
+        );
+  }
+
+  static bool _matchesBuiltInGridItemType(
+    PvzLevelFile levelFile,
+    PvzObject template,
+  ) {
+    if (template.objClass != 'GridItemType') return false;
+    final typeName = _gridItemTypeName(template);
+    if (typeName == null) return false;
+    // A conflicting local definition must not borrow the built-in preset art.
+    if (_findObjectWithTemplateAlias(levelFile, template) != null ||
+        levelFile.objects.any(
+          (object) =>
+              object.objClass == 'GridItemType' &&
+              _gridItemTypeName(object) == typeName,
+        )) {
+      return false;
+    }
+    final builtIn = ReferenceRepository.instance.gridItemTypeForName(typeName);
+    return builtIn != null &&
+        const DeepCollectionEquality().equals(
+          builtIn.objData,
+          template.objData,
         );
   }
 

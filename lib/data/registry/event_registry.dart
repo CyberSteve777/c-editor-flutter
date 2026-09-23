@@ -557,27 +557,6 @@ class EventRegistry {
         }
       },
     ),
-    'PumpkinHouseActionProps': EventMetadata(
-      titleKey: 'eventTitle_PumpkinHouseActionProps',
-      descriptionKey: 'eventDesc_PumpkinHouseActionProps',
-      icon: Icons.holiday_village,
-      color: const Color(0xFFE65100),
-      darkColor: const Color(0xFFFFAB91),
-      category: EventCategory.gridItemSpawn,
-      defaultAlias: 'PumpkinHouseEvent',
-      defaultObjClass: 'PumpkinHouseActionProps',
-      initialDataFactory: () => PumpkinHouseActionPropsData(),
-      summaryProvider: (obj) {
-        try {
-          final data = PumpkinHouseActionPropsData.fromJson(
-            obj.objData as Map<String, dynamic>,
-          );
-          return '${data.tiles.length}';
-        } catch (_) {
-          return '';
-        }
-      },
-    ),
     'WaveActionZombieTentProps': EventMetadata(
       titleKey: 'eventTitle_WaveActionZombieTentProps',
       descriptionKey: 'eventDesc_WaveActionZombieTentProps',
@@ -594,6 +573,27 @@ class EventRegistry {
             obj.objData as Map<String, dynamic>,
           );
           return '${data.zombieTents.length}';
+        } catch (_) {
+          return '';
+        }
+      },
+    ),
+    'PumpkinHouseActionProps': EventMetadata(
+      titleKey: 'eventTitle_PumpkinHouseActionProps',
+      descriptionKey: 'eventDesc_PumpkinHouseActionProps',
+      icon: Icons.holiday_village,
+      color: const Color(0xFFE65100),
+      darkColor: const Color(0xFFFFAB91),
+      category: EventCategory.gridItemSpawn,
+      defaultAlias: 'PumpkinHouseEvent',
+      defaultObjClass: 'PumpkinHouseActionProps',
+      initialDataFactory: () => PumpkinHouseActionPropsData(),
+      summaryProvider: (obj) {
+        try {
+          final data = PumpkinHouseActionPropsData.fromJson(
+            obj.objData as Map<String, dynamic>,
+          );
+          return '${data.tiles.length}';
         } catch (_) {
           return '';
         }

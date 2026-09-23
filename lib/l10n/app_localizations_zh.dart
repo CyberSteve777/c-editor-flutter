@@ -7200,7 +7200,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pvz1SeeingStarsHelpMatchPlants =>
-      '点击格子后可添加植物；若所选格子已有植物，添加后会替换掉原植物。添加的植物会在关卡中显示为透明提示，当所有目标格均种有对应植物时，关卡胜利。';
+      '点击格子后可添加植物；若所选格子已有植物，添加后会替换掉原植物。添加的植物会在关卡中显示为透明提示，当所有目标格均种有对应植物时，关卡胜利。目标格内只能种植目标植物和藤蔓类植物，无法种植其他植物。';
 
   @override
   String get pvz1SeeingStarsFieldCycleIndexLabel => '循环波数 (CycleIndex)';
@@ -8657,7 +8657,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get waveGeneratorModuleHelpIncompatBody =>
-      '波次生成器可能与「看星星」等部分模块不兼容，造成关卡闪退，请谨慎使用。';
+      '波次生成器可能与「看星星」等部分模块不兼容，造成关卡闪退，请谨慎使用。\n「罗马角斗行」模块在波次生成器下不会生效，请改用波次管理器。';
 
   @override
   String get waveGeneratorModuleHelpRow => '行号';
@@ -9627,6 +9627,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get gladiatorWeight => '出现权重 (Weight)';
 
   @override
+  String get gladiatorCompatibilityWarningTitle => '模块兼容性提示';
+
+  @override
+  String get gladiatorWaveGeneratorCompatibilityWarning =>
+      '「罗马角斗行」模块在波次生成器下不会生效，请改用波次管理器。';
+
+  @override
   String get gladiatorUnderwaterMismatchWarning =>
       '当前地图为海底世界外观的六行地图，「罗马角斗行」不会生成。请改用五行地图。';
 
@@ -9650,7 +9657,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get gladiatorHelpTips =>
-      '角斗期间，种植植物不再消耗阳光，但仍然消耗能量。\n巨人僵尸等僵尸的秒杀攻击无法对奖杯造成伤害。\n植物射出角斗行范围的子弹会被围栏阻挡，而离开角斗行范围的僵尸或部分技能瞄准角斗行范围外的僵尸则会静止不动，在角斗计时结束后被释放，继续进攻。\n注意角斗行不会在“海底世界-海底两万里”或“海底世界-亚特兰蒂斯”等海底世界外观的六行地图中生成。\n新建模块使用奖杯对决模式 (GameplayVersion 为1)，0为旧版对决模式。';
+      '角斗期间，种植植物不再消耗阳光，但仍然消耗能量。\n巨人僵尸等僵尸的秒杀攻击无法对奖杯造成伤害。\n植物射出角斗行范围的子弹会被围栏阻挡，而离开角斗行范围的僵尸或部分技能瞄准角斗行范围外的僵尸则会静止不动，在角斗计时结束后被释放，继续进攻。\n注意角斗行不会在“海底世界-海底两万里”或“海底世界-亚特兰蒂斯”等海底世界外观的六行地图中生成。\n新建模块使用奖杯对决模式 (GameplayVersion 为1)，0为旧版对决模式。\n「罗马角斗行」模块在波次生成器下不会生效，请改用波次管理器。';
 
   @override
   String get radiationMeteorHelpTitle => '辐射陨石';
@@ -9833,7 +9840,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get gravityHelpAnti =>
-      '被锁定的植物缓慢上浮，一段时间后飘离战场消失；被锁定的僵尸上升并向前移动，空中免疫平射攻击。前移距离由 ZombieForwardDistance 决定，每64像素为1格，例如64为1格、128为2格。\n当重力树攻击范围内有处于反重力状态的植物时，重力树会攻击并清除攻击范围内植物的反重力状态。重力树自身免疫引力发生器效果，不被浮空，也不被压入土中。';
+      '被锁定的植物缓慢上浮，一段时间后飘离战场消失；被锁定的僵尸上升并向前移动，空中免疫平射攻击。\n当重力树攻击范围内有处于反重力状态的植物时，重力树会攻击并清除攻击范围内植物的反重力状态。重力树自身免疫引力发生器效果，不被浮空，也不被压入土中。';
 
   @override
   String get gravityHelpHeavy =>

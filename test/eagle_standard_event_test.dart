@@ -12,6 +12,8 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/events/eagle_standard_event_screen.dart';
 import 'package:c_editor/screens/select/event_selection_screen.dart';
+import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -162,6 +164,70 @@ void main() {
       expect(ZombieDiscovery.discoverZombies(level, parsed), isEmpty);
       event.objData = {'Flags': []};
       expect(GridItemDiscovery.discoverGridItems(level), isEmpty);
+    },
+  );
+
+  test('tent spawn precedes pumpkin house in both event order sources', () {
+    final order = EventRegistry.getAll().map((m) => m.defaultObjClass).toList();
+    expect(
+      order.indexOf('WaveActionZombieTentProps') + 1,
+      order.indexOf('PumpkinHouseActionProps'),
+    );
+    expect(
+      ObjectOrderRegistry.getPriority('WaveActionZombieTentProps') + 1,
+      ObjectOrderRegistry.getPriority('PumpkinHouseActionProps'),
+    );
+  });
+
+  testWidgets(
+    'manual item types use their actual icons in the grid and cards',
+    (tester) async {
+      final event = PvzObject.fromJson(_fixture());
+      event.objData['Flags'] = [
+        {
+          'Location': {'mX': 0, 'mY': 0},
+          'Type': 'rocket_landing',
+        },
+        {
+          'Location': {'mX': 2, 'mY': 0},
+          'Type': _type,
+        },
+      ];
+      final original = jsonEncode(event.toJson());
+      await tester.pumpWidget(_app(PvzLevelFile(objects: [event])));
+      await tester.pumpAndSettle();
+      await _tap(tester, find.byKey(const ValueKey('eagle-cell-0-0')));
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is GridItemIcon && w.typeName == 'rocket_landing',
+        ),
+        findsNWidgets(2),
+      );
+      final rocketCell = find.byKey(const ValueKey('eagle-cell-0-0'));
+      expect(
+        find.descendant(
+          of: rocketCell,
+          matching: find.byWidgetPredicate(
+            (w) =>
+                w is AssetImageWidget &&
+                w.assetPath == GridItemRepository.getIconPath('rocket_landing'),
+          ),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: rocketCell,
+          matching: find.byWidgetPredicate(
+            (w) =>
+                w is AssetImageWidget &&
+                w.assetPath == GridItemRepository.getIconPath(_type),
+          ),
+        ),
+        findsNothing,
+      );
+      expect(jsonEncode(event.toJson()), original);
+      expect(tester.takeException(), isNull);
     },
   );
 

@@ -302,10 +302,12 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final compatibilityWarnings = LevelIssueRegistry.forLevel(
-      context,
-      widget.levelFile,
-    ).where((issue) => issue.id == 'seeingStarsCompatibilityWarning');
+    final compatibilityWarnings =
+        LevelIssueRegistry.forLevel(context, widget.levelFile).where(
+          (issue) =>
+              issue.id == 'seeingStarsCompatibilityWarning' ||
+              issue.id == 'gladiatorWaveGeneratorCompatibilityWarning',
+        );
     final sectionTitleColor = theme.brightness == Brightness.dark
         ? pvzPurpleDark
         : pvzPurpleLight;
