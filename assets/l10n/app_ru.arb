@@ -782,6 +782,7 @@
   "disablePeavine": "Отключить гороховую лозу",
   "disableArtifact": "Отключить артефакты",
   "selectPlant": "Выбрать растение",
+  "selectAll": "Выбрать все",
   "searchPlant": "Поиск растения",
   "noPlantFound": "Растение не найдено",
   "noResultsFor": "Нет результатов для «{query}»",

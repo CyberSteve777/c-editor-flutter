@@ -2279,6 +2279,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selectPlant => 'Выбрать растение';
 
   @override
+  String get selectAll => 'Выбрать все';
+
+  @override
   String get searchPlant => 'Поиск растения';
 
   @override

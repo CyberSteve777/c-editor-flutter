@@ -777,6 +777,7 @@
   "disablePeavine": "禁用豆藤共生",
   "disableArtifact": "禁用神器（庭院模式下自动生效）",
   "selectPlant": "选择植物",
+  "selectAll": "全选",
   "searchPlant": "搜索植物",
   "noPlantFound": "未找到植物",
   "noResultsFor": "没有关于“{query}”的结果",

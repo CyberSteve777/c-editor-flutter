@@ -4168,6 +4168,12 @@ abstract class AppLocalizations {
   /// **'Select plant'**
   String get selectPlant;
 
+  /// No description provided for @selectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select ALL'**
+  String get selectAll;
+
   /// No description provided for @searchPlant.
   ///
   /// In en, this message translates to:

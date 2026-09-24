@@ -2262,6 +2262,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectPlant => 'Select plant';
 
   @override
+  String get selectAll => 'Select ALL';
+
+  @override
   String get searchPlant => 'Search plant';
 
   @override

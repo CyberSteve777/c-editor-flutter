@@ -283,6 +283,35 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     return ids.where((id) => _zombieBlockedReasonForId(id) == null).toList();
   }
 
+  void _selectAllVisible(List<ZombieInfo> zombies) {
+    final selectableIds = zombies
+        .where((zombie) => _zombieBlockedReason(zombie) == null)
+        .map((zombie) => zombie.id)
+        .toList(growable: false);
+    if (selectableIds.isEmpty) return;
+
+    setState(() {
+      if (widget.allowDuplicateSelection) {
+        final existing = _selectedIdsWithDuplicates.toSet();
+        final missing = selectableIds
+            .where((id) => !existing.contains(id))
+            .toList(growable: false);
+        if (missing.isEmpty) {
+          _selectedIdsWithDuplicates.removeWhere(selectableIds.contains);
+        } else {
+          _selectedIdsWithDuplicates.addAll(missing);
+        }
+      } else {
+        final allSelected = selectableIds.every(_selectedIds.contains);
+        if (allSelected) {
+          _selectedIds.removeAll(selectableIds);
+        } else {
+          _selectedIds.addAll(selectableIds);
+        }
+      }
+    });
+  }
+
   Future<void> _showZombieBlockedDialog(
     BuildContext context,
     _ZombieBlockedReason reason,
@@ -393,6 +422,16 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                   }
                 : null,
             child: const Icon(Icons.check),
+          )
+        : null;
+    final selectAll = widget.multiSelect
+        ? SelectionGridSelectAllButton(
+            label: l10n?.selectAll ?? 'Select ALL',
+            backgroundColor: themeColor,
+            foregroundColor: theme.colorScheme.surface,
+            onPressed: _isLoaded && zombies.isNotEmpty
+                ? () => _selectAllVisible(zombies)
+                : null,
           )
         : null;
 
@@ -515,6 +554,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
               itemCount: zombies.length,
               gridDelegate: gridDelegate,
               confirmation: confirmation,
+              selectAll: selectAll,
               builder: (context, gridPadding) => !_isLoaded
                   ? const Center(child: CircularProgressIndicator())
                   : zombies.isEmpty

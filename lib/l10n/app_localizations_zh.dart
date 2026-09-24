@@ -2197,6 +2197,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectPlant => '选择植物';
 
   @override
+  String get selectAll => '全选';
+
+  @override
   String get searchPlant => '搜索植物';
 
   @override

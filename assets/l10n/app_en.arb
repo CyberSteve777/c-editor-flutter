@@ -840,6 +840,7 @@
   "disablePeavine": "Disable Pea Vine's Pea Symbiosis",
   "disableArtifact": "Disable Artifact (auto-applied when Creative Courtyard module is enabled)",
   "selectPlant": "Select plant",
+  "selectAll": "Select ALL",
   "searchPlant": "Search plant",
   "noPlantFound": "No plant found",
   "noResultsFor": "No results for \"{query}\"",
