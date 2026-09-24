@@ -174,6 +174,47 @@
     "icon": "zombie_camel_onehump.webp"
   },
   {
+    "id": "camel_onehump_touch",
+    "name": "zombie_camel_onehump_touch",
+    "tags": [
+      "Egypt_Pirate",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_camel_onehump.webp"
+  },
+  {
+    "id": "camel_twohump_touch",
+    "name": "zombie_camel_twohump_touch",
+    "tags": [
+      "Egypt_Pirate",
+      "Evildave",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_camel_onehump.webp"
+  },
+  {
+    "id": "camel_manyhump_touch",
+    "name": "zombie_camel_manyhump_touch",
+    "tags": [
+      "Egypt_Pirate",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_camel_onehump.webp"
+  },
+  {
+    "id": "camel_segment_touch",
+    "name": "zombie_camel_segment_touch",
+    "tags": [
+      "Egypt_Pirate",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_camel_onehump.webp"
+  },
+  {
     "id": "pharaoh",
     "name": "zombie_pharaoh",
     "tags": [
@@ -1114,6 +1155,78 @@
       "Chinese"
     ],
     "icon": "zombie_zombie_towerdefend_boss.webp"
+  },
+  {
+    "id": "zombie_target_bottle",
+    "name": "zombie_target_bottle",
+    "tags": [
+      "Dark_Beach",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_dark.webp"
+  },
+  {
+    "id": "zombie_target_arrow_yellow",
+    "name": "zombie_target_arrow_yellow",
+    "tags": [
+      "Dark_Beach",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_dark.webp"
+  },
+  {
+    "id": "zombie_target_arrow_blue",
+    "name": "zombie_target_arrow_blue",
+    "tags": [
+      "Dark_Beach",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_dark.webp"
+  },
+  {
+    "id": "zombie_target_arrow_purple",
+    "name": "zombie_target_arrow_purple",
+    "tags": [
+      "Dark_Beach",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_dark.webp"
+  },
+  {
+    "id": "zombie_target_archmage",
+    "name": "zombie_target_archmage",
+    "tags": [
+      "Dark_Beach",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_dark_archmage.webp"
+  },
+  {
+    "id": "zombie_target_wizard",
+    "name": "zombie_target_wizard",
+    "tags": [
+      "Dark_Beach",
+      "Evildave",
+      "Basic",
+      "Pet",
+      "International"
+    ],
+    "icon": "zombie_dark_wizard.webp"
+  },
+  {
+    "id": "zombie_target_gargantuar",
+    "name": "zombie_target_gargantuar",
+    "tags": [
+      "Dark_Beach",
+      "Gargantuar",
+      "International"
+    ],
+    "icon": "zombie_dark_gargantuar.webp"
   },
   {
     "id": "beach",

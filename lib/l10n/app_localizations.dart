@@ -4066,6 +4066,96 @@ abstract class AppLocalizations {
   /// **'Wave Generator embeds waves directly and cannot be used with a separate Wave Manager container.'**
   String get conflictDesc_WaveGeneratorWaveManager;
 
+  /// No description provided for @conflictDesc_StatueMazeIncompatible.
+  ///
+  /// In en, this message translates to:
+  /// **'Statue Maze conflicts with {module}. Using them together will cause the game to work incorrectly. It is not recommended to use Statue Maze with {module}.'**
+  String conflictDesc_StatueMazeIncompatible(String module);
+
+  /// No description provided for @conflictDesc_CamelMinigameNonTouchZombies.
+  ///
+  /// In en, this message translates to:
+  /// **'Camel Minigame only works with camel touch zombies. Non-touch zombies were found in Wave Generator: {zombies}. Replace them with camel touch zombies to restore level functionality.'**
+  String conflictDesc_CamelMinigameNonTouchZombies(String zombies);
+
+  /// No description provided for @targetZombieWithoutOakTrainWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Target zombies (zombie_target_*) require the OakTrain module to function correctly. Using them without OakTrain will cause the game to work incorrectly.'**
+  String get targetZombieWithoutOakTrainWarning;
+
+  /// No description provided for @targetZombieRequiresOakTrain.
+  ///
+  /// In en, this message translates to:
+  /// **'Target zombies require the OakTrain module. Please add OakTrain to the level first.'**
+  String get targetZombieRequiresOakTrain;
+
+  /// No description provided for @targetZombieRequiresOakTrainDialog.
+  ///
+  /// In en, this message translates to:
+  /// **'This zombie requires the {module} module. Would you like to add it to the level?'**
+  String targetZombieRequiresOakTrainDialog(String module);
+
+  /// No description provided for @conflictDesc_CamelMinigameIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Camel Minigame conflicts with the Standard Level Intro module. They do not work correctly together. It is recommended to remove the Standard Level Intro module in favor of Camel Minigame, as it has its own built-in intro.'**
+  String get conflictDesc_CamelMinigameIntro;
+
+  /// No description provided for @targetZombieInWaveManagerWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Target zombies + Wave Manager'**
+  String get targetZombieInWaveManagerWarningTitle;
+
+  /// No description provided for @targetZombieInWaveManagerWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Target zombies (zombie_target_*) do not work correctly with Wave Manager. It is recommended to use Wave Generator with Rise from Ground mode enabled for full functionality of these zombies.'**
+  String get targetZombieInWaveManagerWarning;
+
+  /// No description provided for @camelMinigameWaveManagerHintTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Camel Minigame + Wave Manager'**
+  String get camelMinigameWaveManagerHintTitle;
+
+  /// No description provided for @camelMinigameWaveManagerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'After all camel touch zombies are destroyed in the final wave, the game will automatically finish the level by killing the remaining zombies. Keep this in mind when using Camel Minigame with Wave Manager.'**
+  String get camelMinigameWaveManagerHint;
+
+  /// No description provided for @oakTrainUnderwaterWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Oak Archer Headshots + underwater lawn'**
+  String get oakTrainUnderwaterWarningTitle;
+
+  /// No description provided for @oakTrainUnderwaterWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'The Oak Archer has no oxygen on underwater world lawns (including custom variants). It will automatically die and the level will be counted as a loss.'**
+  String get oakTrainUnderwaterWarning;
+
+  /// No description provided for @camelRiseFromGroundOnlyCamelTouch.
+  ///
+  /// In en, this message translates to:
+  /// **'Rise from ground only works with camel touch zombies. Other zombies cannot use this spawn mode in Camel Minigame.'**
+  String get camelRiseFromGroundOnlyCamelTouch;
+
+  /// No description provided for @waveGeneratorRiseFromGroundWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rise from Ground mode'**
+  String get waveGeneratorRiseFromGroundWarningTitle;
+
+  /// No description provided for @waveGeneratorRiseFromGroundWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Most zombies cannot move or use abilities in Rise from Ground mode. If a specific line is set without a spawn cell, zombies will always spawn on the first cell of the first line. Set random lines or choose spawn cells manually.'**
+  String get waveGeneratorRiseFromGroundWarning;
+
   /// No description provided for @missingPlantModuleWarningTitle.
   ///
   /// In en, this message translates to:
@@ -4372,6 +4462,12 @@ abstract class AppLocalizations {
   /// **'In order to select this plant, {moduleName} needs to be added.'**
   String plantModuleRequiredMessage(String moduleName);
 
+  /// No description provided for @zombieModuleRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'In order to select this zombie, {moduleName} needs to be added.'**
+  String zombieModuleRequiredMessage(String moduleName);
+
   /// No description provided for @realmExclusivePlantChooserBlockedTitle.
   ///
   /// In en, this message translates to:
@@ -4419,6 +4515,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The plants are still growing strong. Stay tuned for future updates!'**
   String get comingSoonPlantBlockedMessage;
+
+  /// No description provided for @stayTunedMoonZombieBlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get stayTunedMoonZombieBlockedLabel;
+
+  /// No description provided for @stayTunedMoonZombieBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get stayTunedMoonZombieBlockedTitle;
+
+  /// No description provided for @stayTunedMoonZombieBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon BaseZ Part 2 is coming soon. Keep a lookout!'**
+  String get stayTunedMoonZombieBlockedMessage;
 
   /// No description provided for @stayTunedTaleZCorpZombieBlockedLabel.
   ///
@@ -16167,6 +16281,84 @@ abstract class AppLocalizations {
   /// **'The initial random-spawn points exceed the current-wave increment and may cause the level to crash while loading.'**
   String get waveGeneratorSpendingCompatibilityWarning;
 
+  /// No description provided for @waveGeneratorSpawnColumns.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn column range for Rise-from-ground zombies'**
+  String get waveGeneratorSpawnColumns;
+
+  /// No description provided for @waveGeneratorRiseFromGround.
+  ///
+  /// In en, this message translates to:
+  /// **'Rise from ground mode'**
+  String get waveGeneratorRiseFromGround;
+
+  /// No description provided for @waveGeneratorRiseFromGroundHint.
+  ///
+  /// In en, this message translates to:
+  /// **'When enabled, zombies spawn by rising from the ground at specified grid positions instead of walking in from the right.'**
+  String get waveGeneratorRiseFromGroundHint;
+
+  /// No description provided for @waveGeneratorIgnoreFlagCarriers.
+  ///
+  /// In en, this message translates to:
+  /// **'Ignore flag carriers'**
+  String get waveGeneratorIgnoreFlagCarriers;
+
+  /// No description provided for @waveGeneratorIgnoreFlagCarriersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable automatic flag carrier zombies in random spawns.'**
+  String get waveGeneratorIgnoreFlagCarriersHint;
+
+  /// No description provided for @waveGeneratorWaveSpawnTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave spawn time (WaveSpawnTime)'**
+  String get waveGeneratorWaveSpawnTime;
+
+  /// No description provided for @waveGeneratorWaveSpawnTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay in seconds before this wave begins spawning after the previous wave finishes.'**
+  String get waveGeneratorWaveSpawnTimeHint;
+
+  /// No description provided for @waveGeneratorZombieTargetValidTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Target valid time (TargetValidTime)'**
+  String get waveGeneratorZombieTargetValidTime;
+
+  /// No description provided for @waveGeneratorZombieTargetValidTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration in seconds this zombie remains targetable by abilities.'**
+  String get waveGeneratorZombieTargetValidTimeHint;
+
+  /// No description provided for @waveGeneratorZombieRiseGridX.
+  ///
+  /// In en, this message translates to:
+  /// **'Rise grid X (Rise_GridX)'**
+  String get waveGeneratorZombieRiseGridX;
+
+  /// No description provided for @waveGeneratorZombieRiseGridXHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Column where this zombie rises from the ground. Use \'?\' for random.'**
+  String get waveGeneratorZombieRiseGridXHint;
+
+  /// No description provided for @waveGeneratorZombieRiseGridY.
+  ///
+  /// In en, this message translates to:
+  /// **'Rise grid Y (Rise_GridY)'**
+  String get waveGeneratorZombieRiseGridY;
+
+  /// No description provided for @waveGeneratorZombieRiseGridYHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Row where this zombie rises from the ground. Use \'?\' for random.'**
+  String get waveGeneratorZombieRiseGridYHint;
+
   /// No description provided for @waveGeneratorWaveCountSummary.
   ///
   /// In en, this message translates to:
@@ -18374,6 +18566,450 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pinch a zombie with two fingers like a pair of scissors to snip off its head and quickly remove the threat.'**
   String get powerPinchInfo;
+
+  /// No description provided for @moduleTitle_StatueMazeModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Statue Maze'**
+  String get moduleTitle_StatueMazeModuleProperties;
+
+  /// No description provided for @moduleDesc_StatueMazeModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Statue maze puzzle minigame where players tap correct statues in a rotating grid'**
+  String get moduleDesc_StatueMazeModuleProperties;
+
+  /// No description provided for @moduleHelpStatueMazeOverviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The Statue Maze module adds a rotating-grid puzzle minigame. Each set presents a grid of statues that spin, and the player must tap the correct ones before time runs out.'**
+  String get moduleHelpStatueMazeOverviewBody;
+
+  /// No description provided for @moduleHelpStatueMazeSetsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Each set defines one puzzle round. You can add multiple rounds with different grid sizes, time limits, and target counts.'**
+  String get moduleHelpStatueMazeSetsBody;
+
+  /// No description provided for @moduleHelpStatueMazeTilesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Type \"c\" is a correct tile the player should tap. Type \"ac\" is an all-correct target tile. WaitDuration is how long tiles pause between spins, and RotateTime is the duration of each rotation.'**
+  String get moduleHelpStatueMazeTilesBody;
+
+  /// No description provided for @statueMazeSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set {index}'**
+  String statueMazeSet(int index);
+
+  /// No description provided for @statueMazeMatrixSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid size (MatrixSize)'**
+  String get statueMazeMatrixSize;
+
+  /// No description provided for @statueMazeDisplayTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Display time (seconds)'**
+  String get statueMazeDisplayTime;
+
+  /// No description provided for @statueMazeTargetNum.
+  ///
+  /// In en, this message translates to:
+  /// **'Target count (TargetNum)'**
+  String get statueMazeTargetNum;
+
+  /// No description provided for @statueMazeBonusLife.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus life (BonusLife)'**
+  String get statueMazeBonusLife;
+
+  /// No description provided for @statueMazeTileType.
+  ///
+  /// In en, this message translates to:
+  /// **'Tile type'**
+  String get statueMazeTileType;
+
+  /// No description provided for @statueMazeTileTypeCorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct (c)'**
+  String get statueMazeTileTypeCorrect;
+
+  /// No description provided for @statueMazeTileTypeAllCorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'All-correct (ac)'**
+  String get statueMazeTileTypeAllCorrect;
+
+  /// No description provided for @statueMazeWaitDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait duration (seconds)'**
+  String get statueMazeWaitDuration;
+
+  /// No description provided for @statueMazeRotateTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate time (seconds)'**
+  String get statueMazeRotateTime;
+
+  /// No description provided for @statueMazeAddSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add set'**
+  String get statueMazeAddSet;
+
+  /// No description provided for @statueMazeRemoveSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove set'**
+  String get statueMazeRemoveSet;
+
+  /// No description provided for @statueMazeAddTile.
+  ///
+  /// In en, this message translates to:
+  /// **'Add tile'**
+  String get statueMazeAddTile;
+
+  /// No description provided for @statueMazeRemoveTile.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove tile'**
+  String get statueMazeRemoveTile;
+
+  /// No description provided for @statueMazeTiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Tiles'**
+  String get statueMazeTiles;
+
+  /// No description provided for @statueMazeSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets'**
+  String get statueMazeSets;
+
+  /// No description provided for @statueMazeRotations.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotations'**
+  String get statueMazeRotations;
+
+  /// No description provided for @statueMazeGridSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid size'**
+  String get statueMazeGridSize;
+
+  /// No description provided for @statueMazeNoRotations.
+  ///
+  /// In en, this message translates to:
+  /// **'No rotations added'**
+  String get statueMazeNoRotations;
+
+  /// No description provided for @statueMazePlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Play rotation'**
+  String get statueMazePlay;
+
+  /// No description provided for @statueMazePlaying.
+  ///
+  /// In en, this message translates to:
+  /// **'Playing...'**
+  String get statueMazePlaying;
+
+  /// No description provided for @statueMazeStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get statueMazeStop;
+
+  /// No description provided for @moduleHelpStatueMazeRotationsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Each rotation step spins the entire grid. \"c\" is clockwise, \"ac\" is anti-clockwise. WaitDuration is the pause before the rotation starts, RotateTime is how long the spin takes.'**
+  String get moduleHelpStatueMazeRotationsBody;
+
+  /// No description provided for @statueMazeRotationsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap arrow to change direction. Tap card to edit wait & rotate time. Long-press to delete.'**
+  String get statueMazeRotationsHint;
+
+  /// No description provided for @statueMazeRemoveRotationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this rotation step?'**
+  String get statueMazeRemoveRotationConfirm;
+
+  /// No description provided for @moduleTitle_CamelMinigameProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Camel Card Match'**
+  String get moduleTitle_CamelMinigameProperties;
+
+  /// No description provided for @moduleDesc_CamelMinigameProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Camel card matching minigame where players flip cards to find matching pairs'**
+  String get moduleDesc_CamelMinigameProperties;
+
+  /// No description provided for @moduleHelpCamelOverviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The Camel Card Match minigame places chains of camel cards on the lawn. Zombies emerge from the ground and the player must flip cards to find matching pairs before time runs out.'**
+  String get moduleHelpCamelOverviewBody;
+
+  /// No description provided for @moduleHelpCamelTimingsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'CardMatchTime is the delay after a successful match. CardMatchingTime is the flip animation duration. CardNoMatchTime is the idle time after a failed match or a single card flip.'**
+  String get moduleHelpCamelTimingsBody;
+
+  /// No description provided for @moduleHelpCamelSpawningBody.
+  ///
+  /// In en, this message translates to:
+  /// **'MinSpawnXStart / MinSpawnXEnd define the horizontal range where new card chains can appear. MaxSpawnX is the rightmost spawn coordinate (column 1 = 0). AdditionalXBufferBetweenChains pushes subsequent chains further right if a zombie occupies the spot.'**
+  String get moduleHelpCamelSpawningBody;
+
+  /// No description provided for @camelAdditionalXBuffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Chain X buffer (AdditionalXBufferBetweenChains)'**
+  String get camelAdditionalXBuffer;
+
+  /// No description provided for @camelRiseStagger.
+  ///
+  /// In en, this message translates to:
+  /// **'Rise stagger between camels (seconds)'**
+  String get camelRiseStagger;
+
+  /// No description provided for @camelCardMatchTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Match success delay (CardMatchTime, s)'**
+  String get camelCardMatchTime;
+
+  /// No description provided for @camelCardMatchingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Flip animation time (CardMatchingTime, s)'**
+  String get camelCardMatchingTime;
+
+  /// No description provided for @camelCardNoMatchTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Mismatch idle time (CardNoMatchTime, s)'**
+  String get camelCardNoMatchTime;
+
+  /// No description provided for @camelCardTypesUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Card types (1-7)'**
+  String get camelCardTypesUsed;
+
+  /// No description provided for @camelTutorialRiseDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutorial zombie rise delay (s)'**
+  String get camelTutorialRiseDelay;
+
+  /// No description provided for @camelMaxSpawnX.
+  ///
+  /// In en, this message translates to:
+  /// **'Max spawn X'**
+  String get camelMaxSpawnX;
+
+  /// No description provided for @camelMinSpawnXEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Min spawn X end'**
+  String get camelMinSpawnXEnd;
+
+  /// No description provided for @camelMinSpawnXStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Min spawn X start'**
+  String get camelMinSpawnXStart;
+
+  /// No description provided for @camelShowTutorial.
+  ///
+  /// In en, this message translates to:
+  /// **'Show tutorial'**
+  String get camelShowTutorial;
+
+  /// No description provided for @moduleTitle_OakTrainProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Oak Archer Headshots'**
+  String get moduleTitle_OakTrainProperties;
+
+  /// No description provided for @moduleDesc_OakTrainProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Oak archer shooting minigame where the player headshots waves of incoming enemies'**
+  String get moduleDesc_OakTrainProperties;
+
+  /// No description provided for @moduleHelpOakTrainOverviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The Oak Archer Headshots minigame places an oak archer on the lawn. Waves of enemies approach and the player must score points by defeating them. The archer has a total HP pool; healing potions and power-up arrows are replenished on a timer.'**
+  String get moduleHelpOakTrainOverviewBody;
+
+  /// No description provided for @moduleHelpOakTrainScoresBody.
+  ///
+  /// In en, this message translates to:
+  /// **'ArrowScore is the base attack score. WizardScore, ArchmageScore, and BossScore are bonus points for defeating specific enemy types.'**
+  String get moduleHelpOakTrainScoresBody;
+
+  /// No description provided for @moduleHelpOakTrainArrowsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'ArrowPowerNum is the number of power arrows replenished per cycle. ArrowMultipleNum is the number of split arrows replenished per cycle. HealNum is the amount restored by a health potion.'**
+  String get moduleHelpOakTrainArrowsBody;
+
+  /// No description provided for @oakTrainTotalLife.
+  ///
+  /// In en, this message translates to:
+  /// **'Total HP (TotalLife)'**
+  String get oakTrainTotalLife;
+
+  /// No description provided for @oakTrainArrowScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Base attack score (ArrowScore)'**
+  String get oakTrainArrowScore;
+
+  /// No description provided for @oakTrainWizardScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Wizard kill score (WizardScore)'**
+  String get oakTrainWizardScore;
+
+  /// No description provided for @oakTrainArchmageScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Archmage kill score (ArchmageScore)'**
+  String get oakTrainArchmageScore;
+
+  /// No description provided for @oakTrainBossScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Boss kill score (BossScore)'**
+  String get oakTrainBossScore;
+
+  /// No description provided for @oakTrainHealNum.
+  ///
+  /// In en, this message translates to:
+  /// **'Health potion amount (HealNum)'**
+  String get oakTrainHealNum;
+
+  /// No description provided for @oakTrainArrowPowerNum.
+  ///
+  /// In en, this message translates to:
+  /// **'Power arrows per cycle (ArrowPowerNum)'**
+  String get oakTrainArrowPowerNum;
+
+  /// No description provided for @oakTrainArrowMultipleNum.
+  ///
+  /// In en, this message translates to:
+  /// **'Split arrows per cycle (ArrowMultipleNum)'**
+  String get oakTrainArrowMultipleNum;
+
+  /// No description provided for @oakTrainInitArrowsNum.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial arrow counts (Normal, Power, Split)'**
+  String get oakTrainInitArrowsNum;
+
+  /// No description provided for @oakTrainInitArrowNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal arrows'**
+  String get oakTrainInitArrowNormal;
+
+  /// No description provided for @oakTrainInitArrowPower.
+  ///
+  /// In en, this message translates to:
+  /// **'Power arrows'**
+  String get oakTrainInitArrowPower;
+
+  /// No description provided for @oakTrainInitArrowSplit.
+  ///
+  /// In en, this message translates to:
+  /// **'Split arrows'**
+  String get oakTrainInitArrowSplit;
+
+  /// No description provided for @oakTrainInitArrowUnused.
+  ///
+  /// In en, this message translates to:
+  /// **'Unused'**
+  String get oakTrainInitArrowUnused;
+
+  /// No description provided for @moduleTitle_OakTrainIntroProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Oak Archer Tutorial'**
+  String get moduleTitle_OakTrainIntroProperties;
+
+  /// No description provided for @moduleDesc_OakTrainIntroProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Intro animation for the Oak Archer Headshots minigame'**
+  String get moduleDesc_OakTrainIntroProperties;
+
+  /// No description provided for @moduleTitle_GoldRoadProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Gold Road (Unsodded)'**
+  String get moduleTitle_GoldRoadProperties;
+
+  /// No description provided for @moduleDesc_GoldRoadProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost City minigame where the first and last rows are blocked for planting'**
+  String get moduleDesc_GoldRoadProperties;
+
+  /// No description provided for @goldRoadNonLostCityLawnWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-Lost City Lawn'**
+  String get goldRoadNonLostCityLawnWarningTitle;
+
+  /// No description provided for @goldRoadNonLostCityLawnWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Gold Road (Unsodded) is designed for the Lost City lawn. Using it on other lawns is not recommended, as it will negatively affect the level\'s visual appearance.'**
+  String get goldRoadNonLostCityLawnWarning;
+
+  /// No description provided for @goldRoadDeepseaLawnWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Incompatible Lawn'**
+  String get goldRoadDeepseaLawnWarningTitle;
+
+  /// No description provided for @goldRoadDeepseaLawnWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Gold Road (Unsodded) does not work correctly with Deepsea lawns. It will block the 1st and 5th rows instead of the 1st and last rows.'**
+  String get goldRoadDeepseaLawnWarning;
+
+  /// No description provided for @goldRoadCustomLostCityLawnWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-Native Lost City Lawn'**
+  String get goldRoadCustomLostCityLawnWarningTitle;
+
+  /// No description provided for @goldRoadCustomLostCityLawnWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Gold Road (Unsodded) is designed for the native Lost City lawn. Your level uses a custom lawn with Lost City resources. This may still affect the level\'s visual appearance. Use this module with caution.'**
+  String get goldRoadCustomLostCityLawnWarning;
 }
 
 class _AppLocalizationsDelegate

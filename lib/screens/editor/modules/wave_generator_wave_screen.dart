@@ -48,6 +48,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
   late TextEditingController _pointStartCtrl;
   late TextEditingController _pointIncrementCtrl;
   late TextEditingController _blackHoleCtrl;
+  late TextEditingController _waveSpawnTimeCtrl;
   Map<int, int?> _zombieLevels = {};
   bool _zombieDragging = false;
   _WaveGeneratorWaveSection? _activeSection;
@@ -176,9 +177,17 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     }
 
     final isEliteNew = ZombieRepository().isElite(selected);
+    final current = _wave.zombies[index];
     _updateZombie(
       index,
-      WaveGeneratorZombieEntryData(type: rtid, row: currentRow),
+      WaveGeneratorZombieEntryData(
+        type: rtid,
+        row: currentRow,
+        level: current.level,
+        targetValidTime: current.targetValidTime,
+        riseGridX: current.riseGridX,
+        riseGridY: current.riseGridY,
+      ),
       level: isEliteNew ? null : (levelValue == 0 ? null : levelValue),
       replaceLevel: true,
     );
@@ -289,6 +298,9 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     _blackHoleCtrl = TextEditingController(
       text: _wave.colNumPlantIsDragged?.toString() ?? '',
     );
+    _waveSpawnTimeCtrl = TextEditingController(
+      text: _wave.waveSpawnTime?.toString() ?? '',
+    );
   }
 
   @override
@@ -297,6 +309,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     _pointStartCtrl.dispose();
     _pointIncrementCtrl.dispose();
     _blackHoleCtrl.dispose();
+    _waveSpawnTimeCtrl.dispose();
     super.dispose();
   }
 
@@ -376,6 +389,10 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
       waveSpendingPoints: _generatorData.waveSpendingPoints,
       waveSpendingPointIncrement: _generatorData.waveSpendingPointIncrement,
       waves: waves,
+      isRiseFromGroundMode: _generatorData.isRiseFromGroundMode,
+      ignoreFlagCarriers: _generatorData.ignoreFlagCarriers,
+      spawnColStart: _generatorData.spawnColStart,
+      spawnColEnd: _generatorData.spawnColEnd,
     );
     _generatorData.syncWaveCount();
     allLevels[idx] = _normalizedCurrentWaveLevels();
@@ -409,10 +426,12 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
     bool? wavePointOverride,
     int? colNumPlantIsDragged,
     bool? waitUntilAllZombiesDie,
+    num? waveSpawnTime,
     bool clearSpawnPlantFood = false,
     bool clearWavePointStart = false,
     bool clearWavePointIncrement = false,
     bool clearColNumPlantIsDragged = false,
+    bool clearWaveSpawnTime = false,
   }) {
     return WaveGeneratorWaveData(
       disableRandomSpawns: disableRandomSpawns ?? _wave.disableRandomSpawns,
@@ -433,6 +452,9 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
           : (colNumPlantIsDragged ?? _wave.colNumPlantIsDragged),
       waitUntilAllZombiesDie:
           waitUntilAllZombiesDie ?? _wave.waitUntilAllZombiesDie,
+      waveSpawnTime: clearWaveSpawnTime
+          ? null
+          : (waveSpawnTime ?? _wave.waveSpawnTime),
     );
   }
 
@@ -1177,6 +1199,20 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                 _sync();
               },
             ),
+            const SizedBox(height: 12),
+            _buildLabeledNumberField(
+              controller: _waveSpawnTimeCtrl,
+              label:
+                  l10n?.waveGeneratorWaveSpawnTime ??
+                  'Wave spawn time (WaveSpawnTime)',
+              onChanged: (value) {
+                final trimmed = value.trim();
+                _wave = trimmed.isEmpty
+                    ? _copyWave(clearWaveSpawnTime: true)
+                    : _copyWave(waveSpawnTime: num.tryParse(trimmed));
+                _sync();
+              },
+            ),
           ],
         ),
       ),
@@ -1278,6 +1314,112 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildZombieEditSheetFields(
+    BuildContext ctx,
+    int index,
+    WaveGeneratorZombieEntryData zombie,
+    StateSetter setModalState,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    final alias = _zombieBaseId(zombie.type);
+    final isTargetZombie = alias.startsWith('zombie_target_arrow') ||
+        alias.startsWith('zombie_target_bottle');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (isTargetZombie)
+          TextFormField(
+            initialValue: zombie.targetValidTime?.toString() ?? '',
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              labelText:
+                  l10n?.waveGeneratorZombieTargetValidTime ??
+                  'Target valid time (TargetValidTime)',
+              helperText: l10n?.waveGeneratorZombieTargetValidTimeHint,
+              helperMaxLines: 3,
+            ),
+            keyboardType: TextInputType.number,
+            onChanged: (v) {
+              final parsed = int.tryParse(v.trim());
+              final current = _wave.zombies[index];
+              _updateZombie(
+                index,
+                WaveGeneratorZombieEntryData(
+                  type: current.type,
+                  row: current.row,
+                  level: current.level,
+                  targetValidTime: parsed,
+                  riseGridX: current.riseGridX,
+                  riseGridY: current.riseGridY,
+                ),
+              );
+            },
+          ),
+        const SizedBox(height: 12),
+        if (_generatorData.isRiseFromGroundMode)
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  initialValue: zombie.riseGridX ?? '',
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText:
+                        l10n?.waveGeneratorZombieRiseGridX ??
+                        'Rise GridX (Rise_GridX)',
+                    helperText: l10n?.waveGeneratorZombieRiseGridXHint,
+                    helperMaxLines: 3,
+                  ),
+                  onChanged: (v) {
+                    final current = _wave.zombies[index];
+                    _updateZombie(
+                      index,
+                      WaveGeneratorZombieEntryData(
+                        type: current.type,
+                        row: current.row,
+                        level: current.level,
+                        targetValidTime: current.targetValidTime,
+                        riseGridX: v.isEmpty ? null : v,
+                        riseGridY: current.riseGridY,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextFormField(
+                  initialValue: zombie.riseGridY ?? '',
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText:
+                        l10n?.waveGeneratorZombieRiseGridY ??
+                        'Rise GridY (Rise_GridY)',
+                    helperText: l10n?.waveGeneratorZombieRiseGridYHint,
+                    helperMaxLines: 3,
+                  ),
+                  onChanged: (v) {
+                    final current = _wave.zombies[index];
+                    _updateZombie(
+                      index,
+                      WaveGeneratorZombieEntryData(
+                        type: current.type,
+                        row: current.row,
+                        level: current.level,
+                        targetValidTime: current.targetValidTime,
+                        riseGridX: current.riseGridX,
+                        riseGridY: v.isEmpty ? null : v,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+      ],
     );
   }
 
@@ -1423,6 +1565,8 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                         ),
                     ],
                     const SizedBox(height: 12),
+                    _buildZombieEditSheetFields(ctx, index, zombie, setModalState),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
@@ -1432,6 +1576,9 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                               final copy = WaveGeneratorZombieEntryData(
                                 type: zombie.type,
                                 row: rowStr,
+                                targetValidTime: zombie.targetValidTime,
+                                riseGridX: zombie.riseGridX,
+                                riseGridY: zombie.riseGridY,
                               );
                               final newIndex = _wave.zombies.length;
                               _setZombieLevelInMemory(

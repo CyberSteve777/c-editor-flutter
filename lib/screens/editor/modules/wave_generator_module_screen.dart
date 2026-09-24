@@ -42,6 +42,8 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
   late TextEditingController _flagIntervalCtrl;
   late TextEditingController _spendingPointsCtrl;
   late TextEditingController _spendingIncrementCtrl;
+  late TextEditingController _spawnColStartCtrl;
+  late TextEditingController _spawnColEndCtrl;
 
   @override
   void initState() {
@@ -64,6 +66,12 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
     );
     _spendingIncrementCtrl = TextEditingController(
       text: '${_data.waveSpendingPointIncrement}',
+    );
+    _spawnColStartCtrl = TextEditingController(
+      text: _data.spawnColStart?.toString() ?? '',
+    );
+    _spawnColEndCtrl = TextEditingController(
+      text: _data.spawnColEnd?.toString() ?? '',
     );
   }
 
@@ -213,6 +221,10 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
         waveSpendingPoints: _data.waveSpendingPoints,
         waveSpendingPointIncrement: _data.waveSpendingPointIncrement,
         waves: _data.waves,
+        isRiseFromGroundMode: _data.isRiseFromGroundMode,
+        ignoreFlagCarriers: _data.ignoreFlagCarriers,
+        spawnColStart: _data.spawnColStart,
+        spawnColEnd: _data.spawnColEnd,
       );
       _sync();
     });
@@ -228,6 +240,10 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
       waveSpendingPoints: _data.waveSpendingPoints,
       waveSpendingPointIncrement: _data.waveSpendingPointIncrement,
       waves: _data.waves,
+      isRiseFromGroundMode: _data.isRiseFromGroundMode,
+      ignoreFlagCarriers: _data.ignoreFlagCarriers,
+      spawnColStart: _data.spawnColStart,
+      spawnColEnd: _data.spawnColEnd,
     );
     _sync();
   }
@@ -253,6 +269,8 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
     _flagIntervalCtrl.dispose();
     _spendingPointsCtrl.dispose();
     _spendingIncrementCtrl.dispose();
+    _spawnColStartCtrl.dispose();
+    _spawnColEndCtrl.dispose();
     super.dispose();
   }
 
@@ -487,6 +505,99 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
                             ],
                           ),
                         ),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    SwitchListTile(
+                      title: Text(l10n?.waveGeneratorRiseFromGround ?? 'Rise from ground mode'),
+                      subtitle: Text(
+                        l10n?.waveGeneratorRiseFromGroundHint ?? 'IsRiseFromGroundMode',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      value: _data.isRiseFromGroundMode,
+                      onChanged: (v) {
+                        _data.isRiseFromGroundMode = v;
+                        _sync();
+                      },
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    if (_data.isRiseFromGroundMode) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF9A825),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.warning_amber_rounded,
+                              size: 20,
+                              color: Color(0xFF3E2723),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                l10n?.waveGeneratorRiseFromGroundWarning ??
+                                    'Most zombies cannot move or use abilities '
+                                        'in Rise from Ground mode. If a specific '
+                                        'line is set without a spawn cell, zombies '
+                                        'will always spawn on the first cell of '
+                                        'the first line. Set random lines or '
+                                        'choose spawn cells manually.',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: const Color(0xFF3E2723),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    if (_data.isRiseFromGroundMode) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        l10n?.waveGeneratorSpawnColumns ?? 'Spawn columns',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        softWrap: true,
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _spawnColStartCtrl,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'SpawnColStart',
+                              ),
+                              keyboardType: TextInputType.number,
+                              onChanged: (v) {
+                                _data.spawnColStart = int.tryParse(v);
+                                _sync();
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _spawnColEndCtrl,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'SpawnColEnd',
+                              ),
+                              keyboardType: TextInputType.number,
+                              onChanged: (v) {
+                                _data.spawnColEnd = int.tryParse(v);
+                                _sync();
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                     const SizedBox(height: 8),

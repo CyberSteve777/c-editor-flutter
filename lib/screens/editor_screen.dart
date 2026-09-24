@@ -18,6 +18,7 @@ import 'package:c_editor/data/models/custom_stage_preset.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
+import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
@@ -34,6 +35,9 @@ import 'package:c_editor/screens/editor/others/unknown_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/star_challenge_screen.dart';
 import 'package:c_editor/screens/editor/modules/max_sun_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/moon_expert_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/statue_maze_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/camel_minigame_screen.dart';
+import 'package:c_editor/screens/editor/modules/oak_train_screen.dart';
 import 'package:c_editor/screens/editor/modules/rift_theme_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/bowling_minigame_screen.dart';
 import 'package:c_editor/screens/editor/modules/death_hole_module_screen.dart';
@@ -236,6 +240,252 @@ class _EditorScreenState extends State<EditorScreen> {
     if (leave && mounted) widget.onBack();
   }
 
+  static const _internalTagToModule = <String, String>{
+    '_internal_copycats': 'PVZ1CopycatsModuleProperties',
+  };
+
+  Set<String> _levelModuleObjClasses() {
+    if (_ec.state.levelFile == null || _ec.state.parsedData == null) return {};
+    final levelDef = _ec.state.parsedData!.levelDef;
+    if (levelDef == null) return {};
+    final objectMap = _ec.state.parsedData!.objectMap;
+    final set = <String>{};
+    for (final rtid in levelDef.modules) {
+      final info = RtidParser.parse(rtid);
+      if (info == null) continue;
+      if (info.source == 'CurrentLevel') {
+        final obj = objectMap[info.alias];
+        if (obj != null) set.add(obj.objClass);
+      } else if (info.source == 'LevelModules') {
+        set.add(info.alias);
+      }
+    }
+    return set;
+  }
+
+  void _collectPlantIdsFromDynamic(dynamic data, Set<String> out) {
+    if (data is Map) {
+      for (final entry in data.entries) {
+        final k = entry.key as String;
+        final v = entry.value;
+        if (k == 'PresetPlantList' ||
+            k == 'PlantWhiteList' ||
+            k == 'PlantBlackList') {
+          if (v is List) {
+            for (final e in v) {
+              if (e is String && e.isNotEmpty) out.add(e);
+            }
+          }
+        } else if (k == 'PlantMap' && v is Map) {
+          for (final key in v.keys) {
+            if (key is String && key.isNotEmpty) out.add(key);
+          }
+        } else if (k == 'InitialPlantList' && v is List) {
+          for (final e in v) {
+            if (e is Map) {
+              final pt = e['PlantType'];
+              if (pt is String && pt.isNotEmpty) out.add(pt);
+            }
+          }
+        } else if ((k == 'InitialPlantPlacements' || k == 'Placements') &&
+            v is List) {
+          for (final e in v) {
+            if (e is Map) {
+              final tn = e['TypeName'];
+              if (tn is String && tn.isNotEmpty) out.add(tn);
+            }
+          }
+        } else if (k == 'Plants' && v is List) {
+          for (final e in v) {
+            if (e is Map) {
+              final pt = e['PlantType'];
+              if (pt is String && pt.isNotEmpty) out.add(pt);
+              final pts = e['PlantTypes'];
+              if (pts is List) {
+                for (final p in pts) {
+                  if (p is String && p.isNotEmpty) out.add(p);
+                }
+              }
+            }
+          }
+        } else if (k == 'Vases' && v is List) {
+          for (final e in v) {
+            if (e is Map) {
+              final ptn = e['PlantTypeName'];
+              if (ptn is String && ptn.isNotEmpty) out.add(ptn);
+            }
+          }
+        } else if (k == 'SeedRains' && v is List) {
+          for (final e in v) {
+            if (e is Map) {
+              final ptn = e['PlantTypeName'];
+              if (ptn is String && ptn.isNotEmpty) out.add(ptn);
+            }
+          }
+        } else if (k == 'SpawnPlantName') {
+          if (v is List) {
+            for (final p in v) {
+              if (p is String && p.isNotEmpty) out.add(p);
+            }
+          } else if (v is String && v.isNotEmpty) {
+            out.add(v);
+          }
+        } else if ((k == 'PlantTypeName' || k == 'MatchTypeName') &&
+            v is String &&
+            v.isNotEmpty) {
+          out.add(v);
+        }
+        _collectPlantIdsFromDynamic(v, out);
+      }
+    } else if (data is List) {
+      for (final e in data) {
+        _collectPlantIdsFromDynamic(e, out);
+      }
+    }
+  }
+
+  Set<String> _collectPlantIdsInLevel() {
+    if (_ec.state.levelFile == null) return {};
+    final out = <String>{};
+    for (final obj in _ec.state.levelFile!.objects) {
+      final data = obj.objData;
+      if (data is Map<String, dynamic>) {
+        _collectPlantIdsFromDynamic(data, out);
+      }
+    }
+    return out;
+  }
+
+  /// Returns map: module objClass -> list of plant IDs that need this module but it's missing.
+  Map<String, List<String>> _getMissingModuleWarnings() {
+    if (_ec.state.levelFile == null || _ec.state.parsedData == null) return {};
+    final levelModules = _levelModuleObjClasses();
+    final plantIds = _collectPlantIdsInLevel();
+    final repo = PlantRepository();
+    final warnings = <String, Set<String>>{};
+    for (final plantId in plantIds) {
+      final info = repo.getPlantInfoById(plantId);
+      if (info == null) continue;
+      for (final entry in _internalTagToModule.entries) {
+        if (!info.hasInternalTag(entry.key)) continue;
+        final moduleClass = entry.value;
+        if (levelModules.contains(moduleClass)) continue;
+        warnings.putIfAbsent(moduleClass, () => {}).add(plantId);
+      }
+    }
+    return warnings.map((k, v) => MapEntry(k, v.toList()..sort()));
+  }
+
+  List<ModuleMetadata> _calculateMissingModules() {
+    if (_ec.state.levelFile == null || _ec.state.parsedData == null) {
+      return const [];
+    }
+    final existingClasses = <String>{
+      ..._ec.state.levelFile!.objects.map((o) => o.objClass),
+      ...?_ec.state.parsedData!.levelDef?.modules.map((rtid) {
+        final info = RtidParser.parse(rtid);
+        if (info == null) return '';
+        if (info.source == 'CurrentLevel') {
+          return _ec.state.parsedData!.objectMap[info.alias]?.objClass ?? '';
+        }
+        return ReferenceRepository.instance.getObjClass(info.alias) ?? '';
+      }),
+    }.where((e) => e.isNotEmpty).toSet();
+
+    final isVaseBreaker =
+        existingClasses.contains('VaseBreakerPresetProperties') ||
+        existingClasses.contains('VaseBreakerArcadeModuleProperties') ||
+        existingClasses.contains('VaseBreakerFlowModuleProperties');
+    final isZombossMechBattle =
+        existingClasses.contains('ZombossBattleModuleProperties') ||
+        existingClasses.contains('ZombossBattleIntroProperties');
+    final isZombossBattle = existingClasses.contains(
+      'ZombossLastStandMinigameProperties',
+    );
+    final isLastStand = existingClasses.contains('LastStandMinigameProperties');
+    final isCowboyMinigame = existingClasses.contains(
+      'CowboyMinigameProperties',
+    );
+    final isSingleHanded = existingClasses.contains('SingleHandedProperties');
+    final isSingleHandedTutorial = existingClasses.contains(
+      'IntroSingleHandedProperties',
+    );
+    final isEvilDave = existingClasses.contains('EvilDaveProperties');
+
+    final missingList = <String>[];
+    if (!existingClasses.contains('CustomLevelModuleProperties')) {
+      missingList.add('CustomLevelModuleProperties');
+    }
+    if (!existingClasses.contains('ZombiesAteYourBrainsProperties')) {
+      if (!isEvilDave) missingList.add('ZombiesAteYourBrainsProperties');
+    }
+    if (!existingClasses.contains('ZombiesDeadWinConProperties') &&
+        !existingClasses.contains('BronzeDeadWinConProperties')) {
+      if (!isEvilDave &&
+          !isZombossMechBattle &&
+          !isZombossBattle &&
+          !existingClasses.contains('PVZ1SeeingStarsModuleProperties')) {
+        missingList.add('ZombiesDeadWinConProperties');
+      }
+    }
+    if (!existingClasses.contains('StandardLevelIntroProperties')) {
+      if (!isVaseBreaker &&
+          !isLastStand &&
+          !isCowboyMinigame &&
+          !isSingleHanded &&
+          !isSingleHandedTutorial &&
+          !isZombossMechBattle &&
+          !isZombossBattle &&
+          !existingClasses.contains('CamelMinigameProperties')) {
+        missingList.add('StandardLevelIntroProperties');
+      }
+    }
+    if (isVaseBreaker) {
+      if (!existingClasses.contains('VaseBreakerPresetProperties')) {
+        missingList.add('VaseBreakerPresetProperties');
+      }
+      if (!existingClasses.contains('VaseBreakerArcadeModuleProperties')) {
+        missingList.add('VaseBreakerArcadeModuleProperties');
+      }
+      if (!existingClasses.contains('VaseBreakerFlowModuleProperties')) {
+        missingList.add('VaseBreakerFlowModuleProperties');
+      }
+    }
+    if (isEvilDave) {
+      if (!existingClasses.contains('InitialPlantEntryProperties')) {
+        missingList.add('InitialPlantEntryProperties');
+      }
+      if (!existingClasses.contains('SeedBankProperties')) {
+        missingList.add('SeedBankProperties');
+      }
+    }
+    if (isZombossMechBattle) {
+      if (!existingClasses.contains('ZombossBattleModuleProperties')) {
+        missingList.add('ZombossBattleModuleProperties');
+      }
+      if (!existingClasses.contains('ZombossBattleIntroProperties')) {
+        missingList.add('ZombossBattleIntroProperties');
+      }
+    }
+    if (isZombossBattle) {
+      if (!existingClasses.contains('ZombossLastStandMinigameProperties')) {
+        missingList.add('ZombossLastStandMinigameProperties');
+      }
+    }
+    if (isLastStand) {
+      if (!existingClasses.contains('SeedBankProperties')) {
+        missingList.add('SeedBankProperties');
+      }
+    }
+    final metas = missingList
+        .map((cls) => ModuleRegistry.getMetadata(cls))
+        .where((m) {
+          return m.titleKey != ModuleRegistry.defaultMetadataKey;
+        })
+        .toList();
+    return metas;
+  }
+
   void _openGlacierModuleSettings() {
     final levelFile = _ec.state.levelFile;
     final parsed = _ec.state.parsedData;
@@ -282,6 +532,10 @@ class _EditorScreenState extends State<EditorScreen> {
                 builder: (_) => ZombieSelectionScreen(
                   stateBucketId: _selectionStateBucketId,
                   editorCubit: _ec,
+                  levelFile: _ec.state.levelFile,
+                  onAddModule: (objClass) {
+                    _addModule(ModuleRegistry.getMetadata(objClass));
+                  },
                   multiSelect: false,
                   onZombieSelected: (id) {
                     Navigator.pop(context);
@@ -1018,6 +1272,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1054,6 +1312,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1092,6 +1354,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1128,6 +1394,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1223,6 +1493,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1317,6 +1591,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1376,6 +1654,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1435,6 +1717,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1521,6 +1807,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1559,6 +1849,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -1707,6 +2001,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -2048,6 +2346,10 @@ class _EditorScreenState extends State<EditorScreen> {
         builder: (_) => ZombieSelectionScreen(
           stateBucketId: _selectionStateBucketId,
           editorCubit: _ec,
+          levelFile: _ec.state.levelFile,
+          onAddModule: (objClass) {
+            _addModule(ModuleRegistry.getMetadata(objClass));
+          },
           multiSelect: false,
           onZombieSelected: (id) {
             Navigator.pop(context);
@@ -2445,6 +2747,48 @@ class _EditorScreenState extends State<EditorScreen> {
     }
 
     // Check if we have a specific screen for this module
+    if (objClass == 'StatueMazeModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => StatueMazeModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (objClass == 'CamelMinigameProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CamelMinigameScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (objClass == 'OakTrainProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OakTrainScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
     if (objClass == 'StarChallengeModuleProperties') {
       Navigator.push(
         context,
@@ -2538,6 +2882,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: true,
                     onZombieSelected: (_) {},
                     onMultiZombieSelected: (ids) {
@@ -2571,6 +2919,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);
@@ -2679,8 +3031,7 @@ class _EditorScreenState extends State<EditorScreen> {
       );
       return;
     }
-    if (info.source == 'CurrentLevel' &&
-        objClass == 'PVZ1SeeingStarsModuleProperties') {
+    if (objClass == 'PVZ1SeeingStarsModuleProperties') {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -3031,6 +3382,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: true,
                     onZombieSelected: (_) {},
                     onMultiZombieSelected: (ids) {
@@ -3243,6 +3598,10 @@ class _EditorScreenState extends State<EditorScreen> {
                   builder: (_) => ZombieSelectionScreen(
                     stateBucketId: _selectionStateBucketId,
                     editorCubit: _ec,
+                    levelFile: _ec.state.levelFile,
+                    onAddModule: (objClass) {
+                      _addModule(ModuleRegistry.getMetadata(objClass));
+                    },
                     multiSelect: false,
                     onZombieSelected: (id) {
                       Navigator.pop(context);

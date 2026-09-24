@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/utils/custom_icons.dart';
 
 enum ModuleCategory { base, mode, scene, gimmick }
 
@@ -90,7 +91,21 @@ class ModuleRegistry {
         return meta.copyWith(objClass: objClass);
       }
     }
+    for (final meta in registry.values) {
+      if (meta.defaultAlias == alias) {
+        return meta.copyWith(objClass: objClass);
+      }
+    }
     return getMetadata(objClass);
+  }
+
+  static ModuleMetadata? getMetadataByAlias(String alias) {
+    for (final meta in registry.values) {
+      if (meta.defaultAlias == alias) {
+        return meta;
+      }
+    }
+    return null;
   }
 
   static List<ModuleMetadata> getAllModules() => all;
@@ -262,8 +277,18 @@ class ModuleRegistry {
         return l10n.moduleTitle_PVZ1PassageModuleProperties;
       case 'moduleTitle_PVZ1CopycatsModuleProperties':
         return l10n.moduleTitle_PVZ1CopycatsModuleProperties;
+      case 'moduleTitle_StatueMazeModuleProperties':
+        return l10n.moduleTitle_StatueMazeModuleProperties;
+      case 'moduleTitle_CamelMinigameProperties':
+        return l10n.moduleTitle_CamelMinigameProperties;
+      case 'moduleTitle_OakTrainProperties':
+        return l10n.moduleTitle_OakTrainProperties;
+      case 'moduleTitle_OakTrainIntroProperties':
+        return l10n.moduleTitle_OakTrainIntroProperties;
       case 'moduleTitle_PVZ1SeeingStarsModuleProperties':
         return l10n.moduleTitle_PVZ1SeeingStarsModuleProperties;
+      case 'moduleTitle_GoldRoadProperties':
+        return l10n.moduleTitle_GoldRoadProperties;
       default:
         return key;
     }
@@ -438,6 +463,16 @@ class ModuleRegistry {
         return l10n.moduleDesc_PVZ1CopycatsModuleProperties;
       case 'moduleDesc_PVZ1SeeingStarsModuleProperties':
         return l10n.moduleDesc_PVZ1SeeingStarsModuleProperties;
+      case 'moduleDesc_StatueMazeModuleProperties':
+        return l10n.moduleDesc_StatueMazeModuleProperties;
+      case 'moduleDesc_CamelMinigameProperties':
+        return l10n.moduleDesc_CamelMinigameProperties;
+      case 'moduleDesc_OakTrainProperties':
+        return l10n.moduleDesc_OakTrainProperties;
+      case 'moduleDesc_OakTrainIntroProperties':
+        return l10n.moduleDesc_OakTrainIntroProperties;
+      case 'moduleDesc_GoldRoadProperties':
+        return l10n.moduleDesc_GoldRoadProperties;
       default:
         return key;
     }
@@ -1337,6 +1372,61 @@ class ModuleRegistry {
       defaultAlias: 'FinalStageTimeLimitedChallenge',
       defaultSource: 'LevelModules',
       routeId: 'UnknownDetail',
+    ),
+    'StatueMazeModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_StatueMazeModuleProperties',
+      descriptionKey: 'moduleDesc_StatueMazeModuleProperties',
+      icon: Icons.account_balance,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.mode,
+      defaultAlias: 'StatueMazeModule',
+      initialDataFactory: () => StatueMazeModulePropertiesData.createDefault(),
+      routeId: 'StatueMazeModule',
+    ),
+    'CamelMinigameProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_CamelMinigameProperties',
+      descriptionKey: 'moduleDesc_CamelMinigameProperties',
+      icon: CustomIcons.camel,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.mode,
+      defaultAlias: 'CamelMinigame',
+      initialDataFactory: () => CamelMinigamePropertiesData(),
+      routeId: 'CamelMinigame',
+    ),
+    'OakTrainProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_OakTrainProperties',
+      descriptionKey: 'moduleDesc_OakTrainProperties',
+      icon: Icons.gps_fixed,
+      isCore: true,
+      allowMultiple: false,
+      category: ModuleCategory.mode,
+      defaultAlias: 'OakTrain',
+      initialDataFactory: () => OakTrainPropertiesData(),
+      routeId: 'OakTrain',
+    ),
+    'OakTrainIntroProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_OakTrainIntroProperties',
+      descriptionKey: 'moduleDesc_OakTrainIntroProperties',
+      icon: Icons.gps_fixed,
+      isCore: false,
+      category: ModuleCategory.mode,
+      defaultAlias: 'OakTrainTutorial',
+      defaultSource: 'LevelModules',
+      routeId: 'UnknownDetail',
+      objClass: 'OakTrainIntroProperties',
+    ),
+    'GoldRoadProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_GoldRoadProperties',
+      descriptionKey: 'moduleDesc_GoldRoadProperties',
+      icon: Icons.route,
+      isCore: false,
+      category: ModuleCategory.mode,
+      defaultAlias: 'DefaultGoldRoad',
+      defaultSource: 'LevelModules',
+      routeId: 'UnknownDetail',
+      objClass: 'GoldRoadProperties',
     ),
   };
 

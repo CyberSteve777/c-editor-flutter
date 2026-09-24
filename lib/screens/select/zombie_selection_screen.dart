@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/bloc/editor/editor_cubit.dart';
+import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
+import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/select/kongfu_rocket_flick_prompt.dart';
 import 'package:c_editor/utils/selection_search.dart';
+import 'package:c_editor/utils/target_zombie_check.dart';
 import 'package:c_editor/widgets/selection_grid_confirmation.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
@@ -20,7 +23,19 @@ import 'package:c_editor/widgets/editor_components.dart'
 const String _kUnknownIconPath = 'assets/images/others/unknown.webp';
 const String _kStayTunedZombieId = 'stay_tuned';
 
-enum _ZombieBlockedReason { stayTunedTaleZCorp, stayTunedFallback }
+/// ZombieTag â module objClass required to enable those zombies.
+const Map<ZombieTag, String> _moduleGatedZombieTags = {};
+
+Set<String> _levelModuleObjClasses(PvzLevelFile levelFile) {
+  return levelFile.objects.map((o) => o.objClass).toSet();
+}
+
+enum _ZombieBlockedReason {
+  stayTunedMoon,
+  stayTunedTaleZCorp,
+  stayTunedFallback,
+  missingModule,
+}
 
 class _ZombieSelectionViewState {
   _ZombieSelectionViewState({required this.category, required this.tag})
@@ -50,6 +65,8 @@ class ZombieSelectionScreen extends StatefulWidget {
     this.initialSelectedIds = const [],
     this.allowDuplicateSelection = false,
     this.stateBucketId,
+    this.levelFile,
+    this.onAddModule,
   });
 
   final bool multiSelect;
@@ -57,7 +74,7 @@ class ZombieSelectionScreen extends StatefulWidget {
   final void Function(List<String>)? onMultiZombieSelected;
   final VoidCallback onBack;
 
-  /// When set (e.g. from the level editor), enables Kongfu rocket → flick module prompt.
+  /// When set (e.g. from the level editor), enables Kongfu rocket â flick module prompt.
   final EditorCubit? editorCubit;
 
   /// IDs hidden from the grid (e.g. entries in a conflicting list).
@@ -71,6 +88,12 @@ class ZombieSelectionScreen extends StatefulWidget {
 
   /// Keeps chooser tab and scroll state local to the current editing context.
   final String? stateBucketId;
+
+  /// When set, zombies gated by modules are disabled until the corresponding module is in the level.
+  final PvzLevelFile? levelFile;
+
+  /// Called when user taps "Add" in the "module required" dialog.
+  final void Function(String objClass)? onAddModule;
 
   @override
   State<ZombieSelectionScreen> createState() => _ZombieSelectionScreenState();
@@ -257,19 +280,47 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
   }
 
   _ZombieBlockedReason? _zombieBlockedReason(ZombieInfo zombie) {
-    if (zombie.id != _kStayTunedZombieId) return null;
-    final hasTaleZCorp = zombie.tags.contains(ZombieTag.taleZCorp);
-    // The shared stay_tuned entry uses generic copy on the all-zombies tab.
-    if (hasTaleZCorp && _selectedTag == ZombieTag.taleZCorp) {
-      return _ZombieBlockedReason.stayTunedTaleZCorp;
+    if (zombie.id == _kStayTunedZombieId) {
+      final hasMoon = zombie.tags.contains(ZombieTag.moon);
+      final hasTaleZCorp = zombie.tags.contains(ZombieTag.taleZCorp);
+      if (hasMoon && _selectedTag == ZombieTag.moon) {
+        return _ZombieBlockedReason.stayTunedMoon;
+      }
+      if (hasTaleZCorp && _selectedTag == ZombieTag.taleZCorp) {
+        return _ZombieBlockedReason.stayTunedTaleZCorp;
+      }
+      return _ZombieBlockedReason.stayTunedFallback;
     }
-    return _ZombieBlockedReason.stayTunedFallback;
+    // Module gating
+    if (widget.levelFile != null) {
+      final levelModules = _levelModuleObjClasses(widget.levelFile!);
+      if (isTargetZombie(zombie.id) &&
+          !levelModules.contains('OakTrainProperties')) {
+        return _ZombieBlockedReason.missingModule;
+      }
+      if (isCamelTouchZombie(zombie.id) &&
+          !levelModules.contains('CamelMinigameProperties')) {
+        return _ZombieBlockedReason.missingModule;
+      }
+      for (final entry in _moduleGatedZombieTags.entries) {
+        if (zombie.tags.contains(entry.key)) {
+          if (!levelModules.contains(entry.value)) {
+            return _ZombieBlockedReason.missingModule;
+          }
+        }
+      }
+    }
+    return null;
   }
 
   _ZombieBlockedReason? _zombieBlockedReasonForId(String id) {
-    if (id != _kStayTunedZombieId) return null;
     final zombie = ZombieRepository().getZombieById(id);
-    if (zombie == null) return _ZombieBlockedReason.stayTunedFallback;
+    if (zombie == null) {
+      if (id == _kStayTunedZombieId) {
+        return _ZombieBlockedReason.stayTunedFallback;
+      }
+      return null;
+    }
     return _zombieBlockedReason(zombie);
   }
 
@@ -312,12 +363,27 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     });
   }
 
+  String? _requiredModuleForZombie(ZombieInfo zombie) {
+    if (isTargetZombie(zombie.id)) return 'OakTrainProperties';
+    if (isCamelTouchZombie(zombie.id)) return 'CamelMinigameProperties';
+    for (final entry in _moduleGatedZombieTags.entries) {
+      if (zombie.tags.contains(entry.key)) return entry.value;
+    }
+    return null;
+  }
+
   Future<void> _showZombieBlockedDialog(
     BuildContext context,
     _ZombieBlockedReason reason,
   ) async {
     final l10n = AppLocalizations.of(context);
     final (title, message) = switch (reason) {
+      _ZombieBlockedReason.stayTunedMoon => (
+        l10n?.stayTunedMoonZombieBlockedTitle ?? 'A Message from Space',
+        l10n?.stayTunedMoonZombieBlockedMessage ??
+            'The brand-new world, Moon Base, is coming in the '
+                'not-too-distant future. Stay tuned!',
+      ),
       _ZombieBlockedReason.stayTunedTaleZCorp => (
         l10n?.stayTunedTaleZCorpZombieBlockedTitle ?? 'To be continued',
         l10n?.stayTunedTaleZCorpZombieBlockedMessage ??
@@ -328,6 +394,10 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
         l10n?.stayTunedZombieBlockedMessage ??
             'This content is not officially available yet. Stay tuned for '
                 'future updates!',
+      ),
+      _ZombieBlockedReason.missingModule => (
+        l10n?.warning ?? 'Warning',
+        '',
       ),
     };
     await showDialog<void>(
@@ -344,6 +414,71 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _onZombieTap(
+    BuildContext context,
+    ZombieInfo zombie,
+    _ZombieBlockedReason? blockedReason,
+  ) async {
+    if (blockedReason == _ZombieBlockedReason.missingModule) {
+      final requiredObjClass = _requiredModuleForZombie(zombie);
+      if (requiredObjClass == null || widget.onAddModule == null) return;
+      final l10n = AppLocalizations.of(context)!;
+      final meta = ModuleRegistry.getMetadata(requiredObjClass);
+      final moduleName = meta.getTitle(context);
+      final message = l10n.zombieModuleRequiredMessage(moduleName);
+      final added = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(
+                l10n.cancel,
+                style: TextStyle(color: Theme.of(ctx).colorScheme.error),
+              ),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text(l10n.add),
+            ),
+          ],
+        ),
+      );
+      if (added == true && mounted) {
+        widget.onAddModule!(requiredObjClass);
+        setState(() {});
+      }
+      return;
+    }
+    if (blockedReason != null) {
+      await _showZombieBlockedDialog(context, blockedReason);
+      return;
+    }
+    if (widget.multiSelect) {
+      setState(() {
+        if (widget.allowDuplicateSelection) {
+          _selectedIdsWithDuplicates.add(zombie.id);
+        } else if (_selectedIds.contains(zombie.id)) {
+          _selectedIds.remove(zombie.id);
+        } else {
+          _selectedIds.add(zombie.id);
+        }
+      });
+    } else {
+      await maybeShowKongfuRocketFlickPrompt(context, [
+        zombie.id,
+      ], editorCubit: widget.editorCubit);
+      if (!context.mounted) return;
+      widget.onZombieSelected(zombie.id);
+    }
   }
 
   List<ZombieInfo> _categoryFilteredZombies(ZombieRepository repo) {
@@ -604,32 +739,11 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                           selectionColor: widget.multiSelect
                               ? themeColor
                               : null,
-                          onTap: () async {
-                            if (blockedReason != null) {
-                              await _showZombieBlockedDialog(
-                                context,
-                                blockedReason,
-                              );
-                              return;
-                            }
-                            if (widget.multiSelect) {
-                              setState(() {
-                                if (widget.allowDuplicateSelection) {
-                                  _selectedIdsWithDuplicates.add(zombie.id);
-                                } else if (isSelected) {
-                                  _selectedIds.remove(zombie.id);
-                                } else {
-                                  _selectedIds.add(zombie.id);
-                                }
-                              });
-                            } else {
-                              await maybeShowKongfuRocketFlickPrompt(context, [
-                                zombie.id,
-                              ], editorCubit: widget.editorCubit);
-                              if (!context.mounted) return;
-                              widget.onZombieSelected(zombie.id);
-                            }
-                          },
+                          onTap: () => _onZombieTap(
+                            context,
+                            zombie,
+                            blockedReason,
+                          ),
                           onLongPress: () =>
                               _toggleFavorite(context, zombie.id),
                         );

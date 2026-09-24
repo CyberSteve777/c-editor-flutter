@@ -173,6 +173,50 @@ class LevelParser {
     return isPirateLawn(parsed.levelDef, levelFile);
   }
 
+  static const _lostcityBackgroundGroup = 'DelayLoad_Background_LostCity_Compressed';
+  static const _lostcityBackgroundPrefix = 'IMAGE_BACKGROUNDS_LOSTCITY';
+
+  /// Returns true if the stage is a Lost City lawn (native or custom
+  /// with Lost City resources).
+  static bool isLostCityLawn(
+    LevelDefinitionData? levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    return isNativeLostCityLawn(levelDef, levelFile) ||
+        usesLostCityBackground(levelDef, levelFile);
+  }
+
+  /// Returns true if the stage is the native Lost City stage (alias or
+  /// BelongsToWorld).
+  static bool isNativeLostCityLawn(
+    LevelDefinitionData? levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    final info = levelDef == null
+        ? null
+        : RtidParser.parse(levelDef.stageModule);
+    if (info != null && info.alias.contains('LostCity')) return true;
+    final objclass = resolveStagePropertiesObjclass(levelDef, levelFile);
+    if (objclass == 'StageModuleProperties') {
+      final objdata = resolveStageObjdata(levelDef, levelFile);
+      final world = objdata?['BelongsToWorld'];
+      if (world is String && world.toLowerCase() == 'lostcity') return true;
+    }
+    return false;
+  }
+
+  /// Returns true if the stage uses Lost City background resources
+  /// (custom lawn with loaded Lost City assets).
+  static bool usesLostCityBackground(
+    LevelDefinitionData? levelDef,
+    PvzLevelFile levelFile,
+  ) {
+    final objdata = resolveStageObjdata(levelDef, levelFile);
+    if (objdata == null) return false;
+    return objdata['BackgroundResourceGroup'] == _lostcityBackgroundGroup ||
+        objdata['BackgroundImagePrefix'] == _lostcityBackgroundPrefix;
+  }
+
   /// Returns true if the stage uses the roof lawn implementation.
   static bool isRoofLawn(
     LevelDefinitionData? levelDef,
