@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/custom_zombie_level_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
@@ -1443,7 +1444,11 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
           iconPath: _zombieIcon(z.type),
           levelDisplay: isElite ? 'E' : (level == null ? '0' : '$level'),
           isElite: isElite,
-          isCustom: false,
+          isCustom: CustomZombieLevelUtils.isCustomZombieRtid(z.type),
+          isMissingCustomZombie: CustomZombieLevelUtils.isMissingCustomZombie(
+            widget.levelFile,
+            z.type,
+          ),
         );
       }).toList(),
       onTap: _showZombieEditSheet,

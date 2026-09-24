@@ -662,6 +662,11 @@ Iterable<PreviewSticker> _supplementalStickers() sync* {
     'griditems/steam_down': 'griditem_steam_down',
     'griditems/SmokeManhole': 'griditem_SmokeManhole',
     'griditems/lunar_mine_vein': 'griditem_lunar_mine_vein',
+    'griditems/lunar_mine_vein_hardened': 'griditem_lunar_mine_vein_hardened',
+    'griditems/lunar_mine_vein_fragile': 'griditem_lunar_mine_vein_fragile',
+    'griditems/lunar_mine_vein_fragile_plantfood':
+        'griditem_lunar_mine_vein_fragile_plantfood',
+    'griditems/lunar_mine_vein_radiation': 'griditem_lunar_mine_vein_radiation',
     'griditems/radiation_meteor_ore': 'griditem_radiation_meteor_ore',
     'griditems/pumpkin_house': 'griditem_pumpkin_house',
     'griditems/magic_mirror': 'griditem_magic_mirror',

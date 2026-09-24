@@ -1,3 +1,4 @@
+import 'package:c_editor/data/gladiator_row_utils.dart';
 import 'package:collection/collection.dart';
 import 'package:c_editor/data/grid_override_module_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
@@ -96,6 +97,7 @@ LevelPreviewGridStyle resolveGridStyle(
     case GridPreviewModuleKind.energyGrid:
     case GridPreviewModuleKind.lunarMineVein:
     case GridPreviewModuleKind.radiationMeteor:
+    case GridPreviewModuleKind.gladiatorRow:
     case GridPreviewModuleKind.piratePlank:
     case GridPreviewModuleKind.fogSystem:
     case GridPreviewModuleKind.roofProperties:
@@ -228,6 +230,7 @@ enum GridPreviewModuleKind {
   energyGrid,
   lunarMineVein,
   radiationMeteor,
+  gladiatorRow,
   bronzeStatue,
   powerTile,
   fogSystem,
@@ -296,6 +299,12 @@ bool levelHasPrePlacedGridPreview(PvzLevelFile levelFile) {
   if (levelHasModule(levelFile, 'EnergyGridProperties')) return true;
   if (levelHasModule(levelFile, 'LunarMineVeinModuleProperties')) return true;
   if (levelHasModule(levelFile, 'RadiationMeteorModuleProperties')) return true;
+  final gladiator = readGladiatorRowModuleData(levelFile);
+  if (gladiator != null &&
+      gladiator.usesTrophyMode &&
+      gladiator.encounters.isNotEmpty) {
+    return true;
+  }
   if (levelHasModule(levelFile, 'VaseBreakerPresetProperties')) return true;
   if (levelHasModule(levelFile, 'VaseBreakerArcadeModuleProperties'))
     return true;
@@ -706,6 +715,21 @@ List<GridPreviewCategoryOption> collectGridPreviewCategories(
             waves.length,
           ),
           wave: wave,
+        ),
+      );
+    }
+  }
+
+  final gladiatorData = readGladiatorRowModuleData(levelFile);
+  if (gladiatorData != null && gladiatorData.usesTrophyMode) {
+    for (var index = 0; index < gladiatorData.encounters.length; index++) {
+      final encounter = gladiatorData.encounters[index];
+      categories.add(
+        GridPreviewCategoryOption(
+          kind: GridPreviewModuleKind.gladiatorRow,
+          label:
+              '${l10n.groupN(index + 1)} · ${l10n.customZombieWaveItem(encounter.wave + 1)}',
+          index: index,
         ),
       );
     }
@@ -1213,6 +1237,7 @@ String? findLawnMowerAlias(LevelDefinitionData def) {
     'SteamMowers',
     'RenaiMowers',
     'HeianMowers',
+    'RomanMowers2',
     'MoonMowers',
     'FairyTaleMowers',
     'ZCorpMowers',

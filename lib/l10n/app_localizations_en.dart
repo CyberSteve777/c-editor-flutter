@@ -216,6 +216,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearCache => 'Clear cache';
 
   @override
+  String get autosave => 'Autosave';
+
+  @override
+  String get autosaveOn => 'Autosave: on';
+
+  @override
+  String get autosaveOff => 'Autosave: off';
+
+  @override
+  String get autosaveSubtitle => 'Save automatically when leaving the editor';
+
+  @override
   String get ultra => 'Ultra';
 
   @override
@@ -1648,7 +1660,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveTimelineGuideBody =>
-      'Swipe right: Manage wave events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations';
+      'Tap a wave: Manage events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations';
 
   @override
   String get waveTimelineGuideBodyDesktop =>
@@ -1656,7 +1668,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveTimelineGuideBodyMobile =>
-      'Swipe right: Manage wave events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations';
+      'Tap a wave: Manage events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations';
 
   @override
   String get waveDeadLinksTitle => 'Broken References';
@@ -1774,8 +1786,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get waveEmptyRowHint =>
-      'Empty wave (swipe to manage, drop events here)';
+  String get waveEmptyRowHint => 'Empty wave (tap to manage, drop events here)';
 
   @override
   String get waveEmptyRowHintDesktop =>
@@ -1783,7 +1794,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveEmptyRowHintMobile =>
-      'Empty wave (swipe to manage, drop events here)';
+      'Empty wave (tap to manage, drop events here)';
 
   @override
   String get removeFromWave => 'Remove from wave';
@@ -2313,6 +2324,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectPlant => 'Select plant';
 
   @override
+  String get selectAll => 'Select ALL';
+
+  @override
   String get searchPlant => 'Search plant';
 
   @override
@@ -2464,23 +2478,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get comingSoonPlantBlockedMessage =>
       'The plants are still growing strong. Stay tuned for future updates!';
-
-  @override
-  String get stayTunedMoonPlantBlockedTitle => 'A Message from Space';
-
-  @override
-  String get stayTunedMoonPlantBlockedMessage =>
-      'Moon BaseZ Part 2 is coming soon. Keep a lookout!';
-
-  @override
-  String get stayTunedMoonZombieBlockedLabel => 'A Message from Space';
-
-  @override
-  String get stayTunedMoonZombieBlockedTitle => 'A Message from Space';
-
-  @override
-  String get stayTunedMoonZombieBlockedMessage =>
-      'Moon BaseZ Part 2 is coming soon. Keep a lookout!';
 
   @override
   String get stayTunedTaleZCorpZombieBlockedLabel => 'Work\'s Not Over Yet';
@@ -3242,11 +3239,34 @@ class AppLocalizationsEn extends AppLocalizations {
       'Spawns atlantis seashells at set positions';
 
   @override
+  String get eventTitle_SpawnEagleFlagsWaveActionProps =>
+      'Eagle Standard Spawn';
+
+  @override
+  String get eventDesc_SpawnEagleFlagsWaveActionProps =>
+      'Spawn Eagle Standards at specified positions';
+
+  @override
+  String get eventHelpEagleStandardBody =>
+      'This event spawns Eagle Standards at specified positions. Zombies that pass by can pick up the Eagle Standard. When the carrier is defeated, the standard drops to the ground, allowing subsequent zombies to pick it up again repeatedly. A zombie carrying the Eagle Standard grants zombies within a 3×3 area damage reduction and immunity to control effects.\nRegular plants cannot attack the Eagle Standard. Once it has been dropped, Magnet-shroom and Gold Magnet can destroy it.';
+
+  @override
+  String get eventHelpEagleStandardUsage =>
+      'Select a grid cell and tap “+” to add an Eagle Standard. Multiple standards can be placed on the same tile and removed using the cards below. The grid adapts to the current lawn, and standards outside the lawn are listed separately.';
+
+  @override
   String get eventTitle_PumpkinHouseActionProps => 'Pumpkin House Spawn';
 
   @override
   String get eventDesc_PumpkinHouseActionProps =>
       'Spawns pumpkin houses on the lawn at set positions';
+
+  @override
+  String get eventTitle_WaveActionZombieTentProps => 'Zombie Tent Spawn';
+
+  @override
+  String get eventDesc_WaveActionZombieTentProps =>
+      'Spawn zombie tents at specified positions and configure the zombies they summon';
 
   @override
   String get eventTitle_SpawnGravestonesWaveActionProps => 'Grid Item Spawn';
@@ -3649,7 +3669,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resilienceCodename =>
-      'Resilience codename (aliases; English letters only)';
+      'Resilience codename (aliases; English letters only; no spaces)';
 
   @override
   String get resilienceCodenameHint => 'e.g. CustomResilience0';
@@ -3826,7 +3846,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addModuleAliasTitle => 'Add module';
 
   @override
-  String get aliasLabel => 'Alias (English letters only)';
+  String get aliasLabel => 'Alias (English letters only; no spaces)';
 
   @override
   String get add => 'Add';
@@ -4456,6 +4476,63 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventHelpPumpkinHouseUsage =>
       'Select a tile, then tap \"+\" to place a pumpkin house. Lawn size varies by level: 6 rows × 10 columns in Underwater World, and 5 rows × 9 columns in other levels.';
+
+  @override
+  String get eventHelpZombieTentBody =>
+      'This event force spawns zombie tents from Memory Lane directly on the lawn. Unlike the tents carried by Imp Porters, these tents do not require Gold Tiles. They appear at the specified positions and continually summon zombies until destroyed. The level can only be won after every zombie tent on the lawn has been destroyed.';
+
+  @override
+  String get eventHelpZombieTentUsage =>
+      'Select a grid cell and tap \"+\" to place a tent. You can then configure each tent’s type, hitpoints, zombie spawn weights, and spawn interval individually.';
+
+  @override
+  String get eventHelpZombieTentFieldsTitle => 'Parameter Description';
+
+  @override
+  String get eventHelpZombieTentFields =>
+      'Regular tents and New Year tents function identically; only their appearance differs.\nA higher weight gives a zombie a greater chance of being selected. For example, weights of 10 and 30 give the two zombies an approximately 1:3 chance ratio.\nZombie level 0 uses the lawn’s default level, which is level 1 in Creative Courtyard.\nWhen editing the JSON manually, note that tent columns (Column) and rows (Row) are numbered from 1. For example, \"Column\": 7 means the seventh column.';
+
+  @override
+  String get eventZombieTentSpawn => 'Event: Zombie Tent Spawn';
+
+  @override
+  String get zombieTentSectionTitle => 'Tents at selected tile';
+
+  @override
+  String get zombieTentTypeLabel => 'Tent type (TentType)';
+
+  @override
+  String get zombieTentTypeNormal => 'Regular tent';
+
+  @override
+  String get zombieTentTypeFestival => 'New Year tent';
+
+  @override
+  String get zombieTentHitpoints => 'Tent hitpoints (Hitpoints)';
+
+  @override
+  String get zombieTentProductionInterval =>
+      'Production interval (ProductionInterval, seconds)';
+
+  @override
+  String get zombieTentZombiesSection =>
+      'Possible zombie spawns (ZombieTypesToSpawn)';
+
+  @override
+  String get zombieTentWeight => 'Spawn weight (Weight)';
+
+  @override
+  String get zombieTentAddZombie => 'Add zombie';
+
+  @override
+  String get zombieTentAddTent => 'Add tent';
+
+  @override
+  String get zombieTentDeleteTitle => 'Delete tent';
+
+  @override
+  String get zombieTentDeleteConfirm =>
+      'Are you sure you want to delete this tent?';
 
   @override
   String get eventHelpFairyFogBody =>
@@ -7574,7 +7651,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleDesc_PVZ1SeeingStarsModuleProperties =>
-      'Win by planting the requested plants on marked cells; zombies loop until the pattern is complete';
+      'Configures target plants and wave loop for the Seeing Stars minigame';
 
   @override
   String get pvz1SeeingStarsModuleTitle => 'Seeing Stars';
@@ -7583,18 +7660,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pvz1SeeingStarsSectionParams => 'Parameters';
 
   @override
-  String get pvz1SeeingStarsSectionMatchPlants => 'Pattern cells (MatchPlants)';
+  String get pvz1SeeingStarsSectionMatchPlants => 'Target plants (MatchPlants)';
 
   @override
   String get pvz1SeeingStarsHelpMatchPlants =>
-      'Each entry is a lawn cell and the plant that must be planted there. Select a cell on the grid, then add a plant; adding to an occupied cell replaces it. The level is won once every cell holds its plant.';
+      'Select a cell on the grid and add a plant. If the cell already has a plant, the new one replaces it. These plants appear as transparent guides in the level. The level is won when every target cell contains the matching plant. Target cells only allow the matching target plant and vine plants; other plants cannot be planted there.';
 
   @override
   String get pvz1SeeingStarsFieldCycleIndexLabel => 'Cycle wave (CycleIndex)';
 
   @override
   String get pvz1SeeingStarsHelpCycleIndex =>
-      'Wave to loop back to after the final wave. In a 15-wave level with a value of 5, wave 15 is followed by wave 6, and the loop repeats until the pattern is complete.';
+      'The zero-based index of the first wave to repeat after the final wave. For example, in a 15-wave level with a value of 5, wave 15 is followed by wave 6. Waves keep looping until the pattern is complete.';
 
   @override
   String get pvz1SeeingStarsFieldSettlementDurationLabel =>
@@ -7602,38 +7679,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pvz1SeeingStarsHelpSettlementDuration =>
-      'Seconds to wait after the pattern is complete before the level is won. This only settles the level on its own when the Loot Drop (ZombiesDeadWinCon) module is absent.';
+      'After the pattern is complete, the specified delay begins. When it ends, the level is won even if the target cells no longer contain the matching plants. The delay only applies when neither Loot Drop nor Bronze Matrix Loot Drop is present.';
 
   @override
   String get pvz1SeeingStarsHelpOverview =>
-      'Recreates the Memory Lane minigame \"Seeing Stars\". Zombies keep arriving in a wave loop while the player tries to plant the requested plants (classically Starfruit) on the marked cells. This module carries its own win condition, so it replaces the Loot Drop (ZombiesDeadWinCon) module.';
+      'Configures the Memory Lane minigame Seeing Stars. The name comes from the original game\'s level, where players had to plant Starfruit in a star-shaped pattern. Follow the guides on the lawn and plant the matching plants in the indicated cells to win. Meanwhile, the configured zombie waves repeat, disrupting the player\'s planting.';
 
   @override
   String get pvz1SeeingStarsHelpFieldsTitle => 'Parameter details';
 
   @override
   String get pvz1SeeingStarsHelpWinCon =>
-      'Do not combine this module with Loot Drop (ZombiesDeadWinCon). With both present the level can end when the zombies die instead of when the pattern is complete, and the settlement delay is ignored.';
+      'Do not use this module together with Loot Drop or Bronze Matrix Loot Drop. If either is present, its win condition takes priority and the settlement delay is ignored, affecting the minigame experience.\nAlso, Seeing Stars is incompatible with Wave Generator and will cause the level to crash. Use with caution.';
 
   @override
   String get pvz1SeeingStarsMatchPlantsEmpty =>
-      'No pattern cells yet. Select a cell on the grid and add a plant.';
+      'No pattern configured yet. Select any cell on the grid and add a plant.';
 
   @override
-  String get seeingStarsWinConWarningTitle => 'Duplicate win condition';
+  String get seeingStarsWinConWarningTitle => 'Conflicting win conditions';
 
   @override
   String get seeingStarsWinConWarning =>
-      'Seeing Stars settles the level by itself once the pattern is complete. Loot Drop (ZombiesDeadWinCon) is also present, so the level may end when all zombies die instead, and the settlement delay will be ignored. Remove one of the two modules.';
+      'Seeing Stars has its own win condition and ends the level when the pattern is complete. Loot Drop or Bronze Matrix Loot Drop overrides this behavior. Remove the Loot Drop or Bronze Matrix Loot Drop module.';
 
   @override
-  String get seeingStarsCycleWaveLabel => 'Cycle wave';
+  String get seeingStarsCycleWaveLabel => 'Cycle wave (CycleIndex, 0-based)';
 
   @override
-  String get seeingStarsSettlementLabel => 'Settlement delay';
+  String get seeingStarsSettlementLabel =>
+      'Settlement delay (SettlementDuration, seconds)';
 
   @override
-  String get seeingStarsPatternCells => 'Pattern cells';
+  String get pvz1SeeingStarsHelpTipsTitle => 'Friendly Reminder';
+
+  @override
+  String get seeingStarsCompatibilityWarningTitle =>
+      'Module compatibility warning';
+
+  @override
+  String get seeingStarsCompatibilityWarning =>
+      'Seeing Stars is incompatible with Wave Generator and will cause the level to crash. Use with caution.';
+
+  @override
+  String get seeingStarsCycleWaveBadge => 'Wave loop';
+
+  @override
+  String seeingStarsCycleWaveInfo(int wave) {
+    return 'After the final wave, zombies start spawning again from wave $wave. Waves repeat until every target cell contains the matching plant.';
+  }
+
+  @override
+  String get seeingStarsMatchPlants => 'Target plants';
 
   @override
   String get magicHatSpawnPreviewTitle => 'Possible plants from Magic Hat';
@@ -8031,7 +8128,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get glacierModuleLevelTooltip =>
-      'Sets the zombie\'s level, from 0 to 4. Level 0 follows the lawn’s default level, which is Level 1 in Creative Courtyard.';
+      'Sets the zombie\'s level, 0-based to 4. Level 0 follows the lawn’s default level, which is Level 1 in Creative Courtyard.';
 
   @override
   String get moduleTitle_HeianWindModuleProperties => 'Heian Divine Wind';
@@ -8437,7 +8534,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombossMechPropertiesLabel => 'Properties';
 
   @override
-  String get zombossMechAliasLabel => 'Alias';
+  String get zombossMechAliasLabel => 'Alias (English letters only; no spaces)';
 
   @override
   String get zombossMechDeletePhase => 'Delete phase';
@@ -8502,6 +8599,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombossMechSelectAction => 'Select action';
+
+  @override
+  String get zombossMechSummonJump => 'Summon jump';
 
   @override
   String get zombossMechSelectRetreatAction => 'Select retreat action';
@@ -9072,7 +9172,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveGeneratorModuleHelpIncompatBody =>
-      'May be incompatible with some modules and cause the level to crash. Use with caution.';
+      'Wave Generator may be incompatible with modules such as Seeing Stars and cause the level to crash. Use with caution.\nGladiatorial Row does not work with Wave Generator. Use Wave Manager instead.';
 
   @override
   String get waveGeneratorModuleHelpRow => 'Row numbers';
@@ -9559,7 +9659,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customStageSectionAdvanced => 'Advanced Settings';
 
   @override
-  String get customStageAlias => 'Stage alias (English letters only)';
+  String get customStageAlias =>
+      'Stage alias (English letters only; no spaces)';
 
   @override
   String get customStageNoResourceGroups => 'No resource groups in list';
@@ -10049,7 +10150,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lunarMineVeinHelpOverview =>
-      'Places Lunar Energy Crystal Veins on the lawn at the start of the level, as commonly seen in Moon Base. Veins initially provide no energy. Once the configured wave begins, a Lunar Energy Crystal grows at the same position and can then be harvested normally to supply power.';
+      'Places Lunar Energy Crystal Veins on the lawn at the start of the level, as commonly seen in Moon Base. Veins initially provide no energy. Once the configured wave begins, a crystal of the corresponding type grows at the same position and can be mined according to its properties. Select a vein type, then tap a grid cell to place it. Right-click on desktop or long-press on mobile to remove it.';
+
+  @override
+  String get lunarMineVeinTypePalette => 'Crystal vein type';
+
+  @override
+  String get lunarMineVeinHelpHardened =>
+      'Protected by a sturdy outer layer of rock. The shell must first be destroyed by plant attacks before the crystal can be mined normally. Hard-Shell Crystal Veins always grow the 3,000 HP version of the Hard-Shell Crystal.';
+
+  @override
+  String get lunarMineVeinHelpFragile =>
+      'Mining continuously consumes its durability until the crystal shatters. Special Fragile Crystal Veins containing Cosmic Plant Food can also be placed.';
+
+  @override
+  String get lunarMineVeinHelpRadiation =>
+      'Periodically releases radiation in all directions. Plants exposed to the radiation will randomly transform into other plants, while irradiated zombies will either take damage or mutate into a Cosmic Radiation Gargantuar. Cosmic Radiation Gargantuars have extremely high health and will also irradiate nearby plants and zombies when defeated.';
 
   @override
   String get lunarMineVeinHelpWaveTitle => 'Wave numbering';
@@ -10074,6 +10190,135 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get moonPlacementGestureHint =>
       'Tap an empty tile to add an entry. Right-click or long-press an occupied tile to remove it.';
+
+  @override
+  String get moduleTitle_GladiatorRowModuleProperties => 'Gladiatorial Row';
+
+  @override
+  String get moduleDesc_GladiatorRowModuleProperties =>
+      'Temporarily seal off five tiles in a row, with rewards or penalties based on the duel’s outcome';
+
+  @override
+  String get gladiatorSettings => 'Global duel, reward and penalty settings';
+
+  @override
+  String get gladiatorArenaDuration => 'Duel duration (ArenaDuration, seconds)';
+
+  @override
+  String get gladiatorRewardCount =>
+      'Plant Food reward (PlantWinPlantfoodCount)';
+
+  @override
+  String get gladiatorPunishmentCount =>
+      'Penalty cage count (ZombieWinPunishmentCageCount)';
+
+  @override
+  String get gladiatorPunishmentDuration =>
+      'Penalty drop duration (ZombieWinPunishmentDuration, seconds)';
+
+  @override
+  String get gladiatorPunishmentLevel =>
+      'Penalty zombie level (ZombieWinPunishmentZombieLevel)';
+
+  @override
+  String get gladiatorEncounters => 'Duel schedule (Encounters)';
+
+  @override
+  String get gladiatorAddEncounter => 'Add duel';
+
+  @override
+  String get gladiatorRemoveEncounter => 'Remove current duel';
+
+  @override
+  String get gladiatorWave => 'Trigger wave (Wave, starts at 0)';
+
+  @override
+  String get gladiatorRow => 'Row (Row, starts at 0)';
+
+  @override
+  String get gladiatorWarningDuration =>
+      'Zomboss arrival warning time (WarningDuration, seconds)';
+
+  @override
+  String get gladiatorFirstCageDelay =>
+      'First cage drop delay (FirstCageDelay, seconds)';
+
+  @override
+  String get gladiatorPreviewTitle => 'Gladiatorial Row area preview';
+
+  @override
+  String get gladiatorPreviewLegend =>
+      'The green tile marks the trophy fixed in column 5; red tiles mark the rest of the arena. Zombie icons show cage spawn positions, and each tile’s number shows the zombie count. Tap the grid to select a row.';
+
+  @override
+  String get gladiatorSpawns => 'Cage spawn schedule (Spawns)';
+
+  @override
+  String get gladiatorAddSpawn => 'Add cage spawn';
+
+  @override
+  String get gladiatorSpawnTime =>
+      'Spawn delay after the duel begins (Time, seconds)';
+
+  @override
+  String get gladiatorSpawnColumn => 'Spawn column (GridX, starts at 0)';
+
+  @override
+  String get gladiatorSpawnCount => 'Spawn count (Count)';
+
+  @override
+  String get gladiatorSpawnInterval => 'Spawn interval (Interval, seconds)';
+
+  @override
+  String get gladiatorSpawnLevel => 'Zombie level (Level)';
+
+  @override
+  String get gladiatorPunishmentPool =>
+      'Defeat penalty zombie pool (ZombieWinPunishmentZombiePool)';
+
+  @override
+  String get gladiatorPunishmentHint =>
+      'After a defeat, penalty cages select zombies from this list by weight. Higher weights increase the chance of being chosen.';
+
+  @override
+  String get gladiatorAddPunishment => 'Add penalty zombie';
+
+  @override
+  String get gladiatorWeight => 'Spawn weight (Weight)';
+
+  @override
+  String get gladiatorCompatibilityWarningTitle =>
+      'Module compatibility warning';
+
+  @override
+  String get gladiatorWaveGeneratorCompatibilityWarning =>
+      'Gladiatorial Row does not work with Wave Generator. Use Wave Manager instead.';
+
+  @override
+  String get gladiatorUnderwaterMismatchWarning =>
+      'The current lawn uses a six-row Underwater World appearance. Gladiatorial Rows will not appear on this lawn. Use a five-row lawn instead.';
+
+  @override
+  String get gladiatorLegacyModeWarning =>
+      'This module does not explicitly enable trophy duel mode (GameplayVersion: 1). Version 0 is the retired duel mode. The area preview supports trophy mode only; you can switch modes in the module editor.';
+
+  @override
+  String get gladiatorUseTrophyMode => 'Use trophy duel mode';
+
+  @override
+  String get gladiatorHelpTipsTitle => 'Friendly Reminder';
+
+  @override
+  String get gladiatorHelpOverview =>
+      'This module configures the wave-triggered Gladiatorial Row mechanic commonly seen in the Roman Glory Secret Realm. On the specified wave, Roman Zomboss appears in the selected row and temporarily seals off five consecutive tiles. Existing plants and zombies inside those tiles are destroyed, while plants and zombies outside them stop moving and acting.\nA trophy rises in the center of the arena. Zombies arrive in cages airdropped on the right. Protect the trophy until the timer expires to win. Winning grants a large Plant Food reward; losing causes cages to drop across the lawn and release many zombies. After the duel, all plants and zombies remaining inside the arena are destroyed.';
+
+  @override
+  String get gladiatorHelpUsage =>
+      'The duel duration, Plant Food reward and penalty drop settings above, along with the penalty zombie pool and weights below, are global settings shared by every duel in this module. Select “Add duel” to configure an individual duel. Wave, Row and GridX all start at 0: Wave 0 corresponds to timeline wave 1, and Wave 4 to wave 5.';
+
+  @override
+  String get gladiatorHelpTips =>
+      'During a duel, planting no longer costs sun, but still consumes energy.\nInstant-kill attacks from Gargantuars and similar zombies cannot damage the trophy.\nPlant projectiles leaving the arena are blocked by its fences. Zombies that leave the arena, and zombies using certain abilities aimed outside the arena, become frozen in place. They are released when the duel timer ends and resume attacking.\nGladiatorial Rows do not appear on six-row lawns with an Underwater World appearance, such as 20,000 Leagues Under the Sea or Atlantis.\nNew modules use trophy duel mode (GameplayVersion 1). Version 0 is the retired duel mode.\nGladiatorial Row does not work with Wave Generator. Use Wave Manager instead.';
 
   @override
   String get radiationMeteorHelpTitle => 'Radioactive Meteorite';
@@ -10127,6 +10372,152 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get radiationMeteorModulePreviewLanding =>
       'Meteorites landing this wave:';
+
+  @override
+  String get eventTitle_GravityGeneratorWaveActionProps => 'Gravity Generator';
+
+  @override
+  String get eventDesc_GravityGeneratorWaveActionProps =>
+      'Applies different Gravity states to plants or grid cells';
+
+  @override
+  String get gravityLevel => 'Gravity state (GravityLevel)';
+
+  @override
+  String get gravityAnti => 'Anti-Gravity';
+
+  @override
+  String get gravityHeavy => 'Hypergravity';
+
+  @override
+  String get gravityTargetType => 'Target type (TargetType)';
+
+  @override
+  String get gravityTargetPlant => 'Random plant';
+
+  @override
+  String get gravityTargetGrid => 'Fixed grid cell';
+
+  @override
+  String get gravityRangeX => 'Horizontal offset (Range.mX)';
+
+  @override
+  String get gravityRangeY => 'Vertical offset (Range.mY)';
+
+  @override
+  String get gravityRangeWidth => 'Range width (Range.mWidth, cells)';
+
+  @override
+  String get gravityRangeHeight => 'Range height (Range.mHeight, cells)';
+
+  @override
+  String get gravityTargetX => 'Target column (TargetGrid.mX, 0-based)';
+
+  @override
+  String get gravityTargetY => 'Target row (TargetGrid.mY, 0-based)';
+
+  @override
+  String get gravityPreviewTitle => 'Gravity field range preview';
+
+  @override
+  String get gravityPlantRangeHint =>
+      'Choose a random plant on the lawn as the reference point and affect plants and zombies within the range. The cross marks the chosen plant. The range extends right and down from its offset position, including the starting tile. Negative offsets move the range origin left or up.';
+
+  @override
+  String get gravityGridRangeHint =>
+      'Rows and columns start at 0. Tap the grid to select the reference tile. Add the horizontal and vertical offsets to that tile to find the range origin, then extend right and down. Width and height include the starting tile. With zero offsets, a width of 3 and height of 1 cover the target tile and the two tiles to its right.';
+
+  @override
+  String get gravityCenterLegend => 'Cross: reference point';
+
+  @override
+  String get gravityRestrictions =>
+      'Unaffected plants and zombies (TargetRestriction)';
+
+  @override
+  String get gravityRestrictionHint =>
+      'Plants and zombies in this list are unaffected by the gravity field. Leave it empty to exclude no additional types.';
+
+  @override
+  String get gravityAddPlantRestriction => 'Add unaffected plants';
+
+  @override
+  String get gravityAddZombieRestriction => 'Add unaffected zombies';
+
+  @override
+  String get gravityAdvancedSettings => 'Action and timing parameters';
+
+  @override
+  String get gravityActivationDelay =>
+      'Activation delay (ActivationDelay, seconds)';
+
+  @override
+  String get gravityDuration => 'Gravity state duration (Duration, seconds)';
+
+  @override
+  String get gravityDeployDuration =>
+      'Device deployment time (DeployDuration, seconds)';
+
+  @override
+  String get gravityChargeDuration =>
+      'Charge time before applying gravity (ChargeDuration, seconds)';
+
+  @override
+  String get gravityRetractDuration =>
+      'Device retraction cooldown (RetractDuration, seconds)';
+
+  @override
+  String get gravityPlantExitDelay =>
+      'Time until a floating plant disappears (PlantExitDelay, seconds)';
+
+  @override
+  String get gravityZombieRiseDuration =>
+      'Zombie ascent time (ZombieRiseDuration, seconds)';
+
+  @override
+  String get gravityZombieTranslateDuration =>
+      'Airborne zombie travel time (ZombieTranslateDuration, seconds)';
+
+  @override
+  String get gravityZombieFallDuration =>
+      'Zombie landing time at its destination (ZombieFallDuration, seconds)';
+
+  @override
+  String get gravityZombieLiftHeight => 'Zombie lift height (ZombieLiftHeight)';
+
+  @override
+  String get gravityZombieForwardDistance =>
+      'Zombie forward distance (ZombieForwardDistance, 64 pixels = 1 tile)';
+
+  @override
+  String get gravityHeavyPlantSinkDuration =>
+      'Plant sinking duration (HeavyPlantSinkDuration, seconds)';
+
+  @override
+  String get gravityHelpParametersTitle => 'Parameter Description';
+
+  @override
+  String get gravityHelpParameters =>
+      'By default, this event includes all parameters for both Anti-Gravity and Hypergravity. The action settings show only the parameters used by the selected state. Values entered for the other mode are retained when switching.';
+
+  @override
+  String get gravityHelpTipsTitle => 'Friendly Reminder';
+
+  @override
+  String get gravitySequentialNotice =>
+      'Gravity Generator events cannot run simultaneously. The previous Anti-Gravity or Hypergravity sequence must finish before the next one can run. Space out their trigger times.';
+
+  @override
+  String get gravityHelpOverview =>
+      'A device located at the zombie base that triggers as a preset battlefield event during designated waves. Once it emerges from the base, it locks onto plants or zombies within a fixed area on the lawn and fires a gravitational beam, applying different Gravity states and disrupting plants’ attack rhythm and zombies’ movement patterns.';
+
+  @override
+  String get gravityHelpAnti =>
+      'Targeted plants slowly float upward and eventually drift off the battlefield and disappear. Targeted zombies rise and move forward, becoming immune to straight-shot attacks while airborne.\nWhen a plant under Anti-Gravity is within Gravitree’s attack range, Gravitree attacks and clears Anti-Gravity from plants within its range. Gravitree itself is immune to the Gravity Generator: it cannot be lifted into the air or pressed into the ground.';
+
+  @override
+  String get gravityHelpHeavy =>
+      'Targeted plants are pressed halfway into the ground. While in this state, they cannot attack but can still be eaten by zombies. Targeted zombies advance steadily and become immune to knockback effects.\nCosmic Saucer can remove Hypergravity from zombies and put them into the Floating state instead. It can also remove Hypergravity from plants, restoring them to normal.';
 
   @override
   String get rocketLandingHelpTitle => 'Rocket Landing';

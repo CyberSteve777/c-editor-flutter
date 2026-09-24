@@ -36,6 +36,7 @@ enum _ZombieBlockedReason {
   stayTunedFallback,
   missingModule,
 }
+enum _ZombieBlockedReason { stayTunedTaleZCorp, stayTunedFallback }
 
 class _ZombieSelectionViewState {
   _ZombieSelectionViewState({required this.category, required this.tag})
@@ -309,6 +310,11 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
           }
         }
       }
+    if (zombie.id != _kStayTunedZombieId) return null;
+    final hasTaleZCorp = zombie.tags.contains(ZombieTag.taleZCorp);
+    // The shared stay_tuned entry uses generic copy on the all-zombies tab.
+    if (hasTaleZCorp && _selectedTag == ZombieTag.taleZCorp) {
+      return _ZombieBlockedReason.stayTunedTaleZCorp;
     }
     return null;
   }
@@ -341,6 +347,33 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
       if (zombie.tags.contains(entry.key)) return entry.value;
     }
     return null;
+  void _selectAllVisible(List<ZombieInfo> zombies) {
+    final selectableIds = zombies
+        .where((zombie) => _zombieBlockedReason(zombie) == null)
+        .map((zombie) => zombie.id)
+        .toList(growable: false);
+    if (selectableIds.isEmpty) return;
+
+    setState(() {
+      if (widget.allowDuplicateSelection) {
+        final existing = _selectedIdsWithDuplicates.toSet();
+        final missing = selectableIds
+            .where((id) => !existing.contains(id))
+            .toList(growable: false);
+        if (missing.isEmpty) {
+          _selectedIdsWithDuplicates.removeWhere(selectableIds.contains);
+        } else {
+          _selectedIdsWithDuplicates.addAll(missing);
+        }
+      } else {
+        final allSelected = selectableIds.every(_selectedIds.contains);
+        if (allSelected) {
+          _selectedIds.removeAll(selectableIds);
+        } else {
+          _selectedIds.addAll(selectableIds);
+        }
+      }
+    });
   }
 
   Future<void> _showZombieBlockedDialog(
@@ -349,12 +382,6 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
   ) async {
     final l10n = AppLocalizations.of(context);
     final (title, message) = switch (reason) {
-      _ZombieBlockedReason.stayTunedMoon => (
-        l10n?.stayTunedMoonZombieBlockedTitle ?? 'A Message from Space',
-        l10n?.stayTunedMoonZombieBlockedMessage ??
-            'The brand-new world, Moon Base, is coming in the '
-                'not-too-distant future. Stay tuned!',
-      ),
       _ZombieBlockedReason.stayTunedTaleZCorp => (
         l10n?.stayTunedTaleZCorpZombieBlockedTitle ?? 'To be continued',
         l10n?.stayTunedTaleZCorpZombieBlockedMessage ??
@@ -530,6 +557,16 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
             child: const Icon(Icons.check),
           )
         : null;
+    final selectAll = widget.multiSelect
+        ? SelectionGridSelectAllButton(
+            label: l10n?.selectAll ?? 'Select ALL',
+            backgroundColor: themeColor,
+            foregroundColor: theme.colorScheme.surface,
+            onPressed: _isLoaded && zombies.isNotEmpty
+                ? () => _selectAllVisible(zombies)
+                : null,
+          )
+        : null;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -650,6 +687,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
               itemCount: zombies.length,
               gridDelegate: gridDelegate,
               confirmation: confirmation,
+              selectAll: selectAll,
               builder: (context, gridPadding) => !_isLoaded
                   ? const Center(child: CircularProgressIndicator())
                   : zombies.isEmpty

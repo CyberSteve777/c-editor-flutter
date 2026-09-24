@@ -1,13 +1,6 @@
-import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/level_parser.dart';
-import 'package:c_editor/data/registry/conflict_registry.dart';
-import 'package:c_editor/data/registry/module_registry.dart';
-import 'package:c_editor/data/registry/warning_registry.dart';
-import 'package:c_editor/data/repository/plant_repository.dart';
-import 'package:c_editor/data/repository/reference_repository.dart';
-import 'package:c_editor/data/rtid_parser.dart';
-import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/data/registry/issue_registry.dart';
 import 'package:flutter/material.dart';
 
 class ValidationIssue {
@@ -25,16 +18,10 @@ class ValidationIssue {
 }
 
 class LevelValidator {
-  static const _internalTagToModule = {
-    'parallel': 'UnchartedModeNo42UniverseModule',
-    'mausoleum': 'PVZ2MausoleumModuleUnchartedMode',
-    '_internal_copycats': 'PVZ1CopycatsModuleProperties',
-  };
-
-  static List<ValidationIssue> validate(BuildContext context, PvzLevelFile levelFile) {
-    final l10n = AppLocalizations.of(context)!;
-    final issues = <ValidationIssue>[];
-    
+  static List<ValidationIssue> validate(
+    BuildContext context,
+    PvzLevelFile levelFile,
+  ) {
     final parsedData = LevelParser.parseLevel(levelFile);
     final levelDef = parsedData.levelDef;
     if (levelDef == null) return issues;
@@ -67,20 +54,9 @@ class LevelValidator {
         isError: true,
       ));
     }
+    if (parsedData.levelDef == null) return const [];
 
-    // 3. Missing Essentials (Warnings)
-    final missingEssentials = _calculateMissingModules(existingObjClasses);
-    if (missingEssentials.isNotEmpty) {
-      issues.add(ValidationIssue(
-        title: l10n.missingModules,
-        message: l10n.missingModulesRecommended,
-        isError: false,
-        bulletPoints: missingEssentials.map((m) => m.getTitle(context)).toList(),
-      ));
-    }
-
-    // 4. Declarative level warnings (Glacier, Seeing Stars, Tunnel, etc.)
-    for (final warning in WarningRegistry.forLevel(
+    return LevelIssueRegistry.forLevel(
       context,
       levelFile,
       parsed: parsedData,
@@ -320,5 +296,13 @@ class LevelValidator {
         .map((cls) => ModuleRegistry.getMetadata(cls))
         .where((m) => m.titleKey != ModuleRegistry.defaultMetadataKey)
         .toList();
+    ).map(
+      (issue) => ValidationIssue(
+        title: issue.title,
+        message: issue.message,
+        isError: issue.isError,
+        bulletPoints: issue.bulletPoints,
+      ),
+    ).toList();
   }
 }

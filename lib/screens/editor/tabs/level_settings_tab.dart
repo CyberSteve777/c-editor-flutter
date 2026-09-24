@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:c_editor/data/registry/conflict_registry.dart';
-import 'package:c_editor/data/registry/warning_registry.dart';
+import 'package:c_editor/data/registry/issue_registry.dart';
 import 'package:c_editor/data/module_instance_display_name.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/pvz_models.dart';
-import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
-import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 
 bool _isExpeditionTilesModule({
@@ -68,9 +65,7 @@ class LevelSettingsTab extends StatefulWidget {
     super.key,
     required this.levelDef,
     required this.objectMap,
-    required this.missingModules,
-    this.missingModuleWarnings,
-    this.warnings,
+    this.issues,
     required this.onEditBasicInfo,
     required this.onEditModule,
     required this.onRemoveModule,
@@ -80,14 +75,10 @@ class LevelSettingsTab extends StatefulWidget {
 
   final LevelDefinitionData? levelDef;
   final Map<String, PvzObject> objectMap;
-  final List<ModuleMetadata> missingModules;
 
-  /// Module objClass -> list of plant IDs that need this module but it's missing (parallel plants warning).
-  final Map<String, List<String>>? missingModuleWarnings;
-
-  /// Declarative level warnings from [WarningRegistry]. When null, they are
-  /// computed from [levelDef] + [objectMap].
-  final List<LevelWarning>? warnings;
+  /// Conflicts, missing modules, and advisories from [LevelIssueRegistry].
+  /// When null, they are computed from [levelDef] + [objectMap].
+  final List<LevelIssue>? issues;
   final VoidCallback onEditBasicInfo;
   final ValueChanged<String> onEditModule;
   final ValueChanged<String> onRemoveModule;
@@ -119,25 +110,6 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
     return (metadata.routeId != 'Unknown' &&
             metadata.routeId != 'UnknownDetail') ||
         _tabEditorModuleClasses.contains(objClass);
-  }
-
-  /// Returns localized plant name for display; falls back to a readable form of id if no translation.
-  static String _plantDisplayName(
-    BuildContext context,
-    PlantRepository repo,
-    String plantId,
-  ) {
-    final key = repo.getName(plantId);
-    final localized = ResourceNames.lookup(context, key);
-    if (localized != key) return localized;
-    return plantId
-        .split('_')
-        .map(
-          (s) => s.isEmpty
-              ? ''
-              : s[0].toUpperCase() + s.substring(1).toLowerCase(),
-        )
-        .join(' ');
   }
 
   @override
@@ -253,6 +225,9 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
     final levelWarnings =
         widget.warnings ??
         WarningRegistry.forLevel(
+    final levelIssues =
+        widget.issues ??
+        LevelIssueRegistry.forLevel(
           context,
           _levelFileWithDefinition(),
           editorOnly: true,
@@ -359,139 +334,24 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
             ),
             const SizedBox(height: 16),
 
-            // Conflicts
-            ...activeConflicts.map(
-              (pair) => Card(
-                color: Theme.of(context).colorScheme.errorContainer,
-                margin: const EdgeInsets.only(bottom: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.error,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onErrorContainer,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              pair.first,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onErrorContainer,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        pair.second,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            for (final warning in levelWarnings) ...[
+            // Conflicts, missing modules, and advisories
+            for (final issue in levelIssues) ...[
               const SizedBox(height: 12),
-              if (warning.isError)
+              if (issue.isError)
                 _ErrorBanner(
-                  key: ValueKey(warning.id),
-                  title: warning.title,
-                  message: warning.message,
+                  key: ValueKey(issue.id),
+                  title: issue.title,
+                  message: issue.message,
                 )
               else
                 EditorWarningBanner(
-                  key: ValueKey(warning.id),
-                  title: warning.title,
-                  message: warning.message,
-                ),
-            ],
-
-            // Missing module for parallel plants (same style as conflicts)
-            if (widget.missingModuleWarnings != null &&
-                widget.missingModuleWarnings!.isNotEmpty)
-              ...widget.missingModuleWarnings!.entries.map((e) {
-                final meta = ModuleRegistry.getMetadata(e.key);
-                final moduleName = meta.getTitle(context);
-                final repo = PlantRepository();
-                final plantList = e.value
-                    .map((id) => _plantDisplayName(context, repo, id))
-                    .join(', ');
-                final message = AppLocalizations.of(
-                  context,
-                )!.missingModuleForPlantsWarning(moduleName, plantList);
-                return Card(
-                  color: Theme.of(context).colorScheme.errorContainer,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.error,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onErrorContainer,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                l10n?.missingPlantModuleWarningTitle ??
-                                    'Missing module for parallel plants',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onErrorContainer,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          message,
-                          style: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onErrorContainer,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
-
-            // Missing Essentials
-            if (widget.missingModules.isNotEmpty)
-              EditorWarningBanner(
-                title: l10n?.missingModules ?? 'Missing modules',
-                message:
-                    l10n?.missingModulesRecommended ??
-                    'The level might not function correctly. Recommended to add:',
-                children: widget.missingModules
-                    .map(
-                      (meta) => Text(
-                        '• ${meta.getTitle(context)}',
+                  key: ValueKey(issue.id),
+                  title: issue.title,
+                  message: issue.message,
+                  children: [
+                    for (final bullet in issue.bulletPoints)
+                      Text(
+                        '• $bullet',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: editorWarningBannerForeground(
@@ -499,9 +359,9 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
                           ),
                         ),
                       ),
-                    )
-                    .toList(),
-              ),
+                  ],
+                ),
+            ],
           ],
         ),
         if (pendingDeleteRtid != null)
@@ -648,7 +508,7 @@ class _ReorderableModuleList extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           buildDefaultDragHandles: false,
           itemCount: modules.length,
-          onReorder: onReorder,
+          onReorderItem: onReorder,
           itemBuilder: (context, index) {
             final item = modules[index];
             return _ReorderableModuleTile(

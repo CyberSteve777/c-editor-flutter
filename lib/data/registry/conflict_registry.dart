@@ -2,19 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/data/registry/issue_registry.dart';
 
-class ModuleConflictRule {
-  final Set<String> conflictingClasses;
-  final String? titleKey;
-  final String? descriptionKey;
+export 'package:c_editor/data/registry/issue_registry.dart'
+    show ModuleConflictRule;
 
-  const ModuleConflictRule({
-    required this.conflictingClasses,
-    this.titleKey,
-    this.descriptionKey,
-  });
-}
-
+/// Compatibility wrapper around [LevelIssueRegistry] pairwise conflicts.
 class ConflictRegistry {
   static const List<ModuleConflictRule> rules = [
     ModuleConflictRule(
@@ -125,6 +118,8 @@ class ConflictRegistry {
       descriptionKey: 'conflictDesc_CamelMinigameIntro',
     ),
   ];
+  static List<ModuleConflictRule> get rules =>
+      LevelIssueRegistry.conflictModuleRules;
 
   /// Returns list of (localized title, localized description) for active conflicts.
   static List<Pair<String, String>> getActiveConflicts(
@@ -402,6 +397,12 @@ class ConflictRegistry {
       names[0],
       names.length > 1 ? names[1] : names[0],
     );
+    Set<String> existingObjClasses,
+  ) {
+    return LevelIssueRegistry.conflictsForClasses(
+      context,
+      existingObjClasses,
+    ).map((issue) => Pair(issue.title, issue.message)).toList();
   }
 }
 

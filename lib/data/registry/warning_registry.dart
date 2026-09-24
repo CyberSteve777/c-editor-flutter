@@ -1,211 +1,28 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:c_editor/data/glacier_module_presets.dart';
-import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
-import 'package:c_editor/data/registry/module_registry.dart';
-import 'package:c_editor/data/repository/reference_repository.dart';
-import 'package:c_editor/data/rtid_parser.dart';
-import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/data/registry/issue_registry.dart';
 
-/// How serious a level warning is. Errors use the red conflict styling,
-/// warnings use the yellow [EditorWarningBanner] styling.
-enum LevelWarningSeverity { warning, error }
+export 'package:c_editor/data/registry/issue_registry.dart'
+    show
+        LevelIssueSeverity,
+        LevelIssue,
+        LevelIssueContext,
+        LevelModuleRef,
+        isExpeditionTilesModule,
+        LevelIssueRegistry;
 
-/// One entry of `LevelDefinition.Modules`, resolved to its object class.
-class LevelModuleRef {
-  const LevelModuleRef({
-    required this.rtid,
-    required this.alias,
-    required this.objClass,
-    required this.objData,
-    required this.isCurrentLevel,
-  });
+/// Back-compat aliases for the renamed issue types.
+typedef LevelWarningSeverity = LevelIssueSeverity;
+typedef LevelWarning = LevelIssue;
+typedef LevelWarningContext = LevelIssueContext;
 
-  final String rtid;
-  final String alias;
-  final String objClass;
-  final dynamic objData;
-  final bool isCurrentLevel;
-
-  /// "Expedition Tiles" is a Tunnel Defend preset with `BrickMapIndex == 3`
-  /// (or the stock SouDaChe aliases) and behaves like its own module.
-  bool get isExpeditionTiles => isExpeditionTilesModule(
-    alias: alias,
-    objClass: objClass,
-    objData: objData,
-  );
-}
-
-bool isExpeditionTilesModule({
-  required String alias,
-  required String? objClass,
-  required dynamic objData,
-}) {
-  if (objClass != 'TunnelDefendModuleProperties') return false;
-  if (alias == 'SouDaCheTunnelDefendDefault' ||
-      alias.startsWith('SoudacheTunnelDefendStage')) {
-    return true;
-  }
-  if (objData is Map) {
-    return (objData['BrickMapIndex'] as num?)?.toInt() == 3;
-  }
-  return false;
-}
-
-/// Everything a [LevelWarningRule] may inspect. Build one per evaluation with
-/// [LevelWarningContext.fromLevel] so the module list is resolved only once.
-class LevelWarningContext {
-  LevelWarningContext._({
-    required this.levelFile,
-    required this.parsed,
-    required this.modules,
-  }) : moduleObjClasses = modules.map((m) => m.objClass).toSet(),
-       objectObjClasses = levelFile.objects.map((o) => o.objClass).toSet();
-
-  factory LevelWarningContext.fromLevel(
-    PvzLevelFile levelFile, {
-    ParsedLevelData? parsed,
-  }) {
-    final data = parsed ?? LevelParser.parseLevel(levelFile);
-    final modules = <LevelModuleRef>[];
-    for (final rtid in data.levelDef?.modules ?? const <String>[]) {
-      final info = RtidParser.parse(rtid);
-      if (info == null) continue;
-      if (info.source == 'CurrentLevel') {
-        final obj =
-            data.objectMap[info.alias] ??
-            levelFile.objects.firstWhereOrNull(
-              (o) => o.aliases?.contains(info.alias) == true,
-            );
-        if (obj == null) continue;
-        modules.add(
-          LevelModuleRef(
-            rtid: rtid,
-            alias: info.alias,
-            objClass: obj.objClass,
-            objData: obj.objData,
-            isCurrentLevel: true,
-          ),
-        );
-      } else {
-        final ref = ReferenceRepository.instance.objectForAlias(info.alias);
-        final objClass = ref?.objClass ?? _objClassForStockAlias(info.alias);
-        if (objClass == null) continue;
-        modules.add(
-          LevelModuleRef(
-            rtid: rtid,
-            alias: info.alias,
-            objClass: objClass,
-            objData: ref?.objData,
-            isCurrentLevel: false,
-          ),
-        );
-      }
-    }
-    return LevelWarningContext._(
-      levelFile: levelFile,
-      parsed: data,
-      modules: modules,
-    );
-  }
-
-  /// Falls back to the module registry when the reference catalog has not
-  /// been loaded yet (e.g. widget tests), so stock aliases such as
-  /// `ZombiesDeadWinCon` still resolve to their object class.
-  static String? _objClassForStockAlias(String alias) {
-    for (final entry in ModuleRegistry.registry.entries) {
-      if (entry.value.defaultAlias == alias) return entry.key;
-    }
-    return null;
-  }
-
-  final PvzLevelFile levelFile;
-  final ParsedLevelData parsed;
-  final List<LevelModuleRef> modules;
-
-  /// Object classes referenced from `LevelDefinition.Modules`.
-  final Set<String> moduleObjClasses;
-
-  /// Object classes of every object in the file, whether or not it is wired
-  /// into the module list.
-  final Set<String> objectObjClasses;
-
-  LevelDefinitionData? get levelDef => parsed.levelDef;
-
-  bool hasModule(String objClass) => moduleObjClasses.contains(objClass);
-
-  bool hasModuleOrObject(String objClass) =>
-      moduleObjClasses.contains(objClass) ||
-      objectObjClasses.contains(objClass);
-
-  bool get hasTunnelDefend => modules.any(
-    (m) => m.objClass == 'TunnelDefendModuleProperties' && !m.isExpeditionTiles,
-  );
-
-  bool get hasExpeditionTiles => modules.any((m) => m.isExpeditionTiles);
-
-  PvzObject? firstObject(String objClass) =>
-      levelFile.objects.firstWhereOrNull((o) => o.objClass == objClass) ??
-      parsed.objectMap.values.firstWhereOrNull((o) => o.objClass == objClass);
-
-  String get stageAlias =>
-      RtidParser.parse(levelDef?.stageModule ?? '')?.alias ?? '';
-}
-
-typedef LevelWarningPredicate = bool Function(LevelWarningContext ctx);
-typedef LevelWarningText =
-    String Function(BuildContext context, AppLocalizations l10n);
-
-/// A declarative level warning: when [isActive] holds for the level, the
-/// localized [title] / [message] are shown wherever warnings are surfaced.
-class LevelWarningRule {
-  const LevelWarningRule({
-    required this.id,
-    required this.isActive,
-    required this.title,
-    required this.message,
-    this.severity = LevelWarningSeverity.warning,
-    this.showInEditor = true,
-  });
-
-  /// Stable identifier; also used as the widget key in the settings tab.
-  final String id;
-  final LevelWarningSeverity severity;
-  final LevelWarningPredicate isActive;
-  final LevelWarningText title;
-  final LevelWarningText message;
-
-  /// False for checks that are only meaningful on export (heavy scans, or
-  /// situations the editor already confirms interactively).
-  final bool showInEditor;
-}
-
-/// A resolved, localized warning ready for display.
-class LevelWarning {
-  const LevelWarning({
-    required this.id,
-    required this.severity,
-    required this.title,
-    required this.message,
-  });
-
-  final String id;
-  final LevelWarningSeverity severity;
-  final String title;
-  final String message;
-
-  bool get isError => severity == LevelWarningSeverity.error;
-}
-
-/// Level-wide advisories that are not hard module conflicts (those live in
-/// `ConflictRegistry`): missing companions, risky combinations, lawn
-/// mismatches, and modules that duplicate each other's behaviour.
+/// Compatibility wrapper — prefer [LevelIssueRegistry].
 class WarningRegistry {
-  static const glacierModule = 'GlacierModuleProperties';
-  static const zombossBattleModule = 'ZombossBattleModuleProperties';
-  static const seeingStarsModule = 'PVZ1SeeingStarsModuleProperties';
-  static const zombiesDeadWinCon = 'ZombiesDeadWinConProperties';
+  static const seeingStarsModule = LevelIssueRegistry.seeingStarsModule;
+  static const zombiesDeadWinCon = LevelIssueRegistry.zombiesDeadWinCon;
+  static const bronzeDeadWinCon = LevelIssueRegistry.bronzeDeadWinCon;
+  static const glacierModule = LevelIssueRegistry.glacierModule;
+  static const zombossBattleModule = LevelIssueRegistry.zombossBattleModule;
 
   static final List<LevelWarningRule> rules = [
     LevelWarningRule(
@@ -430,6 +247,7 @@ class WarningRegistry {
 
   /// Convenience for callers that only hold a level file.
   static List<LevelWarning> forLevel(
+  static List<LevelIssue> forLevel(
     BuildContext context,
     PvzLevelFile levelFile, {
     ParsedLevelData? parsed,
@@ -562,4 +380,10 @@ class WarningRegistry {
     if (m == null) return false;
     return m.group(2) == 'ZombieTypes' || m.group(2) == 'CurrentLevel';
   }
+  }) => LevelIssueRegistry.forLevel(
+    context,
+    levelFile,
+    parsed: parsed,
+    editorOnly: editorOnly,
+  );
 }

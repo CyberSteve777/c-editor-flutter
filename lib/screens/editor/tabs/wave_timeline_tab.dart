@@ -1,3 +1,4 @@
+import 'package:c_editor/data/gladiator_row_utils.dart';
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,8 @@ import 'package:c_editor/widgets/editor_components.dart'
         showEditorChoiceDialog;
 import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/widgets/initial_kongfu_grid_items_card.dart';
+import 'package:c_editor/screens/common/level_preview_grid_helpers.dart'
+    show readSeeingStarsModuleData;
 import 'package:c_editor/widgets/wave_module_preview_dialogs.dart';
 import 'package:c_editor/widgets/zombie_lane_drag_widgets.dart'
     show zombieDragLongPressDelay, zombieDropSlotWidth;
@@ -40,7 +43,7 @@ String _waveGuideBodyForPlatform(BuildContext context, AppLocalizations? l10n) {
   if (l10n == null) {
     return desktop
         ? 'Left-click a wave: Manage wave events\nLong-press an event: Drag to reorder or move waves\nClick points: View spawn expectations'
-        : 'Swipe right: Manage wave events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations';
+        : 'Tap a wave: Manage events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations';
   }
   return desktop
       ? l10n.waveTimelineGuideBodyDesktop
@@ -55,7 +58,7 @@ String _waveEmptyRowHintForPlatform(
   if (l10n == null) {
     return desktop
         ? 'Empty wave (click to manage, drop events here)'
-        : 'Empty wave (swipe to manage, drop events here)';
+        : 'Empty wave (tap to manage, drop events here)';
   }
   return desktop ? l10n.waveEmptyRowHintDesktop : l10n.waveEmptyRowHintMobile;
 }
@@ -2982,6 +2985,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     }
 
     final waves = wm.waves;
+    final seeingStars = readSeeingStarsModuleData(widget.levelFile);
     final interval = wm.flagWaveInterval <= 0 ? 10 : wm.flagWaveInterval;
 
     final deadLinks = wm.waves
@@ -3045,12 +3049,51 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                 onTap: () => _showLunarMineVeinInfoDialog(context, waveIndex),
               ));
             }
+            final gladiator = readGladiatorRowModuleData(widget.levelFile);
+            if (gladiator != null &&
+                gladiatorEncountersForWave(gladiator, waveIndex).isNotEmpty) {
+              actionButtons.add((
+                label:
+                    l10n?.moduleTitle_GladiatorRowModuleProperties ??
+                    'Gladiatorial Row',
+                onTap: () => showGladiatorRowWavePreviewDialog(
+                  context,
+                  levelFile: widget.levelFile,
+                  waveIndex: waveIndex,
+                  data: gladiator,
+                  onOpenModuleSettings: widget.onOpenModule == null
+                      ? null
+                      : () => openModuleWithHint(
+                          widget.onOpenModule,
+                          widget.levelFile,
+                          'GladiatorRowModuleProperties',
+                          hint: ModuleOpenHint(gladiatorWave: waveIndex - 1),
+                        ),
+                ),
+              ));
+            }
             if (_waveHasRadiationMeteorActivity(waveIndex)) {
               actionButtons.add((
                 label:
                     l10n?.radiationMeteorModuleExpectationLabel ??
                     'Radioactive Meteorite',
                 onTap: () => _showRadiationMeteorInfoDialog(context, waveIndex),
+              ));
+            }
+            if (seeingStars != null && seeingStars.cycleIndex == index) {
+              actionButtons.add((
+                label: l10n?.seeingStarsCycleWaveBadge ?? 'Wave loop',
+                onTap: () => showSeeingStarsWavePreviewDialog(
+                  context,
+                  waveIndex: waveIndex,
+                  onOpenModuleSettings: widget.onOpenModule == null
+                      ? null
+                      : () => openModuleWithHint(
+                          widget.onOpenModule,
+                          widget.levelFile,
+                          'PVZ1SeeingStarsModuleProperties',
+                        ),
+                ),
               ));
             }
             if (_waveHasDropShipActivity(waveIndex)) {
