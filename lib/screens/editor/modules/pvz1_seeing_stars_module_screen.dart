@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
-import 'package:c_editor/data/registry/warning_registry.dart';
+import 'package:c_editor/data/registry/issue_registry.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
@@ -44,7 +44,7 @@ class PVZ1SeeingStarsModuleScreen extends StatefulWidget {
 
 class _PVZ1SeeingStarsModuleScreenState
     extends State<PVZ1SeeingStarsModuleScreen> {
-  static const _objClass = WarningRegistry.seeingStarsModule;
+  static const _objClass = LevelIssueRegistry.seeingStarsModule;
 
   late String _alias;
   late PvzObject _moduleObj;
@@ -197,7 +197,7 @@ class _PVZ1SeeingStarsModuleScreenState
               '${l10n.pvz1SeeingStarsHelpSettlementDuration}',
         ),
         HelpSectionData(
-          title: l10n.seeingStarsWinConWarningTitle,
+          title: l10n.pvz1SeeingStarsHelpTipsTitle,
           body: l10n.pvz1SeeingStarsHelpWinCon,
         ),
       ],
@@ -219,10 +219,12 @@ class _PVZ1SeeingStarsModuleScreenState
         final c = a.gridY.compareTo(b.gridY);
         return c != 0 ? c : a.gridX.compareTo(b.gridX);
       });
-    final winConWarning = WarningRegistry.forLevel(
-      context,
-      widget.levelFile,
-    ).firstWhereOrNull((w) => w.id == 'seeingStarsWinConWarning');
+    final warnings = LevelIssueRegistry.forLevel(context, widget.levelFile)
+        .where(
+          (w) =>
+              w.id == 'seeingStarsWinConWarning' ||
+              w.id == 'seeingStarsCompatibilityWarning',
+        );
 
     return Scaffold(
       appBar: AppBar(
@@ -261,13 +263,13 @@ class _PVZ1SeeingStarsModuleScreenState
               onAliasChanged: _handleAliasChanged,
               onChanged: widget.onChanged,
             ),
-            if (winConWarning != null) ...[
+            for (final warning in warnings) ...[
               const SizedBox(height: 16),
               EditorWarningBanner(
-                key: const ValueKey('seeingStarsWinConWarning'),
+                key: ValueKey(warning.id),
                 margin: EdgeInsets.zero,
-                title: winConWarning.title,
-                message: winConWarning.message,
+                title: warning.title,
+                message: warning.message,
               ),
             ],
             const SizedBox(height: 16),
@@ -280,14 +282,6 @@ class _PVZ1SeeingStarsModuleScreenState
                       content: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            l10n.pvz1SeeingStarsSectionMatchPlants,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: accent,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
                           Text(
                             l10n.selectedPosition,
                             style: theme.textTheme.bodySmall?.copyWith(
@@ -337,7 +331,7 @@ class _PVZ1SeeingStarsModuleScreenState
                     Tooltip(
                       message: l10n.pvz1SeeingStarsHelpCycleIndex,
                       child: EditorResponsiveInputField(
-                        label: l10n.pvz1SeeingStarsFieldCycleIndexLabel,
+                        label: l10n.seeingStarsCycleWaveLabel,
                         decoration: editorInputDecoration(
                           context,
                           focusColor: accent,
@@ -363,7 +357,7 @@ class _PVZ1SeeingStarsModuleScreenState
                     Tooltip(
                       message: l10n.pvz1SeeingStarsHelpSettlementDuration,
                       child: EditorResponsiveInputField(
-                        label: l10n.pvz1SeeingStarsFieldSettlementDurationLabel,
+                        label: l10n.seeingStarsSettlementLabel,
                         decoration: editorInputDecoration(
                           context,
                           focusColor: accent,

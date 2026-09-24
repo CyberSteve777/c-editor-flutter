@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/autosave_settings_dialog.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_module_order_utils.dart';
 import 'package:c_editor/data/cowboy_minigame_utils.dart';
@@ -18,13 +18,13 @@ import 'package:c_editor/data/models/custom_stage_preset.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
+import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugins/plugin_ui_host.dart';
 import 'package:c_editor/screens/level_overview/level_overview.dart';
 import 'package:c_editor/escape_override.dart';
-import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/fish_properties_repository.dart';
 import 'package:c_editor/screens/editor/basic_info_screen.dart';
@@ -54,6 +54,7 @@ import 'package:c_editor/screens/editor/modules/lunar_terminal_module_screen.dar
 import 'package:c_editor/screens/editor/modules/level_powerup_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/lunar_mine_vein_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/radiation_meteor_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/gladiator_row_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/witch_module_properties_screen.dart';
 import 'package:c_editor/data/final_stage_time_limited_module_utils.dart';
 import 'package:c_editor/screens/editor/modules/starting_plantfood_module_screen.dart';
@@ -99,7 +100,7 @@ import 'package:c_editor/screens/editor/modules/gulliver_tunnel_module_screen.da
 import 'package:c_editor/screens/editor/modules/zombie_rush_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/pvz1_copycats_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/pvz1_seeing_stars_module_screen.dart';
-import 'package:c_editor/data/registry/warning_registry.dart';
+import 'package:c_editor/data/registry/issue_registry.dart';
 import 'package:c_editor/screens/editor/modules/pvz1_passage_module_screen.dart';
 import 'package:c_editor/screens/editor/tabs/izombie_tab.dart';
 import 'package:c_editor/screens/editor/tabs/level_settings_tab.dart';
@@ -139,7 +140,10 @@ import 'package:c_editor/screens/editor/events/tidal_change_event_screen.dart';
 import 'package:c_editor/screens/editor/events/zombie_potion_event_screen.dart';
 import 'package:c_editor/screens/editor/events/shell_event_screen.dart';
 import 'package:c_editor/screens/editor/events/pumpkin_house_event_screen.dart';
+import 'package:c_editor/screens/editor/events/eagle_standard_event_screen.dart';
+import 'package:c_editor/screens/editor/events/zombie_tent_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/rocket_landing_event_screen.dart';
+import 'package:c_editor/screens/editor/events/gravity_generator_event_screen.dart';
 import 'package:c_editor/screens/editor/events/jittered_event_screen.dart';
 import 'package:c_editor/screens/editor/events/ground_spawn_event_screen.dart';
 import 'package:c_editor/data/pvz_alias_utils.dart';
@@ -222,6 +226,10 @@ class _EditorScreenState extends State<EditorScreen> {
       return false;
     }
     if (context.read<EditorCubit>().state.hasChanges) {
+      if (context.read<SettingsCubit>().state.autosave) {
+        await _save();
+        return true;
+      }
       return await _confirmLeave();
     }
     return true;
@@ -2064,6 +2072,21 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
 
+    if (objClass == 'SpawnEagleFlagsWaveActionProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EagleStandardEventScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+
     if (objClass == 'PumpkinHouseActionProps') {
       await Navigator.push(
         context,
@@ -2073,6 +2096,39 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (objClass == 'WaveActionZombieTentProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ZombieTentWaveEventScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+            onRequestZombieSelection: (onSelected) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ZombieSelectionScreen(
+                    stateBucketId: _selectionStateBucketId,
+                    editorCubit: _ec,
+                    multiSelect: false,
+                    onZombieSelected: (id) {
+                      Navigator.pop(context);
+                      onSelected(id);
+                    },
+                    onMultiZombieSelected: (_) {},
+                    onBack: () => Navigator.pop(context),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       );
@@ -2130,6 +2186,21 @@ class _EditorScreenState extends State<EditorScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => ModernPortalsEventScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (objClass == 'GravityGeneratorWaveActionProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GravityGeneratorEventScreen(
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
@@ -3682,6 +3753,22 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
     if (info.source == 'CurrentLevel' &&
+        objClass == 'GladiatorRowModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GladiatorRowModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+            initialWave: hint?.gladiatorWave,
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
         objClass == 'RadiationMeteorModuleProperties') {
       Navigator.push(
         context,
@@ -4048,6 +4135,17 @@ class _EditorScreenState extends State<EditorScreen> {
                       ),
                     ),
                     PopupMenuItem(
+                      value: 'autosave',
+                      child: EditorPopupMenuTile(
+                        leading: const Icon(Icons.save_outlined),
+                        title: Text(
+                          settings.autosave
+                              ? (l10n?.autosaveOn ?? 'Autosave: on')
+                              : (l10n?.autosaveOff ?? 'Autosave: off'),
+                        ),
+                      ),
+                    ),
+                    PopupMenuItem(
                       value: 'level_overview',
                       enabled: _ec.state.levelFile != null,
                       child: EditorPopupMenuTile(
@@ -4094,6 +4192,8 @@ class _EditorScreenState extends State<EditorScreen> {
                       _showUiScaleDialog(context);
                     } else if (value == 'theme') {
                       context.read<SettingsCubit>().cycleTheme();
+                    } else if (value == 'autosave') {
+                      showAutosaveSettingsDialog(context);
                     } else if (value == 'level_overview') {
                       await openLevelOverviewFromOpenSession(context);
                     } else {
@@ -4241,11 +4341,7 @@ class _EditorScreenState extends State<EditorScreen> {
                                                 _ec.state.parsedData!.levelDef,
                                             objectMap:
                                                 _ec.state.parsedData!.objectMap,
-                                            missingModules:
-                                                _calculateMissingModules(),
-                                            missingModuleWarnings:
-                                                _getMissingModuleWarnings(),
-                                            warnings: WarningRegistry.forLevel(
+                                            issues: LevelIssueRegistry.forLevel(
                                               context,
                                               _ec.state.levelFile!,
                                               parsed: _ec.state.parsedData,
@@ -4485,9 +4581,7 @@ class _CustomStageAliasPromptDialogState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final available = MediaQuery.sizeOf(context).width - 48;
-    final dialogW = available < 420
-        ? (available < 1 ? 1.0 : available)
-        : 420.0;
+    final dialogW = available < 420 ? (available < 1 ? 1.0 : available) : 420.0;
 
     return EscapeClosesModal(
       child: Dialog(

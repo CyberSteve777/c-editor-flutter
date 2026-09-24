@@ -107,9 +107,6 @@ flutter:
     - family: PvZPreview
       fonts:
         - asset: lib/bundled_plugins/preview_img_cplugin/assets/fonts/FBUSV8C5EI.ttf
-    - family: CustomIcons
-      fonts:
-        - asset: assets/fonts/CustomIcons.ttf
 
 flutter_launcher_icons:
   android: true

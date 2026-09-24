@@ -23,7 +23,7 @@ import 'package:c_editor/widgets/editor_components.dart'
 const String _kUnknownIconPath = 'assets/images/others/unknown.webp';
 const String _kStayTunedZombieId = 'stay_tuned';
 
-/// ZombieTag → module objClass required to enable those zombies.
+/// ZombieTag â module objClass required to enable those zombies.
 const Map<ZombieTag, String> _moduleGatedZombieTags = {};
 
 Set<String> _levelModuleObjClasses(PvzLevelFile levelFile) {
@@ -74,7 +74,7 @@ class ZombieSelectionScreen extends StatefulWidget {
   final void Function(List<String>)? onMultiZombieSelected;
   final VoidCallback onBack;
 
-  /// When set (e.g. from the level editor), enables Kongfu rocket → flick module prompt.
+  /// When set (e.g. from the level editor), enables Kongfu rocket â flick module prompt.
   final EditorCubit? editorCubit;
 
   /// IDs hidden from the grid (e.g. entries in a conflicting list).
@@ -334,6 +334,35 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     return ids.where((id) => _zombieBlockedReasonForId(id) == null).toList();
   }
 
+  void _selectAllVisible(List<ZombieInfo> zombies) {
+    final selectableIds = zombies
+        .where((zombie) => _zombieBlockedReason(zombie) == null)
+        .map((zombie) => zombie.id)
+        .toList(growable: false);
+    if (selectableIds.isEmpty) return;
+
+    setState(() {
+      if (widget.allowDuplicateSelection) {
+        final existing = _selectedIdsWithDuplicates.toSet();
+        final missing = selectableIds
+            .where((id) => !existing.contains(id))
+            .toList(growable: false);
+        if (missing.isEmpty) {
+          _selectedIdsWithDuplicates.removeWhere(selectableIds.contains);
+        } else {
+          _selectedIdsWithDuplicates.addAll(missing);
+        }
+      } else {
+        final allSelected = selectableIds.every(_selectedIds.contains);
+        if (allSelected) {
+          _selectedIds.removeAll(selectableIds);
+        } else {
+          _selectedIds.addAll(selectableIds);
+        }
+      }
+    });
+  }
+
   String? _requiredModuleForZombie(ZombieInfo zombie) {
     if (isTargetZombie(zombie.id)) return 'OakTrainProperties';
     if (isCamelTouchZombie(zombie.id)) return 'CamelMinigameProperties';
@@ -530,6 +559,16 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
             child: const Icon(Icons.check),
           )
         : null;
+    final selectAll = widget.multiSelect
+        ? SelectionGridSelectAllButton(
+            label: l10n?.selectAll ?? 'Select ALL',
+            backgroundColor: themeColor,
+            foregroundColor: theme.colorScheme.surface,
+            onPressed: _isLoaded && zombies.isNotEmpty
+                ? () => _selectAllVisible(zombies)
+                : null,
+          )
+        : null;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -650,6 +689,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
               itemCount: zombies.length,
               gridDelegate: gridDelegate,
               confirmation: confirmation,
+              selectAll: selectAll,
               builder: (context, gridPadding) => !_isLoaded
                   ? const Center(child: CircularProgressIndicator())
                   : zombies.isEmpty

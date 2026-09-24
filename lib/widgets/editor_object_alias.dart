@@ -370,14 +370,18 @@ class _PvzAliasInputDialogState extends State<_PvzAliasInputDialog> {
               ),
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: _controller,
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: l10n?.aliasLabel ?? 'Alias',
-                errorText: _errorText,
+            SizedBox(
+              width: 400,
+              child: EditorResponsiveInputField(
+                label: l10n?.aliasLabel ?? 'Alias',
+                decoration: InputDecoration(errorText: _errorText),
+                builder: (context, decoration) => TextField(
+                  controller: _controller,
+                  autofocus: true,
+                  decoration: decoration,
+                  onSubmitted: (_) => _submit(),
+                ),
               ),
-              onSubmitted: (_) => _submit(),
             ),
           ],
         ),

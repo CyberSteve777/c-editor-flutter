@@ -215,6 +215,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get clearCache => '释放缓存';
 
   @override
+  String get autosave => '自动保存';
+
+  @override
+  String get autosaveOn => '自动保存：开';
+
+  @override
+  String get autosaveOff => '自动保存：关';
+
+  @override
+  String get autosaveSubtitle => '离开编辑器时自动保存更改';
+
+  @override
   String get ultra => '超大';
 
   @override
@@ -1615,7 +1627,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get waveTimelineGuideBody =>
-      '右滑：管理波次事件\n长按事件：拖动排序或移到其他波次\n点击点数：查看点数出怪期望';
+      '点击波次：管理事件\n长按事件：拖动排序或移到其他波次\n点击点数：查看点数出怪期望';
 
   @override
   String get waveTimelineGuideBodyDesktop =>
@@ -1623,7 +1635,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get waveTimelineGuideBodyMobile =>
-      '右滑：管理波次事件\n长按事件：拖动排序或移到其他波次\n点击点数：查看点数出怪期望';
+      '点击波次：管理事件\n长按事件：拖动排序或移到其他波次\n点击点数：查看点数出怪期望';
 
   @override
   String get waveDeadLinksTitle => '引用失效报警';
@@ -1736,13 +1748,13 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get waveEmptyRowHint => '空波次 (滑动管理，可拖入事件)';
+  String get waveEmptyRowHint => '空波次 (点击管理，可拖入事件)';
 
   @override
   String get waveEmptyRowHintDesktop => '空波次 (点击管理，可拖入事件)';
 
   @override
-  String get waveEmptyRowHintMobile => '空波次 (滑动管理，可拖入事件)';
+  String get waveEmptyRowHintMobile => '空波次 (点击管理，可拖入事件)';
 
   @override
   String get removeFromWave => '从波次移除';
@@ -2245,6 +2257,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectPlant => '选择植物';
 
   @override
+  String get selectAll => '全选';
+
+  @override
   String get searchPlant => '搜索植物';
 
   @override
@@ -2383,12 +2398,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get comingSoonPlantBlockedMessage => '植物们仍在茁壮成长。敬请期待后续更新！';
-
-  @override
-  String get stayTunedMoonPlantBlockedTitle => '来自宇宙的预告';
-
-  @override
-  String get stayTunedMoonPlantBlockedMessage => '月球基地第二章节即将推出，敬请关注！';
 
   @override
   String get stayTunedMoonZombieBlockedLabel => '来自宇宙的预告';
@@ -3075,10 +3084,30 @@ class AppLocalizationsZh extends AppLocalizations {
   String get eventDesc_ZombieAtlantisShellActionProps => '在指定位置生成海底贝壳';
 
   @override
+  String get eventTitle_SpawnEagleFlagsWaveActionProps => '鹰旗生成';
+
+  @override
+  String get eventDesc_SpawnEagleFlagsWaveActionProps => '在指定位置生成罗马鹰旗';
+
+  @override
+  String get eventHelpEagleStandardBody =>
+      '此事件可在指定位置生成罗马鹰旗。僵尸经过可以拾起鹰旗，阵亡时会掉落，后续僵尸可以反复重新拾起。携带鹰旗的僵尸会为 3×3 范围内的僵尸提供减伤与免控效果。\n普通植物无法攻击鹰旗。鹰旗落地后，磁力菇与吸金磁可以将其摧毁。';
+
+  @override
+  String get eventHelpEagleStandardUsage =>
+      '选中网格中的格子，点击“+”添加鹰旗。可在同一格放置多面鹰旗，并通过下方卡片删除。网格会根据当前草坪调整大小，草坪外的鹰旗会单独列出。';
+
+  @override
   String get eventTitle_PumpkinHouseActionProps => '南瓜屋生成';
 
   @override
   String get eventDesc_PumpkinHouseActionProps => '在指定位置生成南瓜屋';
+
+  @override
+  String get eventTitle_WaveActionZombieTentProps => '帐篷生成';
+
+  @override
+  String get eventDesc_WaveActionZombieTentProps => '在指定位置生成僵尸帐篷，并配置帐篷内僵尸';
 
   @override
   String get eventTitle_SpawnGravestonesWaveActionProps => '障碍物生成';
@@ -3447,7 +3476,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '韧性条额外伤害上限 (ResilienceExtraDamageThreshold)';
 
   @override
-  String get resilienceCodename => '韧性条代码名 (aliases，仅支持英文字母)';
+  String get resilienceCodename => '韧性条代码名 (aliases，仅支持英文字母；不支持空格)';
 
   @override
   String get resilienceCodenameHint => '例如： CustomResilience0';
@@ -3621,7 +3650,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addModuleAliasTitle => '添加模块';
 
   @override
-  String get aliasLabel => '代号 (仅支持英文字母)';
+  String get aliasLabel => '代号 (仅支持英文字母；不支持空格)';
 
   @override
   String get add => '添加';
@@ -4229,6 +4258,60 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get eventHelpPumpkinHouseUsage =>
       '选中格子后，点击“+”放置南瓜屋。场地大小因关卡地图而异，共有5×9和6×10两种规格。';
+
+  @override
+  String get eventHelpZombieTentBody =>
+      '此事件可以在场地上强行生成回忆之旅中的僵尸帐篷，与小鬼搬运工僵尸背上的帐篷不同的是，这些帐篷不需要黄金地砖，会直接在指定位置生成，并源源不断地召唤僵尸，直至被摧毁。只有场上的所有僵尸帐篷都被摧毁，关卡才会胜利结算。';
+
+  @override
+  String get eventHelpZombieTentUsage =>
+      '选中格子后，点击“+”放置帐篷，随后可以单独配置每顶帐篷的类型、生命值、召唤僵尸的权重及间隔。';
+
+  @override
+  String get eventHelpZombieTentFieldsTitle => '参数说明';
+
+  @override
+  String get eventHelpZombieTentFields =>
+      '僵尸帐篷有常规帐篷和新年帐篷两种，二者除外观上的区别外无任何区别。\n权重数值越大，僵尸出现的概率越高。如果两种僵尸的权重分别为10和30，那么两者被选中的概率比例约为1:3。\n 僵尸阶级中的0阶表示随地图阶级，庭院模式下即为1阶。\n手动编辑时，注意JSON文件中帐篷所在的列 (Column) 和行 (Row) 都从1开始计数，如\"Column\": 7代表第7列。';
+
+  @override
+  String get eventZombieTentSpawn => '事件：帐篷生成';
+
+  @override
+  String get zombieTentSectionTitle => '当前格子的帐篷';
+
+  @override
+  String get zombieTentTypeLabel => '帐篷类型 (TentType)';
+
+  @override
+  String get zombieTentTypeNormal => '常规帐篷';
+
+  @override
+  String get zombieTentTypeFestival => '新年帐篷';
+
+  @override
+  String get zombieTentHitpoints => '帐篷生命值 (Hitpoints)';
+
+  @override
+  String get zombieTentProductionInterval => '生产间隔 (ProductionInterval, 单位：秒)';
+
+  @override
+  String get zombieTentZombiesSection => '可能召唤的僵尸 (ZombieTypesToSpawn)';
+
+  @override
+  String get zombieTentWeight => '出现权重 (Weight)';
+
+  @override
+  String get zombieTentAddZombie => '添加僵尸';
+
+  @override
+  String get zombieTentAddTent => '添加帐篷';
+
+  @override
+  String get zombieTentDeleteTitle => '删除帐篷';
+
+  @override
+  String get zombieTentDeleteConfirm => '确定要删除这顶帐篷吗？';
 
   @override
   String get eventHelpFairyFogBody =>
@@ -5315,7 +5398,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addPlantConveyor => '添加植物';
 
   @override
-  String get addTool => '添加工具';
+  String get addTool => '添加工具卡';
 
   @override
   String get increasedCost => '通货膨胀设置';
@@ -7190,31 +7273,30 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pvz1CopycatsAddZombie => '向白名单添加僵尸';
 
   @override
-  String get moduleTitle_PVZ1SeeingStarsModuleProperties => '观星';
+  String get moduleTitle_PVZ1SeeingStarsModuleProperties => '看星星';
 
   @override
-  String get moduleDesc_PVZ1SeeingStarsModuleProperties =>
-      '在指定格子种下对应植物即可获胜；僵尸波次循环直到图案完成';
+  String get moduleDesc_PVZ1SeeingStarsModuleProperties => '配置观星小游戏的目标植物与循环波数';
 
   @override
-  String get pvz1SeeingStarsModuleTitle => '观星';
+  String get pvz1SeeingStarsModuleTitle => '看星星';
 
   @override
   String get pvz1SeeingStarsSectionParams => '参数';
 
   @override
-  String get pvz1SeeingStarsSectionMatchPlants => '图案格子 (MatchPlants)';
+  String get pvz1SeeingStarsSectionMatchPlants => '目标植物 (MatchPlants)';
 
   @override
   String get pvz1SeeingStarsHelpMatchPlants =>
-      '每条记录是草坪上的一个格子以及必须种在该处的植物。在网格上选中格子后添加植物；对已占用格子再次添加会替换原植物。当所有格子都种上对应植物时关卡获胜。';
+      '点击格子后可添加植物；若所选格子已有植物，添加后会替换掉原植物。添加的植物会在关卡中显示为透明提示，当所有目标格均种有对应植物时，关卡胜利。目标格内只能种植目标植物和藤蔓类植物，无法种植其他植物。';
 
   @override
   String get pvz1SeeingStarsFieldCycleIndexLabel => '循环波数 (CycleIndex)';
 
   @override
   String get pvz1SeeingStarsHelpCycleIndex =>
-      '最后一波结束后循环回到的波次。例如共 15 波且值为 5 时，第 15 波之后接着第 6 波，并如此循环直到图案完成。';
+      '最后一波结束后继续出怪使用的初始波次数目，从0开始计数。例如关卡共15波且循环波数为5时，第15波结束后会从第6波开始继续出怪，循环往复直至图案完成。';
 
   @override
   String get pvz1SeeingStarsFieldSettlementDurationLabel =>
@@ -7222,37 +7304,55 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pvz1SeeingStarsHelpSettlementDuration =>
-      '图案完成后等待多少秒再结算胜利。仅在没有「战利品掉落」(ZombiesDeadWinCon) 模块时，该延迟才会单独触发结算。';
+      '图案完成后会进入指定秒数的延迟，延迟结束后，无论目标格是否还种有对应植物，关卡都会胜利结算。延迟仅会在关卡中没有「死亡结算」或「铜人阵死亡结算」模块时生效。';
 
   @override
   String get pvz1SeeingStarsHelpOverview =>
-      '复刻回忆之旅小游戏「观星」。僵尸按波次循环出怪，玩家需在标记格子种下指定植物（经典为杨桃）。本模块自带胜利条件，可替代「战利品掉落」(ZombiesDeadWinCon) 模块。';
+      '本模块用于在关卡中配置回忆之旅小游戏“看星星”关卡所需的各类参数。该小游戏因其一代原关卡是使用星星果在草坪上种满星星图案而得名。根据草坪上的提示，在对应位置种上相同植物，完成图案，即可过关。在此过程中，波次中配置的僵尸会循环往复地出现，干扰布阵。';
 
   @override
   String get pvz1SeeingStarsHelpFieldsTitle => '参数说明';
 
   @override
   String get pvz1SeeingStarsHelpWinCon =>
-      '请勿与「战利品掉落」(ZombiesDeadWinCon) 同时使用。两者并存时，关卡可能在僵尸清场时结束而非图案完成时结束，结算延迟也会被忽略。';
+      '请勿将该模块与「死亡结算」或「铜人阵死亡结算」同时使用。若关卡中存在这些模块，将以其结算条件为准，结算延迟也会被忽略，影响该小游戏的游玩体验。\n此外，「看星星」模块与波次生成器模块不兼容，会导致关卡闪退，请谨慎使用。';
 
   @override
-  String get pvz1SeeingStarsMatchPlantsEmpty => '尚未添加图案格子。请在网格上选中格子并添加植物。';
+  String get pvz1SeeingStarsMatchPlantsEmpty => '尚未配置图案。请选中网格中的任意格子并添加植物。';
 
   @override
-  String get seeingStarsWinConWarningTitle => '重复的胜利条件';
+  String get seeingStarsWinConWarningTitle => '结算条件冲突';
 
   @override
   String get seeingStarsWinConWarning =>
-      '「观星」会在图案完成后自行结算关卡。关卡中同时存在「战利品掉落」(ZombiesDeadWinCon)，因此可能在僵尸全部死亡时结束，结算延迟也会被忽略。请移除其中一个模块。';
+      '「看星星」模块自带结算条件，会在场上的图案完成后自动结算。这种独特的结算方式会被「死亡结算」或「铜人阵死亡结算」自动覆盖，建议移除「死亡结算」或「铜人阵死亡结算」模块。';
 
   @override
-  String get seeingStarsCycleWaveLabel => '循环波数';
+  String get seeingStarsCycleWaveLabel => '循环波数 (CycleIndex，从0开始计数)';
 
   @override
-  String get seeingStarsSettlementLabel => '结算延迟';
+  String get seeingStarsSettlementLabel => '结算延迟 (SettlementDuration，单位：秒)';
 
   @override
-  String get seeingStarsPatternCells => '图案格子';
+  String get pvz1SeeingStarsHelpTipsTitle => '温馨提示';
+
+  @override
+  String get seeingStarsCompatibilityWarningTitle => '模块兼容性提示';
+
+  @override
+  String get seeingStarsCompatibilityWarning =>
+      '「看星星」模块与波次生成器模块不兼容，会导致关卡闪退，请谨慎使用。';
+
+  @override
+  String get seeingStarsCycleWaveBadge => '波次循环';
+
+  @override
+  String seeingStarsCycleWaveInfo(int wave) {
+    return '最后一波结束后，将从第$wave波重新出怪，循环直至所有目标格均种有对应植物。';
+  }
+
+  @override
+  String get seeingStarsMatchPlants => '目标植物';
 
   @override
   String get magicHatSpawnPreviewTitle => '魔术帽可能召唤的植物';
@@ -7268,7 +7368,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pvz1PassageHelpOverview =>
-      '本模块用于配置一代风格的传送门，常用于回忆之旅小游戏“斗转星移”关卡。传送门成对出现，影响植物子弹和僵尸的运动轨迹，每隔一段时间会改变位置。注意传送门不会影响植物的索敌范围，即植物不会主动攻击前方传送门另一端的僵尸，只会在本行有僵尸时发动攻击。';
+      '本模块用于配置一代风格的传送门，常见于回忆之旅小游戏“斗转星移”关卡。传送门成对出现，影响植物子弹和僵尸的运动轨迹，每隔一段时间会改变位置。注意传送门不会影响植物的索敌范围，即植物不会主动攻击前方传送门另一端的僵尸，只会在本行有僵尸时发动攻击。';
 
   @override
   String get pvz1PassageHelpFieldsTitle => '参数介绍';
@@ -8023,7 +8123,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombossMechPropertiesLabel => '属性';
 
   @override
-  String get zombossMechAliasLabel => '代号 (仅支持英文字母)';
+  String get zombossMechAliasLabel => '代号 (仅支持英文字母；不支持空格)';
 
   @override
   String get zombossMechDeletePhase => '删除阶段';
@@ -8085,6 +8185,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get zombossMechSelectAction => '选择动作';
+
+  @override
+  String get zombossMechSummonJump => '召唤跳跃';
 
   @override
   String get zombossMechSelectRetreatAction => '选择撤退动作';
@@ -8642,7 +8745,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waveGeneratorModuleHelpIncompat => '模块兼容性提示';
 
   @override
-  String get waveGeneratorModuleHelpIncompatBody => '可能与部分模块不兼容，造成关卡闪退，请谨慎使用。';
+  String get waveGeneratorModuleHelpIncompatBody =>
+      '波次生成器可能与「看星星」等部分模块不兼容，造成关卡闪退，请谨慎使用。\n「罗马角斗行」模块在波次生成器下不会生效，请改用波次管理器。';
 
   @override
   String get waveGeneratorModuleHelpRow => '行号';
@@ -9059,7 +9163,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get customStageSectionAdvanced => '高级设置';
 
   @override
-  String get customStageAlias => '地图代号 (仅支持英文字母)';
+  String get customStageAlias => '地图代号 (仅支持英文字母；不支持空格)';
 
   @override
   String get customStageNoResourceGroups => '列表中没有资源组';
@@ -9521,7 +9625,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get lunarMineVeinHelpOverview =>
-      '在关卡开始时于场上放置月能水晶矿脉，常见于月球基地。晶矿初始无法提供能量，进入设定波次后，会在原位置生长出月能水晶，此后可正常采集供能。';
+      '在关卡开始时于场上放置月能水晶矿脉，常见于月球基地。晶矿初始无法提供能量，进入设定波次后，会在原位置生长出对应类型的水晶，此后可按其特性进行开采。选择晶矿类型后，点击网格放置；桌面端右键或移动端长按可删除。';
+
+  @override
+  String get lunarMineVeinTypePalette => '晶矿类型';
+
+  @override
+  String get lunarMineVeinHelpHardened =>
+      '外层有坚固岩石保护，需要使用植物的攻击摧毁外壳后才可以正常开采。坚壳晶矿生长出的坚壳水晶固定为3000生命值的版本。';
+
+  @override
+  String get lunarMineVeinHelpFragile =>
+      '采集过程会持续消耗耐久，直至晶体碎裂。可以添加蕴含宇宙能量豆的特殊易碎晶矿。';
+
+  @override
+  String get lunarMineVeinHelpRadiation =>
+      '每隔一段时间持续向四周发散辐射，将受到辐射的植物随机变为其他植物，对僵尸造成伤害或使其变异为宇宙辐射巨人僵尸。宇宙辐射巨人僵尸具备超高血量，击败时还将辐射附近的植物和僵尸。';
 
   @override
   String get lunarMineVeinHelpWaveTitle => '波次编号';
@@ -9544,6 +9663,129 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get moonPlacementGestureHint => '点击空地块添加项目；右键单击或长按已有项目的地块可将其移除。';
+
+  @override
+  String get moduleTitle_GladiatorRowModuleProperties => '罗马角斗行';
+
+  @override
+  String get moduleDesc_GladiatorRowModuleProperties =>
+      '临时封锁横向五格，根据角斗胜负获得奖励或惩罚';
+
+  @override
+  String get gladiatorSettings => '全局角斗与奖惩设置';
+
+  @override
+  String get gladiatorArenaDuration => '角斗时长 (ArenaDuration，单位：秒)';
+
+  @override
+  String get gladiatorRewardCount => '胜利能量豆奖励 (PlantWinPlantfoodCount)';
+
+  @override
+  String get gladiatorPunishmentCount =>
+      '失败铁笼数量 (ZombieWinPunishmentCageCount)';
+
+  @override
+  String get gladiatorPunishmentDuration =>
+      '失败空投持续时间 (ZombieWinPunishmentDuration，单位：秒)';
+
+  @override
+  String get gladiatorPunishmentLevel =>
+      '降落的僵尸阶级 (ZombieWinPunishmentZombieLevel)';
+
+  @override
+  String get gladiatorEncounters => '角斗安排 (Encounters)';
+
+  @override
+  String get gladiatorAddEncounter => '添加角斗';
+
+  @override
+  String get gladiatorRemoveEncounter => '删除当前角斗';
+
+  @override
+  String get gladiatorWave => '触发波次 (Wave，从0开始计数)';
+
+  @override
+  String get gladiatorRow => '所在行 (Row，从0开始计数)';
+
+  @override
+  String get gladiatorWarningDuration => '僵王登场预警时长 (WarningDuration，单位：秒)';
+
+  @override
+  String get gladiatorFirstCageDelay => '首个铁笼降落延迟 (FirstCageDelay，单位：秒)';
+
+  @override
+  String get gladiatorPreviewTitle => '角斗行范围预览';
+
+  @override
+  String get gladiatorPreviewLegend =>
+      '绿色方格代表固定位于第5列的奖杯，红色方格代表其余角斗格。僵尸图标表示铁笼出怪位置，同格数字表示僵尸的数量。点击网格可选择所在行。';
+
+  @override
+  String get gladiatorSpawns => '铁笼出怪安排 (Spawns)';
+
+  @override
+  String get gladiatorAddSpawn => '添加铁笼出怪';
+
+  @override
+  String get gladiatorSpawnTime => '角斗开始后的出怪延迟 (Time，单位：秒)';
+
+  @override
+  String get gladiatorSpawnColumn => '出怪列 (GridX，从0开始计数)';
+
+  @override
+  String get gladiatorSpawnCount => '出怪数量 (Count)';
+
+  @override
+  String get gladiatorSpawnInterval => '出怪间隔 (Interval，单位：秒)';
+
+  @override
+  String get gladiatorSpawnLevel => '僵尸阶级 (Level)';
+
+  @override
+  String get gladiatorPunishmentPool =>
+      '失败惩罚僵尸池 (ZombieWinPunishmentZombiePool)';
+
+  @override
+  String get gladiatorPunishmentHint => '角斗失败后，空投铁笼从此列表按权重选择僵尸。权重越大，出现概率越高。';
+
+  @override
+  String get gladiatorAddPunishment => '添加惩罚僵尸';
+
+  @override
+  String get gladiatorWeight => '出现权重 (Weight)';
+
+  @override
+  String get gladiatorCompatibilityWarningTitle => '模块兼容性提示';
+
+  @override
+  String get gladiatorWaveGeneratorCompatibilityWarning =>
+      '「罗马角斗行」模块在波次生成器下不会生效，请改用波次管理器。';
+
+  @override
+  String get gladiatorUnderwaterMismatchWarning =>
+      '当前地图为海底世界外观的六行地图，「罗马角斗行」不会生成。请改用五行地图。';
+
+  @override
+  String get gladiatorLegacyModeWarning =>
+      '当前模块未明确启用奖杯对决模式 (GameplayVersion: 1)。0为旧版对决模式；此处的范围预览仅适用于奖杯模式，可在模块编辑页切换。';
+
+  @override
+  String get gladiatorUseTrophyMode => '使用奖杯对决模式';
+
+  @override
+  String get gladiatorHelpTipsTitle => '温馨提示';
+
+  @override
+  String get gladiatorHelpOverview =>
+      '此模块用于配置关卡中随波次出现的“角斗行”机制，常见于罗马荣光秘境。到达指定波次时，罗马僵王会出现在指定行，临时封锁该行的横向五格，消灭五格内原有的植物和僵尸，并停止五格外植物和僵尸的行动，形成“角斗行”。\n角斗行中心会升起一座奖杯。僵尸会通过右侧空投的铁笼进入角斗行，植物方需要竭尽全力保护奖杯，坚守到计时结束即可获胜。角斗胜利，玩家将获得大量能量豆奖励；角斗失败，场上会空投铁笼，释放大量僵尸。角斗结束后，角斗行内已有的植物和僵尸会被摧毁。';
+
+  @override
+  String get gladiatorHelpUsage =>
+      '上方的角斗时长、胜利能量豆数量及失败空投参数，以及下方的惩罚僵尸池和权重，均为全局参数，会对模块中的所有角斗生效。点击“添加角斗”，可设置每组角斗的具体参数。角斗的波次 (Wave)、所在行 (Row)、出怪列 (GridX) 均从0开始计数，如波次填0对应波次时间线的第1波，填4对应第5波。';
+
+  @override
+  String get gladiatorHelpTips =>
+      '角斗期间，种植植物不再消耗阳光，但仍然消耗能量。\n巨人僵尸等僵尸的秒杀攻击无法对奖杯造成伤害。\n植物射出角斗行范围的子弹会被围栏阻挡，而离开角斗行范围的僵尸或部分技能瞄准角斗行范围外的僵尸则会静止不动，在角斗计时结束后被释放，继续进攻。\n注意角斗行不会在“海底世界-海底两万里”或“海底世界-亚特兰蒂斯”等海底世界外观的六行地图中生成。\n新建模块使用奖杯对决模式 (GameplayVersion 为1)，0为旧版对决模式。\n「罗马角斗行」模块在波次生成器下不会生效，请改用波次管理器。';
 
   @override
   String get radiationMeteorHelpTitle => '辐射陨石';
@@ -9594,6 +9836,143 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get radiationMeteorModulePreviewLanding => '本波降落的陨石：';
+
+  @override
+  String get eventTitle_GravityGeneratorWaveActionProps => '重力发生器';
+
+  @override
+  String get eventDesc_GravityGeneratorWaveActionProps => '为植物或格子施加不同等级引力状态';
+
+  @override
+  String get gravityLevel => '引力状态 (GravityLevel)';
+
+  @override
+  String get gravityAnti => '反重力 (anti)';
+
+  @override
+  String get gravityHeavy => '超重力 (heavy)';
+
+  @override
+  String get gravityTargetType => '目标类型 (TargetType)';
+
+  @override
+  String get gravityTargetPlant => '随机植物';
+
+  @override
+  String get gravityTargetGrid => '固定格子';
+
+  @override
+  String get gravityRangeX => '横向偏移 (Range.mX)';
+
+  @override
+  String get gravityRangeY => '纵向偏移 (Range.mY)';
+
+  @override
+  String get gravityRangeWidth => '范围宽度 (Range.mWidth，单位：格)';
+
+  @override
+  String get gravityRangeHeight => '范围高度 (Range.mHeight，单位：格)';
+
+  @override
+  String get gravityTargetX => '目标列 (TargetGrid.mX，从0开始)';
+
+  @override
+  String get gravityTargetY => '目标行 (TargetGrid.mY，从0开始)';
+
+  @override
+  String get gravityPreviewTitle => '引力场生效范围预览';
+
+  @override
+  String get gravityPlantRangeHint =>
+      '随机选择场上一株植物作为定位基准，影响范围内的植物和僵尸。十字标记为目标植物；范围从偏移后的位置起，向右、向下延伸，并包含起始格。负偏移表示向左或向上移动范围起点。';
+
+  @override
+  String get gravityGridRangeHint =>
+      '行列均从0开始计数，点击网格可选择定位基准格。范围起点为目标格加上横向、纵向偏移，再向右、向下延伸，宽度和高度均包含起始格。例如偏移为0、宽3高1时，覆盖目标格及其右侧两格。';
+
+  @override
+  String get gravityCenterLegend => '十字：定位基准点';
+
+  @override
+  String get gravityRestrictions => '不受影响的植物和僵尸 (TargetRestriction)';
+
+  @override
+  String get gravityRestrictionHint => '此列表中的植物和僵尸不会受到引力场的影响。留空表示不额外排除任何类型。';
+
+  @override
+  String get gravityAddPlantRestriction => '添加不受影响的植物';
+
+  @override
+  String get gravityAddZombieRestriction => '添加不受影响的僵尸';
+
+  @override
+  String get gravityAdvancedSettings => '动作与时序参数';
+
+  @override
+  String get gravityActivationDelay => '触发延迟 (ActivationDelay，单位：秒)';
+
+  @override
+  String get gravityDuration => '引力状态持续时间 (Duration，单位：秒)';
+
+  @override
+  String get gravityDeployDuration => '装置展开时间 (DeployDuration，单位：秒)';
+
+  @override
+  String get gravityChargeDuration => '施加引力前的蓄力时间 (ChargeDuration，单位：秒)';
+
+  @override
+  String get gravityRetractDuration => '装置回收冷却时间 (RetractDuration，单位：秒)';
+
+  @override
+  String get gravityPlantExitDelay => '植物浮空后消失时间 (PlantExitDelay，单位：秒)';
+
+  @override
+  String get gravityZombieRiseDuration => '僵尸浮空上升时间 (ZombieRiseDuration，单位：秒)';
+
+  @override
+  String get gravityZombieTranslateDuration =>
+      '僵尸浮空前移时间 (ZombieTranslateDuration，单位：秒)';
+
+  @override
+  String get gravityZombieFallDuration =>
+      '僵尸到达目的地后的降落时间 (ZombieFallDuration，单位：秒)';
+
+  @override
+  String get gravityZombieLiftHeight => '僵尸浮空高度 (ZombieLiftHeight)';
+
+  @override
+  String get gravityZombieForwardDistance =>
+      '僵尸前移距离 (ZombieForwardDistance，64像素=1格)';
+
+  @override
+  String get gravityHeavyPlantSinkDuration =>
+      '超重力植物下沉时间 (HeavyPlantSinkDuration，单位：秒)';
+
+  @override
+  String get gravityHelpParametersTitle => '参数说明';
+
+  @override
+  String get gravityHelpParameters =>
+      '本事件默认包含反重力和超重力两种状态使用的所有参数。动作参数区会随引力状态切换，仅显示当前模式使用的参数；另一模式已填写的数值会保留。';
+
+  @override
+  String get gravityHelpTipsTitle => '温馨提示';
+
+  @override
+  String get gravitySequentialNotice =>
+      '多个重力发生器事件不能同时进行。前一次反重力或超重力流程结束后才能进行下一次，请错开事件触发时间。';
+
+  @override
+  String get gravityHelpOverview =>
+      '僵尸方基地上的装置，作为预设战场事件在指定波次触发。装置从基地探出后锁定场上固定范围内的植物或僵尸，发射引力光束为其施加不同等级引力状态，干扰植物攻击节奏与僵尸移动方式。';
+
+  @override
+  String get gravityHelpAnti =>
+      '被锁定的植物缓慢上浮，一段时间后飘离战场消失；被锁定的僵尸上升并向前移动，空中免疫平射攻击。\n当重力树攻击范围内有处于反重力状态的植物时，重力树会攻击并清除攻击范围内植物的反重力状态。重力树自身免疫引力发生器效果，不被浮空，也不被压入土中。';
+
+  @override
+  String get gravityHelpHeavy =>
+      '被锁定的植物将其一半压入土中，期间无法攻击，可被僵尸啃食；被锁定的僵尸稳固行进，免疫击退效果。\n宇宙飞碟瓜可以解除僵尸的超重力状态，并使其进入悬浮态；同时还可以解除植物的超重力状态，使其恢复正常。';
 
   @override
   String get rocketLandingHelpTitle => '火箭降落';

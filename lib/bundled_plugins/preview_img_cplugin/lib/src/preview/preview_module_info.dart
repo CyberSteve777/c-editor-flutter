@@ -669,11 +669,11 @@ PreviewModuleInfoPayload _seeingStars(
   }
   final cells = _cellsList(data.matchPlants.map((p) => (p.gridX, p.gridY)));
   final lines = <String>[
-    t('previewGenSeeingStarsCells', 'Pattern cells: {count}', {
+    t('previewGenSeeingStarsCells', 'Target plants: {count}', {
       'count': data.matchPlants.length,
     }),
     t('previewGenSeeingStarsCycle', 'Waves loop back to wave {wave}', {
-      'wave': data.cycleIndex,
+      'wave': data.cycleIndex + 1,
     }),
     t(
       'previewGenSeeingStarsSettlement',
@@ -688,7 +688,7 @@ PreviewModuleInfoPayload _seeingStars(
     lines: lines,
     gridNotes: [
       t('previewGenSeeingStarsCycle', 'Waves loop back to wave {wave}', {
-        'wave': data.cycleIndex,
+        'wave': data.cycleIndex + 1,
       }),
       t(
         'previewGenSeeingStarsSettlement',
@@ -702,7 +702,7 @@ PreviewModuleInfoPayload _seeingStars(
         ? const []
         : [
             PreviewIconSection(
-              title: t('previewGenSeeingStarsCells', 'Pattern cells: {count}', {
+              title: t('previewGenSeeingStarsCells', 'Target plants: {count}', {
                 'count': data.matchPlants.length,
               }),
               items: [
@@ -947,8 +947,8 @@ PreviewModuleInfoPayload _lunarVeins(
           items: [
             for (final p in byWave[w]!)
               PreviewItem(
-                id: 'lunar_mine_vein_${p.gridX}_${p.gridY}',
-                assetPath: GridItemRepository.getIconPath('lunar_mine_vein'),
+                id: '${p.typeName}_${p.gridX}_${p.gridY}',
+                assetPath: GridItemRepository.getIconPath(p.typeName),
                 gridX: p.gridX,
                 gridY: p.gridY,
               ),
