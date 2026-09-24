@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/autosave_settings_dialog.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_module_order_utils.dart';
 import 'package:c_editor/data/cowboy_minigame_utils.dart';
@@ -221,6 +222,10 @@ class _EditorScreenState extends State<EditorScreen> {
       return false;
     }
     if (context.read<EditorCubit>().state.hasChanges) {
+      if (context.read<SettingsCubit>().state.autosave) {
+        await _save();
+        return true;
+      }
       return await _confirmLeave();
     }
     return true;
@@ -3771,6 +3776,17 @@ class _EditorScreenState extends State<EditorScreen> {
                       ),
                     ),
                     PopupMenuItem(
+                      value: 'autosave',
+                      child: EditorPopupMenuTile(
+                        leading: const Icon(Icons.save_outlined),
+                        title: Text(
+                          settings.autosave
+                              ? (l10n?.autosaveOn ?? 'Autosave: on')
+                              : (l10n?.autosaveOff ?? 'Autosave: off'),
+                        ),
+                      ),
+                    ),
+                    PopupMenuItem(
                       value: 'level_overview',
                       enabled: _ec.state.levelFile != null,
                       child: EditorPopupMenuTile(
@@ -3817,6 +3833,8 @@ class _EditorScreenState extends State<EditorScreen> {
                       _showUiScaleDialog(context);
                     } else if (value == 'theme') {
                       context.read<SettingsCubit>().cycleTheme();
+                    } else if (value == 'autosave') {
+                      showAutosaveSettingsDialog(context);
                     } else if (value == 'level_overview') {
                       await openLevelOverviewFromOpenSession(context);
                     } else {

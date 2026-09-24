@@ -16,7 +16,7 @@ on:
         description: 'Create the release as a draft'
         required: false
         type: boolean
-        default: false
+        default: true
 
 concurrency:
   group: publish-release

@@ -43,10 +43,12 @@ class SettingsCubit extends Cubit<SettingsState> {
       );
     }
     final uiScale = prefs.getDouble('ui_scale') ?? 1.0;
+    final autosave = prefs.getBool('autosave') ?? false;
     return SettingsState(
       locale: locale,
       themeMode: themeMode,
       uiScale: uiScale,
+      autosave: autosave,
     );
   }
 
@@ -67,5 +69,10 @@ class SettingsCubit extends Cubit<SettingsState> {
   void setUiScale(double scale) {
     emit(state.copyWith(uiScale: scale));
     _prefs.setDouble('ui_scale', scale);
+  }
+
+  void setAutosave(bool enabled) {
+    emit(state.copyWith(autosave: enabled));
+    _prefs.setBool('autosave', enabled);
   }
 }

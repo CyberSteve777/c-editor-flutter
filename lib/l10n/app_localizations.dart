@@ -496,6 +496,30 @@ abstract class AppLocalizations {
   /// **'Clear cache'**
   String get clearCache;
 
+  /// No description provided for @autosave.
+  ///
+  /// In en, this message translates to:
+  /// **'Autosave'**
+  String get autosave;
+
+  /// No description provided for @autosaveOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Autosave: on'**
+  String get autosaveOn;
+
+  /// No description provided for @autosaveOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Autosave: off'**
+  String get autosaveOff;
+
+  /// No description provided for @autosaveSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save automatically when leaving the editor'**
+  String get autosaveSubtitle;
+
   /// No description provided for @ultra.
   ///
   /// In en, this message translates to:
@@ -4143,6 +4167,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select plant'**
   String get selectPlant;
+
+  /// No description provided for @selectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select ALL'**
+  String get selectAll;
 
   /// No description provided for @searchPlant.
   ///

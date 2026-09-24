@@ -218,6 +218,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get clearCache => 'Очистить кэш';
 
   @override
+  String get autosave => 'Автосохранение';
+
+  @override
+  String get autosaveOn => 'Автосохранение: вкл.';
+
+  @override
+  String get autosaveOff => 'Автосохранение: выкл.';
+
+  @override
+  String get autosaveSubtitle =>
+      'Сохранять автоматически при выходе из редактора';
+
+  @override
   String get ultra => 'Ультра';
 
   @override
@@ -2264,6 +2277,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get selectPlant => 'Выбрать растение';
+
+  @override
+  String get selectAll => 'Выбрать все';
 
   @override
   String get searchPlant => 'Поиск растения';

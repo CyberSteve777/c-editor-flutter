@@ -216,6 +216,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearCache => 'Clear cache';
 
   @override
+  String get autosave => 'Autosave';
+
+  @override
+  String get autosaveOn => 'Autosave: on';
+
+  @override
+  String get autosaveOff => 'Autosave: off';
+
+  @override
+  String get autosaveSubtitle => 'Save automatically when leaving the editor';
+
+  @override
   String get ultra => 'Ultra';
 
   @override
@@ -2248,6 +2260,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectPlant => 'Select plant';
+
+  @override
+  String get selectAll => 'Select ALL';
 
   @override
   String get searchPlant => 'Search plant';
