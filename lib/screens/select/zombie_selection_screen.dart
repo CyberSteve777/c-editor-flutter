@@ -23,7 +23,7 @@ import 'package:c_editor/widgets/editor_components.dart'
 const String _kUnknownIconPath = 'assets/images/others/unknown.webp';
 const String _kStayTunedZombieId = 'stay_tuned';
 
-/// ZombieTag → module objClass required to enable those zombies.
+/// ZombieTag â module objClass required to enable those zombies.
 const Map<ZombieTag, String> _moduleGatedZombieTags = {};
 
 Set<String> _levelModuleObjClasses(PvzLevelFile levelFile) {
@@ -36,7 +36,6 @@ enum _ZombieBlockedReason {
   stayTunedFallback,
   missingModule,
 }
-enum _ZombieBlockedReason { stayTunedTaleZCorp, stayTunedFallback }
 
 class _ZombieSelectionViewState {
   _ZombieSelectionViewState({required this.category, required this.tag})
@@ -75,7 +74,7 @@ class ZombieSelectionScreen extends StatefulWidget {
   final void Function(List<String>)? onMultiZombieSelected;
   final VoidCallback onBack;
 
-  /// When set (e.g. from the level editor), enables Kongfu rocket → flick module prompt.
+  /// When set (e.g. from the level editor), enables Kongfu rocket â flick module prompt.
   final EditorCubit? editorCubit;
 
   /// IDs hidden from the grid (e.g. entries in a conflicting list).
@@ -310,11 +309,6 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
           }
         }
       }
-    if (zombie.id != _kStayTunedZombieId) return null;
-    final hasTaleZCorp = zombie.tags.contains(ZombieTag.taleZCorp);
-    // The shared stay_tuned entry uses generic copy on the all-zombies tab.
-    if (hasTaleZCorp && _selectedTag == ZombieTag.taleZCorp) {
-      return _ZombieBlockedReason.stayTunedTaleZCorp;
     }
     return null;
   }
@@ -340,13 +334,6 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     return ids.where((id) => _zombieBlockedReasonForId(id) == null).toList();
   }
 
-  String? _requiredModuleForZombie(ZombieInfo zombie) {
-    if (isTargetZombie(zombie.id)) return 'OakTrainProperties';
-    if (isCamelTouchZombie(zombie.id)) return 'CamelMinigameProperties';
-    for (final entry in _moduleGatedZombieTags.entries) {
-      if (zombie.tags.contains(entry.key)) return entry.value;
-    }
-    return null;
   void _selectAllVisible(List<ZombieInfo> zombies) {
     final selectableIds = zombies
         .where((zombie) => _zombieBlockedReason(zombie) == null)
@@ -376,12 +363,27 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
     });
   }
 
+  String? _requiredModuleForZombie(ZombieInfo zombie) {
+    if (isTargetZombie(zombie.id)) return 'OakTrainProperties';
+    if (isCamelTouchZombie(zombie.id)) return 'CamelMinigameProperties';
+    for (final entry in _moduleGatedZombieTags.entries) {
+      if (zombie.tags.contains(entry.key)) return entry.value;
+    }
+    return null;
+  }
+
   Future<void> _showZombieBlockedDialog(
     BuildContext context,
     _ZombieBlockedReason reason,
   ) async {
     final l10n = AppLocalizations.of(context);
     final (title, message) = switch (reason) {
+      _ZombieBlockedReason.stayTunedMoon => (
+        l10n?.stayTunedMoonZombieBlockedTitle ?? 'A Message from Space',
+        l10n?.stayTunedMoonZombieBlockedMessage ??
+            'The brand-new world, Moon Base, is coming in the '
+                'not-too-distant future. Stay tuned!',
+      ),
       _ZombieBlockedReason.stayTunedTaleZCorp => (
         l10n?.stayTunedTaleZCorpZombieBlockedTitle ?? 'To be continued',
         l10n?.stayTunedTaleZCorpZombieBlockedMessage ??

@@ -2400,6 +2400,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get comingSoonPlantBlockedMessage => '植物们仍在茁壮成长。敬请期待后续更新！';
 
   @override
+  String get stayTunedMoonZombieBlockedLabel => '来自宇宙的预告';
+
+  @override
+  String get stayTunedMoonZombieBlockedTitle => '来自宇宙的预告';
+
+  @override
+  String get stayTunedMoonZombieBlockedMessage => '月球基地第二章节即将推出，敬请关注！';
+
+  @override
   String get stayTunedTaleZCorpZombieBlockedLabel => 'Z公司的工作尚未结束';
 
   @override

@@ -2480,6 +2480,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'The plants are still growing strong. Stay tuned for future updates!';
 
   @override
+  String get stayTunedMoonZombieBlockedLabel => 'A Message from Space';
+
+  @override
+  String get stayTunedMoonZombieBlockedTitle => 'A Message from Space';
+
+  @override
+  String get stayTunedMoonZombieBlockedMessage =>
+      'Moon BaseZ Part 2 is coming soon. Keep a lookout!';
+
+  @override
   String get stayTunedTaleZCorpZombieBlockedLabel => 'Work\'s Not Over Yet';
 
   @override

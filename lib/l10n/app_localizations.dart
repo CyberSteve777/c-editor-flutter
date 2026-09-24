@@ -4516,6 +4516,24 @@ abstract class AppLocalizations {
   /// **'The plants are still growing strong. Stay tuned for future updates!'**
   String get comingSoonPlantBlockedMessage;
 
+  /// No description provided for @stayTunedMoonZombieBlockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get stayTunedMoonZombieBlockedLabel;
+
+  /// No description provided for @stayTunedMoonZombieBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A Message from Space'**
+  String get stayTunedMoonZombieBlockedTitle;
+
+  /// No description provided for @stayTunedMoonZombieBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Moon BaseZ Part 2 is coming soon. Keep a lookout!'**
+  String get stayTunedMoonZombieBlockedMessage;
+
   /// No description provided for @stayTunedTaleZCorpZombieBlockedLabel.
   ///
   /// In en, this message translates to:

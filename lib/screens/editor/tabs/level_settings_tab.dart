@@ -214,17 +214,6 @@ class _LevelSettingsTabState extends State<LevelSettingsTab> {
     final coreModules = currentModulesList.where((m) => m.isCore).toList();
     final miscModules = currentModulesList.where((m) => !m.isCore).toList();
 
-    final existingObjClasses = currentModulesList
-        .map((m) => m.objClass)
-        .toSet();
-    final activeConflicts = ConflictRegistry.getActiveConflicts(
-      context,
-      existingObjClasses,
-      levelFile: _levelFileWithDefinition(),
-    );
-    final levelWarnings =
-        widget.warnings ??
-        WarningRegistry.forLevel(
     final levelIssues =
         widget.issues ??
         LevelIssueRegistry.forLevel(
