@@ -1,154 +1,21 @@
 import 'package:c_editor/data/pvz_models/PvzModel.dart';
 
-class StatueMazeModulePropertiesData extends PvzModel {
-  StatueMazeModulePropertiesData({List<StatueMazeSetData>? sets})
-    : sets = List<StatueMazeSetData>.from(sets ?? const []);
-
-  List<StatueMazeSetData> sets;
-
-  factory StatueMazeModulePropertiesData.createDefault() {
-    return StatueMazeModulePropertiesData(
-      sets: [StatueMazeSetData.createDefault()],
-    );
-  }
-
-  factory StatueMazeModulePropertiesData.fromJson(Map<String, dynamic> json) {
-    final raw = json['Sets'];
-    final sets = <StatueMazeSetData>[];
-    if (raw is List) {
-      for (final e in raw) {
-        if (e is Map) {
-          sets.add(
-            StatueMazeSetData.fromJson(Map<String, dynamic>.from(e)),
-          );
-        }
-      }
-    }
-    return StatueMazeModulePropertiesData(sets: sets);
-  }
-
-  @override
-  Map<String, dynamic> toJson() => {
-    'Sets': sets.map((e) => e.toJson()).toList(),
-  };
-}
-
-class StatueMazeSetData extends PvzModel {
-  StatueMazeSetData({
-    this.matrixSize = 3,
-    this.displayTime = 10.0,
-    this.targetNum = 1,
-    this.bonusLife = 0,
-    List<StatueMazeTileData>? tiles,
-    List<StatueMazeRotationData>? rotations,
-  }) : tiles = List<StatueMazeTileData>.from(tiles ?? const []),
-       rotations = List<StatueMazeRotationData>.from(rotations ?? const []);
-
-  int matrixSize;
-  double displayTime;
-  int targetNum;
-  int bonusLife;
-  List<StatueMazeTileData> tiles;
-  List<StatueMazeRotationData> rotations;
-
-  factory StatueMazeSetData.createDefault() {
-    return StatueMazeSetData(
-      matrixSize: 3,
-      displayTime: 10.0,
-      targetNum: 1,
-      bonusLife: 0,
-      tiles: [StatueMazeTileData(type: 'c')],
-      rotations: [
-        StatueMazeRotationData(
-          type: 'c',
-          waitDuration: 1.0,
-          rotateTime: 0.5,
-        ),
-      ],
-    );
-  }
-
-  factory StatueMazeSetData.fromJson(Map<String, dynamic> json) {
-    final tiles = <StatueMazeTileData>[];
-    final rawTiles = json['Tiles'];
-    if (rawTiles is List) {
-      for (final e in rawTiles) {
-        if (e is Map) {
-          tiles.add(
-            StatueMazeTileData.fromJson(Map<String, dynamic>.from(e)),
-          );
-        } else if (e is String) {
-          tiles.add(StatueMazeTileData(type: e));
-        }
-      }
-    }
-
-    final rotations = <StatueMazeRotationData>[];
-    final rawRotations = json['Rotations'];
-    if (rawRotations is List) {
-      for (final e in rawRotations) {
-        if (e is Map) {
-          rotations.add(
-            StatueMazeRotationData.fromJson(Map<String, dynamic>.from(e)),
-          );
-        }
-      }
-    }
-
-    return StatueMazeSetData(
-      matrixSize: (json['MatrixSize'] as num?)?.toInt() ?? 3,
-      displayTime: (json['DisplayTime'] as num?)?.toDouble() ?? 10.0,
-      targetNum: (json['TargetNum'] as num?)?.toInt() ?? 1,
-      bonusLife: (json['BonusLife'] as num?)?.toInt() ?? 0,
-      tiles: tiles,
-      rotations: rotations,
-    );
-  }
-
-  @override
-  Map<String, dynamic> toJson() => {
-    'MatrixSize': matrixSize,
-    'DisplayTime': displayTime,
-    'TargetNum': targetNum,
-    'BonusLife': bonusLife,
-    'Tiles': tiles.map((e) => e.toJson()).toList(),
-    'Rotations': rotations.map((e) => e.toJson()).toList(),
-  };
-}
-
-class StatueMazeTileData extends PvzModel {
-  StatueMazeTileData({this.type = 'c'});
-
-  /// `"c"` = correct tile, `"ac"` = all-correct target tile.
-  String type;
-
-  factory StatueMazeTileData.fromJson(Map<String, dynamic> json) {
-    return StatueMazeTileData(
-      type: json['Type'] as String? ?? 'c',
-    );
-  }
-
-  @override
-  Map<String, dynamic> toJson() => {'Type': type};
-}
-
-class StatueMazeRotationData extends PvzModel {
-  StatueMazeRotationData({
+class StatueMatrixInfo extends PvzModel {
+  StatueMatrixInfo({
     this.type = 'c',
-    this.waitDuration = 1.0,
-    this.rotateTime = 0.5,
+    this.waitDuration = 2.0,
+    this.rotateTime = 1.5,
   });
 
-  /// `"c"` = clockwise, `"ac"` = anti-clockwise.
   String type;
   double waitDuration;
   double rotateTime;
 
-  factory StatueMazeRotationData.fromJson(Map<String, dynamic> json) {
-    return StatueMazeRotationData(
+  factory StatueMatrixInfo.fromJson(Map<String, dynamic> json) {
+    return StatueMatrixInfo(
       type: json['Type'] as String? ?? 'c',
-      waitDuration: (json['WaitDuration'] as num?)?.toDouble() ?? 1.0,
-      rotateTime: (json['RotateTime'] as num?)?.toDouble() ?? 0.5,
+      waitDuration: (json['WaitDuration'] as num?)?.toDouble() ?? 2.0,
+      rotateTime: (json['RotateTime'] as num?)?.toDouble() ?? 1.5,
     );
   }
 
@@ -157,5 +24,84 @@ class StatueMazeRotationData extends PvzModel {
     'Type': type,
     'WaitDuration': waitDuration,
     'RotateTime': rotateTime,
+  };
+}
+
+class StatueSetInfo extends PvzModel {
+  StatueSetInfo({
+    this.matrixSize = 4,
+    this.displayTime = 3.0,
+    this.targetNum = 3,
+    List<StatueMatrixInfo>? matrixInfos,
+    this.bonusLife = 0,
+  }) : matrixInfos = matrixInfos ?? [];
+
+  int matrixSize;
+  double displayTime;
+  int targetNum;
+  List<StatueMatrixInfo> matrixInfos;
+  int bonusLife;
+
+  factory StatueSetInfo.fromJson(Map<String, dynamic> json) {
+    final rawInfos = json['MatrixInfos'];
+    final infos = <StatueMatrixInfo>[];
+    if (rawInfos is List) {
+      for (final e in rawInfos) {
+        if (e is Map<String, dynamic>) {
+          infos.add(StatueMatrixInfo.fromJson(e));
+        } else if (e is Map) {
+          infos.add(StatueMatrixInfo.fromJson(Map<String, dynamic>.from(e)));
+        }
+      }
+    }
+    return StatueSetInfo(
+      matrixSize: json['MatrixSize'] as int? ?? 4,
+      displayTime: (json['DisplayTime'] as num?)?.toDouble() ?? 3.0,
+      targetNum: json['TargetNum'] as int? ?? 3,
+      matrixInfos: infos,
+      bonusLife: json['BonusLife'] as int? ?? 0,
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+    'MatrixSize': matrixSize,
+    'DisplayTime': displayTime,
+    'TargetNum': targetNum,
+    'MatrixInfos': matrixInfos.map((e) => e.toJson()).toList(),
+    'BonusLife': bonusLife,
+  };
+}
+
+class StatueMazeModulePropertiesData extends PvzModel {
+  StatueMazeModulePropertiesData({List<StatueSetInfo>? setInfos})
+      : setInfos = setInfos ?? [StatueSetInfo()];
+
+  List<StatueSetInfo> setInfos;
+
+  factory StatueMazeModulePropertiesData.createDefault() {
+    return StatueMazeModulePropertiesData(
+      setInfos: [StatueSetInfo()],
+    );
+  }
+
+  factory StatueMazeModulePropertiesData.fromJson(Map<String, dynamic> json) {
+    final rawSets = json['SetInfos'];
+    final sets = <StatueSetInfo>[];
+    if (rawSets is List) {
+      for (final e in rawSets) {
+        if (e is Map<String, dynamic>) {
+          sets.add(StatueSetInfo.fromJson(e));
+        } else if (e is Map) {
+          sets.add(StatueSetInfo.fromJson(Map<String, dynamic>.from(e)));
+        }
+      }
+    }
+    return StatueMazeModulePropertiesData(setInfos: sets.isEmpty ? null : sets);
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+    'SetInfos': setInfos.map((e) => e.toJson()).toList(),
   };
 }

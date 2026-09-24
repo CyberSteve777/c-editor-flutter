@@ -2,69 +2,62 @@ import 'package:c_editor/data/pvz_models/PvzModel.dart';
 
 class CamelMinigamePropertiesData extends PvzModel {
   CamelMinigamePropertiesData({
-    this.additionalXBufferBetweenChains = 1.0,
-    this.riseStaggerBetweenCamels = 0.5,
-    this.cardMatchTime = 0.5,
-    this.cardMatchingTime = 1.0,
-    this.cardNoMatchTime = 1.0,
-    List<int>? cardTypesUsed,
-    this.tutorialZombieRiseDelay = 1.0,
-    this.maxSpawnX = 8,
-    this.minSpawnXStart = 0,
-    this.minSpawnXEnd = 2,
-    this.showTutorial = false,
-  }) : cardTypesUsed = List<int>.from(cardTypesUsed ?? const [1, 2, 3]);
+    this.additionalXBufferBetweenChains = 50,
+    this.camelSegmentRiseStagger = 0.33,
+    this.cardMatchTime = 0,
+    this.cardMatchingTime = 0.5,
+    this.cardNoMatchTime = 1.5,
+    this.cardTypesUsed = 3,
+    this.initialTutorialZombieRiseDelay = 2,
+    this.maxSpawnX = 600,
+    this.minSpawnXEnd = 500,
+    this.minSpawnXStart = 550,
+    this.showTutorial = true,
+  });
 
-  double additionalXBufferBetweenChains;
-  double riseStaggerBetweenCamels;
+  int additionalXBufferBetweenChains;
+  double camelSegmentRiseStagger;
   double cardMatchTime;
   double cardMatchingTime;
   double cardNoMatchTime;
-  List<int> cardTypesUsed;
-  double tutorialZombieRiseDelay;
-  double maxSpawnX;
-  double minSpawnXStart;
-  double minSpawnXEnd;
+  int cardTypesUsed;
+  double initialTutorialZombieRiseDelay;
+  int maxSpawnX;
+  int minSpawnXEnd;
+  int minSpawnXStart;
   bool showTutorial;
 
   factory CamelMinigamePropertiesData.fromJson(Map<String, dynamic> json) {
-    final rawTypes = json['CardTypesUsed'];
-    final types = <int>[];
-    if (rawTypes is List) {
-      for (final e in rawTypes) {
-        if (e is num) types.add(e.toInt());
-      }
-    }
     return CamelMinigamePropertiesData(
       additionalXBufferBetweenChains:
-          (json['AdditionalXBufferBetweenChains'] as num?)?.toDouble() ?? 1.0,
-      riseStaggerBetweenCamels:
-          (json['RiseStaggerBetweenCamels'] as num?)?.toDouble() ?? 0.5,
-      cardMatchTime: (json['CardMatchTime'] as num?)?.toDouble() ?? 0.5,
-      cardMatchingTime: (json['CardMatchingTime'] as num?)?.toDouble() ?? 1.0,
-      cardNoMatchTime: (json['CardNoMatchTime'] as num?)?.toDouble() ?? 1.0,
-      cardTypesUsed: types.isEmpty ? null : types,
-      tutorialZombieRiseDelay:
-          (json['TutorialZombieRiseDelay'] as num?)?.toDouble() ?? 1.0,
-      maxSpawnX: (json['MaxSpawnX'] as num?)?.toDouble() ?? 8,
-      minSpawnXStart: (json['MinSpawnXStart'] as num?)?.toDouble() ?? 0,
-      minSpawnXEnd: (json['MinSpawnXEnd'] as num?)?.toDouble() ?? 2,
-      showTutorial: json['ShowTutorial'] as bool? ?? false,
+          json['AdditionalXBufferBetweenChains'] as int? ?? 50,
+      camelSegmentRiseStagger:
+          (json['CamelSegmentRiseStagger'] as num?)?.toDouble() ?? 0.33,
+      cardMatchTime: (json['CardMatchTime'] as num?)?.toDouble() ?? 0,
+      cardMatchingTime: (json['CardMatchingTime'] as num?)?.toDouble() ?? 0.5,
+      cardNoMatchTime: (json['CardNoMatchTime'] as num?)?.toDouble() ?? 1.5,
+      cardTypesUsed: json['CardTypesUsed'] as int? ?? 3,
+      initialTutorialZombieRiseDelay:
+          (json['InitialTutorialZombieRiseDelay'] as num?)?.toDouble() ?? 2,
+      maxSpawnX: json['MaxSpawnX'] as int? ?? 600,
+      minSpawnXEnd: json['MinSpawnXEnd'] as int? ?? 500,
+      minSpawnXStart: json['MinSpawnXStart'] as int? ?? 550,
+      showTutorial: json['ShowTutorial'] as bool? ?? true,
     );
   }
 
   @override
   Map<String, dynamic> toJson() => {
     'AdditionalXBufferBetweenChains': additionalXBufferBetweenChains,
-    'RiseStaggerBetweenCamels': riseStaggerBetweenCamels,
+    'CamelSegmentRiseStagger': camelSegmentRiseStagger,
     'CardMatchTime': cardMatchTime,
     'CardMatchingTime': cardMatchingTime,
     'CardNoMatchTime': cardNoMatchTime,
-    'CardTypesUsed': List<int>.from(cardTypesUsed),
-    'TutorialZombieRiseDelay': tutorialZombieRiseDelay,
+    'CardTypesUsed': cardTypesUsed,
+    'InitialTutorialZombieRiseDelay': initialTutorialZombieRiseDelay,
     'MaxSpawnX': maxSpawnX,
-    'MinSpawnXStart': minSpawnXStart,
     'MinSpawnXEnd': minSpawnXEnd,
-    if (showTutorial) 'ShowTutorial': true,
+    'MinSpawnXStart': minSpawnXStart,
+    'ShowTutorial': showTutorial,
   };
 }

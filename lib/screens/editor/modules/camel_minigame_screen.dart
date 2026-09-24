@@ -1,7 +1,12 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
-import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/editor_components.dart'
+    show
+        EditorResponsiveInputField,
+        HelpSectionData,
+        showEditorHelpDialog;
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 class CamelMinigameScreen extends StatefulWidget {
@@ -24,19 +29,21 @@ class CamelMinigameScreen extends StatefulWidget {
 
 class _CamelMinigameScreenState extends State<CamelMinigameScreen> {
   static const _objClass = 'CamelMinigameProperties';
-  late String _alias;
+
   late PvzObject _moduleObj;
   late CamelMinigamePropertiesData _data;
+  late String _alias;
 
-  late TextEditingController _xBufferController;
-  late TextEditingController _riseStaggerController;
-  late TextEditingController _cardMatchController;
-  late TextEditingController _cardMatchingController;
-  late TextEditingController _cardNoMatchController;
-  late TextEditingController _tutorialRiseController;
-  late TextEditingController _maxSpawnXController;
-  late TextEditingController _minSpawnXStartController;
-  late TextEditingController _minSpawnXEndController;
+  late TextEditingController _xBufferCtrl;
+  late TextEditingController _riseStaggerCtrl;
+  late TextEditingController _cardMatchTimeCtrl;
+  late TextEditingController _cardMatchingTimeCtrl;
+  late TextEditingController _cardNoMatchTimeCtrl;
+  late TextEditingController _cardTypesUsedCtrl;
+  late TextEditingController _tutorialRiseDelayCtrl;
+  late TextEditingController _maxSpawnXCtrl;
+  late TextEditingController _minSpawnXEndCtrl;
+  late TextEditingController _minSpawnXStartCtrl;
 
   @override
   void initState() {
@@ -46,14 +53,20 @@ class _CamelMinigameScreenState extends State<CamelMinigameScreen> {
   }
 
   void _loadData() {
-    _moduleObj = widget.levelFile.objects.firstWhere(
-      (object) => object.aliases?.contains(_alias) == true,
-      orElse: () => PvzObject(
-        aliases: [_alias],
+    final alias = _alias;
+    final existing = widget.levelFile.objects.firstWhereOrNull(
+      (o) => o.aliases?.contains(alias) == true,
+    );
+    if (existing != null) {
+      _moduleObj = existing;
+    } else {
+      _moduleObj = PvzObject(
+        aliases: [alias],
         objClass: _objClass,
         objData: CamelMinigamePropertiesData().toJson(),
-      ),
-    );
+      );
+      widget.levelFile.objects.add(_moduleObj);
+    }
     try {
       _data = CamelMinigamePropertiesData.fromJson(
         Map<String, dynamic>.from(_moduleObj.objData as Map),
@@ -61,58 +74,57 @@ class _CamelMinigameScreenState extends State<CamelMinigameScreen> {
     } catch (_) {
       _data = CamelMinigamePropertiesData();
     }
-    _xBufferController = TextEditingController(
-      text: _fmt(_data.additionalXBufferBetweenChains),
+    _xBufferCtrl = TextEditingController(
+      text: _data.additionalXBufferBetweenChains.toString(),
     );
-    _riseStaggerController = TextEditingController(
-      text: _fmt(_data.riseStaggerBetweenCamels),
+    _riseStaggerCtrl = TextEditingController(
+      text: _data.camelSegmentRiseStagger.toString(),
     );
-    _cardMatchController = TextEditingController(
-      text: _fmt(_data.cardMatchTime),
+    _cardMatchTimeCtrl = TextEditingController(
+      text: _data.cardMatchTime.toString(),
     );
-    _cardMatchingController = TextEditingController(
-      text: _fmt(_data.cardMatchingTime),
+    _cardMatchingTimeCtrl = TextEditingController(
+      text: _data.cardMatchingTime.toString(),
     );
-    _cardNoMatchController = TextEditingController(
-      text: _fmt(_data.cardNoMatchTime),
+    _cardNoMatchTimeCtrl = TextEditingController(
+      text: _data.cardNoMatchTime.toString(),
     );
-    _tutorialRiseController = TextEditingController(
-      text: _fmt(_data.tutorialZombieRiseDelay),
+    _cardTypesUsedCtrl = TextEditingController(
+      text: _data.cardTypesUsed.toString(),
     );
-    _maxSpawnXController = TextEditingController(
-      text: _fmt(_data.maxSpawnX),
+    _tutorialRiseDelayCtrl = TextEditingController(
+      text: _data.initialTutorialZombieRiseDelay.toString(),
     );
-    _minSpawnXStartController = TextEditingController(
-      text: _fmt(_data.minSpawnXStart),
+    _maxSpawnXCtrl = TextEditingController(
+      text: _data.maxSpawnX.toString(),
     );
-    _minSpawnXEndController = TextEditingController(
-      text: _fmt(_data.minSpawnXEnd),
+    _minSpawnXEndCtrl = TextEditingController(
+      text: _data.minSpawnXEnd.toString(),
     );
-  }
-
-  String _fmt(double v) {
-    if (v == v.roundToDouble()) return '${v.toInt()}';
-    return '$v';
-  }
-
-  @override
-  void dispose() {
-    _xBufferController.dispose();
-    _riseStaggerController.dispose();
-    _cardMatchController.dispose();
-    _cardMatchingController.dispose();
-    _cardNoMatchController.dispose();
-    _tutorialRiseController.dispose();
-    _maxSpawnXController.dispose();
-    _minSpawnXStartController.dispose();
-    _minSpawnXEndController.dispose();
-    super.dispose();
+    _minSpawnXStartCtrl = TextEditingController(
+      text: _data.minSpawnXStart.toString(),
+    );
   }
 
   void _sync() {
     _moduleObj.objData = _data.toJson();
     widget.onChanged();
     setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _xBufferCtrl.dispose();
+    _riseStaggerCtrl.dispose();
+    _cardMatchTimeCtrl.dispose();
+    _cardMatchingTimeCtrl.dispose();
+    _cardNoMatchTimeCtrl.dispose();
+    _cardTypesUsedCtrl.dispose();
+    _tutorialRiseDelayCtrl.dispose();
+    _maxSpawnXCtrl.dispose();
+    _minSpawnXEndCtrl.dispose();
+    _minSpawnXStartCtrl.dispose();
+    super.dispose();
   }
 
   void _handleAliasChanged(String newAlias) {
@@ -125,72 +137,48 @@ class _CamelMinigameScreenState extends State<CamelMinigameScreen> {
     setState(() => _alias = newAlias);
   }
 
-  void _parseDouble(String value, void Function(double) assign) {
-    final n = double.tryParse(value.trim());
-    if (n != null) {
-      assign(n);
-      _sync();
-    }
-  }
-
-  Widget _doubleField({
-    required String label,
-    required TextEditingController controller,
-    required void Function(double) onParsed,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: EditorResponsiveInputField(
-        label: label,
-        decoration: const InputDecoration(border: OutlineInputBorder()),
-        builder: (context, decoration) => TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: decoration,
-          onChanged: (v) => _parseDouble(v, onParsed),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
-
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: widget.onBack,
+        ),
         title: buildEditorObjectAppBarTitle(
           context: context,
           localizedName: resolveModuleTitleByObjClass(context, _objClass),
           isEvent: false,
           objClass: _objClass,
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: l10n.back,
-          onPressed: widget.onBack,
-        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
-            tooltip: l10n.tooltipAboutModule,
             onPressed: () => showEditorHelpDialog(
               context,
               isEvent: false,
-              title: l10n.moduleTitle_CamelMinigameProperties,
+              title:
+                  l10n?.moduleTitle_CamelMinigameProperties ??
+                  'Camel Card Match',
               sections: [
                 HelpSectionData(
-                  title: l10n.overview,
-                  body: l10n.moduleHelpCamelOverviewBody,
+                  title: l10n?.overview ?? 'Overview',
+                  body:
+                      l10n?.moduleHelpCamelOverviewBody ??
+                      'Camel card matching minigame.',
                 ),
                 HelpSectionData(
-                  title: l10n.camelCardMatchTime,
-                  body: l10n.moduleHelpCamelTimingsBody,
+                  title: l10n?.editing ?? 'Timings',
+                  body:
+                      l10n?.moduleHelpCamelTimingsBody ??
+                      'Card timing parameters.',
                 ),
                 HelpSectionData(
-                  title: l10n.camelMaxSpawnX,
-                  body: l10n.moduleHelpCamelSpawningBody,
+                  title: l10n?.position ?? 'Spawning',
+                  body:
+                      l10n?.moduleHelpCamelSpawningBody ??
+                      'Card chain spawning range.',
                 ),
               ],
             ),
@@ -214,103 +202,259 @@ class _CamelMinigameScreenState extends State<CamelMinigameScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      l10n.moduleTitle_CamelMinigameProperties,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      l10n?.editing ?? 'Timings',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    _doubleField(
-                      label: l10n.camelAdditionalXBuffer,
-                      controller: _xBufferController,
-                      onParsed: (v) =>
-                          _data.additionalXBufferBetweenChains = v,
+                    const SizedBox(height: 12),
+                    _buildIntField(
+                      l10n?.camelCardTypesUsed ?? 'Card types (1-7)',
+                      _cardTypesUsedCtrl,
+                      (v) {
+                        final n = int.tryParse(v);
+                        if (n != null && n >= 1 && n <= 7) {
+                          _data.cardTypesUsed = n;
+                          _sync();
+                        }
+                      },
                     ),
-                    _doubleField(
-                      label: l10n.camelRiseStagger,
-                      controller: _riseStaggerController,
-                      onParsed: (v) => _data.riseStaggerBetweenCamels = v,
-                    ),
-                    _doubleField(
-                      label: l10n.camelCardMatchTime,
-                      controller: _cardMatchController,
-                      onParsed: (v) => _data.cardMatchTime = v,
-                    ),
-                    _doubleField(
-                      label: l10n.camelCardMatchingTime,
-                      controller: _cardMatchingController,
-                      onParsed: (v) => _data.cardMatchingTime = v,
-                    ),
-                    _doubleField(
-                      label: l10n.camelCardNoMatchTime,
-                      controller: _cardNoMatchController,
-                      onParsed: (v) => _data.cardNoMatchTime = v,
-                    ),
-                    _doubleField(
-                      label: l10n.camelTutorialRiseDelay,
-                      controller: _tutorialRiseController,
-                      onParsed: (v) => _data.tutorialZombieRiseDelay = v,
-                    ),
-                    _doubleField(
-                      label: l10n.camelMaxSpawnX,
-                      controller: _maxSpawnXController,
-                      onParsed: (v) => _data.maxSpawnX = v,
-                    ),
-                    _doubleField(
-                      label: l10n.camelMinSpawnXStart,
-                      controller: _minSpawnXStartController,
-                      onParsed: (v) => _data.minSpawnXStart = v,
-                    ),
-                    _doubleField(
-                      label: l10n.camelMinSpawnXEnd,
-                      controller: _minSpawnXEndController,
-                      onParsed: (v) => _data.minSpawnXEnd = v,
-                    ),
-                    Text(
-                      l10n.camelCardTypesUsed,
-                      style: theme.textTheme.titleSmall,
-                    ),
+                    const SizedBox(height: 4),
+                    _buildCardTypeIcons(),
                     const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (var type = 1; type <= 7; type++)
-                          FilterChip(
-                            label: Text('$type'),
-                            selected: _data.cardTypesUsed.contains(type),
-                            onSelected: (selected) {
-                              if (selected) {
-                                if (!_data.cardTypesUsed.contains(type)) {
-                                  _data.cardTypesUsed.add(type);
-                                  _data.cardTypesUsed.sort();
-                                }
-                              } else {
-                                _data.cardTypesUsed.remove(type);
-                              }
-                              _sync();
-                            },
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF9A825),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            size: 20,
+                            color: Color(0xFF3E2723),
                           ),
-                      ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              l10n?.camelRiseFromGroundOnlyCamelTouch ??
+                                  'Rise from ground only works with camel '
+                                      'touch zombies. Other zombies cannot use '
+                                      'this spawn mode in Camel Minigame.',
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: const Color(0xFF3E2723)),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 8),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(l10n.camelShowTutorial),
-                      value: _data.showTutorial,
-                      onChanged: (value) {
-                        _data.showTutorial = value;
-                        _sync();
+                    _buildDoubleField(
+                      l10n?.camelRiseStagger ?? 'Rise stagger (s)',
+                      _riseStaggerCtrl,
+                      (v) {
+                        final n = double.tryParse(v);
+                        if (n != null && n >= 0) {
+                          _data.camelSegmentRiseStagger = n;
+                          _sync();
+                        }
+                      },
+                    ),
+                    _buildDoubleField(
+                      l10n?.camelCardMatchTime ?? 'Match success delay (s)',
+                      _cardMatchTimeCtrl,
+                      (v) {
+                        final n = double.tryParse(v);
+                        if (n != null && n >= 0) {
+                          _data.cardMatchTime = n;
+                          _sync();
+                        }
+                      },
+                    ),
+                    _buildDoubleField(
+                      l10n?.camelCardMatchingTime ?? 'Flip animation (s)',
+                      _cardMatchingTimeCtrl,
+                      (v) {
+                        final n = double.tryParse(v);
+                        if (n != null && n >= 0) {
+                          _data.cardMatchingTime = n;
+                          _sync();
+                        }
+                      },
+                    ),
+                    _buildDoubleField(
+                      l10n?.camelCardNoMatchTime ?? 'Mismatch idle (s)',
+                      _cardNoMatchTimeCtrl,
+                      (v) {
+                        final n = double.tryParse(v);
+                        if (n != null && n >= 0) {
+                          _data.cardNoMatchTime = n;
+                          _sync();
+                        }
+                      },
+                    ),
+                    _buildDoubleField(
+                      l10n?.camelTutorialRiseDelay ?? 'Tutorial rise delay (s)',
+                      _tutorialRiseDelayCtrl,
+                      (v) {
+                        final n = double.tryParse(v);
+                        if (n != null && n >= 0) {
+                          _data.initialTutorialZombieRiseDelay = n;
+                          _sync();
+                        }
                       },
                     ),
                   ],
                 ),
               ),
             ),
+            const SizedBox(height: 12),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n?.position ?? 'Spawning',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildIntField(
+                      l10n?.camelAdditionalXBuffer ?? 'Chain X buffer',
+                      _xBufferCtrl,
+                      (v) {
+                        final n = int.tryParse(v);
+                        if (n != null && n >= 0) {
+                          _data.additionalXBufferBetweenChains = n;
+                          _sync();
+                        }
+                      },
+                    ),
+                    _buildIntField(
+                      l10n?.camelMaxSpawnX ?? 'Max spawn X',
+                      _maxSpawnXCtrl,
+                      (v) {
+                        final n = int.tryParse(v);
+                        if (n != null) {
+                          _data.maxSpawnX = n;
+                          _sync();
+                        }
+                      },
+                    ),
+                    _buildIntField(
+                      l10n?.camelMinSpawnXStart ?? 'Min spawn X start',
+                      _minSpawnXStartCtrl,
+                      (v) {
+                        final n = int.tryParse(v);
+                        if (n != null) {
+                          _data.minSpawnXStart = n;
+                          _sync();
+                        }
+                      },
+                    ),
+                    _buildIntField(
+                      l10n?.camelMinSpawnXEnd ?? 'Min spawn X end',
+                      _minSpawnXEndCtrl,
+                      (v) {
+                        final n = int.tryParse(v);
+                        if (n != null) {
+                          _data.minSpawnXEnd = n;
+                          _sync();
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: SwitchListTile(
+                title: Text(l10n?.camelShowTutorial ?? 'Show tutorial'),
+                value: _data.showTutorial,
+                onChanged: (v) {
+                  _data.showTutorial = v;
+                  _sync();
+                },
+              ),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDoubleField(
+    String label,
+    TextEditingController ctrl,
+    ValueChanged<String> onChanged,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: EditorResponsiveInputField(
+        label: label,
+        builder: (context, decoration) => TextField(
+          controller: ctrl,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: decoration,
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCardTypeIcons() {
+    const cardTypeAssets = [
+      'assets/images/others/camelminigame_1.png',
+      'assets/images/others/camelminigame_2.png',
+      'assets/images/others/camelminigame_3.png',
+      'assets/images/others/camelminigame_4.png',
+      'assets/images/others/camelminigame_5.png',
+      'assets/images/others/camelminigame_6.png',
+      'assets/images/others/camelminigame_7.png',
+    ];
+    final used = _data.cardTypesUsed;
+    return Row(
+      children: [
+        for (var i = 0; i < cardTypeAssets.length; i++)
+          Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: Opacity(
+              opacity: i < used ? 1.0 : 0.25,
+              child: Image.asset(
+                cardTypeAssets[i],
+                width: 20,
+                height: 20,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildIntField(
+    String label,
+    TextEditingController ctrl,
+    ValueChanged<String> onChanged,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: EditorResponsiveInputField(
+        label: label,
+        builder: (context, decoration) => TextField(
+          controller: ctrl,
+          keyboardType: TextInputType.number,
+          decoration: decoration,
+          onChanged: onChanged,
         ),
       ),
     );
