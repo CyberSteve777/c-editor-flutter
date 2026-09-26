@@ -643,9 +643,44 @@ Future<List<PreviewSticker>> loadPreviewStickerCatalog() async {
 }
 
 Iterable<PreviewSticker> _supplementalStickers() sync* {
+  yield const PreviewSticker(
+    assetPath: 'assets/images/zombies/zombie_renai_toxicwater.webp',
+    tag: 'zombies',
+    labelKey: 'previewStickerNameDisinfectionZombie',
+    searchTerms: ['zombie_renai_toxicwater'],
+  );
+  const camelSymbolKeys = [
+    'previewStickerNameCamelSunSymbol',
+    'previewStickerNameCamelConeSymbol',
+    'previewStickerNameCamelSkullSymbol',
+    'previewStickerNameCamelBucketSymbol',
+    'previewStickerNameCamelCloverSymbol',
+    'previewStickerNameCamelBoneSymbol',
+    'previewStickerNameCamelTorchSymbol',
+  ];
+  for (var i = 0; i < camelSymbolKeys.length; i++) {
+    yield PreviewSticker(
+      assetPath: 'assets/images/others/camelminigame_${i + 1}.webp',
+      tag: 'others',
+      labelKey: camelSymbolKeys[i],
+      searchTerms: ['camelminigame_${i + 1}'],
+    );
+  }
+  final arrowNames = <String, String Function(AppLocalizations)>{
+    'oaktrain_normal': (s) => s.oakTrainInitArrowNormal,
+    'oaktrain_power': (s) => s.oakTrainInitArrowPower,
+    'oaktrain_triple': (s) => s.oakTrainInitArrowSplit,
+  };
+  for (final entry in arrowNames.entries) {
+    yield PreviewSticker(
+      assetPath: 'assets/images/others/${entry.key}.webp',
+      tag: 'others',
+      nameResolver: (context) => entry.value(AppLocalizations.of(context)!),
+      searchTerms: [entry.key],
+    );
+  }
   const resources = <String, String>{
     'zombies/zombie_general_zmech_phase': 'zombie_general_zmech_phase1',
-    'zombies/zombie_renai_toxicwater': 'zombie_beach_snorkel',
     'zombies/zombie_zombie_towerdefend_boss': 'zombie_zombie_towerdefend_boss',
     'zombies/zombie_zombie_towerdefend_wolf_fire':
         'zombie_zombie_towerdefend_wolf_fire',

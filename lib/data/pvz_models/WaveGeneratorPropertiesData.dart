@@ -74,8 +74,10 @@ class WaveGeneratorPropertiesData extends PvzModel {
       'WaveSpendingPointIncrement': waveSpendingPointIncrement,
       if (isRiseFromGroundMode) 'IsRiseFromGroundMode': true,
       if (ignoreFlagCarriers) 'IgnoreFlagCarriers': true,
-      if (spawnColStart != null) 'SpawnColStart': spawnColStart,
-      if (spawnColEnd != null) 'SpawnColEnd': spawnColEnd,
+      if (isRiseFromGroundMode || spawnColStart != null)
+        'SpawnColStart': isRiseFromGroundMode ? 2 : spawnColStart,
+      if (isRiseFromGroundMode || spawnColEnd != null)
+        'SpawnColEnd': isRiseFromGroundMode ? 2 : spawnColEnd,
       'Waves': waves.map((w) => w.toJson()).toList(),
     };
   }

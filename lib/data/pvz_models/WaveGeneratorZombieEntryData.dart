@@ -32,8 +32,8 @@ class WaveGeneratorZombieEntryData extends PvzModel {
       row: row,
       level: json['Level'] as int?,
       targetValidTime: json['TargetValidTime'] as int?,
-      riseGridX: json['Rise_GridX'] as String?,
-      riseGridY: json['Rise_GridY'] as String?,
+      riseGridX: json['Rise_GridX']?.toString(),
+      riseGridY: json['Rise_GridY']?.toString(),
     );
   }
 

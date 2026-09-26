@@ -2515,7 +2515,7 @@ class HelpSectionData {
 
 const _kWaveDropConfigTitleIconSize = 32.0;
 const _kPlantDropIconCardSize = 56.0;
-const _kPlantFoodIconPath = 'assets/images/others/plantfood.png';
+const _kPlantFoodIconPath = 'assets/images/others/plantfood.webp';
 const _kPlantDropTagIconPath =
     'assets/images/tags/plants/rarity/Plant_Green.webp';
 

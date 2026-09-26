@@ -35,6 +35,7 @@ import 'package:c_editor/widgets/initial_kongfu_grid_items_card.dart';
 import 'package:c_editor/screens/common/level_preview_grid_helpers.dart'
     show readSeeingStarsModuleData;
 import 'package:c_editor/widgets/wave_module_preview_dialogs.dart';
+import 'package:c_editor/widgets/wave_number_label.dart';
 import 'package:c_editor/widgets/zombie_lane_drag_widgets.dart'
     show zombieDragLongPressDelay, zombieDropSlotWidth;
 
@@ -707,24 +708,11 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         _draggingEvent != null &&
         _draggingEvent!.sourceWaveIndex != waveIndex &&
         _dragHoverWaveIndex == waveIndex;
-    final waveNumber = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          '$waveIndex',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            color: theme.colorScheme.primary,
-          ),
-        ),
-        if (isFlagWave)
-          Padding(
-            padding: const EdgeInsets.only(left: 2),
-            child: Icon(Icons.flag, size: 12, color: theme.colorScheme.error),
-          ),
-      ],
+    final waveNumber = WaveNumberLabel(
+      waveNumber: waveIndex,
+      isFlagWave: isFlagWave,
     );
+    final numberSize = waveNumber.minimumSize(context, minWidth: 52);
     final dragging = _draggingEvent != null;
     final eventsColumn = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -874,7 +862,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
 
     final rowStack = LayoutBuilder(
       builder: (context, constraints) {
-        const numberWidth = 52.0;
+        final numberWidth = numberSize.width;
         const maxActionWidth = 260.0;
         const gap = 8.0;
         final contentWidth = (constraints.maxWidth - numberWidth).clamp(
@@ -917,7 +905,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(width: numberWidth),
+                SizedBox(width: numberWidth),
                 Expanded(child: content),
               ],
             ),
@@ -952,7 +940,9 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
       // Empty waves have less intrinsic content than event waves. Keep enough
       // height for the overlaid number strip (and its full tap target) so the
       // number is never compressed out of view.
-      constraints: const BoxConstraints(minHeight: 48),
+      constraints: BoxConstraints(
+        minHeight: (numberSize.height + 28).clamp(48, double.infinity),
+      ),
       child: rowStack,
     );
     if (!includeDivider) {

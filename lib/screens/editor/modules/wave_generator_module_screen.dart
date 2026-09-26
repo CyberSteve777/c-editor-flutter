@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:c_editor/widgets/camel_minigame_conflicts.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/issue_registry.dart';
 import 'package:c_editor/data/rtid_parser.dart';
@@ -42,8 +43,6 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
   late TextEditingController _flagIntervalCtrl;
   late TextEditingController _spendingPointsCtrl;
   late TextEditingController _spendingIncrementCtrl;
-  late TextEditingController _spawnColStartCtrl;
-  late TextEditingController _spawnColEndCtrl;
 
   @override
   void initState() {
@@ -66,12 +65,6 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
     );
     _spendingIncrementCtrl = TextEditingController(
       text: '${_data.waveSpendingPointIncrement}',
-    );
-    _spawnColStartCtrl = TextEditingController(
-      text: _data.spawnColStart?.toString() ?? '',
-    );
-    _spawnColEndCtrl = TextEditingController(
-      text: _data.spawnColEnd?.toString() ?? '',
     );
   }
 
@@ -269,8 +262,6 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
     _flagIntervalCtrl.dispose();
     _spendingPointsCtrl.dispose();
     _spendingIncrementCtrl.dispose();
-    _spawnColStartCtrl.dispose();
-    _spawnColEndCtrl.dispose();
     super.dispose();
   }
 
@@ -420,6 +411,10 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
               ),
               const SizedBox(height: 16),
             ],
+            CamelMinigameConflicts(
+              levelFile: widget.levelFile,
+              onlyIds: const {'camelMinigameNonTouchZombies'},
+            ),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -509,97 +504,31 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
                     ],
                     const SizedBox(height: 16),
                     SwitchListTile(
-                      title: Text(l10n?.waveGeneratorRiseFromGround ?? 'Rise from ground mode'),
+                      title: Text(
+                        l10n?.waveGeneratorRiseFromGround ??
+                            'Rise from ground mode',
+                      ),
                       subtitle: Text(
-                        l10n?.waveGeneratorRiseFromGroundHint ?? 'IsRiseFromGroundMode',
+                        l10n?.waveGeneratorRiseFromGroundHint ??
+                            'IsRiseFromGroundMode',
                         style: theme.textTheme.bodySmall,
                       ),
                       value: _data.isRiseFromGroundMode,
                       onChanged: (v) {
                         _data.isRiseFromGroundMode = v;
+                        if (v) {
+                          _data.spawnColStart = 2;
+                          _data.spawnColEnd = 2;
+                        }
                         _sync();
                       },
                       contentPadding: EdgeInsets.zero,
                     ),
-                    if (_data.isRiseFromGroundMode) ...[
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF9A825),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(
-                              Icons.warning_amber_rounded,
-                              size: 20,
-                              color: Color(0xFF3E2723),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                l10n?.waveGeneratorRiseFromGroundWarning ??
-                                    'Most zombies cannot move or use abilities '
-                                        'in Rise from Ground mode. If a specific '
-                                        'line is set without a spawn cell, zombies '
-                                        'will always spawn on the first cell of '
-                                        'the first line. Set random lines or '
-                                        'choose spawn cells manually.',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: const Color(0xFF3E2723),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                    if (_data.isRiseFromGroundMode)
+                      EditorWarningBanner(
+                        title: l10n!.waveGeneratorRiseFromGroundWarningTitle,
+                        message: l10n.waveGeneratorRiseFromGroundWarning,
                       ),
-                    ],
-                    if (_data.isRiseFromGroundMode) ...[
-                      const SizedBox(height: 12),
-                      Text(
-                        l10n?.waveGeneratorSpawnColumns ?? 'Spawn columns',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        softWrap: true,
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _spawnColStartCtrl,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'SpawnColStart',
-                              ),
-                              keyboardType: TextInputType.number,
-                              onChanged: (v) {
-                                _data.spawnColStart = int.tryParse(v);
-                                _sync();
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _spawnColEndCtrl,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'SpawnColEnd',
-                              ),
-                              keyboardType: TextInputType.number,
-                              onChanged: (v) {
-                                _data.spawnColEnd = int.tryParse(v);
-                                _sync();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                     const SizedBox(height: 8),
                     Text(
                       l10n?.waveGeneratorWaveCountSummary(_data.waves.length) ??

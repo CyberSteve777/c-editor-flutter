@@ -298,10 +298,10 @@ Future<String?> showLevelConversionOptionsDialog(
     );
   } else if (lower.endsWith('.zlib')) {
     options.add(
-      const EditorChoiceDialogOption(
+      EditorChoiceDialogOption(
         value: '.bin',
         icon: Icons.expand,
-        title: 'Decompress ZLib',
+        title: l10n.decompressZlib,
       ),
     );
   } else {
@@ -309,10 +309,10 @@ Future<String?> showLevelConversionOptionsDialog(
   }
   if (includeDebugFormats && !lower.endsWith('.zlib')) {
     options.add(
-      const EditorChoiceDialogOption(
+      EditorChoiceDialogOption(
         value: '.zlib',
         icon: Icons.compress,
-        title: 'Compress with ZLib',
+        title: l10n.compressWithZlib,
       ),
     );
   }
@@ -1458,7 +1458,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
         title: Text(l10n.nameLevel),
         content: TextField(
           controller: ctrl,
-          decoration: const InputDecoration(labelText: 'Name'),
+          decoration: InputDecoration(labelText: l10n.name),
           onChanged: (v) => _newLevelNameInput = v,
         ),
         actions: [
@@ -1852,7 +1852,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                 child: EditorPopupMenuTile(
                   leading: const Icon(Icons.save_outlined),
                   title: Text(
-                    settings.autosave ? l10n.autosaveOn : l10n.autosaveOff,
+                    settings.hasAutosave ? l10n.autosaveOn : l10n.autosaveOff,
                   ),
                   contentPadding: EdgeInsets.zero,
                 ),

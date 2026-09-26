@@ -250,12 +250,6 @@ abstract class AppLocalizations {
   /// **'Expand'**
   String get expand;
 
-  /// No description provided for @obtainableInLevel.
-  ///
-  /// In en, this message translates to:
-  /// **'Can be obtained in the level'**
-  String get obtainableInLevel;
-
   /// No description provided for @allZombiesInLevel.
   ///
   /// In en, this message translates to:
@@ -303,12 +297,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fright Witch'**
   String get witchLabel;
-
-  /// No description provided for @lawnMowerLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Lawn Mower'**
-  String get lawnMowerLabel;
 
   /// No description provided for @lawnMowerTypeLabel.
   ///
@@ -517,7 +505,7 @@ abstract class AppLocalizations {
   /// No description provided for @autosaveSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Save automatically when leaving the editor'**
+  /// **'Save changes automatically when leaving a level'**
   String get autosaveSubtitle;
 
   /// No description provided for @ultra.
@@ -639,18 +627,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Plugins can run code within C-Editor to add more fun and useful features. By default, their access to files and the network is restricted by a sandbox, but malicious plugins may still cause harm. Please install plugins from trusted sources only.'**
   String get pluginTrustWarningBody;
-
-  /// No description provided for @pluginInstalledSection.
-  ///
-  /// In en, this message translates to:
-  /// **'Installed plugins'**
-  String get pluginInstalledSection;
-
-  /// No description provided for @pluginScreensSection.
-  ///
-  /// In en, this message translates to:
-  /// **'Features & screens'**
-  String get pluginScreensSection;
 
   /// No description provided for @pluginEmpty.
   ///
@@ -778,12 +754,6 @@ abstract class AppLocalizations {
   /// **'ID'**
   String get pluginIdLabel;
 
-  /// No description provided for @pluginLinks.
-  ///
-  /// In en, this message translates to:
-  /// **'Links'**
-  String get pluginLinks;
-
   /// No description provided for @pluginLinkWebsite.
   ///
   /// In en, this message translates to:
@@ -874,144 +844,6 @@ abstract class AppLocalizations {
   /// **'Could not share level file'**
   String get shareLevelFailed;
 
-  /// No description provided for @shareAsFile.
-  ///
-  /// In en, this message translates to:
-  /// **'Share as File'**
-  String get shareAsFile;
-
-  /// No description provided for @shareAsPreview.
-  ///
-  /// In en, this message translates to:
-  /// **'Share as Preview'**
-  String get shareAsPreview;
-
-  /// No description provided for @selectBackground.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Background'**
-  String get selectBackground;
-
-  /// No description provided for @autoSelectBackground.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto-select'**
-  String get autoSelectBackground;
-
-  /// No description provided for @customBackground.
-  ///
-  /// In en, this message translates to:
-  /// **'Custom Background'**
-  String get customBackground;
-
-  /// No description provided for @selectPlantList.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Plant List'**
-  String get selectPlantList;
-
-  /// No description provided for @levelContainsCustomZombies.
-  ///
-  /// In en, this message translates to:
-  /// **'Level contains custom zombies'**
-  String get levelContainsCustomZombies;
-
-  /// No description provided for @generatingPreview.
-  ///
-  /// In en, this message translates to:
-  /// **'Generating preview...'**
-  String get generatingPreview;
-
-  /// No description provided for @saveToGallery.
-  ///
-  /// In en, this message translates to:
-  /// **'Save to Gallery'**
-  String get saveToGallery;
-
-  /// No description provided for @imageSavedSuccessfully.
-  ///
-  /// In en, this message translates to:
-  /// **'Image saved successfully'**
-  String get imageSavedSuccessfully;
-
-  /// No description provided for @shareOptionTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'How to share?'**
-  String get shareOptionTitle;
-
-  /// No description provided for @selectLevelType.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Level Type'**
-  String get selectLevelType;
-
-  /// No description provided for @autoSelectLevelType.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto-detect'**
-  String get autoSelectLevelType;
-
-  /// No description provided for @manualSelectLevelType.
-  ///
-  /// In en, this message translates to:
-  /// **'Manual selection'**
-  String get manualSelectLevelType;
-
-  /// No description provided for @levelTypeAdventure.
-  ///
-  /// In en, this message translates to:
-  /// **'Regular'**
-  String get levelTypeAdventure;
-
-  /// No description provided for @levelTypeLastStand.
-  ///
-  /// In en, this message translates to:
-  /// **'Last Stand'**
-  String get levelTypeLastStand;
-
-  /// No description provided for @levelTypeConveyor.
-  ///
-  /// In en, this message translates to:
-  /// **'Conveyor'**
-  String get levelTypeConveyor;
-
-  /// No description provided for @levelTypeSeedRain.
-  ///
-  /// In en, this message translates to:
-  /// **'Seed Rain'**
-  String get levelTypeSeedRain;
-
-  /// No description provided for @levelTypeIPlant.
-  ///
-  /// In en, this message translates to:
-  /// **'I, Plant'**
-  String get levelTypeIPlant;
-
-  /// No description provided for @levelTypeOldStyle.
-  ///
-  /// In en, this message translates to:
-  /// **'Wave Generator'**
-  String get levelTypeOldStyle;
-
-  /// No description provided for @levelTypeUnknown.
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown'**
-  String get levelTypeUnknown;
-
-  /// No description provided for @selectFolder.
-  ///
-  /// In en, this message translates to:
-  /// **'Select folder'**
-  String get selectFolder;
-
-  /// No description provided for @storagePermissionHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Storage permission required. Enable \"Allow access to manage all files\" in Settings to open level files.'**
-  String get storagePermissionHint;
-
   /// No description provided for @storagePermissionDialogTitle.
   ///
   /// In en, this message translates to:
@@ -1054,12 +886,6 @@ abstract class AppLocalizations {
   /// **'Select folder'**
   String get selectFolderButton;
 
-  /// No description provided for @uploadToWebsite.
-  ///
-  /// In en, this message translates to:
-  /// **'Upload to website'**
-  String get uploadToWebsite;
-
   /// No description provided for @importFiles.
   ///
   /// In en, this message translates to:
@@ -1095,12 +921,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Folder import is not supported in this browser.'**
   String get importFolderUnsupported;
-
-  /// No description provided for @uploadLevelPickerTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Select one or multiple levels to upload'**
-  String get uploadLevelPickerTitle;
 
   /// No description provided for @smartUploadTitle.
   ///
@@ -1150,65 +970,11 @@ abstract class AppLocalizations {
   /// **'Copy all'**
   String get smartUploadCopyAll;
 
-  /// No description provided for @localFileKeepTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep browser level?'**
-  String get localFileKeepTitle;
-
-  /// No description provided for @localFileKeepMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'This level is stored in the browser only:\n\n{fileName}\n\nKeep it when connecting a local folder?'**
-  String localFileKeepMessage(String fileName);
-
-  /// No description provided for @localFileKeep.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep'**
-  String get localFileKeep;
-
-  /// No description provided for @localFileDiscard.
-  ///
-  /// In en, this message translates to:
-  /// **'Discard'**
-  String get localFileDiscard;
-
-  /// No description provided for @localFileKeepAll.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep all'**
-  String get localFileKeepAll;
-
-  /// No description provided for @localFileDiscardAll.
-  ///
-  /// In en, this message translates to:
-  /// **'Discard all'**
-  String get localFileDiscardAll;
-
   /// No description provided for @openFolder.
   ///
   /// In en, this message translates to:
   /// **'Open folder'**
   String get openFolder;
-
-  /// No description provided for @levelLibraryPath.
-  ///
-  /// In en, this message translates to:
-  /// **'Workspace folder'**
-  String get levelLibraryPath;
-
-  /// No description provided for @levelLibraryPathHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Levels are stored in this folder. On iOS you can pick any folder; access is saved so it persists after restart.'**
-  String get levelLibraryPathHint;
-
-  /// No description provided for @pathCopied.
-  ///
-  /// In en, this message translates to:
-  /// **'Path copied to clipboard'**
-  String get pathCopied;
 
   /// No description provided for @useDefaultLibraryFolder.
   ///
@@ -1287,12 +1053,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select a game data package for the testing mod (.rsb.smf)'**
   String get exportSelectFile;
-
-  /// No description provided for @exportSelectedFile.
-  ///
-  /// In en, this message translates to:
-  /// **'Selected file: {path}'**
-  String exportSelectedFile(String path);
 
   /// No description provided for @backupRecommendationTitle.
   ///
@@ -1390,35 +1150,11 @@ abstract class AppLocalizations {
   /// **'Creating backup…'**
   String get backupProgressTitle;
 
-  /// No description provided for @transferProgressCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{completed} / {total}'**
-  String transferProgressCount(int completed, int total);
-
-  /// No description provided for @folderAccessError.
-  ///
-  /// In en, this message translates to:
-  /// **'The selected folder is read-only or inaccessible. Please select another folder.'**
-  String get folderAccessError;
-
-  /// No description provided for @webFolderImportNotice.
-  ///
-  /// In en, this message translates to:
-  /// **'Folder imported into browser storage. On this browser, edits are not written back to disk automatically——please use the \"Export\" feature to save files.'**
-  String get webFolderImportNotice;
-
   /// No description provided for @favorite.
   ///
   /// In en, this message translates to:
   /// **'Favorite'**
   String get favorite;
-
-  /// No description provided for @unfavorite.
-  ///
-  /// In en, this message translates to:
-  /// **'Unfavorite'**
-  String get unfavorite;
 
   /// No description provided for @move.
   ///
@@ -1545,12 +1281,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Proceed'**
   String get proceed;
-
-  /// No description provided for @startExport.
-  ///
-  /// In en, this message translates to:
-  /// **'Begin'**
-  String get startExport;
 
   /// No description provided for @exportProceed.
   ///
@@ -1732,12 +1462,6 @@ abstract class AppLocalizations {
   /// **'Deep copy'**
   String get deepCopy;
 
-  /// No description provided for @discordLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Our Discord server:'**
-  String get discordLabel;
-
   /// No description provided for @comingSoon.
   ///
   /// In en, this message translates to:
@@ -1773,12 +1497,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select target waves'**
   String get copyEventTarget;
-
-  /// No description provided for @targetWaveIndex.
-  ///
-  /// In en, this message translates to:
-  /// **'Target wave number'**
-  String get targetWaveIndex;
 
   /// No description provided for @targetWaveAlreadyContainsEvent.
   ///
@@ -2020,12 +1738,6 @@ abstract class AppLocalizations {
   /// **'Back'**
   String get returnUp;
 
-  /// No description provided for @jsonFile.
-  ///
-  /// In en, this message translates to:
-  /// **'JSON file'**
-  String get jsonFile;
-
   /// No description provided for @convertToJson.
   ///
   /// In en, this message translates to:
@@ -2158,12 +1870,6 @@ abstract class AppLocalizations {
   /// **'Usage'**
   String get usageSection;
 
-  /// No description provided for @usageText.
-  ///
-  /// In en, this message translates to:
-  /// **'1. Directory Setup: On first launch, tap the folder icon in the upper-right corner and choose the folder that stores your level JSON files.\n2. Open/Create: Tap a level in the list to edit it, or use the button below to create a new level from a template.\n3. Modules: In the editor, use \"Add New Module\" to extend the level with additional features.\n4. Save: When editing is complete, tap the save button in the upper-right corner to write the changes back to the original JSON file automatically.\n5. Convert level files: JSON can be converted into hot-update-readable HUJSON (manually change the file extension from .hujson back to .json before importing) or encrypted RTON (used to replace level data in dynamic.rsb.smf).\n6. Plugins: Plugins can run additional code to provide new features and interfaces, enriching the editor experience. In addition to built-in plugins, new plugins can be obtained by installing a local .cplugin file or entering a URL. Features provided by plugins can be enabled or disabled independently.\n7. Tap the \"Upload to Creative Courtyard\" button to open the official Plants vs. Zombies 2 Advanced Creative Courtyard Creator Hub. The button is only visible when the level list is at the top.\n8. You can view past officially recommended level IDs and the reasons they were selected on the \"Creative Courtyard · Recommended Levels Showcase\" webpage. Playing these levels not only supports talented level creators but also helps improve your own level design skills.\n9. If you have any questions or need help with advanced level creation, feel free to join the Plants vs. Zombies Discord server and ask in the PvZ2C-Modding channel thread.'**
-  String get usageText;
-
   /// No description provided for @usageTextDesktop.
   ///
   /// In en, this message translates to:
@@ -2193,12 +1899,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'C-Editor Discord server invite link:'**
   String get cEditorInviteLabel;
-
-  /// No description provided for @linksSubsection.
-  ///
-  /// In en, this message translates to:
-  /// **'Links'**
-  String get linksSubsection;
 
   /// No description provided for @creditsSection.
   ///
@@ -3004,12 +2704,6 @@ abstract class AppLocalizations {
   /// **'Remove'**
   String get confirmRemove;
 
-  /// No description provided for @addModule.
-  ///
-  /// In en, this message translates to:
-  /// **'Add module'**
-  String get addModule;
-
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:
@@ -3046,35 +2740,11 @@ abstract class AppLocalizations {
   /// **'Non-mech Zomboss Battle'**
   String get zombossBattle;
 
-  /// No description provided for @moveSourceSameAsDest.
-  ///
-  /// In en, this message translates to:
-  /// **'Source and target folder are the same'**
-  String get moveSourceSameAsDest;
-
-  /// No description provided for @moveSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Moved successfully'**
-  String get moveSuccess;
-
-  /// No description provided for @moveFail.
-  ///
-  /// In en, this message translates to:
-  /// **'Move failed'**
-  String get moveFail;
-
   /// No description provided for @rootFolder.
   ///
   /// In en, this message translates to:
   /// **'Root'**
   String get rootFolder;
-
-  /// No description provided for @createEmptyWave.
-  ///
-  /// In en, this message translates to:
-  /// **'Create empty wave'**
-  String get createEmptyWave;
 
   /// No description provided for @createEmptyWaveContainer.
   ///
@@ -3112,29 +2782,11 @@ abstract class AppLocalizations {
   /// **'Wave management is enabled, but the entity object (WaveManagerProperties) is missing. Please create an empty wave container.'**
   String get noWaveManagerHint;
 
-  /// No description provided for @waveTimelineHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Tap an event to edit it, or tap \"+\" to add a new one.'**
-  String get waveTimelineHint;
-
-  /// No description provided for @waveTimelineHintDetail.
-  ///
-  /// In en, this message translates to:
-  /// **'Swipe left on a wave to delete it.'**
-  String get waveTimelineHintDetail;
-
   /// No description provided for @waveTimelineGuideTitle.
   ///
   /// In en, this message translates to:
   /// **'Operation Guide'**
   String get waveTimelineGuideTitle;
-
-  /// No description provided for @waveTimelineGuideBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Tap a wave: Manage events\nLong-press an event: Drag to reorder or move waves\nTap points: View spawn expectations'**
-  String get waveTimelineGuideBody;
 
   /// No description provided for @waveTimelineGuideBodyDesktop.
   ///
@@ -3256,18 +2908,6 @@ abstract class AppLocalizations {
   /// **'Erase from level'**
   String get customZombieOrphanDeleteErase;
 
-  /// No description provided for @editCustomZombieProperties.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit custom zombie properties'**
-  String get editCustomZombieProperties;
-
-  /// No description provided for @makeZombieAsCustom.
-  ///
-  /// In en, this message translates to:
-  /// **'Make zombie as custom'**
-  String get makeZombieAsCustom;
-
   /// No description provided for @customLabel.
   ///
   /// In en, this message translates to:
@@ -3334,12 +2974,6 @@ abstract class AppLocalizations {
   /// **'Total: {total}'**
   String waveTotalLabel(int total);
 
-  /// No description provided for @waveEmptyRowHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Empty wave (tap to manage, drop events here)'**
-  String get waveEmptyRowHint;
-
   /// No description provided for @waveEmptyRowHintDesktop.
   ///
   /// In en, this message translates to:
@@ -3357,18 +2991,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove from wave'**
   String get removeFromWave;
-
-  /// No description provided for @deleteEventEntityTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete event entity?'**
-  String get deleteEventEntityTitle;
-
-  /// No description provided for @deleteEventEntityBody.
-  ///
-  /// In en, this message translates to:
-  /// **'This will remove the event object from the level.'**
-  String get deleteEventEntityBody;
 
   /// No description provided for @waveEventsTitle.
   ///
@@ -3586,18 +3208,6 @@ abstract class AppLocalizations {
   /// **'8-Bit'**
   String get jam8Bit;
 
-  /// No description provided for @noWaves.
-  ///
-  /// In en, this message translates to:
-  /// **'No waves'**
-  String get noWaves;
-
-  /// No description provided for @addFirstWave.
-  ///
-  /// In en, this message translates to:
-  /// **'Add the first wave.'**
-  String get addFirstWave;
-
   /// No description provided for @deleteWave.
   ///
   /// In en, this message translates to:
@@ -3790,18 +3400,6 @@ abstract class AppLocalizations {
   /// **'Module editor in development'**
   String get moduleEditorInProgress;
 
-  /// No description provided for @dataEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'Data is empty'**
-  String get dataEmpty;
-
-  /// No description provided for @saveSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Save successful'**
-  String get saveSuccess;
-
   /// No description provided for @saveFail.
   ///
   /// In en, this message translates to:
@@ -3819,18 +3417,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove this reference? The entity data will remain until all references are removed.'**
   String get confirmRemoveRefMessage;
-
-  /// No description provided for @deleteEventConfirmCheckbox.
-  ///
-  /// In en, this message translates to:
-  /// **'I understand this action cannot be undone'**
-  String get deleteEventConfirmCheckbox;
-
-  /// No description provided for @noZombiesInLane.
-  ///
-  /// In en, this message translates to:
-  /// **'No zombies in this lane'**
-  String get noZombiesInLane;
 
   /// No description provided for @code.
   ///
@@ -3910,41 +3496,17 @@ abstract class AppLocalizations {
   /// **'Using non-default victory modules may cause level crashes due to module conflicts. Use with caution.'**
   String get victoryModuleWarning;
 
-  /// No description provided for @hintTextDisplay.
-  ///
-  /// In en, this message translates to:
-  /// **'Text display (Description)'**
-  String get hintTextDisplay;
-
-  /// No description provided for @beatTheLevelDialogIntro.
-  ///
-  /// In en, this message translates to:
-  /// **'Display hint text in a pop-up at the beginning of the level.'**
-  String get beatTheLevelDialogIntro;
-
   /// No description provided for @beatTheLevelDialogHint.
   ///
   /// In en, this message translates to:
   /// **'Supports Chinese; for multi-line text enter newlines directly, no need for \\n. Note: hints cannot be viewed in Creative Courtyard on iOS.'**
   String get beatTheLevelDialogHint;
 
-  /// No description provided for @levelHintText.
-  ///
-  /// In en, this message translates to:
-  /// **'Level hint text'**
-  String get levelHintText;
-
   /// No description provided for @missingModules.
   ///
   /// In en, this message translates to:
   /// **'Missing modules'**
   String get missingModules;
-
-  /// No description provided for @moduleConflict.
-  ///
-  /// In en, this message translates to:
-  /// **'Module conflict'**
-  String get moduleConflict;
 
   /// No description provided for @conflictTitle_ModuleLogic.
   ///
@@ -4066,94 +3628,58 @@ abstract class AppLocalizations {
   /// **'Wave Generator embeds waves directly and cannot be used with a separate Wave Manager container.'**
   String get conflictDesc_WaveGeneratorWaveManager;
 
-  /// No description provided for @conflictDesc_StatueMazeIncompatible.
-  ///
-  /// In en, this message translates to:
-  /// **'Statue Maze conflicts with {module}. Using them together will cause the game to work incorrectly. It is not recommended to use Statue Maze with {module}.'**
-  String conflictDesc_StatueMazeIncompatible(String module);
-
   /// No description provided for @conflictDesc_CamelMinigameNonTouchZombies.
   ///
   /// In en, this message translates to:
-  /// **'Camel Minigame only works with camel touch zombies. Non-touch zombies were found in Wave Generator: {zombies}. Replace them with camel touch zombies to restore level functionality.'**
+  /// **'Mummy Memory only supports the special Mummy Memory Camel Zombies. Other zombies were detected: {zombies}. Their appearance in the level will crash the game. Replace or remove them.'**
   String conflictDesc_CamelMinigameNonTouchZombies(String zombies);
-
-  /// No description provided for @targetZombieWithoutOakTrainWarning.
-  ///
-  /// In en, this message translates to:
-  /// **'Target zombies (zombie_target_*) require the OakTrain module to function correctly. Using them without OakTrain will cause the game to work incorrectly.'**
-  String get targetZombieWithoutOakTrainWarning;
 
   /// No description provided for @targetZombieRequiresOakTrain.
   ///
   /// In en, this message translates to:
-  /// **'Target zombies require the OakTrain module. Please add OakTrain to the level first.'**
+  /// **'Oak Archery’s exclusive zombies work best with their dedicated module. Add Oak Archery to the level.'**
   String get targetZombieRequiresOakTrain;
-
-  /// No description provided for @targetZombieRequiresOakTrainDialog.
-  ///
-  /// In en, this message translates to:
-  /// **'This zombie requires the {module} module. Would you like to add it to the level?'**
-  String targetZombieRequiresOakTrainDialog(String module);
 
   /// No description provided for @conflictDesc_CamelMinigameIntro.
   ///
   /// In en, this message translates to:
-  /// **'Camel Minigame conflicts with the Standard Level Intro module. They do not work correctly together. It is recommended to remove the Standard Level Intro module in favor of Camel Minigame, as it has its own built-in intro.'**
+  /// **'Mummy Memory conflicts with the Standard Intro module. Using both causes abnormal transition effects at the start of the level.'**
   String get conflictDesc_CamelMinigameIntro;
 
   /// No description provided for @targetZombieInWaveManagerWarningTitle.
   ///
   /// In en, this message translates to:
-  /// **'Target zombies + Wave Manager'**
+  /// **'Zombie compatibility warning'**
   String get targetZombieInWaveManagerWarningTitle;
 
   /// No description provided for @targetZombieInWaveManagerWarning.
   ///
   /// In en, this message translates to:
-  /// **'Target zombies (zombie_target_*) do not work correctly with Wave Manager. It is recommended to use Wave Generator with Rise from Ground mode enabled for full functionality of these zombies.'**
+  /// **'Oak Archery’s exclusive zombies cannot use their abilities in regular Wave Manager events such as Basic Spawner and Underwater Spawner. Use Ground Spawner or custom zombies to achieve similar effects.'**
   String get targetZombieInWaveManagerWarning;
-
-  /// No description provided for @camelMinigameWaveManagerHintTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Camel Minigame + Wave Manager'**
-  String get camelMinigameWaveManagerHintTitle;
-
-  /// No description provided for @camelMinigameWaveManagerHint.
-  ///
-  /// In en, this message translates to:
-  /// **'After all camel touch zombies are destroyed in the final wave, the game will automatically finish the level by killing the remaining zombies. Keep this in mind when using Camel Minigame with Wave Manager.'**
-  String get camelMinigameWaveManagerHint;
 
   /// No description provided for @oakTrainUnderwaterWarningTitle.
   ///
   /// In en, this message translates to:
-  /// **'Oak Archer Headshots + underwater lawn'**
+  /// **'Lawn compatibility warning'**
   String get oakTrainUnderwaterWarningTitle;
 
   /// No description provided for @oakTrainUnderwaterWarning.
   ///
   /// In en, this message translates to:
-  /// **'The Oak Archer has no oxygen on underwater world lawns (including custom variants). It will automatically die and the level will be counted as a loss.'**
+  /// **'The base lawn is set to Underwater World or Moon BaseZ, so the Oak Archer provided by Oak Archery may not survive. Pre-place Oxygen Algae or Moss Tiles as needed.'**
   String get oakTrainUnderwaterWarning;
-
-  /// No description provided for @camelRiseFromGroundOnlyCamelTouch.
-  ///
-  /// In en, this message translates to:
-  /// **'Rise from ground only works with camel touch zombies. Other zombies cannot use this spawn mode in Camel Minigame.'**
-  String get camelRiseFromGroundOnlyCamelTouch;
 
   /// No description provided for @waveGeneratorRiseFromGroundWarningTitle.
   ///
   /// In en, this message translates to:
-  /// **'Rise from Ground mode'**
+  /// **'Spawn behavior warning'**
   String get waveGeneratorRiseFromGroundWarningTitle;
 
   /// No description provided for @waveGeneratorRiseFromGroundWarning.
   ///
   /// In en, this message translates to:
-  /// **'Most zombies cannot move or use abilities in Rise from Ground mode. If a specific line is set without a spawn cell, zombies will always spawn on the first cell of the first line. Set random lines or choose spawn cells manually.'**
+  /// **'With Rise from Ground (IsRiseFromGroundMode) enabled, most spawned zombies cannot move or use their abilities. If only a row is specified without a spawn position, that row is ignored and the zombie always spawns in the first tile of the first row. Use random rows or set explicit spawn positions.'**
   String get waveGeneratorRiseFromGroundWarning;
 
   /// No description provided for @missingPlantModuleWarningTitle.
@@ -4432,30 +3958,6 @@ abstract class AppLocalizations {
   /// **'Edit parameters'**
   String get modifyConveyorEntryEditTitle;
 
-  /// No description provided for @moduleTitle_UnchartedModeNo42UniverseModule.
-  ///
-  /// In en, this message translates to:
-  /// **'Parallel Universe Module'**
-  String get moduleTitle_UnchartedModeNo42UniverseModule;
-
-  /// No description provided for @moduleDesc_UnchartedModeNo42UniverseModule.
-  ///
-  /// In en, this message translates to:
-  /// **'Enables Parallel Universe plants (No.41 & No.42)'**
-  String get moduleDesc_UnchartedModeNo42UniverseModule;
-
-  /// No description provided for @moduleTitle_PVZ2MausoleumModuleUnchartedMode.
-  ///
-  /// In en, this message translates to:
-  /// **'Underground Palace Module'**
-  String get moduleTitle_PVZ2MausoleumModuleUnchartedMode;
-
-  /// No description provided for @moduleDesc_PVZ2MausoleumModuleUnchartedMode.
-  ///
-  /// In en, this message translates to:
-  /// **'Enables plants featured in the Underground Palace realm'**
-  String get moduleDesc_PVZ2MausoleumModuleUnchartedMode;
-
   /// No description provided for @plantModuleRequiredMessage.
   ///
   /// In en, this message translates to:
@@ -4479,12 +3981,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Realm-exclusive plants cannot be selected in Chooser Mode. To use them, please refer to other methods such as Preset Mode, Conveyor Belt, or Packet Drops.'**
   String get realmExclusivePlantChooserBlockedMessage;
-
-  /// No description provided for @hiddenPlantChooserBlockedLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Cannot select this plant'**
-  String get hiddenPlantChooserBlockedLabel;
 
   /// No description provided for @hiddenPlantChooserBlockedTitle.
   ///
@@ -4516,12 +4012,6 @@ abstract class AppLocalizations {
   /// **'The plants are still growing strong. Stay tuned for future updates!'**
   String get comingSoonPlantBlockedMessage;
 
-  /// No description provided for @stayTunedMoonZombieBlockedLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'A Message from Space'**
-  String get stayTunedMoonZombieBlockedLabel;
-
   /// No description provided for @stayTunedMoonZombieBlockedTitle.
   ///
   /// In en, this message translates to:
@@ -4534,12 +4024,6 @@ abstract class AppLocalizations {
   /// **'Moon BaseZ Part 2 is coming soon. Keep a lookout!'**
   String get stayTunedMoonZombieBlockedMessage;
 
-  /// No description provided for @stayTunedTaleZCorpZombieBlockedLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Work\'s Not Over Yet'**
-  String get stayTunedTaleZCorpZombieBlockedLabel;
-
   /// No description provided for @stayTunedTaleZCorpZombieBlockedTitle.
   ///
   /// In en, this message translates to:
@@ -4551,12 +4035,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Part 2 of ZCorp Secret Realm is coming. Stay tuned!'**
   String get stayTunedTaleZCorpZombieBlockedMessage;
-
-  /// No description provided for @stayTunedZombieBlockedLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Stay tuned'**
-  String get stayTunedZombieBlockedLabel;
 
   /// No description provided for @stayTunedZombieBlockedTitle.
   ///
@@ -4731,18 +4209,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This module is recommended for Underwater World lawns. Using it on lawns other than 20,000 Leagues Under the Sea/Atlantis may cause compatibility issues.'**
   String get spermWhaleModuleNotDeepSeaWarning;
-
-  /// No description provided for @spermWhaleModuleLawnPreview.
-  ///
-  /// In en, this message translates to:
-  /// **'Lawn Preview'**
-  String get spermWhaleModuleLawnPreview;
-
-  /// No description provided for @spermWhaleModuleLawnPreviewHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Underwater World levels use a 6×10 lawn layout, while other levels use a 5×9 layout'**
-  String get spermWhaleModuleLawnPreviewHint;
 
   /// No description provided for @moduleTitle_PennyClassroomModuleProperties.
   ///
@@ -5152,12 +4618,6 @@ abstract class AppLocalizations {
   /// **'Plants existing on the lawn at the start'**
   String get moduleDesc_InitialPlantEntryProperties;
 
-  /// No description provided for @frozenPlantPlacementTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Legacy Preset Plants'**
-  String get frozenPlantPlacementTitle;
-
   /// No description provided for @frozenPlantPlacementLastStand.
   ///
   /// In en, this message translates to:
@@ -5169,12 +4629,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Selected position'**
   String get frozenPlantPlacementSelectedPosition;
-
-  /// No description provided for @frozenPlantPlacementPlaceHere.
-  ///
-  /// In en, this message translates to:
-  /// **'Add plant'**
-  String get frozenPlantPlacementPlaceHere;
 
   /// No description provided for @frozenPlantPlacementPlantList.
   ///
@@ -5536,12 +4990,6 @@ abstract class AppLocalizations {
   /// **'Configures the spawning of Kongfu World Taiji tiles'**
   String get moduleDesc_EnergyGridProperties;
 
-  /// No description provided for @bronzeModuleTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Bronze Matrix Statues'**
-  String get bronzeModuleTitle;
-
   /// No description provided for @bronzeModuleHelpTitle.
   ///
   /// In en, this message translates to:
@@ -5595,12 +5043,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add bronze statue'**
   String get bronzeModuleAddTitle;
-
-  /// No description provided for @bronzeModuleTypeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Type'**
-  String get bronzeModuleTypeLabel;
 
   /// No description provided for @bronzeModuleSpawnTimeLabel.
   ///
@@ -5842,10 +5284,22 @@ abstract class AppLocalizations {
   /// **'This event spawns Eagle Standards at specified positions. Zombies that pass by can pick up the Eagle Standard. When the carrier is defeated, the standard drops to the ground, allowing subsequent zombies to pick it up again repeatedly. A zombie carrying the Eagle Standard grants zombies within a 3×3 area damage reduction and immunity to control effects.\nRegular plants cannot attack the Eagle Standard. Once it has been dropped, Magnet-shroom and Gold Magnet can destroy it.'**
   String get eventHelpEagleStandardBody;
 
+  /// No description provided for @eventHelpEagleStandardEligibleZombiesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligible zombies'**
+  String get eventHelpEagleStandardEligibleZombiesTitle;
+
+  /// No description provided for @eventHelpEagleStandardEligibleZombiesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'In the current version, only Roman Zombies, Roman Coneheads, Roman Bucketheads, Centurion Zombies, Bust Head Zombies, Roman Flag Zombies, and Roman Imps can pick up the Eagle Standard. Other zombies ignore the Standard and continue past it, but can still benefit from the bonuses granted by its carrier.'**
+  String get eventHelpEagleStandardEligibleZombiesBody;
+
   /// No description provided for @eventHelpEagleStandardUsage.
   ///
   /// In en, this message translates to:
-  /// **'Select a grid cell and tap “+” to add an Eagle Standard. Multiple standards can be placed on the same tile and removed using the cards below. The grid adapts to the current lawn, and standards outside the lawn are listed separately.'**
+  /// **'Select a grid cell and tap \"+\" to add an Eagle Standard. Multiple standards can be placed on the same tile and removed using the cards below. The grid adapts to the current lawn, and standards outside the lawn are listed separately.'**
   String get eventHelpEagleStandardUsage;
 
   /// No description provided for @eventTitle_PumpkinHouseActionProps.
@@ -6154,24 +5608,6 @@ abstract class AppLocalizations {
   /// **'Zombie Vase (Purple)'**
   String get zombieVaseOption;
 
-  /// No description provided for @plantVaseOptionDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose a plant seed packet to place inside a green vase.'**
-  String get plantVaseOptionDescription;
-
-  /// No description provided for @zombieVaseOptionDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose a zombie to place inside a purple vase.'**
-  String get zombieVaseOptionDescription;
-
-  /// No description provided for @collectableVaseOptionDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose a collectible item to place inside a vase.'**
-  String get collectableVaseOptionDescription;
-
   /// No description provided for @searchZombie.
   ///
   /// In en, this message translates to:
@@ -6207,12 +5643,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Item'**
   String get itemLabel;
-
-  /// No description provided for @railcartSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Minecart and Rail Settings'**
-  String get railcartSettings;
 
   /// No description provided for @railcartType.
   ///
@@ -6526,24 +5956,6 @@ abstract class AppLocalizations {
   /// **'Enable resilience'**
   String get enableResilience;
 
-  /// No description provided for @resilienceSource.
-  ///
-  /// In en, this message translates to:
-  /// **'Source'**
-  String get resilienceSource;
-
-  /// No description provided for @resiliencePreset.
-  ///
-  /// In en, this message translates to:
-  /// **'Existing'**
-  String get resiliencePreset;
-
-  /// No description provided for @resilienceCustom.
-  ///
-  /// In en, this message translates to:
-  /// **'Custom'**
-  String get resilienceCustom;
-
   /// No description provided for @resiliencePresetSelect.
   ///
   /// In en, this message translates to:
@@ -6597,30 +6009,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'e.g. CustomResilience0'**
   String get resilienceCodenameHint;
-
-  /// No description provided for @resistances.
-  ///
-  /// In en, this message translates to:
-  /// **'Resistances'**
-  String get resistances;
-
-  /// No description provided for @zombieResilience.
-  ///
-  /// In en, this message translates to:
-  /// **'Armor / Resilience'**
-  String get zombieResilience;
-
-  /// No description provided for @resilienceEnable.
-  ///
-  /// In en, this message translates to:
-  /// **'Enable armor'**
-  String get resilienceEnable;
-
-  /// No description provided for @weakTypeExplosive.
-  ///
-  /// In en, this message translates to:
-  /// **'Explosive'**
-  String get weakTypeExplosive;
 
   /// No description provided for @instantKillResistance.
   ///
@@ -6735,18 +6123,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit custom shield'**
   String get resilienceEditCustom;
-
-  /// No description provided for @resilienceSourceResilienceConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'ResilienceConfig'**
-  String get resilienceSourceResilienceConfig;
-
-  /// No description provided for @resilienceSourceCurrentLevel.
-  ///
-  /// In en, this message translates to:
-  /// **'CurrentLevel'**
-  String get resilienceSourceCurrentLevel;
 
   /// No description provided for @resilienceTypeAll.
   ///
@@ -7024,18 +6400,6 @@ abstract class AppLocalizations {
   /// **'Plant Food'**
   String get plantFood;
 
-  /// No description provided for @selectGridItem.
-  ///
-  /// In en, this message translates to:
-  /// **'Select grid item'**
-  String get selectGridItem;
-
-  /// No description provided for @addItemTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Add item'**
-  String get addItemTitle;
-
   /// No description provided for @initialPlantLayout.
   ///
   /// In en, this message translates to:
@@ -7150,12 +6514,6 @@ abstract class AppLocalizations {
   /// **'Drop interval (seconds)'**
   String get rainIntervalSeconds;
 
-  /// No description provided for @startingPlantFood.
-  ///
-  /// In en, this message translates to:
-  /// **'Starting Plant Food'**
-  String get startingPlantFood;
-
   /// No description provided for @bowlingFoulLine.
   ///
   /// In en, this message translates to:
@@ -7252,12 +6610,6 @@ abstract class AppLocalizations {
   /// **'Stay duration (waves)'**
   String get dinoWaveDuration;
 
-  /// No description provided for @eventHelpDinoType.
-  ///
-  /// In en, this message translates to:
-  /// **'Which dinosaur enters the lawn. Each species has different behavior when assisting zombies.'**
-  String get eventHelpDinoType;
-
   /// No description provided for @eventHelpDinoRow.
   ///
   /// In en, this message translates to:
@@ -7282,12 +6634,6 @@ abstract class AppLocalizations {
   /// **'Unknown module'**
   String get unknownModuleHelpTitle;
 
-  /// No description provided for @unknownModuleHelpBody.
-  ///
-  /// In en, this message translates to:
-  /// **'This module is not registered in the level interpreter. It may be manually modified objclass.'**
-  String get unknownModuleHelpBody;
-
   /// No description provided for @noEditorForModule.
   ///
   /// In en, this message translates to:
@@ -7305,12 +6651,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid event'**
   String get invalidEventTitle;
-
-  /// No description provided for @invalidEventBody.
-  ///
-  /// In en, this message translates to:
-  /// **'This event object could not be parsed.'**
-  String get invalidEventBody;
 
   /// No description provided for @invalidReference.
   ///
@@ -7353,12 +6693,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Red warning message'**
   String get waveStartMessage;
-
-  /// No description provided for @zombieTypeZombieName.
-  ///
-  /// In en, this message translates to:
-  /// **'Zombie Settings'**
-  String get zombieTypeZombieName;
 
   /// No description provided for @optional.
   ///
@@ -7503,24 +6837,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap a tile to select it, then add sea creatures. Tap \"+\" to add built-in sea creatures. Tap a creature\'s icon for more options such as duplicate, delete, or customize. Customized creatures are marked with a blue \"C\". A warning is shown if a creature is placed outside the lawn.'**
   String get fishPropertiesEntryHelp;
-
-  /// No description provided for @fishAddCustom.
-  ///
-  /// In en, this message translates to:
-  /// **'Add custom sea creature'**
-  String get fishAddCustom;
-
-  /// No description provided for @addFishLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Add sea creature'**
-  String get addFishLabel;
-
-  /// No description provided for @addBuiltInFishLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Add built-in sea creature'**
-  String get addBuiltInFishLabel;
 
   /// No description provided for @makeFishAsCustom.
   ///
@@ -8284,12 +7600,6 @@ abstract class AppLocalizations {
   /// **'Add zombie'**
   String get schoolBusAddZombie;
 
-  /// No description provided for @schoolBusRowsHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Rows are 1-based: Row 1 = top lane, Row 5/6 = bottom lane.'**
-  String get schoolBusRowsHint;
-
   /// No description provided for @eventHelpThunderWaveBody.
   ///
   /// In en, this message translates to:
@@ -8464,36 +7774,6 @@ abstract class AppLocalizations {
   /// **'This is the last barrel. Deleting it will leave this event without any barrels. Continue?'**
   String get barrelWaveDeleteLastHint;
 
-  /// No description provided for @eventHelpGraveSpawnWait.
-  ///
-  /// In en, this message translates to:
-  /// **'Delay between wave start and zombie spawn. If the next wave begins before the timer ends, no zombies will spawn.'**
-  String get eventHelpGraveSpawnWait;
-
-  /// No description provided for @eventHelpStormBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Creates sandstorms or snowstorms that rapidly transport zombies to the front lines. Can spawn in groups. Freezing Storm from Memory Lane can freeze plants it passes through.'**
-  String get eventHelpStormBody;
-
-  /// No description provided for @eventHelpStormColumns.
-  ///
-  /// In en, this message translates to:
-  /// **'The left boundary of the lawn is column 0, and the right boundary is column 9 (or column 10 in Underwater World). Start column must be less than end column, or the storm will not spawn.'**
-  String get eventHelpStormColumns;
-
-  /// No description provided for @eventHelpStormLevels.
-  ///
-  /// In en, this message translates to:
-  /// **'Zombie level and row cannot be set independently within storms. Manually editing zombie levels has no effect; zombie levels follow the lawn’s level sequence by default.'**
-  String get eventHelpStormLevels;
-
-  /// No description provided for @eventHelpGroundSpawnBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Spawns zombies directly from the ground within the specified range. Configuration is similar to natural spawning. Level 0 follows the lawn’s default level (which is Level 1 in Creative Courtyard).\n By default, the Drop config specifies the number of zombies that carry Plant Food. After adding a plant, it will randomly assign a zombie to drop a seed packet of the selected plant.'**
-  String get eventHelpGroundSpawnBody;
-
   /// No description provided for @moduleHelpDeathHoleBody.
   ///
   /// In en, this message translates to:
@@ -8536,24 +7816,6 @@ abstract class AppLocalizations {
   /// **'Add rain content'**
   String get seedRainAddContentTitle;
 
-  /// No description provided for @seedRainAddPlantDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Select one or more plant seed packets to fall from the sky.'**
-  String get seedRainAddPlantDescription;
-
-  /// No description provided for @seedRainAddZombieDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Select one or more zombie cards to fall from the sky.'**
-  String get seedRainAddZombieDescription;
-
-  /// No description provided for @seedRainAddPlantFoodDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Add Plant Food as a possible falling item.'**
-  String get seedRainAddPlantFoodDescription;
-
   /// No description provided for @moduleHelpRailcartBody.
   ///
   /// In en, this message translates to:
@@ -8589,18 +7851,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tide line configuration'**
   String get initialTidePosition;
-
-  /// No description provided for @moduleHelpManholeBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Defines an underground pipe system. Commonly used in Steam Ages levels. Pipes connect two sewers, allowing zombies to travel between them.'**
-  String get moduleHelpManholeBody;
-
-  /// No description provided for @moduleHelpManholeEdit.
-  ///
-  /// In en, this message translates to:
-  /// **'Select a pipe group from the list above. The grid below shows the layout. Use \"Set Start\" or \"Set End\", then tap a tile to place it.'**
-  String get moduleHelpManholeEdit;
 
   /// No description provided for @moduleHelpWeatherBody.
   ///
@@ -8806,12 +8056,6 @@ abstract class AppLocalizations {
   /// **'Attraction config'**
   String get attractionConfig;
 
-  /// No description provided for @placePlant.
-  ///
-  /// In en, this message translates to:
-  /// **'Place plant'**
-  String get placePlant;
-
   /// No description provided for @plantList.
   ///
   /// In en, this message translates to:
@@ -8872,12 +8116,6 @@ abstract class AppLocalizations {
   /// **'Manhole Pipeline module'**
   String get manholePipeline;
 
-  /// No description provided for @manholePipelines.
-  ///
-  /// In en, this message translates to:
-  /// **'Manhole pipelines'**
-  String get manholePipelines;
-
   /// No description provided for @manholePipelineHelpTitle.
   ///
   /// In en, this message translates to:
@@ -8895,12 +8133,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select a pipe group from the list above. The grid below shows the layout. Use \"Set Start\" or \"Set End\", then tap a tile to place it.'**
   String get manholePipelineHelpEditing;
-
-  /// No description provided for @smokePollutionModuleTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Steam Manhole module'**
-  String get smokePollutionModuleTitle;
 
   /// No description provided for @smokePollutionModuleHelpTitle.
   ///
@@ -8962,12 +8194,6 @@ abstract class AppLocalizations {
   /// **'Dark Alchemy module'**
   String get zombiePotion;
 
-  /// No description provided for @zombiePotionSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Zombie Potion Settings'**
-  String get zombiePotionSettings;
-
   /// No description provided for @zombiePotionHelpTitle.
   ///
   /// In en, this message translates to:
@@ -8980,12 +8206,6 @@ abstract class AppLocalizations {
   /// **'Event: Spacetime Portal'**
   String get eventTimeRift;
 
-  /// No description provided for @deathHole.
-  ///
-  /// In en, this message translates to:
-  /// **'Death Crater module'**
-  String get deathHole;
-
   /// No description provided for @seedRain.
   ///
   /// In en, this message translates to:
@@ -8997,12 +8217,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Event: Freezing Wind'**
   String get eventFrostWind;
-
-  /// No description provided for @lastStandSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Last Stand Settings'**
-  String get lastStandSettings;
 
   /// No description provided for @lastStandInitialResourceSettings.
   ///
@@ -9046,12 +8260,6 @@ abstract class AppLocalizations {
   /// **'To select this module, add the \"{moduleName}\" module first.'**
   String moduleDependencyRequiredMessage(String moduleName);
 
-  /// No description provided for @conveyorManualPacketSpawning.
-  ///
-  /// In en, this message translates to:
-  /// **'Manual packet spawning'**
-  String get conveyorManualPacketSpawning;
-
   /// No description provided for @cowboyMinigameSettings.
   ///
   /// In en, this message translates to:
@@ -9063,12 +8271,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Prompt text'**
   String get cowboyMinigameBeginString;
-
-  /// No description provided for @cowboyMinigameBeginStringHidden.
-  ///
-  /// In en, this message translates to:
-  /// **'Do not show text'**
-  String get cowboyMinigameBeginStringHidden;
 
   /// No description provided for @cowboyMinigameBeginStringDefault.
   ///
@@ -9334,12 +8536,6 @@ abstract class AppLocalizations {
   /// **'Configure All by Oneself Tutorial'**
   String get singleHandedConfigureTutorial;
 
-  /// No description provided for @singleHandedTutorialSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'All by Oneself Tutorial Settings'**
-  String get singleHandedTutorialSettings;
-
   /// No description provided for @singleHandedTutorialWaveForStartRocket.
   ///
   /// In en, this message translates to:
@@ -9550,12 +8746,6 @@ abstract class AppLocalizations {
   /// **'Replace'**
   String get customGridItemReplaceAction;
 
-  /// No description provided for @roofFlowerPot.
-  ///
-  /// In en, this message translates to:
-  /// **'Roof Pots module'**
-  String get roofFlowerPot;
-
   /// No description provided for @roofFlowerPotColumns.
   ///
   /// In en, this message translates to:
@@ -9598,12 +8788,6 @@ abstract class AppLocalizations {
   /// **'Bulb Bowling module'**
   String get bowlingMinigame;
 
-  /// No description provided for @zombieMoveFast.
-  ///
-  /// In en, this message translates to:
-  /// **'Fast Entry module'**
-  String get zombieMoveFast;
-
   /// No description provided for @eventPotionDrop.
   ///
   /// In en, this message translates to:
@@ -9622,35 +8806,11 @@ abstract class AppLocalizations {
   /// **'Event: Pumpkin House Spawn'**
   String get eventPumpkinHouseSpawn;
 
-  /// No description provided for @eventSchoolBusSpawn.
-  ///
-  /// In en, this message translates to:
-  /// **'Event: Ice cream Van spawn'**
-  String get eventSchoolBusSpawn;
-
-  /// No description provided for @warMist.
-  ///
-  /// In en, this message translates to:
-  /// **'Fog System module'**
-  String get warMist;
-
-  /// No description provided for @eventDino.
-  ///
-  /// In en, this message translates to:
-  /// **'Event: Dino Spawn'**
-  String get eventDino;
-
   /// No description provided for @duration.
   ///
   /// In en, this message translates to:
   /// **'Duration'**
   String get duration;
-
-  /// No description provided for @sunDropper.
-  ///
-  /// In en, this message translates to:
-  /// **'Sun Dropper module'**
-  String get sunDropper;
 
   /// No description provided for @eventFairyWind.
   ///
@@ -9712,12 +8872,6 @@ abstract class AppLocalizations {
   /// **'Zombie spawn delay'**
   String get zombieSpawnWait;
 
-  /// No description provided for @selectCustomZombie.
-  ///
-  /// In en, this message translates to:
-  /// **'Select custom zombie'**
-  String get selectCustomZombie;
-
   /// No description provided for @change.
   ///
   /// In en, this message translates to:
@@ -9741,12 +8895,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Apply batch level?'**
   String get applyBatchLevel;
-
-  /// No description provided for @conveyorBelt.
-  ///
-  /// In en, this message translates to:
-  /// **'Conveyor Belt Module Settings'**
-  String get conveyorBelt;
 
   /// No description provided for @starChallenges.
   ///
@@ -9790,12 +8938,6 @@ abstract class AppLocalizations {
   /// **'Add grid item'**
   String get addGridItem;
 
-  /// No description provided for @plantLevels.
-  ///
-  /// In en, this message translates to:
-  /// **'Plant levels'**
-  String get plantLevels;
-
   /// No description provided for @scope.
   ///
   /// In en, this message translates to:
@@ -9838,12 +8980,6 @@ abstract class AppLocalizations {
   /// **'Auto count'**
   String get autoCount;
 
-  /// No description provided for @overrideStartingPlantfood.
-  ///
-  /// In en, this message translates to:
-  /// **'Starting Plant Food settings'**
-  String get overrideStartingPlantfood;
-
   /// No description provided for @startingPlantfoodOverride.
   ///
   /// In en, this message translates to:
@@ -9861,12 +8997,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Icon Image'**
   String get iconImage;
-
-  /// No description provided for @overrideMaxSun.
-  ///
-  /// In en, this message translates to:
-  /// **'Max Sun Limit Settings'**
-  String get overrideMaxSun;
 
   /// No description provided for @maxSunOverride.
   ///
@@ -9909,12 +9039,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This module is commonly used in Moon BaseZ Expert Mode. When enabled, every zombie in the level uses the specified level, and all plants are forced to Level 1. \nThese settings override other plant and zombie level settings, including those in the Tier Definition module. Note that this module has no effect in Creative Courtyard.'**
   String get moonExpertHelpOverview;
-
-  /// No description provided for @enterMoonExpertZombieLevelHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter zombie level (0–10)'**
-  String get enterMoonExpertZombieLevelHint;
 
   /// No description provided for @startingPlantfoodHelpTitle.
   ///
@@ -9976,12 +9100,6 @@ abstract class AppLocalizations {
   /// **'Initial zombie layout'**
   String get initialZombieLayout;
 
-  /// No description provided for @placeZombie.
-  ///
-  /// In en, this message translates to:
-  /// **'Place zombie'**
-  String get placeZombie;
-
   /// No description provided for @manualInput.
   ///
   /// In en, this message translates to:
@@ -10000,12 +9118,6 @@ abstract class AppLocalizations {
   /// **'Points'**
   String get points;
 
-  /// No description provided for @eventStorm.
-  ///
-  /// In en, this message translates to:
-  /// **'Event: Storm Raid'**
-  String get eventStorm;
-
   /// No description provided for @row.
   ///
   /// In en, this message translates to:
@@ -10017,12 +9129,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add'**
   String get addType;
-
-  /// No description provided for @plantFunExperimental.
-  ///
-  /// In en, this message translates to:
-  /// **'Plant (work in progress)'**
-  String get plantFunExperimental;
 
   /// No description provided for @availableZombies.
   ///
@@ -10114,12 +9220,6 @@ abstract class AppLocalizations {
   /// **'Add tool packet'**
   String get addTool;
 
-  /// No description provided for @increasedCost.
-  ///
-  /// In en, this message translates to:
-  /// **'Inflation'**
-  String get increasedCost;
-
   /// No description provided for @powerTile.
   ///
   /// In en, this message translates to:
@@ -10210,18 +9310,6 @@ abstract class AppLocalizations {
   /// **'Quick edit: {interaction}'**
   String powerTileHelpQuickEdit(String interaction);
 
-  /// No description provided for @eventStandardSpawn.
-  ///
-  /// In en, this message translates to:
-  /// **'Event: Basic Spawner'**
-  String get eventStandardSpawn;
-
-  /// No description provided for @eventGroundSpawn.
-  ///
-  /// In en, this message translates to:
-  /// **'Event: Ground Spawner'**
-  String get eventGroundSpawn;
-
   /// No description provided for @eventEditorInDevelopment.
   ///
   /// In en, this message translates to:
@@ -10245,12 +9333,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This level has no Tide System module (TideProperties). This event may not function correctly and could cause a crash.'**
   String get levelHasNoTideProperties;
-
-  /// No description provided for @changePosition.
-  ///
-  /// In en, this message translates to:
-  /// **'Tide adjustment'**
-  String get changePosition;
 
   /// No description provided for @changePositionChangeAmount.
   ///
@@ -10312,12 +9394,6 @@ abstract class AppLocalizations {
   /// **'Damage per second'**
   String get damagePerSecond;
 
-  /// No description provided for @pipe.
-  ///
-  /// In en, this message translates to:
-  /// **'Pipe'**
-  String get pipe;
-
   /// No description provided for @stageMismatch.
   ///
   /// In en, this message translates to:
@@ -10347,18 +9423,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Plank rows (Underwater World)'**
   String get plankRowsDeepSea;
-
-  /// No description provided for @selectedRows.
-  ///
-  /// In en, this message translates to:
-  /// **'Rows selected:'**
-  String get selectedRows;
-
-  /// No description provided for @indexLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Index'**
-  String get indexLabel;
 
   /// No description provided for @selectWeatherType.
   ///
@@ -10408,35 +9472,11 @@ abstract class AppLocalizations {
   /// **'Potion Type List'**
   String get potionTypeList;
 
-  /// No description provided for @initial.
-  ///
-  /// In en, this message translates to:
-  /// **'Initial count (InitialPotionCount)'**
-  String get initial;
-
   /// No description provided for @max.
   ///
   /// In en, this message translates to:
   /// **'Max count (MaxPotionCount)'**
   String get max;
-
-  /// No description provided for @spawnTimerShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Spawn Interval (PotionSpawnTimer)'**
-  String get spawnTimerShort;
-
-  /// No description provided for @minSec.
-  ///
-  /// In en, this message translates to:
-  /// **'Min (seconds)'**
-  String get minSec;
-
-  /// No description provided for @maxSec.
-  ///
-  /// In en, this message translates to:
-  /// **'Max (seconds)'**
-  String get maxSec;
 
   /// No description provided for @ignoreGravestoneSubtitle.
   ///
@@ -10449,18 +9489,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This portal can spawn:'**
   String get thisPortalSpawns;
-
-  /// No description provided for @startEndFormat.
-  ///
-  /// In en, this message translates to:
-  /// **'Start: ({sx}, {sy})  End: ({ex}, {ey})'**
-  String startEndFormat(int sx, int sy, int ex, int ey);
-
-  /// No description provided for @indexN.
-  ///
-  /// In en, this message translates to:
-  /// **'Index: {n}'**
-  String indexN(int n);
 
   /// No description provided for @noItemsAddHint.
   ///
@@ -10678,12 +9706,6 @@ abstract class AppLocalizations {
   /// **'Item pool (GravestonePool)'**
   String get gravestonePool;
 
-  /// No description provided for @removePlants.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove plants'**
-  String get removePlants;
-
   /// No description provided for @current.
   ///
   /// In en, this message translates to:
@@ -10726,18 +9748,6 @@ abstract class AppLocalizations {
   /// **'Carried zombies ({count} total)'**
   String stormCarriedZombiesCount(int count);
 
-  /// No description provided for @eventGraveSpawnSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Event: Grave Item Spawner'**
-  String get eventGraveSpawnSubtitle;
-
-  /// No description provided for @eventStormSpawnSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Event: Storm Raid'**
-  String get eventStormSpawnSubtitle;
-
   /// No description provided for @eventHelpGraveSpawnBody.
   ///
   /// In en, this message translates to:
@@ -10761,12 +9771,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The left boundary is column 0 and the right boundary is column 9 (or column 10 in Underwater World). Start column must be less than end column, or the storm will not spawn.'**
   String get eventHelpStormColumnRange;
-
-  /// No description provided for @eventHelpStormZombieLevels.
-  ///
-  /// In en, this message translates to:
-  /// **'Zombie level and row cannot be set independently within storms. Manually editing zombie levels has no effect; zombie levels follow the lawn’s level sequence by default.'**
-  String get eventHelpStormZombieLevels;
 
   /// No description provided for @spawnParameters.
   ///
@@ -10905,12 +9909,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Zombie Perks'**
   String get ztPerksAddTitle;
-
-  /// No description provided for @ztPerksTypeAlreadyAssigned.
-  ///
-  /// In en, this message translates to:
-  /// **'A perk of this type is already assigned to this zombie.'**
-  String get ztPerksTypeAlreadyAssigned;
 
   /// No description provided for @eventHelpJitteredZtPerks.
   ///
@@ -11187,23 +10185,11 @@ abstract class AppLocalizations {
   /// **'Zomboss Mech type'**
   String get zombossMechType;
 
-  /// No description provided for @unknownZombossMech.
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown Zomboss Mech'**
-  String get unknownZombossMech;
-
   /// No description provided for @zombossMechSelection.
   ///
   /// In en, this message translates to:
   /// **'Zomboss mech selection'**
   String get zombossMechSelection;
-
-  /// No description provided for @zombossMechBaseLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Base Zomboss Mech'**
-  String get zombossMechBaseLabel;
 
   /// No description provided for @zombossMechBaseHint.
   ///
@@ -11216,12 +10202,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select base Zomboss mech'**
   String get zombossMechSelectBaseTitle;
-
-  /// No description provided for @zombossMechChangeBase.
-  ///
-  /// In en, this message translates to:
-  /// **'Change base Zomboss mech'**
-  String get zombossMechChangeBase;
 
   /// No description provided for @zombossMechUsedProperties.
   ///
@@ -11276,18 +10256,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove pathways too'**
   String get zombossBattleRemoveTunnelDefend;
-
-  /// No description provided for @zombossBattleChangeBase.
-  ///
-  /// In en, this message translates to:
-  /// **'Change base Zomboss'**
-  String get zombossBattleChangeBase;
-
-  /// No description provided for @zombossBattleBaseLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Base Zomboss'**
-  String get zombossBattleBaseLabel;
 
   /// No description provided for @zombossBattleBaseHint.
   ///
@@ -11355,18 +10323,6 @@ abstract class AppLocalizations {
   /// **'Sets which row the Zomboss initially appears in.'**
   String get zombossBattleInitialGridRowHint;
 
-  /// No description provided for @zombossBattleStartStageIndexLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Starting Stage (ZombossStartStageIndex)'**
-  String get zombossBattleStartStageIndexLabel;
-
-  /// No description provided for @zombossBattleStartStageIndexHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Sets which stage of the Zomboss mech the battle starts from. 0 represents the first stage.'**
-  String get zombossBattleStartStageIndexHint;
-
   /// No description provided for @zombossBattleSkipPlantingLabel.
   ///
   /// In en, this message translates to:
@@ -11427,18 +10383,6 @@ abstract class AppLocalizations {
   /// **'The required count updates automatically based on the number of plants added.'**
   String get protectPlantsAutoCount;
 
-  /// No description provided for @protectItemsOverview.
-  ///
-  /// In en, this message translates to:
-  /// **'Defines grid items that must be protected. The level fails if any of them are destroyed.'**
-  String get protectItemsOverview;
-
-  /// No description provided for @protectItemsAutoCount.
-  ///
-  /// In en, this message translates to:
-  /// **'The required count updates automatically based on the number of grid items added.'**
-  String get protectItemsAutoCount;
-
   /// No description provided for @positionsCount.
   ///
   /// In en, this message translates to:
@@ -11487,12 +10431,6 @@ abstract class AppLocalizations {
   /// **'Select from preset condition list'**
   String get selectFromPresetHint;
 
-  /// No description provided for @spawnTimer.
-  ///
-  /// In en, this message translates to:
-  /// **'Spawn Interval (PotionSpawnTimer)'**
-  String get spawnTimer;
-
   /// No description provided for @potionTypes.
   ///
   /// In en, this message translates to:
@@ -11510,12 +10448,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Conveyor Pool'**
   String get conveyorCardPool;
-
-  /// No description provided for @toolCardsUseFixedLevel.
-  ///
-  /// In en, this message translates to:
-  /// **'Tool packets use a fixed level by default and do not need to be modified.'**
-  String get toolCardsUseFixedLevel;
 
   /// No description provided for @maxLimits.
   ///
@@ -11601,18 +10533,6 @@ abstract class AppLocalizations {
   /// **'Zombie pool'**
   String get zombiePool;
 
-  /// No description provided for @plantLevelsCount.
-  ///
-  /// In en, this message translates to:
-  /// **'Plant levels: {count}'**
-  String plantLevelsCount(int count);
-
-  /// No description provided for @lvN.
-  ///
-  /// In en, this message translates to:
-  /// **'Level {n}'**
-  String lvN(int n);
-
   /// No description provided for @protectGridItems.
   ///
   /// In en, this message translates to:
@@ -11655,12 +10575,6 @@ abstract class AppLocalizations {
   /// **'Applies to all instances of the plant used in the level, including endangered plants and packet drops.'**
   String get globalPlantLevelsScope;
 
-  /// No description provided for @mustProtectCountFormat.
-  ///
-  /// In en, this message translates to:
-  /// **'Required to protect: {count}'**
-  String mustProtectCountFormat(int count);
-
   /// No description provided for @noWaveManagerPropsFound.
   ///
   /// In en, this message translates to:
@@ -11673,23 +10587,11 @@ abstract class AppLocalizations {
   /// **'Item(s) in selected tile'**
   String get itemsSortedByRow;
 
-  /// No description provided for @eventStormSpawn.
-  ///
-  /// In en, this message translates to:
-  /// **'Event: Storm Raid'**
-  String get eventStormSpawn;
-
   /// No description provided for @stormEvent.
   ///
   /// In en, this message translates to:
   /// **'Storm Raid'**
   String get stormEvent;
-
-  /// No description provided for @makeCustom.
-  ///
-  /// In en, this message translates to:
-  /// **'Set as custom'**
-  String get makeCustom;
 
   /// No description provided for @zombieLevelsBody.
   ///
@@ -11786,18 +10688,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 seed packet} other{{count} seed packets}}'**
   String waveDropPlantsCount(int count);
-
-  /// No description provided for @zombiesCarryingPlants.
-  ///
-  /// In en, this message translates to:
-  /// **'Zombies carrying seed packets'**
-  String get zombiesCarryingPlants;
-
-  /// No description provided for @zombiesCarryingPlantFood.
-  ///
-  /// In en, this message translates to:
-  /// **'Zombies carrying Plant Food'**
-  String get zombiesCarryingPlantFood;
 
   /// No description provided for @description.
   ///
@@ -11985,41 +10875,95 @@ abstract class AppLocalizations {
   /// **'Level: '**
   String get levelLabel;
 
+  /// No description provided for @fairyFogType.
+  ///
+  /// In en, this message translates to:
+  /// **'Fog level (FogType)'**
+  String get fairyFogType;
+
+  /// No description provided for @fairyFogLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {level}'**
+  String fairyFogLevel(int level);
+
+  /// No description provided for @fairyFogMovingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving time (MovingTime; seconds)'**
+  String get fairyFogMovingTime;
+
+  /// No description provided for @fairyFogRangeX.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting column (mX; 0-based)'**
+  String get fairyFogRangeX;
+
+  /// No description provided for @fairyFogRangeY.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting row (mY; 0-based)'**
+  String get fairyFogRangeY;
+
+  /// No description provided for @fairyFogRangeWidth.
+  ///
+  /// In en, this message translates to:
+  /// **'Width (mWidth; tiles)'**
+  String get fairyFogRangeWidth;
+
+  /// No description provided for @fairyFogRangeHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Height (mHeight; tiles)'**
+  String get fairyFogRangeHeight;
+
+  /// No description provided for @fairyWindParameters.
+  ///
+  /// In en, this message translates to:
+  /// **'Wind parameters'**
+  String get fairyWindParameters;
+
+  /// No description provided for @fairyWindDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration (Duration; seconds)'**
+  String get fairyWindDuration;
+
+  /// No description provided for @modifyConveyorMissingModule.
+  ///
+  /// In en, this message translates to:
+  /// **'Conveyor Belt module wasn\'t detected in the level, so this event may not take effect.'**
+  String get modifyConveyorMissingModule;
+
+  /// No description provided for @renaiWavePreviewEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No statue or marble mound data is configured in the module'**
+  String get renaiWavePreviewEmpty;
+
+  /// No description provided for @decompressZlib.
+  ///
+  /// In en, this message translates to:
+  /// **'Decompress ZLib'**
+  String get decompressZlib;
+
+  /// No description provided for @compressWithZlib.
+  ///
+  /// In en, this message translates to:
+  /// **'Compress with ZLib'**
+  String get compressWithZlib;
+
+  /// No description provided for @seedRainUnknownItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown item'**
+  String get seedRainUnknownItem;
+
   /// No description provided for @mistParameters.
   ///
   /// In en, this message translates to:
   /// **'Fog parameters'**
   String get mistParameters;
-
-  /// No description provided for @sunDropParameters.
-  ///
-  /// In en, this message translates to:
-  /// **'Sun drop parameters'**
-  String get sunDropParameters;
-
-  /// No description provided for @initialDropDelay.
-  ///
-  /// In en, this message translates to:
-  /// **'Initial drop delay (InitialSunDropDelay; seconds)'**
-  String get initialDropDelay;
-
-  /// No description provided for @baseCountdown.
-  ///
-  /// In en, this message translates to:
-  /// **'Base drop interval (SunCountdownBase)'**
-  String get baseCountdown;
-
-  /// No description provided for @maxCountdown.
-  ///
-  /// In en, this message translates to:
-  /// **'Max drop interval (SunCountdownMax)'**
-  String get maxCountdown;
-
-  /// No description provided for @countdownRange.
-  ///
-  /// In en, this message translates to:
-  /// **'Interval variation range (SunCountdownRange)'**
-  String get countdownRange;
 
   /// No description provided for @increasePerSun.
   ///
@@ -12081,12 +11025,6 @@ abstract class AppLocalizations {
   /// **'Select group'**
   String get selectGroup;
 
-  /// No description provided for @gridTapAddRemove.
-  ///
-  /// In en, this message translates to:
-  /// **'Tile (tap to add/change, long-press to remove)'**
-  String get gridTapAddRemove;
-
   /// No description provided for @sunBombHelpOverview.
   ///
   /// In en, this message translates to:
@@ -12141,12 +11079,6 @@ abstract class AppLocalizations {
   /// **'Set how many tiles the fuse extends to the right for each row (one value per row)'**
   String get bombPropertiesFuseLengthsHint;
 
-  /// No description provided for @bombPropertiesFuseLength.
-  ///
-  /// In en, this message translates to:
-  /// **'Fuse Length'**
-  String get bombPropertiesFuseLength;
-
   /// No description provided for @damage.
   ///
   /// In en, this message translates to:
@@ -12182,18 +11114,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter the level’s maximum sun cap (e.g. 9900)'**
   String get enterMaxSunHint;
-
-  /// No description provided for @optionalLabelHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Optional label'**
-  String get optionalLabelHint;
-
-  /// No description provided for @imageResourceIdHint.
-  ///
-  /// In en, this message translates to:
-  /// **'IMAGE_... resource id'**
-  String get imageResourceIdHint;
 
   /// No description provided for @enterStartingPlantfoodHint.
   ///
@@ -12260,12 +11180,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'When selection mode is Preset, placing the Seed Bank before the Conveyor Belt makes conveyor plants cost sun, while placing it after allows preset plants to be planted without sun cost.'**
   String get seedBankAdvancedGameplayBody;
-
-  /// No description provided for @seedBankIZombie.
-  ///
-  /// In en, this message translates to:
-  /// **'Seed Bank (I, Zombie Mode)'**
-  String get seedBankIZombie;
 
   /// No description provided for @basicRules.
   ///
@@ -12458,12 +11372,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Spawnable Objects'**
   String get gridItemCategorySpawnableObjects;
-
-  /// No description provided for @sunDropperConfigTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Sun Drop Settings'**
-  String get sunDropperConfigTitle;
 
   /// No description provided for @customLocalParams.
   ///
@@ -13035,12 +11943,6 @@ abstract class AppLocalizations {
   /// **'Required module for the Lord of the Underground Palace Zomboss battle'**
   String get moduleDesc_ZombossFinalStageTimeLimitedChallengeProperties;
 
-  /// No description provided for @finalStageTimeLimitedChallengeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Finisher Countdown'**
-  String get finalStageTimeLimitedChallengeTitle;
-
   /// No description provided for @finalStageTimeLimitedChallengeHelpTitle.
   ///
   /// In en, this message translates to:
@@ -13130,12 +12032,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Places pre-set Gulliver tunnels on the lawn'**
   String get moduleDesc_InitialGridItemGulliverTunnelProperties;
-
-  /// No description provided for @witchModuleTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Fright Witch Settings'**
-  String get witchModuleTitle;
 
   /// No description provided for @witchModuleHelpTitle.
   ///
@@ -13269,12 +12165,6 @@ abstract class AppLocalizations {
   /// **'Adds theme effects from Penny\'s Pursuit, Memory Lane, and other game modes to the level'**
   String get moduleDesc_RiftThemeDemoModuleProperties;
 
-  /// No description provided for @riftThemeModuleTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Theme Configuration'**
-  String get riftThemeModuleTitle;
-
   /// No description provided for @riftThemeHelpTitle.
   ///
   /// In en, this message translates to:
@@ -13317,53 +12207,17 @@ abstract class AppLocalizations {
   /// **'No themes selected. Tap the button in the lower-right corner to choose themes.'**
   String get riftThemeEmpty;
 
-  /// No description provided for @riftThemeAddTheme.
-  ///
-  /// In en, this message translates to:
-  /// **'Add theme'**
-  String get riftThemeAddTheme;
-
   /// No description provided for @riftThemeSelectThemes.
   ///
   /// In en, this message translates to:
   /// **'Select themes'**
   String get riftThemeSelectThemes;
 
-  /// No description provided for @riftThemeSelectTheme.
-  ///
-  /// In en, this message translates to:
-  /// **'Theme'**
-  String get riftThemeSelectTheme;
-
-  /// No description provided for @riftThemeSearchPlaceholder.
-  ///
-  /// In en, this message translates to:
-  /// **'Search theme name or codename'**
-  String get riftThemeSearchPlaceholder;
-
-  /// No description provided for @riftThemeAlreadyAdded.
-  ///
-  /// In en, this message translates to:
-  /// **'Already added'**
-  String get riftThemeAlreadyAdded;
-
   /// No description provided for @riftThemeNoSearchResults.
   ///
   /// In en, this message translates to:
   /// **'No matching themes'**
   String get riftThemeNoSearchResults;
-
-  /// No description provided for @riftThemeAllUsedTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'All themes added'**
-  String get riftThemeAllUsedTitle;
-
-  /// No description provided for @riftThemeAllUsedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'All available themes have already been added. Each theme can only be added once.'**
-  String get riftThemeAllUsedMessage;
 
   /// No description provided for @moduleTitle_ZombieRushModuleProperties.
   ///
@@ -13578,7 +12432,7 @@ abstract class AppLocalizations {
   /// No description provided for @pvz1SeeingStarsHelpWinCon.
   ///
   /// In en, this message translates to:
-  /// **'Do not use this module together with Loot Drop or Bronze Matrix Loot Drop. If either is present, its win condition takes priority and the settlement delay is ignored, affecting the minigame experience.\nAlso, Seeing Stars is incompatible with Wave Generator and will cause the level to crash. Use with caution.'**
+  /// **'Do not combine this module with Loot Drop, Bronze Matrix Loot Drop, Level Timer, Bemarbled, or other modules with their own end conditions. They may override or interfere with Seeing Stars\' win condition and disrupt the minigame.\nSeeing Stars is also incompatible with Wave Generator and will crash the level if both are used. Use with caution.'**
   String get pvz1SeeingStarsHelpWinCon;
 
   /// No description provided for @pvz1SeeingStarsMatchPlantsEmpty.
@@ -13596,7 +12450,7 @@ abstract class AppLocalizations {
   /// No description provided for @seeingStarsWinConWarning.
   ///
   /// In en, this message translates to:
-  /// **'Seeing Stars has its own win condition and ends the level when the pattern is complete. Loot Drop or Bronze Matrix Loot Drop overrides this behavior. Remove the Loot Drop or Bronze Matrix Loot Drop module.'**
+  /// **'Seeing Stars ends the level when the pattern is complete. Do not combine it with Loot Drop, Bronze Matrix Loot Drop, Level Timer, Bemarbled, or other modules with their own end conditions, as they may override or interfere with its win condition.'**
   String get seeingStarsWinConWarning;
 
   /// No description provided for @seeingStarsCycleWaveLabel.
@@ -13791,18 +12645,6 @@ abstract class AppLocalizations {
   /// **'Wave (0 = Wave 1, 1 = Wave 2, ...)'**
   String get moduleWaveFieldZeroBased;
 
-  /// No description provided for @appearanceLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Appearance'**
-  String get appearanceLabel;
-
-  /// No description provided for @airDropShipGroupLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Group'**
-  String get airDropShipGroupLabel;
-
   /// No description provided for @moduleTitle_RenaiModuleProperties.
   ///
   /// In en, this message translates to:
@@ -13814,12 +12656,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enables the Vitruvian Wheel and day–night cycle, configures Renaissance Statues and Marble Mounds'**
   String get moduleDesc_RenaiModuleProperties;
-
-  /// No description provided for @renaiModuleTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Renaissance Module Settings'**
-  String get renaiModuleTitle;
 
   /// No description provided for @renaiModuleHelpTitle.
   ///
@@ -13887,12 +12723,6 @@ abstract class AppLocalizations {
   /// **'Please enable the day–night cycle first'**
   String get renaiModuleNightStatuesDisabledHint;
 
-  /// No description provided for @renaiModuleAddStatue.
-  ///
-  /// In en, this message translates to:
-  /// **'Add statue'**
-  String get renaiModuleAddStatue;
-
   /// No description provided for @renaiModuleCarveWave.
   ///
   /// In en, this message translates to:
@@ -13929,12 +12759,6 @@ abstract class AppLocalizations {
   /// **'Statues to be revived this wave:'**
   String get renaiModulePreviewRevivingStatues;
 
-  /// No description provided for @renaiModuleStatueCarve.
-  ///
-  /// In en, this message translates to:
-  /// **'Statue revival'**
-  String get renaiModuleStatueCarve;
-
   /// No description provided for @moduleTitle_DropShipProperties.
   ///
   /// In en, this message translates to:
@@ -13946,12 +12770,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Airdrops Flying Imp Zombies onto the lawn'**
   String get moduleDesc_DropShipProperties;
-
-  /// No description provided for @airDropShipModuleTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Transport Boat Assault'**
-  String get airDropShipModuleTitle;
 
   /// No description provided for @airDropShipModuleHelpTitle.
   ///
@@ -13982,12 +12800,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Each entry’s wave index is 0-based (e.g., 0 = first wave, 1 = second wave). Each Transport Boat drops at least one Flying Imp Zombie. The extra imp count specifies how many additional imps are dropped on top of the initial one for that wave.'**
   String get airDropShipModuleHelpImpsBody;
-
-  /// No description provided for @airDropShipModuleAppearWaves.
-  ///
-  /// In en, this message translates to:
-  /// **'Appear waves (Wave; starts from 0)'**
-  String get airDropShipModuleAppearWaves;
 
   /// No description provided for @airDropShipModuleAppearances.
   ///
@@ -14235,12 +13047,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 item configured} other{{count} items configured}}'**
   String glacierModuleEntryCount(int count);
 
-  /// No description provided for @glacierModuleEntryLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Group {index}'**
-  String glacierModuleEntryLabel(int index);
-
   /// No description provided for @glacierModuleNoEntries.
   ///
   /// In en, this message translates to:
@@ -14264,24 +13070,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add zombie'**
   String get glacierModuleAddZombieContent;
-
-  /// No description provided for @glacierModuleAddZombieDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose a zombie that may appear when the Ice Chunk breaks.'**
-  String get glacierModuleAddZombieDescription;
-
-  /// No description provided for @glacierModuleAddEmptyDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Add a separately weighted outcome in which the Ice Chunk releases no zombie.'**
-  String get glacierModuleAddEmptyDescription;
-
-  /// No description provided for @glacierModuleSelectZombie.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Zombie'**
-  String get glacierModuleSelectZombie;
 
   /// No description provided for @glacierModuleEmptyType.
   ///
@@ -14330,12 +13118,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wind that pushes zombies and knocks plants into the air'**
   String get moduleDesc_HeianWindModuleProperties;
-
-  /// No description provided for @heianWindModuleTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Heian Divine Wind Settings'**
-  String get heianWindModuleTitle;
 
   /// No description provided for @heianWindModuleHelpTitle.
   ///
@@ -14649,30 +13431,6 @@ abstract class AppLocalizations {
   /// **'View/edit JSON'**
   String get tooltipJsonViewer;
 
-  /// No description provided for @tooltipAdd.
-  ///
-  /// In en, this message translates to:
-  /// **'Add'**
-  String get tooltipAdd;
-
-  /// No description provided for @tooltipDecrease.
-  ///
-  /// In en, this message translates to:
-  /// **'Decrease'**
-  String get tooltipDecrease;
-
-  /// No description provided for @tooltipIncrease.
-  ///
-  /// In en, this message translates to:
-  /// **'Increase'**
-  String get tooltipIncrease;
-
-  /// No description provided for @bungeeWaveEventTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Bungee Drop Settings'**
-  String get bungeeWaveEventTitle;
-
   /// No description provided for @bungeeWaveEventHelpTitle.
   ///
   /// In en, this message translates to:
@@ -14745,12 +13503,6 @@ abstract class AppLocalizations {
   /// **'Zombies drop sun when defeated'**
   String get moduleDesc_LevelMutatorRiftTimedSunProps;
 
-  /// No description provided for @zombieSunDropTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Zombie Sun Drop Settings'**
-  String get zombieSunDropTitle;
-
   /// No description provided for @zombieSunDropHelpTitle.
   ///
   /// In en, this message translates to:
@@ -14805,12 +13557,6 @@ abstract class AppLocalizations {
   /// **'Configure this zombie\'s sun drops for levels 1–6; for levels above 6, the level 1 value will be used'**
   String get zombieSunDropEditHint;
 
-  /// No description provided for @zombieSunDropTier.
-  ///
-  /// In en, this message translates to:
-  /// **'Level'**
-  String get zombieSunDropTier;
-
   /// No description provided for @zombieSunDropTierLabel.
   ///
   /// In en, this message translates to:
@@ -14828,12 +13574,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shows tutorial dialog boxes when specific zombies are defeated'**
   String get moduleDesc_PickupCollectableTutorialProperties;
-
-  /// No description provided for @pickupCollectableTutorialTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Pickup Collectible Tutorial Settings'**
-  String get pickupCollectableTutorialTitle;
 
   /// No description provided for @pickupCollectableTutorialHelpTitle.
   ///
@@ -15051,12 +13791,6 @@ abstract class AppLocalizations {
   /// **'Multiple Boss modules were found. Select the instance to edit from the module list in Level Settings.'**
   String get zombossMultipleModuleSelectionHint;
 
-  /// No description provided for @zombossMechStageActions.
-  ///
-  /// In en, this message translates to:
-  /// **'Actions'**
-  String get zombossMechStageActions;
-
   /// No description provided for @zombossMechActions.
   ///
   /// In en, this message translates to:
@@ -15255,12 +13989,6 @@ abstract class AppLocalizations {
   /// **'No actions found'**
   String get zombossMechNoActionsFound;
 
-  /// No description provided for @zombossMechCustomActionLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Custom (CurrentLevel)'**
-  String get zombossMechCustomActionLabel;
-
   /// No description provided for @zombossCustomActionBaseAction.
   ///
   /// In en, this message translates to:
@@ -15417,18 +14145,6 @@ abstract class AppLocalizations {
   /// **'Clear invalid value and restore default'**
   String get zombossMechAwardDropClearInvalid;
 
-  /// No description provided for @zombossMechCatalogActionReadOnly.
-  ///
-  /// In en, this message translates to:
-  /// **'Built-in actions cannot be edited here. Create a custom action to change zombie lists.'**
-  String get zombossMechCatalogActionReadOnly;
-
-  /// No description provided for @zombossMechRetreatDisabled.
-  ///
-  /// In en, this message translates to:
-  /// **'Disabled'**
-  String get zombossMechRetreatDisabled;
-
   /// No description provided for @zombossMechOpenGlacierModule.
   ///
   /// In en, this message translates to:
@@ -15537,12 +14253,6 @@ abstract class AppLocalizations {
   /// **'Add phase'**
   String get zombossMechAddPhase;
 
-  /// No description provided for @zombossMechRemovePhase.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove phase'**
-  String get zombossMechRemovePhase;
-
   /// No description provided for @zombossMechHitPoints.
   ///
   /// In en, this message translates to:
@@ -15554,12 +14264,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue anyway'**
   String get continueAnyway;
-
-  /// No description provided for @armrackModuleTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Weapon Stands'**
-  String get armrackModuleTitle;
 
   /// No description provided for @armrackModuleHelpTitle.
   ///
@@ -15591,18 +14295,6 @@ abstract class AppLocalizations {
   /// **'Select a weapon stand type, then click an empty tile to place the selected Weapon Stand. Only one can be placed on each tile. Right-click on desktop or long-press on mobile to remove the weapon stand from that tile.'**
   String get armrackModuleHelpPlacementBody;
 
-  /// No description provided for @armrackModuleHelpWaveLimit.
-  ///
-  /// In en, this message translates to:
-  /// **'Wave Limitations'**
-  String get armrackModuleHelpWaveLimit;
-
-  /// No description provided for @armrackModuleHelpWaveLimitBody.
-  ///
-  /// In en, this message translates to:
-  /// **'In levels that use the Wave Manager, only the first group\'s configuration takes effect in-game, and only the first group is shown on the editor\'s Wave Timeline. When using the Wave Generator, weapon stands can be added to other wave groups normally and will spawn with their corresponding waves in the level.'**
-  String get armrackModuleHelpWaveLimitBody;
-
   /// No description provided for @armrackModuleTypePalette.
   ///
   /// In en, this message translates to:
@@ -15615,12 +14307,6 @@ abstract class AppLocalizations {
   /// **'Weapon Stands'**
   String get armrackModuleExpectationLabel;
 
-  /// No description provided for @armrackModuleIgnoredWaveOverridesWarning.
-  ///
-  /// In en, this message translates to:
-  /// **'The level contains weapon stand configurations outside the first group. These configurations will remain in the level file, but will not appear on the Wave Timeline because the Wave Manager only reads the first group\'s configuration.'**
-  String get armrackModuleIgnoredWaveOverridesWarning;
-
   /// No description provided for @armrackModuleRequiredMessage.
   ///
   /// In en, this message translates to:
@@ -15632,12 +14318,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The Vitruvian Wheel requires the \"{moduleName}\" to work correctly. Add it?'**
   String renaiGridItemModuleRequiredMessage(String moduleName);
-
-  /// No description provided for @energyGridModuleTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Taiji Tiles'**
-  String get energyGridModuleTitle;
 
   /// No description provided for @energyGridModuleHelpTitle.
   ///
@@ -15669,18 +14349,6 @@ abstract class AppLocalizations {
   /// **'Click an empty tile to place a Taiji Tile. Only one can be placed on each tile. Right-click on desktop or long-press on mobile to remove the Taiji Tile from that tile.'**
   String get energyGridModuleHelpPlacementBody;
 
-  /// No description provided for @energyGridModuleHelpWaveLimit.
-  ///
-  /// In en, this message translates to:
-  /// **'Wave Limitations'**
-  String get energyGridModuleHelpWaveLimit;
-
-  /// No description provided for @energyGridModuleHelpWaveLimitBody.
-  ///
-  /// In en, this message translates to:
-  /// **'In levels that use the Wave Manager, only the first group\'s configuration takes effect in-game, and only the first group is shown on the editor\'s Wave Timeline. When using the Wave Generator, Taiji Tiles can be added to other wave groups normally and will spawn with their corresponding waves in the level.'**
-  String get energyGridModuleHelpWaveLimitBody;
-
   /// No description provided for @energyGridModuleTapToPlace.
   ///
   /// In en, this message translates to:
@@ -15692,12 +14360,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Taiji Tiles'**
   String get energyGridModuleExpectationLabel;
-
-  /// No description provided for @energyGridModuleIgnoredWaveOverridesWarning.
-  ///
-  /// In en, this message translates to:
-  /// **'The level contains Taiji Tile configurations outside the first group. These configurations will remain in the level file, but will not appear on the Wave Timeline because Wave Manager only reads the first group\'s configuration.'**
-  String get energyGridModuleIgnoredWaveOverridesWarning;
 
   /// No description provided for @energyGridModuleWarningMessage.
   ///
@@ -15716,12 +14378,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wave index'**
   String get gridOverrideModuleWaveFieldOneBased;
-
-  /// No description provided for @gridOverrideModuleTimelineNote.
-  ///
-  /// In en, this message translates to:
-  /// **'Only the first group\'s configuration is shown on the Wave Manager timeline.'**
-  String get gridOverrideModuleTimelineNote;
 
   /// No description provided for @gridOverrideModuleInitialWaveNote.
   ///
@@ -15788,12 +14444,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wave {wave} - {label}'**
   String waveGeneratorGridOverrideWavePreviewTitle(int wave, String label);
-
-  /// No description provided for @mechanismPlankSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Connected Minecart settings'**
-  String get mechanismPlankSettings;
 
   /// No description provided for @mechanismPlankStartColumn.
   ///
@@ -16155,12 +14805,6 @@ abstract class AppLocalizations {
   /// **'Generator Timeline'**
   String get waveGeneratorTabLabel;
 
-  /// No description provided for @waveGeneratorModuleTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Wave Generator'**
-  String get waveGeneratorModuleTitle;
-
   /// No description provided for @waveGeneratorModuleHelpTitle.
   ///
   /// In en, this message translates to:
@@ -16281,82 +14925,64 @@ abstract class AppLocalizations {
   /// **'The initial random-spawn points exceed the current-wave increment and may cause the level to crash while loading.'**
   String get waveGeneratorSpendingCompatibilityWarning;
 
-  /// No description provided for @waveGeneratorSpawnColumns.
-  ///
-  /// In en, this message translates to:
-  /// **'Spawn column range for Rise-from-ground zombies'**
-  String get waveGeneratorSpawnColumns;
-
   /// No description provided for @waveGeneratorRiseFromGround.
   ///
   /// In en, this message translates to:
-  /// **'Rise from ground mode'**
+  /// **'Rise from Ground (IsRiseFromGroundMode)'**
   String get waveGeneratorRiseFromGround;
 
   /// No description provided for @waveGeneratorRiseFromGroundHint.
   ///
   /// In en, this message translates to:
-  /// **'When enabled, zombies spawn by rising from the ground at specified grid positions instead of walking in from the right.'**
+  /// **'When enabled, zombies emerge from the ground by default instead of walking in from the right'**
   String get waveGeneratorRiseFromGroundHint;
-
-  /// No description provided for @waveGeneratorIgnoreFlagCarriers.
-  ///
-  /// In en, this message translates to:
-  /// **'Ignore flag carriers'**
-  String get waveGeneratorIgnoreFlagCarriers;
-
-  /// No description provided for @waveGeneratorIgnoreFlagCarriersHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Disable automatic flag carrier zombies in random spawns.'**
-  String get waveGeneratorIgnoreFlagCarriersHint;
 
   /// No description provided for @waveGeneratorWaveSpawnTime.
   ///
   /// In en, this message translates to:
-  /// **'Wave spawn time (WaveSpawnTime)'**
+  /// **'Wave spawn delay (WaveSpawnTime; time: seconds)'**
   String get waveGeneratorWaveSpawnTime;
 
   /// No description provided for @waveGeneratorWaveSpawnTimeHint.
   ///
   /// In en, this message translates to:
-  /// **'Delay in seconds before this wave begins spawning after the previous wave finishes.'**
+  /// **'The minimum wait between the previous wave’s spawns and this wave’s spawns. Only applies with Rise from Ground (IsRiseFromGroundMode) enabled. After the previous wave finishes spawning, the game starts a countdown using this wave’s delay. This wave spawns when the countdown ends.\nIf WaitUntilAllZombiesDie is also enabled, both conditions must be met. A Spacetime Black Hole at the end of the previous wave overrides this delay; the next spawning steps begin about 8 seconds after the black hole triggers.'**
   String get waveGeneratorWaveSpawnTimeHint;
 
   /// No description provided for @waveGeneratorZombieTargetValidTime.
   ///
   /// In en, this message translates to:
-  /// **'Target valid time (TargetValidTime)'**
+  /// **'Target lifetime (TargetValidTime; time: seconds)'**
   String get waveGeneratorZombieTargetValidTime;
 
   /// No description provided for @waveGeneratorZombieTargetValidTimeHint.
   ///
   /// In en, this message translates to:
-  /// **'Duration in seconds this zombie remains targetable by abilities.'**
+  /// **'How long a Power Sphere remains on the lawn after appearing. Leave empty for it to disappear after the default 1.5 seconds.'**
   String get waveGeneratorZombieTargetValidTimeHint;
 
   /// No description provided for @waveGeneratorZombieRiseGridX.
   ///
   /// In en, this message translates to:
-  /// **'Rise grid X (Rise_GridX)'**
+  /// **'Spawn column (Rise_GridX)'**
   String get waveGeneratorZombieRiseGridX;
 
   /// No description provided for @waveGeneratorZombieRiseGridXHint.
   ///
   /// In en, this message translates to:
-  /// **'Column where this zombie rises from the ground. Use \'?\' for random.'**
+  /// **'The column where this zombie emerges from the ground.'**
   String get waveGeneratorZombieRiseGridXHint;
 
   /// No description provided for @waveGeneratorZombieRiseGridY.
   ///
   /// In en, this message translates to:
-  /// **'Rise grid Y (Rise_GridY)'**
+  /// **'Spawn row (Rise_GridY)'**
   String get waveGeneratorZombieRiseGridY;
 
   /// No description provided for @waveGeneratorZombieRiseGridYHint.
   ///
   /// In en, this message translates to:
-  /// **'Row where this zombie rises from the ground. Use \'?\' for random.'**
+  /// **'The row where this zombie emerges from the ground. Overrides the Wave Generator’s Row setting.'**
   String get waveGeneratorZombieRiseGridYHint;
 
   /// No description provided for @waveGeneratorWaveCountSummary.
@@ -16413,29 +15039,11 @@ abstract class AppLocalizations {
   /// **'No fixed spawns'**
   String get waveGeneratorEmptyWaveRow;
 
-  /// No description provided for @waveGeneratorRandomSpawnsEnabled.
-  ///
-  /// In en, this message translates to:
-  /// **'Random spawns enabled'**
-  String get waveGeneratorRandomSpawnsEnabled;
-
-  /// No description provided for @waveGeneratorRandomSpawnsDisabled.
-  ///
-  /// In en, this message translates to:
-  /// **'Random spawns disabled for this wave'**
-  String get waveGeneratorRandomSpawnsDisabled;
-
   /// No description provided for @waveGeneratorRandomZombiesLabel.
   ///
   /// In en, this message translates to:
   /// **'Current random-spawn pool'**
   String get waveGeneratorRandomZombiesLabel;
-
-  /// No description provided for @waveGeneratorWavePoolDisabled.
-  ///
-  /// In en, this message translates to:
-  /// **'This wave does not perform random spawns, but zombie-pool changes still take effect from this wave.'**
-  String get waveGeneratorWavePoolDisabled;
 
   /// No description provided for @waveGeneratorDisableRandomSpawns.
   ///
@@ -16454,12 +15062,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wait until all zombies from the previous wave are defeated before spawning this wave (WaitUntilAllZombiesDie)'**
   String get waveGeneratorWaitUntilAllDie;
-
-  /// No description provided for @waveGeneratorNoScriptedZombies.
-  ///
-  /// In en, this message translates to:
-  /// **'This wave has no fixed spawns.'**
-  String get waveGeneratorNoScriptedZombies;
 
   /// No description provided for @waveGeneratorSpawnPlantFood.
   ///
@@ -16490,12 +15092,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Changes the point increment used by later waves. It only takes effect when current-wave random spawn points (WavePointStart) is set.'**
   String get waveGeneratorWavePointIncrementHint;
-
-  /// No description provided for @waveGeneratorWavePointIncrementInactiveHint.
-  ///
-  /// In en, this message translates to:
-  /// **'This setting has no effect without current-wave random spawn points (WavePointStart), but its existing value is preserved.'**
-  String get waveGeneratorWavePointIncrementInactiveHint;
 
   /// No description provided for @waveGeneratorWavePointOverride.
   ///
@@ -16574,18 +15170,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wave Generator module'**
   String get waveGeneratorWaveScreenSubtitle;
-
-  /// No description provided for @waveGeneratorWaveScreenHelpTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Wave Generator module'**
-  String get waveGeneratorWaveScreenHelpTitle;
-
-  /// No description provided for @waveGeneratorWaveScreenHelpBody.
-  ///
-  /// In en, this message translates to:
-  /// **'During random spawning, the game selects by weight from zombies affordable with the remaining points, deducts the selected cost, and filters the candidates again until no zombies are eligible. Unused points do not carry over to the next wave. Fixed spawns are added directly to this wave and consume no random-spawn points.'**
-  String get waveGeneratorWaveScreenHelpBody;
 
   /// No description provided for @waveGeneratorRandomSpawnsSectionTitle.
   ///
@@ -17067,12 +15651,6 @@ abstract class AppLocalizations {
   /// **'From stage'**
   String get importResourceGroupFromStage;
 
-  /// No description provided for @importResourceGroupSourceStage.
-  ///
-  /// In en, this message translates to:
-  /// **'Source stage'**
-  String get importResourceGroupSourceStage;
-
   /// No description provided for @searchResourceGroup.
   ///
   /// In en, this message translates to:
@@ -17193,12 +15771,6 @@ abstract class AppLocalizations {
   /// **'Preset custom lawns'**
   String get customStagePresetSectionTitle;
 
-  /// No description provided for @editCustomStage.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit custom lawn'**
-  String get editCustomStage;
-
   /// No description provided for @startupLoadingLocalization.
   ///
   /// In en, this message translates to:
@@ -17289,156 +15861,6 @@ abstract class AppLocalizations {
   /// **'We recommend editing these levels to fix the issues before exporting, or choosing different files.'**
   String get validationRecommendation;
 
-  /// No description provided for @validationProgress.
-  ///
-  /// In en, this message translates to:
-  /// **'Validating {current} / {total}'**
-  String validationProgress(int current, int total);
-
-  /// No description provided for @invalid_rsb_version.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid RSB version, should be 3 or 4'**
-  String get invalid_rsb_version;
-
-  /// No description provided for @invalid_file_list_offset.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid File List Offset'**
-  String get invalid_file_list_offset;
-
-  /// No description provided for @invalid_rsb_ver_3_resource_offset.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Resource Offset for RSB version 3'**
-  String get invalid_rsb_ver_3_resource_offset;
-
-  /// No description provided for @invalid_composite_name.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Composite Name'**
-  String get invalid_composite_name;
-
-  /// No description provided for @out_of_range_1.
-  ///
-  /// In en, this message translates to:
-  /// **'Out of range for poolIndex'**
-  String get out_of_range_1;
-
-  /// No description provided for @out_of_range_2.
-  ///
-  /// In en, this message translates to:
-  /// **'Out of range for packet index'**
-  String get out_of_range_2;
-
-  /// No description provided for @invalid_rsg_name.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid RSG Name'**
-  String get invalid_rsg_name;
-
-  /// No description provided for @invalid_packet_width.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Packet Width'**
-  String get invalid_packet_width;
-
-  /// No description provided for @invalid_packet_height.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Packet Height'**
-  String get invalid_packet_height;
-
-  /// No description provided for @invalid_item_packet.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Item Packet'**
-  String get invalid_item_packet;
-
-  /// No description provided for @invalid_rsg_number.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid RSG index'**
-  String get invalid_rsg_number;
-
-  /// No description provided for @invalid_part2_offset.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Part2 Offset'**
-  String get invalid_part2_offset;
-
-  /// No description provided for @invalid_head_length.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid Head Length'**
-  String get invalid_head_length;
-
-  /// No description provided for @rsb_is_corrupted.
-  ///
-  /// In en, this message translates to:
-  /// **'This RSB is corrupted'**
-  String get rsb_is_corrupted;
-
-  /// No description provided for @invalid_ptx_info_eachlength.
-  ///
-  /// In en, this message translates to:
-  /// **'PTX Info is invalid'**
-  String get invalid_ptx_info_eachlength;
-
-  /// No description provided for @invalid_end_offset.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid End Offset'**
-  String get invalid_end_offset;
-
-  /// No description provided for @invalid_rsb_head.
-  ///
-  /// In en, this message translates to:
-  /// **'Mismatch RSB magic, should starts with \"1BSR\"'**
-  String get invalid_rsb_head;
-
-  /// No description provided for @invalid_ptx_info_each_length.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid PTX Info'**
-  String get invalid_ptx_info_each_length;
-
-  /// No description provided for @category_out_of_length.
-  ///
-  /// In en, this message translates to:
-  /// **'Category is out of length'**
-  String get category_out_of_length;
-
-  /// No description provided for @name_path_must_be_ascii.
-  ///
-  /// In en, this message translates to:
-  /// **'Name path must match ASCII'**
-  String get name_path_must_be_ascii;
-
-  /// No description provided for @invalid_rsg_magic.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid RSG Magic, should starts with \"PGSR\"'**
-  String get invalid_rsg_magic;
-
-  /// No description provided for @invalid_rsg_version.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid RSG version, should be 3 or 4'**
-  String get invalid_rsg_version;
-
-  /// No description provided for @invalid_rsg_compression_flag.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid RSG Compression flag, only 0 to 3 is supported'**
-  String get invalid_rsg_compression_flag;
-
-  /// No description provided for @mismatch_zlib_magic.
-  ///
-  /// In en, this message translates to:
-  /// **'Mismatch PopCap Zlib magic, should begins with 0xDEADFED4'**
-  String get mismatch_zlib_magic;
-
   /// No description provided for @customPortalAdd.
   ///
   /// In en, this message translates to:
@@ -17450,12 +15872,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Custom Portal'**
   String get customPortalSingleName;
-
-  /// No description provided for @customPortalName.
-  ///
-  /// In en, this message translates to:
-  /// **'Custom Portal {index}'**
-  String customPortalName(int index);
 
   /// No description provided for @customPortalCreateTitle.
   ///
@@ -17504,12 +15920,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The custom portal is no longer used. Remove its associated data objects from this level?'**
   String get customPortalUnusedSingleMessage;
-
-  /// No description provided for @customPortalUnusedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Custom Portal {index} is no longer used. Remove its associated data objects from this level?'**
-  String customPortalUnusedMessage(int index);
 
   /// No description provided for @customPortalAppearanceSection.
   ///
@@ -17588,18 +15998,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Spawnable Zombie Types'**
   String get customPortalZombieTypes;
-
-  /// No description provided for @customPortalMinimumQuantity.
-  ///
-  /// In en, this message translates to:
-  /// **'Minimum Spawn Quantity'**
-  String get customPortalMinimumQuantity;
-
-  /// No description provided for @customPortalMaximumQuantity.
-  ///
-  /// In en, this message translates to:
-  /// **'Maximum Spawn Quantity'**
-  String get customPortalMaximumQuantity;
 
   /// No description provided for @customPortalSpawnInterval.
   ///
@@ -17913,18 +16311,6 @@ abstract class AppLocalizations {
   /// **'Duel schedule (Encounters)'**
   String get gladiatorEncounters;
 
-  /// No description provided for @gladiatorAddEncounter.
-  ///
-  /// In en, this message translates to:
-  /// **'Add duel'**
-  String get gladiatorAddEncounter;
-
-  /// No description provided for @gladiatorRemoveEncounter.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove current duel'**
-  String get gladiatorRemoveEncounter;
-
   /// No description provided for @gladiatorWave.
   ///
   /// In en, this message translates to:
@@ -18048,13 +16434,13 @@ abstract class AppLocalizations {
   /// No description provided for @gladiatorLegacyModeWarning.
   ///
   /// In en, this message translates to:
-  /// **'This module does not explicitly enable trophy duel mode (GameplayVersion: 1). Version 0 is the retired duel mode. The area preview supports trophy mode only; you can switch modes in the module editor.'**
+  /// **'This module’s duel mode (GameplayVersion) is not set to 1. It may be using the retired legacy mode instead of trophy duel mode, so the Gladiatorial Row area cannot be previewed.'**
   String get gladiatorLegacyModeWarning;
 
   /// No description provided for @gladiatorUseTrophyMode.
   ///
   /// In en, this message translates to:
-  /// **'Use trophy duel mode'**
+  /// **'Switch to trophy duel mode'**
   String get gladiatorUseTrophyMode;
 
   /// No description provided for @gladiatorHelpTipsTitle.
@@ -18072,13 +16458,13 @@ abstract class AppLocalizations {
   /// No description provided for @gladiatorHelpUsage.
   ///
   /// In en, this message translates to:
-  /// **'The duel duration, Plant Food reward and penalty drop settings above, along with the penalty zombie pool and weights below, are global settings shared by every duel in this module. Select “Add duel” to configure an individual duel. Wave, Row and GridX all start at 0: Wave 0 corresponds to timeline wave 1, and Wave 4 to wave 5.'**
+  /// **'The duel duration, Plant Food reward and penalty drop settings above, along with the penalty zombie pool and weights below, are global settings shared by every duel in this module. Select “Add duel” to configure an individual duel. When you add a zombie, its resource groups are automatically added to the module. The wave (Wave), row (Row) and spawn column (GridX) are all numbered from 0: Wave 0 corresponds to timeline wave 1, and Wave 4 to wave 5. The editor defaults to trophy duel mode (GameplayVersion 1). Setting it to 0 enables a different, retired duel mode, which you can explore through manual editing.'**
   String get gladiatorHelpUsage;
 
   /// No description provided for @gladiatorHelpTips.
   ///
   /// In en, this message translates to:
-  /// **'During a duel, planting no longer costs sun, but still consumes energy.\nInstant-kill attacks from Gargantuars and similar zombies cannot damage the trophy.\nPlant projectiles leaving the arena are blocked by its fences. Zombies that leave the arena, and zombies using certain abilities aimed outside the arena, become frozen in place. They are released when the duel timer ends and resume attacking.\nGladiatorial Rows do not appear on six-row lawns with an Underwater World appearance, such as 20,000 Leagues Under the Sea or Atlantis.\nNew modules use trophy duel mode (GameplayVersion 1). Version 0 is the retired duel mode.\nGladiatorial Row does not work with Wave Generator. Use Wave Manager instead.'**
+  /// **'During a duel, planting no longer costs sun, but plants still occupy the Life Support System’s power capacity.\nInstant-kill attacks from Gargantuars and similar zombies cannot damage the trophy.\nPlant projectiles leaving the arena are blocked by its fences. Zombies that leave the arena, and zombies using certain abilities aimed outside the arena, become frozen in place. They are released when the duel timer ends and resume attacking.\nGladiatorial Rows do not appear on six-row lawns with an Underwater World appearance, such as 20,000 Leagues Under the Sea or Atlantis. The Gladiatorial Row module also does not work with Wave Generator.'**
   String get gladiatorHelpTips;
 
   /// No description provided for @radiationMeteorHelpTitle.
@@ -18192,13 +16578,13 @@ abstract class AppLocalizations {
   /// No description provided for @gravityAnti.
   ///
   /// In en, this message translates to:
-  /// **'Anti-Gravity'**
+  /// **'Anti-Gravity (anti)'**
   String get gravityAnti;
 
   /// No description provided for @gravityHeavy.
   ///
   /// In en, this message translates to:
-  /// **'Hypergravity'**
+  /// **'Hypergravity (heavy)'**
   String get gravityHeavy;
 
   /// No description provided for @gravityTargetType.
@@ -18210,13 +16596,13 @@ abstract class AppLocalizations {
   /// No description provided for @gravityTargetPlant.
   ///
   /// In en, this message translates to:
-  /// **'Random plant'**
+  /// **'Random plant (plant)'**
   String get gravityTargetPlant;
 
   /// No description provided for @gravityTargetGrid.
   ///
   /// In en, this message translates to:
-  /// **'Fixed grid cell'**
+  /// **'Fixed grid cell (grid)'**
   String get gravityTargetGrid;
 
   /// No description provided for @gravityRangeX.
@@ -18465,18 +16851,6 @@ abstract class AppLocalizations {
   /// **'Rocket settings'**
   String get rocketLandingSettings;
 
-  /// No description provided for @rocketPoolCount.
-  ///
-  /// In en, this message translates to:
-  /// **'Rocket count (Count)'**
-  String get rocketPoolCount;
-
-  /// No description provided for @rocketSpawnCount.
-  ///
-  /// In en, this message translates to:
-  /// **'Total grid items to spawn (SpawnCount)'**
-  String get rocketSpawnCount;
-
   /// No description provided for @rocketSpawnInterval.
   ///
   /// In en, this message translates to:
@@ -18504,7 +16878,7 @@ abstract class AppLocalizations {
   /// No description provided for @powerUpsHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'This wonderfully interesting mechanic makes a major return in the 13th Anniversary Secret Realm, allowing players to defeat zombies with specific gestures while a Power Up is active. Enabling this module lets you set the exact number of free uses for each Power Up in the level. Note that Power Snow and Power Flame from the international version do not exist in the Chinese version.'**
+  /// **'This wonderfully interesting mechanic makes a major return in the 13th Anniversary Secret Realm, allowing players to defeat zombies with specific gestures while a Power Up is active. Enabling this module lets you set the exact number of free uses for each Power Up in the level. Note that Power Snow and Power Flame from the international version do not exist in the Chinese version, and the Power Ups used in Vasebreaker and Beghouled cannot be added through this module.'**
   String get powerUpsHelpOverview;
 
   /// No description provided for @powerUpsAddTitle.
@@ -18570,175 +16944,103 @@ abstract class AppLocalizations {
   /// No description provided for @moduleTitle_StatueMazeModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Statue Maze'**
+  /// **'Bemarbled'**
   String get moduleTitle_StatueMazeModuleProperties;
 
   /// No description provided for @moduleDesc_StatueMazeModuleProperties.
   ///
   /// In en, this message translates to:
-  /// **'Statue maze puzzle minigame where players tap correct statues in a rotating grid'**
+  /// **'Find every hidden zombie in the statue array after it rotates'**
   String get moduleDesc_StatueMazeModuleProperties;
 
   /// No description provided for @moduleHelpStatueMazeOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'The Statue Maze module adds a rotating-grid puzzle minigame. Each set presents a grid of statues that spin, and the player must tap the correct ones before time runs out.'**
+  /// **'A Renaissance Ages-exclusive minigame. This minigame consists of several rounds, each with an array of statues, some of which conceal Aristocrat Zombies. At the start of each round, the locations of the hidden zombies are revealed. The entire array then rotates several times to challenge the player’s memory. Once the rotations finish, the player must use their limited supply of tools to smash every statue hiding a zombie. The level is lost if any zombies remain undiscovered when all attempts have been used. The player can also spend diamonds to buy extra attempts when they run out.'**
   String get moduleHelpStatueMazeOverviewBody;
 
-  /// No description provided for @moduleHelpStatueMazeSetsBody.
+  /// No description provided for @moduleHelpStatueMazeTimingTitle.
   ///
   /// In en, this message translates to:
-  /// **'Each set defines one puzzle round. You can add multiple rounds with different grid sizes, time limits, and target counts.'**
-  String get moduleHelpStatueMazeSetsBody;
+  /// **'Timing parameters'**
+  String get moduleHelpStatueMazeTimingTitle;
 
-  /// No description provided for @moduleHelpStatueMazeTilesBody.
+  /// No description provided for @moduleHelpStatueMazeTimingBody.
   ///
   /// In en, this message translates to:
-  /// **'Type \"c\" is a correct tile the player should tap. Type \"ac\" is an all-correct target tile. WaitDuration is how long tiles pause between spins, and RotateTime is the duration of each rotation.'**
-  String get moduleHelpStatueMazeTilesBody;
-
-  /// No description provided for @statueMazeSet.
-  ///
-  /// In en, this message translates to:
-  /// **'Set {index}'**
-  String statueMazeSet(int index);
-
-  /// No description provided for @statueMazeMatrixSize.
-  ///
-  /// In en, this message translates to:
-  /// **'Grid size (MatrixSize)'**
-  String get statueMazeMatrixSize;
+  /// **'Initial reveal time (DisplayTime): The time between revealing the statues that hide zombies and the start of the first rotation.\nTotal step duration (WaitDuration): The total time from the start of the current rotation to the start of the next. The final rotation step in each round also runs for this full duration before the player can act.\nRotation duration (RotateTime): The duration of the current 90° rotation animation.\nThe actual pause between rotations is therefore the total step duration minus the rotation duration. If the rotation duration exceeds the total step duration, the next rotation starts before the previous one finishes and resets the statues’ movement parameters. This may cause abnormal movement paths or animations.\nThe black-screen transition between rounds has a fixed duration and cannot be customized in the level.'**
+  String get moduleHelpStatueMazeTimingBody;
 
   /// No description provided for @statueMazeDisplayTime.
   ///
   /// In en, this message translates to:
-  /// **'Display time (seconds)'**
+  /// **'Initial reveal time (DisplayTime; seconds)'**
   String get statueMazeDisplayTime;
 
   /// No description provided for @statueMazeTargetNum.
   ///
   /// In en, this message translates to:
-  /// **'Target count (TargetNum)'**
+  /// **'Zombie count (TargetNum)'**
   String get statueMazeTargetNum;
 
   /// No description provided for @statueMazeBonusLife.
   ///
   /// In en, this message translates to:
-  /// **'Bonus life (BonusLife)'**
+  /// **'Extra attempts (BonusLife)'**
   String get statueMazeBonusLife;
-
-  /// No description provided for @statueMazeTileType.
-  ///
-  /// In en, this message translates to:
-  /// **'Tile type'**
-  String get statueMazeTileType;
-
-  /// No description provided for @statueMazeTileTypeCorrect.
-  ///
-  /// In en, this message translates to:
-  /// **'Correct (c)'**
-  String get statueMazeTileTypeCorrect;
-
-  /// No description provided for @statueMazeTileTypeAllCorrect.
-  ///
-  /// In en, this message translates to:
-  /// **'All-correct (ac)'**
-  String get statueMazeTileTypeAllCorrect;
 
   /// No description provided for @statueMazeWaitDuration.
   ///
   /// In en, this message translates to:
-  /// **'Wait duration (seconds)'**
+  /// **'Total step duration (WaitDuration; seconds)'**
   String get statueMazeWaitDuration;
 
   /// No description provided for @statueMazeRotateTime.
   ///
   /// In en, this message translates to:
-  /// **'Rotate time (seconds)'**
+  /// **'Rotation duration (RotateTime; seconds)'**
   String get statueMazeRotateTime;
 
   /// No description provided for @statueMazeAddSet.
   ///
   /// In en, this message translates to:
-  /// **'Add set'**
+  /// **'Add round'**
   String get statueMazeAddSet;
-
-  /// No description provided for @statueMazeRemoveSet.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove set'**
-  String get statueMazeRemoveSet;
-
-  /// No description provided for @statueMazeAddTile.
-  ///
-  /// In en, this message translates to:
-  /// **'Add tile'**
-  String get statueMazeAddTile;
-
-  /// No description provided for @statueMazeRemoveTile.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove tile'**
-  String get statueMazeRemoveTile;
-
-  /// No description provided for @statueMazeTiles.
-  ///
-  /// In en, this message translates to:
-  /// **'Tiles'**
-  String get statueMazeTiles;
 
   /// No description provided for @statueMazeSets.
   ///
   /// In en, this message translates to:
-  /// **'Sets'**
+  /// **'Rotation rounds'**
   String get statueMazeSets;
 
   /// No description provided for @statueMazeRotations.
   ///
   /// In en, this message translates to:
-  /// **'Rotations'**
+  /// **'Rotation steps'**
   String get statueMazeRotations;
 
   /// No description provided for @statueMazeGridSize.
   ///
   /// In en, this message translates to:
-  /// **'Grid size'**
+  /// **'Array size'**
   String get statueMazeGridSize;
 
   /// No description provided for @statueMazeNoRotations.
   ///
   /// In en, this message translates to:
-  /// **'No rotations added'**
+  /// **'No rotation steps added'**
   String get statueMazeNoRotations;
-
-  /// No description provided for @statueMazePlay.
-  ///
-  /// In en, this message translates to:
-  /// **'Play rotation'**
-  String get statueMazePlay;
-
-  /// No description provided for @statueMazePlaying.
-  ///
-  /// In en, this message translates to:
-  /// **'Playing...'**
-  String get statueMazePlaying;
-
-  /// No description provided for @statueMazeStop.
-  ///
-  /// In en, this message translates to:
-  /// **'Stop'**
-  String get statueMazeStop;
 
   /// No description provided for @moduleHelpStatueMazeRotationsBody.
   ///
   /// In en, this message translates to:
-  /// **'Each rotation step spins the entire grid. \"c\" is clockwise, \"ac\" is anti-clockwise. WaitDuration is the pause before the rotation starts, RotateTime is how long the spin takes.'**
+  /// **'Each round can contain multiple rotation steps. Each step rotates the entire array by 90°. “C” means clockwise and “AC” means counterclockwise. Tap the play button below the grid to preview all rotation steps in the current round.'**
   String get moduleHelpStatueMazeRotationsBody;
 
   /// No description provided for @statueMazeRotationsHint.
   ///
   /// In en, this message translates to:
-  /// **'Tap arrow to change direction. Tap card to edit wait & rotate time. Long-press to delete.'**
+  /// **'Tap the arrow to switch rotation direction. Tap a card to edit that step’s parameters. Long-press a card to delete the step.'**
   String get statueMazeRotationsHint;
 
   /// No description provided for @statueMazeRemoveRotationConfirm.
@@ -18747,130 +17049,190 @@ abstract class AppLocalizations {
   /// **'Remove this rotation step?'**
   String get statueMazeRemoveRotationConfirm;
 
+  /// No description provided for @camelGenerationParameters.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn parameters'**
+  String get camelGenerationParameters;
+
+  /// No description provided for @camelSpawnDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn distance'**
+  String get camelSpawnDistance;
+
+  /// No description provided for @camelSpawnPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn distance preview'**
+  String get camelSpawnPreview;
+
+  /// No description provided for @camelSpawnCoordinatesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Horizontal coordinates start at 0 at the left edge of column 1, with 64 units per tile. Colored lines mark the spawn distance parameters. The extra backward offset only applies when zombies already occupy the spawn position.'**
+  String get camelSpawnCoordinatesHint;
+
+  /// No description provided for @camelCompatibilityWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This module only supports levels that use the special Mummy Memory Camel Zombies and a Seed Bank in Preset mode. The game will crash if other zombies appear or the Seed Bank uses Chooser mode.'**
+  String get camelCompatibilityWarning;
+
+  /// No description provided for @camelHelpSpawningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn behavior'**
+  String get camelHelpSpawningTitle;
+
+  /// No description provided for @camelHelpTutorialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show tutorial dialogue'**
+  String get camelHelpTutorialTitle;
+
+  /// No description provided for @camelHelpTipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Friendly Reminder'**
+  String get camelHelpTipsTitle;
+
+  /// No description provided for @moduleHelpCamelTutorialBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable “Show tutorial dialogue” to have Crazy Dave and Penny explain how to win by matching pairs before the level starts. The dialogue is fixed to the story shown when playing Ancient Egypt - Day 7 for the first time.'**
+  String get moduleHelpCamelTutorialBody;
+
+  /// No description provided for @moduleHelpCamelTipsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This module only supports levels that use the special Mummy Memory Camel Zombies and a Seed Bank in Preset mode. The game will crash if other zombies appear or the Seed Bank uses Chooser mode.\nPlants can interact with Mummy Memory Camel Zombies normally, but these zombies may have animation issues when hypnotized or defeated, among other situations.'**
+  String get moduleHelpCamelTipsBody;
+
+  /// No description provided for @conflictDesc_CamelMinigameChooser.
+  ///
+  /// In en, this message translates to:
+  /// **'Mummy Memory conflicts with the Seed Bank’s Chooser mode and will crash the level. Switch the Seed Bank to Preset mode.'**
+  String get conflictDesc_CamelMinigameChooser;
+
   /// No description provided for @moduleTitle_CamelMinigameProperties.
   ///
   /// In en, this message translates to:
-  /// **'Camel Card Match'**
+  /// **'Mummy Memory'**
   String get moduleTitle_CamelMinigameProperties;
 
   /// No description provided for @moduleDesc_CamelMinigameProperties.
   ///
   /// In en, this message translates to:
-  /// **'Camel card matching minigame where players flip cards to find matching pairs'**
+  /// **'Configures the spawn range and parameters of Camel Zombies in Mummy Memory'**
   String get moduleDesc_CamelMinigameProperties;
 
   /// No description provided for @moduleHelpCamelOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'The Camel Card Match minigame places chains of camel cards on the lawn. Zombies emerge from the ground and the player must flip cards to find matching pairs before time runs out.'**
+  /// **'An Ancient Egypt-exclusive minigame. Special Mummy Memory Camel Zombies emerge from the ground. Tap a zombie to flip its sign and reveal a symbol, then find its match. Matching two symbols immediately defeats both zombies. If the symbols differ, the signs flip back and the zombies keep moving. If only one zombie remains, or the last two have different symbols, they are defeated as soon as their signs are flipped.'**
   String get moduleHelpCamelOverviewBody;
-
-  /// No description provided for @moduleHelpCamelTimingsBody.
-  ///
-  /// In en, this message translates to:
-  /// **'CardMatchTime is the delay after a successful match. CardMatchingTime is the flip animation duration. CardNoMatchTime is the idle time after a failed match or a single card flip.'**
-  String get moduleHelpCamelTimingsBody;
 
   /// No description provided for @moduleHelpCamelSpawningBody.
   ///
   /// In en, this message translates to:
-  /// **'MinSpawnXStart / MinSpawnXEnd define the horizontal range where new card chains can appear. MaxSpawnX is the rightmost spawn coordinate (column 1 = 0). AdditionalXBufferBetweenChains pushes subsequent chains further right if a zombie occupies the spot.'**
+  /// **'With this module, zombies from regular spawn events, including Basic Spawner and Underwater Spawner, emerge directly from the ground. Adjust the parameters to set their spawn range. Horizontal coordinates start at 0 at the left edge of column 1, with 64 units per tile. This spawn behavior does not affect zombies generated through other events or modules, such as Sandstorm, Transport Boat Assault, or Grid Item Spawn.'**
   String get moduleHelpCamelSpawningBody;
 
   /// No description provided for @camelAdditionalXBuffer.
   ///
   /// In en, this message translates to:
-  /// **'Chain X buffer (AdditionalXBufferBetweenChains)'**
+  /// **'Extra backward offset for occupied spawn positions (AdditionalXBufferBetweenChains)'**
   String get camelAdditionalXBuffer;
 
   /// No description provided for @camelRiseStagger.
   ///
   /// In en, this message translates to:
-  /// **'Rise stagger between camels (seconds)'**
+  /// **'Rise interval between adjacent Camel Zombies in a group (CamelSegmentRiseStagger; seconds)'**
   String get camelRiseStagger;
 
   /// No description provided for @camelCardMatchTime.
   ///
   /// In en, this message translates to:
-  /// **'Match success delay (CardMatchTime, s)'**
+  /// **'Response time after a successful match (CardMatchTime; seconds)'**
   String get camelCardMatchTime;
 
   /// No description provided for @camelCardMatchingTime.
   ///
   /// In en, this message translates to:
-  /// **'Flip animation time (CardMatchingTime, s)'**
+  /// **'Sign flip time (CardMatchingTime; seconds)'**
   String get camelCardMatchingTime;
 
   /// No description provided for @camelCardNoMatchTime.
   ///
   /// In en, this message translates to:
-  /// **'Mismatch idle time (CardNoMatchTime, s)'**
+  /// **'Idle time after mismatched symbols or a single flipped sign (CardNoMatchTime; seconds)'**
   String get camelCardNoMatchTime;
 
   /// No description provided for @camelCardTypesUsed.
   ///
   /// In en, this message translates to:
-  /// **'Card types (1-7)'**
+  /// **'Symbol types (CardTypesUsed)'**
   String get camelCardTypesUsed;
 
   /// No description provided for @camelTutorialRiseDelay.
   ///
   /// In en, this message translates to:
-  /// **'Tutorial zombie rise delay (s)'**
+  /// **'Time to emerge from the ground (InitialTutorialZombieRiseDelay; seconds)'**
   String get camelTutorialRiseDelay;
 
   /// No description provided for @camelMaxSpawnX.
   ///
   /// In en, this message translates to:
-  /// **'Max spawn X'**
+  /// **'Maximum spawn distance (MaxSpawnX)'**
   String get camelMaxSpawnX;
 
   /// No description provided for @camelMinSpawnXEnd.
   ///
   /// In en, this message translates to:
-  /// **'Min spawn X end'**
+  /// **'Maximum spawn distance end position (MinSpawnXEnd)'**
   String get camelMinSpawnXEnd;
 
   /// No description provided for @camelMinSpawnXStart.
   ///
   /// In en, this message translates to:
-  /// **'Min spawn X start'**
+  /// **'Minimum spawn distance start position (MinSpawnXStart)'**
   String get camelMinSpawnXStart;
 
   /// No description provided for @camelShowTutorial.
   ///
   /// In en, this message translates to:
-  /// **'Show tutorial'**
+  /// **'Show tutorial dialogue (ShowTutorial)'**
   String get camelShowTutorial;
 
   /// No description provided for @moduleTitle_OakTrainProperties.
   ///
   /// In en, this message translates to:
-  /// **'Oak Archer Headshots'**
+  /// **'Oak Archery'**
   String get moduleTitle_OakTrainProperties;
 
   /// No description provided for @moduleDesc_OakTrainProperties.
   ///
   /// In en, this message translates to:
-  /// **'Oak archer shooting minigame where the player headshots waves of incoming enemies'**
+  /// **'Uses Oak Archer\'s arrows to land headshots and earn points'**
   String get moduleDesc_OakTrainProperties;
 
   /// No description provided for @moduleHelpOakTrainOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'The Oak Archer Headshots minigame places an oak archer on the lawn. Waves of enemies approach and the player must score points by defeating them. The archer has a total HP pool; healing potions and power-up arrows are replenished on a timer.'**
+  /// **'A Dark Ages-exclusive minigame. An Oak Archer is placed in column 1, row 3. Control him and use three types of arrows to land headshots on targets and win. The game is lost if Oak Archer runs out of health or a zombie reaches the house.'**
   String get moduleHelpOakTrainOverviewBody;
 
   /// No description provided for @moduleHelpOakTrainScoresBody.
   ///
   /// In en, this message translates to:
-  /// **'ArrowScore is the base attack score. WizardScore, ArchmageScore, and BossScore are bonus points for defeating specific enemy types.'**
+  /// **'Defeating different zombie types awards different scores, which are converted into coins when the level is completed. Collecting these coins has no effect when the Creative Courtyard module is in use. This score is calculated separately from the score awarded for defeating zombies by the Level Scoring module and does not count toward score challenges.'**
   String get moduleHelpOakTrainScoresBody;
 
   /// No description provided for @moduleHelpOakTrainArrowsBody.
   ///
   /// In en, this message translates to:
-  /// **'ArrowPowerNum is the number of power arrows replenished per cycle. ArrowMultipleNum is the number of split arrows replenished per cycle. HealNum is the amount restored by a health potion.'**
+  /// **'Oak Archer can fire three types of arrows: normal arrows hit a single target, power arrows deal double damage in a small area, and scatter arrows fire seven individual shots in a spread. When normal arrows run out, 12 are automatically reloaded after 10 seconds. Other arrows are obtained by shooting the colored Power Spheres on the lawn. Scatter arrows can also be purchased with diamonds during the level.'**
   String get moduleHelpOakTrainArrowsBody;
 
   /// No description provided for @oakTrainTotalLife.
@@ -18900,31 +17262,31 @@ abstract class AppLocalizations {
   /// No description provided for @oakTrainBossScore.
   ///
   /// In en, this message translates to:
-  /// **'Boss kill score (BossScore)'**
+  /// **'Gargantuar boss kill score (BossScore)'**
   String get oakTrainBossScore;
 
   /// No description provided for @oakTrainHealNum.
   ///
   /// In en, this message translates to:
-  /// **'Health potion amount (HealNum)'**
+  /// **'Health restored by Green Health Spheres (HealNum)'**
   String get oakTrainHealNum;
 
   /// No description provided for @oakTrainArrowPowerNum.
   ///
   /// In en, this message translates to:
-  /// **'Power arrows per cycle (ArrowPowerNum)'**
+  /// **'Power arrows supplied by Blue Power Spheres (ArrowPowerNum)'**
   String get oakTrainArrowPowerNum;
 
   /// No description provided for @oakTrainArrowMultipleNum.
   ///
   /// In en, this message translates to:
-  /// **'Split arrows per cycle (ArrowMultipleNum)'**
+  /// **'Scatter arrows supplied by Yellow Power Spheres (ArrowMultipleNum)'**
   String get oakTrainArrowMultipleNum;
 
   /// No description provided for @oakTrainInitArrowsNum.
   ///
   /// In en, this message translates to:
-  /// **'Initial arrow counts (Normal, Power, Split)'**
+  /// **'Initial arrow counts'**
   String get oakTrainInitArrowsNum;
 
   /// No description provided for @oakTrainInitArrowNormal.
@@ -18942,74 +17304,206 @@ abstract class AppLocalizations {
   /// No description provided for @oakTrainInitArrowSplit.
   ///
   /// In en, this message translates to:
-  /// **'Split arrows'**
+  /// **'Scatter arrows'**
   String get oakTrainInitArrowSplit;
-
-  /// No description provided for @oakTrainInitArrowUnused.
-  ///
-  /// In en, this message translates to:
-  /// **'Unused'**
-  String get oakTrainInitArrowUnused;
 
   /// No description provided for @moduleTitle_OakTrainIntroProperties.
   ///
   /// In en, this message translates to:
-  /// **'Oak Archer Tutorial'**
+  /// **'Oak Archery Tutorial'**
   String get moduleTitle_OakTrainIntroProperties;
 
   /// No description provided for @moduleDesc_OakTrainIntroProperties.
   ///
   /// In en, this message translates to:
-  /// **'Intro animation for the Oak Archer Headshots minigame'**
+  /// **'Introduces the basics of Oak Archery before the level begins'**
   String get moduleDesc_OakTrainIntroProperties;
 
   /// No description provided for @moduleTitle_GoldRoadProperties.
   ///
   /// In en, this message translates to:
-  /// **'Gold Road (Unsodded)'**
+  /// **'Golden Road'**
   String get moduleTitle_GoldRoadProperties;
 
   /// No description provided for @moduleDesc_GoldRoadProperties.
   ///
   /// In en, this message translates to:
-  /// **'Lost City minigame where the first and last rows are blocked for planting'**
+  /// **'Turns the first and fifth rows into unsodded areas'**
   String get moduleDesc_GoldRoadProperties;
 
   /// No description provided for @goldRoadNonLostCityLawnWarningTitle.
   ///
   /// In en, this message translates to:
-  /// **'Non-Lost City Lawn'**
+  /// **'Lawn appearance notice'**
   String get goldRoadNonLostCityLawnWarningTitle;
 
   /// No description provided for @goldRoadNonLostCityLawnWarning.
   ///
   /// In en, this message translates to:
-  /// **'Gold Road (Unsodded) is designed for the Lost City lawn. Using it on other lawns is not recommended, as it will negatively affect the level\'s visual appearance.'**
+  /// **'Golden Road is a Lost City minigame module, so its unsodded areas feature the sun pattern specific to the Lost City lawn. Using it with other lawn appearances may affect the overall look of the level.'**
   String get goldRoadNonLostCityLawnWarning;
 
   /// No description provided for @goldRoadDeepseaLawnWarningTitle.
   ///
   /// In en, this message translates to:
-  /// **'Incompatible Lawn'**
+  /// **'Lawn compatibility notice'**
   String get goldRoadDeepseaLawnWarningTitle;
 
   /// No description provided for @goldRoadDeepseaLawnWarning.
   ///
   /// In en, this message translates to:
-  /// **'Gold Road (Unsodded) does not work correctly with Deepsea lawns. It will block the 1st and 5th rows instead of the 1st and last rows.'**
+  /// **'Golden Road only turns the first and fifth rows into unsodded areas. This also applies to six-row lawns with an Underwater World appearance, so keep this in mind when using the module.'**
   String get goldRoadDeepseaLawnWarning;
 
-  /// No description provided for @goldRoadCustomLostCityLawnWarningTitle.
+  /// No description provided for @moduleHelpOakTrainZombiesBody.
   ///
   /// In en, this message translates to:
-  /// **'Non-Native Lost City Lawn'**
-  String get goldRoadCustomLostCityLawnWarningTitle;
+  /// **'The zombies designed for this module are dedicated variants with abilities that differ from their regular tower-defense counterparts. They appear through the Wave Generator with Rise from Ground enabled. Their abilities do not work in regular Wave Manager events such as Basic Spawner and Underwater Spawner. Use Ground Spawner or custom zombies to achieve similar effects.\nThe Power Spheres that supply arrows are also zombies internally. Their abilities depend on both Oak Archery and Rise from Ground; spawning them outside these conditions may cause missing textures or effects.'**
+  String get moduleHelpOakTrainZombiesBody;
 
-  /// No description provided for @goldRoadCustomLostCityLawnWarning.
+  /// No description provided for @oakTrainHealthTitle.
   ///
   /// In en, this message translates to:
-  /// **'Gold Road (Unsodded) is designed for the native Lost City lawn. Your level uses a custom lawn with Lost City resources. This may still affect the level\'s visual appearance. Use this module with caution.'**
-  String get goldRoadCustomLostCityLawnWarning;
+  /// **'Oak Archer health'**
+  String get oakTrainHealthTitle;
+
+  /// No description provided for @oakTrainScoresTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scoring'**
+  String get oakTrainScoresTitle;
+
+  /// No description provided for @oakTrainArrowsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrow supplies'**
+  String get oakTrainArrowsTitle;
+
+  /// No description provided for @oakTrainHelpArrowsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrow types'**
+  String get oakTrainHelpArrowsTitle;
+
+  /// No description provided for @oakTrainHelpScoresTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scoring rules'**
+  String get oakTrainHelpScoresTitle;
+
+  /// No description provided for @oakTrainHelpZombiesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Special zombies'**
+  String get oakTrainHelpZombiesTitle;
+
+  /// No description provided for @waveGeneratorColumnOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Column {number} ({index})'**
+  String waveGeneratorColumnOption(int number, String index);
+
+  /// No description provided for @waveGeneratorRowOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Row {number} ({index})'**
+  String waveGeneratorRowOption(int number, String index);
+
+  /// No description provided for @waveGeneratorDelaySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'This wave spawns after a {seconds}s delay'**
+  String waveGeneratorDelaySummary(String seconds);
+
+  /// No description provided for @waveGeneratorDelayInactiveSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn delay: {seconds}s (inactive without Rise from Ground)'**
+  String waveGeneratorDelayInactiveSummary(String seconds);
+
+  /// No description provided for @waveGeneratorPositionSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn position: {column}, {row}'**
+  String waveGeneratorPositionSummary(String column, String row);
+
+  /// No description provided for @waveGeneratorPositionUnset.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get waveGeneratorPositionUnset;
+
+  /// No description provided for @oakTrainTutorialIntroWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Module compatibility warning'**
+  String get oakTrainTutorialIntroWarningTitle;
+
+  /// No description provided for @oakTrainTutorialIntroWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Oak Archery Tutorial conflicts with the Intro Animation module. Using them together causes zombies to spawn before the tutorial ends.'**
+  String get oakTrainTutorialIntroWarning;
+
+  /// No description provided for @statueMazeMissingRotationsWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Bemarbled rounds {rounds} have no rotation steps, which will crash the level. Add at least one rotation step to each round.'**
+  String statueMazeMissingRotationsWarning(String rounds);
+
+  /// No description provided for @moduleHelpStatueMazeCompatibilityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compatibility'**
+  String get moduleHelpStatueMazeCompatibilityTitle;
+
+  /// No description provided for @moduleHelpStatueMazeCompatibilityBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Bemarbled can coexist with many modules. Normally, the level will not end until Bemarbled\'s win condition is also met. However, certain modules, such as Level Timer, may trigger an earlier ending. Keep this in mind when combining them.'**
+  String get moduleHelpStatueMazeCompatibilityBody;
+
+  /// No description provided for @autosaveZombossAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes automatically when leaving custom Zomboss mech actions'**
+  String get autosaveZombossAction;
+
+  /// No description provided for @autosavePortal.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes automatically when leaving custom portals'**
+  String get autosavePortal;
+
+  /// No description provided for @autosaveResilienceShield.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes automatically when leaving custom resilience shields'**
+  String get autosaveResilienceShield;
+
+  /// No description provided for @autosavePreviewImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the image automatically when leaving the preview generator'**
+  String get autosavePreviewImage;
+
+  /// No description provided for @autosaveExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit'**
+  String get autosaveExit;
+
+  /// No description provided for @automaticallySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically saved'**
+  String get automaticallySaved;
+
+  /// No description provided for @automaticallySavedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically saved to: {path}'**
+  String automaticallySavedTo(String path);
 }
 
 class _AppLocalizationsDelegate

@@ -174,6 +174,16 @@
     "icon": "zombie_camel_onehump.webp"
   },
   {
+    "id": "camel_segment_touch",
+    "name": "zombie_camel_segment_touch",
+    "tags": [
+      "Egypt_Pirate",
+      "Basic",
+      "International"
+    ],
+    "icon": "zombie_camel_segment_touch.webp"
+  },
+  {
     "id": "camel_onehump_touch",
     "name": "zombie_camel_onehump_touch",
     "tags": [
@@ -181,7 +191,7 @@
       "Basic",
       "International"
     ],
-    "icon": "zombie_camel_onehump.webp"
+    "icon": "zombie_camel_segment_touch.webp"
   },
   {
     "id": "camel_twohump_touch",
@@ -192,7 +202,7 @@
       "Basic",
       "International"
     ],
-    "icon": "zombie_camel_onehump.webp"
+    "icon": "zombie_camel_segment_touch.webp"
   },
   {
     "id": "camel_manyhump_touch",
@@ -202,17 +212,7 @@
       "Basic",
       "International"
     ],
-    "icon": "zombie_camel_onehump.webp"
-  },
-  {
-    "id": "camel_segment_touch",
-    "name": "zombie_camel_segment_touch",
-    "tags": [
-      "Egypt_Pirate",
-      "Basic",
-      "International"
-    ],
-    "icon": "zombie_camel_onehump.webp"
+    "icon": "zombie_camel_segment_touch.webp"
   },
   {
     "id": "pharaoh",
@@ -1161,40 +1161,36 @@
     "name": "zombie_target_bottle",
     "tags": [
       "Dark_Beach",
-      "Basic",
-      "International"
+      "Chinese"
     ],
-    "icon": "zombie_dark.webp"
-  },
-  {
-    "id": "zombie_target_arrow_yellow",
-    "name": "zombie_target_arrow_yellow",
-    "tags": [
-      "Dark_Beach",
-      "Basic",
-      "International"
-    ],
-    "icon": "zombie_dark.webp"
+    "icon": "zombie_target_bottle.webp"
   },
   {
     "id": "zombie_target_arrow_blue",
     "name": "zombie_target_arrow_blue",
     "tags": [
       "Dark_Beach",
-      "Basic",
-      "International"
+      "Chinese"
     ],
-    "icon": "zombie_dark.webp"
+    "icon": "zombie_target_arrow_blue.webp"
   },
   {
     "id": "zombie_target_arrow_purple",
     "name": "zombie_target_arrow_purple",
     "tags": [
       "Dark_Beach",
-      "Basic",
-      "International"
+      "Chinese"
     ],
-    "icon": "zombie_dark.webp"
+    "icon": "zombie_target_arrow_purple.webp"
+  },
+  {
+    "id": "zombie_target_arrow_yellow",
+    "name": "zombie_target_arrow_yellow",
+    "tags": [
+      "Dark_Beach",
+      "Chinese"
+    ],
+    "icon": "zombie_target_arrow_yellow.webp"
   },
   {
     "id": "zombie_target_archmage",
@@ -1202,7 +1198,7 @@
     "tags": [
       "Dark_Beach",
       "Basic",
-      "International"
+      "Chinese"
     ],
     "icon": "zombie_dark_archmage.webp"
   },
@@ -1211,10 +1207,9 @@
     "name": "zombie_target_wizard",
     "tags": [
       "Dark_Beach",
-      "Evildave",
       "Basic",
       "Pet",
-      "International"
+      "Chinese"
     ],
     "icon": "zombie_dark_wizard.webp"
   },
@@ -1224,7 +1219,7 @@
     "tags": [
       "Dark_Beach",
       "Gargantuar",
-      "International"
+      "Chinese"
     ],
     "icon": "zombie_dark_gargantuar.webp"
   },

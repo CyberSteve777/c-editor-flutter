@@ -6,6 +6,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 part 'settings_state.dart';
 
+enum AutosaveTarget {
+  level('autosave'),
+  zombossAction('autosave_zomboss_action'),
+  portal('autosave_portal'),
+  resilienceShield('autosave_resilience_shield'),
+  previewImage('autosave_preview_image');
+
+  const AutosaveTarget(this.preferenceKey);
+  final String preferenceKey;
+}
+
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit(this._prefs) : super(_initialState(_prefs)) {
     setDocumentLanguage(state.locale.languageCode);
@@ -43,12 +54,14 @@ class SettingsCubit extends Cubit<SettingsState> {
       );
     }
     final uiScale = prefs.getDouble('ui_scale') ?? 1.0;
-    final autosave = prefs.getBool('autosave') ?? false;
     return SettingsState(
       locale: locale,
       themeMode: themeMode,
       uiScale: uiScale,
-      autosave: autosave,
+      autosaveTargets: Set.unmodifiable({
+        for (final target in AutosaveTarget.values)
+          if (prefs.getBool(target.preferenceKey) ?? false) target,
+      }),
     );
   }
 
@@ -72,7 +85,17 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void setAutosave(bool enabled) {
-    emit(state.copyWith(autosave: enabled));
-    _prefs.setBool('autosave', enabled);
+    final targets = {...state.autosaveTargets};
+    enabled
+        ? targets.add(AutosaveTarget.level)
+        : targets.remove(AutosaveTarget.level);
+    setAutosaveTargets(targets);
+  }
+
+  void setAutosaveTargets(Set<AutosaveTarget> targets) {
+    emit(state.copyWith(autosaveTargets: Set.unmodifiable(targets)));
+    for (final target in AutosaveTarget.values) {
+      _prefs.setBool(target.preferenceKey, targets.contains(target));
+    }
   }
 }

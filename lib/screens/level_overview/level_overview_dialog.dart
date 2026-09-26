@@ -1,3 +1,7 @@
+import 'package:c_editor/data/oak_archery_preview.dart';
+import 'package:c_editor/data/wave_generator_level_utils.dart';
+import 'package:c_editor/data/zombie_display_utils.dart';
+import 'package:c_editor/widgets/oak_train_warnings.dart';
 import 'package:c_editor/data/gladiator_row_utils.dart';
 import 'package:c_editor/widgets/gladiator_row_preview.dart';
 import 'dart:math' as math;
@@ -399,6 +403,8 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           _buildConveyorCard(context, theme, l10n),
           _buildCopycatCard(context, theme, l10n),
           _buildSeeingStarsCard(context, theme, l10n),
+          _buildOakArcheryCard(theme, l10n),
+          _buildWaveGeneratorCard(theme, l10n),
           _buildSingleHandedCard(context, theme, l10n),
           _buildSeedRainCard(context, theme, l10n),
           _buildHeianWindCard(context, theme, l10n),
@@ -3486,6 +3492,71 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     );
   }
 
+  Widget _buildOakArcheryCard(ThemeData theme, AppLocalizations l10n) {
+    final obj = findModuleObject(widget.levelFile, 'OakTrainProperties');
+    if (obj?.objData is! Map) return const SizedBox.shrink();
+    final data = OakTrainPropertiesData.fromJson(
+      Map<String, dynamic>.from(obj!.objData as Map),
+    );
+    return Card(
+      child: _OverviewCardPadding(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildSectionTitle(l10n.moduleTitle_OakTrainProperties, theme),
+            const SizedBox(height: 12),
+            OakTrainWarnings(levelFile: widget.levelFile),
+            for (final field in oakArcheryFields(data, l10n))
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'assets/images/${field.icon}',
+                      width: 36,
+                      height: 36,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text('${field.label}: ${field.value}')),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWaveGeneratorCard(ThemeData theme, AppLocalizations l10n) {
+    final data = WaveGeneratorLevelUtils.readData(widget.levelFile);
+    if (data == null) return const SizedBox.shrink();
+    return Card(
+      child: _OverviewCardPadding(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildSectionTitle(l10n.moduleTitle_WaveGeneratorProperties, theme),
+            const SizedBox(height: 12),
+            for (final line in waveGeneratorPreviewLines(
+              data,
+              l10n,
+              (id) => ZombieDisplayUtils.localizedName(
+                context,
+                typeOrRtid: id,
+                levelFile: widget.levelFile,
+              ),
+            ))
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Text(line),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildEncounterCard(
     BuildContext context,
     ThemeData theme,
@@ -5894,7 +5965,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                           flex: 4,
                           child: AssetImageWidget(
                             assetPath:
-                                'assets/images/others/Pirate_Seas_Planks.png',
+                                'assets/images/others/Pirate_Seas_Planks.webp',
                             fit: BoxFit.fill,
                           ),
                         )

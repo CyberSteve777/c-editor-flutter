@@ -8,6 +8,7 @@ import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/camel_minigame_conflicts.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
@@ -353,6 +354,10 @@ class _SeedBankPropertiesScreenState extends State<SeedBankPropertiesScreen> {
                 accentColor: isZombieMode ? izombieColor : null,
               ),
               const SizedBox(height: 16),
+              CamelMinigameConflicts(
+                levelFile: widget.levelFile,
+                onlyIds: const {'camelMinigameChooserConflict'},
+              ),
               _buildBasicRulesCard(context, isZombieMode, l10n),
               const SizedBox(height: 16),
               if (isZombieMode)

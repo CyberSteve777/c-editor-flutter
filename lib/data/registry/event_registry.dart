@@ -204,6 +204,17 @@ class EventRegistry {
       defaultObjClass: 'ZombiePotionActionProps',
       initialDataFactory: () => ZombiePotionActionPropsData(),
     ),
+    'TidalChangeWaveActionProps': EventMetadata(
+      titleKey: 'eventTitle_TidalChangeWaveActionProps',
+      descriptionKey: 'eventDesc_TidalChangeWaveActionProps',
+      icon: Icons.water_drop,
+      color: const Color(0xFF00ACC1),
+      darkColor: const Color(0xFF81D4FA),
+      category: EventCategory.environmental,
+      defaultAlias: 'TidalChangeEvent',
+      defaultObjClass: 'TidalChangeWaveActionProps',
+      initialDataFactory: () => TidalChangeWaveActionData(),
+    ),
     'BeachStageEventZombieSpawnerProps': EventMetadata(
       titleKey: 'eventTitle_BeachStageEventZombieSpawnerProps',
       descriptionKey: 'eventDesc_BeachStageEventZombieSpawnerProps',
@@ -224,17 +235,6 @@ class EventRegistry {
           return '';
         }
       },
-    ),
-    'TidalChangeWaveActionProps': EventMetadata(
-      titleKey: 'eventTitle_TidalChangeWaveActionProps',
-      descriptionKey: 'eventDesc_TidalChangeWaveActionProps',
-      icon: Icons.water_drop,
-      color: const Color(0xFF00ACC1),
-      darkColor: const Color(0xFF81D4FA),
-      category: EventCategory.environmental,
-      defaultAlias: 'TidalChangeEvent',
-      defaultObjClass: 'TidalChangeWaveActionProps',
-      initialDataFactory: () => TidalChangeWaveActionData(),
     ),
     'FrostWindWaveActionProps': EventMetadata(
       titleKey: 'eventTitle_FrostWindWaveActionProps',

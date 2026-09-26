@@ -1,3 +1,4 @@
+import 'package:c_editor/widgets/oak_train_warnings.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/custom_zombie_level_utils.dart';
@@ -753,6 +754,7 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              OakTrainWarnings(levelFile: widget.levelFile, event: _moduleObj),
               EditorAliasInputField(
                 alias: _alias,
                 levelFile: widget.levelFile,

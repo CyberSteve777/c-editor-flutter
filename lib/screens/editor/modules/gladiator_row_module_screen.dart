@@ -326,6 +326,8 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final warningBrightness = Theme.of(context).brightness;
+    final warningForeground = editorWarningBannerForeground(warningBrightness);
     final encounter = _encounter;
     final compatibilityWarnings =
         LevelIssueRegistry.forLevel(context, widget.levelFile).where(
@@ -419,14 +421,25 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
                 margin: EdgeInsets.zero,
                 title: l10n.gladiatorHelpTipsTitle,
                 message: l10n.gladiatorLegacyModeWarning,
-              ),
-              OutlinedButton(
-                key: const ValueKey('gladiator-use-trophy-mode'),
-                onPressed: () {
-                  _data.values['GameplayVersion'] = 1;
-                  _sync();
-                },
-                child: Text(l10n.gladiatorUseTrophyMode),
+                children: [
+                  const SizedBox(height: 12),
+                  EditorFilledButton(
+                    key: const ValueKey('gladiator-use-trophy-mode'),
+                    onPressed: () {
+                      _data.values['GameplayVersion'] = 1;
+                      _sync();
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: editorWarningBannerBackground(
+                        warningBrightness,
+                      ),
+                      foregroundColor: warningForeground,
+                      side: BorderSide(color: warningForeground, width: 1.5),
+                    ),
+                    icon: const Icon(Icons.swap_horiz),
+                    label: Text(l10n.gladiatorUseTrophyMode),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
             ],

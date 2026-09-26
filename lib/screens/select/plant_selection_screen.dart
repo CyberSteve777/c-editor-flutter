@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/data/registry/issue_registry.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
-import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/select/magic_hat_spawn_preview_screen.dart';
@@ -273,22 +272,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
   Set<String> _levelModuleObjClasses() {
     final lf = widget.levelFile;
     if (lf == null) return {};
-    final parsed = LevelParser.parseLevel(lf);
-    final levelDef = parsed.levelDef;
-    if (levelDef == null) return {};
-    final objectMap = parsed.objectMap;
-    final set = <String>{};
-    for (final rtid in levelDef.modules) {
-      final info = RtidParser.parse(rtid);
-      if (info == null) continue;
-      if (info.source == 'CurrentLevel') {
-        final obj = objectMap[info.alias];
-        if (obj != null) set.add(obj.objClass);
-      } else if (info.source == 'LevelModules') {
-        set.add(info.alias);
-      }
-    }
-    return set;
+    return LevelIssueContext.fromLevel(lf).moduleObjClasses;
   }
 
   _PlantBlockedReason? _chooserBlockedReasonForPlant(PlantInfo plant) {
@@ -519,8 +503,7 @@ class _PlantSelectionScreenState extends State<PlantSelectionScreen> {
   ) {
     final selectableIds = plants
         .where(
-          (plant) =>
-              _plantBlockedReason(plant, levelModuleObjClasses) == null,
+          (plant) => _plantBlockedReason(plant, levelModuleObjClasses) == null,
         )
         .map((plant) => plant.id)
         .toList(growable: false);

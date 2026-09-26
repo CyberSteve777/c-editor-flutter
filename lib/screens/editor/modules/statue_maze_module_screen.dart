@@ -1,3 +1,4 @@
+import 'package:c_editor/data/statue_maze_validation.dart';
 import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart'
     show
+        EditorWarningBanner,
         EditorResponsiveInputField,
         HelpSectionData,
         showEditorHelpDialog;
@@ -26,8 +28,7 @@ class StatueMazeModuleScreen extends StatefulWidget {
   final VoidCallback onBack;
 
   @override
-  State<StatueMazeModuleScreen> createState() =>
-      _StatueMazeModuleScreenState();
+  State<StatueMazeModuleScreen> createState() => _StatueMazeModuleScreenState();
 }
 
 class _StatueMazeModuleScreenState extends State<StatueMazeModuleScreen>
@@ -184,7 +185,9 @@ class _StatueMazeModuleScreenState extends State<StatueMazeModuleScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n?.confirmDelete ?? 'Delete?'),
-        content: Text(l10n?.statueMazeRemoveRotationConfirm ?? 'Remove this rotation step?'),
+        content: Text(
+          l10n?.statueMazeRemoveRotationConfirm ?? 'Remove this rotation step?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -213,39 +216,43 @@ class _StatueMazeModuleScreenState extends State<StatueMazeModuleScreen>
 
   void _editRotationParams(int index) {
     final info = _currentSet.matrixInfos[index];
-    final waitCtrl = TextEditingController(
-      text: info.waitDuration.toString(),
-    );
-    final rotateCtrl = TextEditingController(
-      text: info.rotateTime.toString(),
-    );
+    final waitCtrl = TextEditingController(text: info.waitDuration.toString());
+    final rotateCtrl = TextEditingController(text: info.rotateTime.toString());
     final l10n = AppLocalizations.of(context);
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('${l10n?.statueMazeRotations ?? 'Rotation'} #${index + 1}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: waitCtrl,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: l10n?.statueMazeWaitDuration ?? 'Wait (s)',
-                border: const OutlineInputBorder(),
+        scrollable: true,
+        content: SizedBox(
+          width: 360,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              EditorResponsiveInputField(
+                label:
+                    l10n?.statueMazeWaitDuration ??
+                    'Total step duration (WaitDuration, seconds)',
+                builder: (context, decoration) => TextField(
+                  controller: waitCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: decoration,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: rotateCtrl,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: l10n?.statueMazeRotateTime ?? 'Rotate (s)',
-                border: const OutlineInputBorder(),
+              const SizedBox(height: 12),
+              EditorResponsiveInputField(
+                label:
+                    l10n?.statueMazeRotateTime ??
+                    'Rotation duration (RotateTime, seconds)',
+                builder: (context, decoration) => TextField(
+                  controller: rotateCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: decoration,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -340,7 +347,8 @@ class _StatueMazeModuleScreenState extends State<StatueMazeModuleScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final emptyRounds = statueMazeRoundsWithoutRotations(_data.toJson());
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -359,18 +367,23 @@ class _StatueMazeModuleScreenState extends State<StatueMazeModuleScreen>
             onPressed: () => showEditorHelpDialog(
               context,
               isEvent: false,
-              title:
-                  l10n?.moduleTitle_StatueMazeModuleProperties ?? 'Statue Maze',
+              title: l10n.moduleTitle_StatueMazeModuleProperties,
               sections: [
                 HelpSectionData(
-                  title: l10n?.overview ?? 'Overview',
-                  body: l10n?.moduleHelpStatueMazeOverviewBody ??
-                      'The Statue Maze module adds a rotating-grid puzzle minigame.',
+                  title: l10n.overview,
+                  body: l10n.moduleHelpStatueMazeOverviewBody,
                 ),
                 HelpSectionData(
-                  title: l10n?.statueMazeRotations ?? 'Rotations',
-                  body: l10n?.moduleHelpStatueMazeRotationsBody ??
-                      'Type "c" is clockwise rotation. Type "ac" is anti-clockwise rotation.',
+                  title: l10n.statueMazeRotations,
+                  body: l10n.moduleHelpStatueMazeRotationsBody,
+                ),
+                HelpSectionData(
+                  title: l10n.moduleHelpStatueMazeTimingTitle,
+                  body: l10n.moduleHelpStatueMazeTimingBody,
+                ),
+                HelpSectionData(
+                  title: l10n.moduleHelpStatueMazeCompatibilityTitle,
+                  body: l10n.moduleHelpStatueMazeCompatibilityBody,
                 ),
               ],
             ),
@@ -390,18 +403,27 @@ class _StatueMazeModuleScreenState extends State<StatueMazeModuleScreen>
               onChanged: widget.onChanged,
             ),
             const SizedBox(height: 16),
+            if (emptyRounds.isNotEmpty) ...[
+              EditorWarningBanner(
+                key: const ValueKey('statueMazeMissingRotations'),
+                message: l10n.statueMazeMissingRotationsWarning(
+                  emptyRounds.join(', '),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             _buildSetSelector(l10n),
             const SizedBox(height: 16),
             _buildGridSizeSelector(l10n),
             const SizedBox(height: 12),
             _buildParameterBoxes(l10n),
             const SizedBox(height: 16),
+            _buildRotationSection(l10n),
+            _buildRotationHint(l10n),
+            const SizedBox(height: 16),
             _buildGridPreview(),
             const SizedBox(height: 16),
             _buildAnimationControls(l10n),
-            const SizedBox(height: 16),
-            _buildRotationSection(l10n),
-            _buildRotationHint(l10n),
           ],
         ),
       ),
@@ -413,36 +435,69 @@ class _StatueMazeModuleScreenState extends State<StatueMazeModuleScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n?.statueMazeSets ?? 'Sets',
-          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+        Text(
+          l10n?.statueMazeSets ?? 'Sets',
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 8),
-        SizedBox(height: 44,
-          child: ListView.separated(scrollDirection: Axis.horizontal,
+        SizedBox(
+          height: 44,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
             itemCount: _data.setInfos.length + 1,
             separatorBuilder: (_, __) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               if (index == _data.setInfos.length) {
-                return SizedBox(height: 44,
-                  child: OutlinedButton.icon(onPressed: _addSet,
+                return SizedBox(
+                  height: 44,
+                  child: OutlinedButton.icon(
+                    onPressed: _addSet,
                     icon: const Icon(Icons.add, size: 18),
                     label: Text(l10n?.statueMazeAddSet ?? 'Add'),
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 12))),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                    ),
+                  ),
                 );
               }
               final sel = index == _selectedSetIndex;
               return GestureDetector(
-                onTap: () { setState(() => _selectedSetIndex = index); _resetPositions(); },
-                onLongPress: _data.setInfos.length > 1 ? () => _removeSet(index) : null,
-                child: AnimatedContainer(duration: const Duration(milliseconds: 200),
-                  width: 44, height: 44,
+                onTap: () {
+                  setState(() => _selectedSetIndex = index);
+                  _resetPositions();
+                },
+                onLongPress: _data.setInfos.length > 1
+                    ? () => _removeSet(index)
+                    : null,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
-                    color: sel ? theme.colorScheme.primary : theme.colorScheme.surfaceContainerHighest,
+                    color: sel
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: sel ? theme.colorScheme.primary : theme.colorScheme.outline.withValues(alpha: 0.3), width: 2)),
-                  child: Center(child: Text('${index + 1}',
-                    style: TextStyle(fontWeight: FontWeight.bold,
-                      color: sel ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface))),
+                    border: Border.all(
+                      color: sel
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.outline.withValues(alpha: 0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: sel
+                            ? theme.colorScheme.onPrimary
+                            : theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
                 ),
               );
             },
@@ -454,59 +509,140 @@ class _StatueMazeModuleScreenState extends State<StatueMazeModuleScreen>
 
   Widget _buildGridSizeSelector(AppLocalizations? l10n) {
     final theme = Theme.of(context);
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(l10n?.statueMazeGridSize ?? 'Grid size',
-        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
-      const SizedBox(height: 8),
-      Row(children: [2, 3, 4, 5].map((size) {
-        final sel = _currentSet.matrixSize == size;
-        return Padding(padding: const EdgeInsets.only(right: 8),
-          child: GestureDetector(onTap: () {
-            _currentSet.matrixSize = size; _resetPositions(); setState(() {}); _save();
-          }, child: AnimatedContainer(duration: const Duration(milliseconds: 200),
-            width: 56, height: 44,
-            decoration: BoxDecoration(
-              color: sel ? theme.colorScheme.primary : theme.colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: sel ? theme.colorScheme.primary : theme.colorScheme.outline.withValues(alpha: 0.3), width: 2)),
-            child: Center(child: Text('${size}x$size',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13,
-                color: sel ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface))),
-          )),
-        );
-      }).toList()),
-    ]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n?.statueMazeGridSize ?? 'Grid size',
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [2, 3, 4, 5].map((size) {
+            final sel = _currentSet.matrixSize == size;
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: GestureDetector(
+                onTap: () {
+                  _currentSet.matrixSize = size;
+                  _resetPositions();
+                  setState(() {});
+                  _save();
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 56,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: sel
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: sel
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.outline.withValues(alpha: 0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${size}x$size',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: sel
+                            ? theme.colorScheme.onPrimary
+                            : theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
   }
 
   Widget _buildParameterBoxes(AppLocalizations? l10n) {
-    return Row(children: [
-      Expanded(child: _buildParamBox(l10n?.statueMazeDisplayTime ?? 'Display time (s)',
-        _currentSet.displayTime.toString(), (v) { final n = double.tryParse(v);
-          if (n != null && n > 0) { _currentSet.displayTime = n; _save(); } })),
-      const SizedBox(width: 8),
-      Expanded(child: _buildParamBox(l10n?.statueMazeTargetNum ?? 'Target count',
-        _currentSet.targetNum.toString(), (v) { final n = int.tryParse(v);
-          if (n != null && n >= 0) { _currentSet.targetNum = n; _save(); } })),
-      const SizedBox(width: 8),
-      Expanded(child: _buildParamBox(l10n?.statueMazeBonusLife ?? 'Bonus life',
-        _currentSet.bonusLife.toString(), (v) { final n = int.tryParse(v);
-          if (n != null && n >= 0) { _currentSet.bonusLife = n; _save(); } })),
-    ]);
+    return Row(
+      children: [
+        Expanded(
+          child: _buildParamBox(
+            l10n?.statueMazeDisplayTime ?? 'Display time (s)',
+            _currentSet.displayTime.toString(),
+            (v) {
+              final n = double.tryParse(v);
+              if (n != null && n > 0) {
+                _currentSet.displayTime = n;
+                _save();
+              }
+            },
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildParamBox(
+            l10n?.statueMazeTargetNum ?? 'Target count',
+            _currentSet.targetNum.toString(),
+            (v) {
+              final n = int.tryParse(v);
+              if (n != null && n >= 0) {
+                _currentSet.targetNum = n;
+                _save();
+              }
+            },
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildParamBox(
+            l10n?.statueMazeBonusLife ?? 'Bonus life',
+            _currentSet.bonusLife.toString(),
+            (v) {
+              final n = int.tryParse(v);
+              if (n != null && n >= 0) {
+                _currentSet.bonusLife = n;
+                _save();
+              }
+            },
+          ),
+        ),
+      ],
+    );
   }
 
-  Widget _buildParamBox(String label, String value, ValueChanged<String> onChanged) {
-    return EditorResponsiveInputField(label: label, labelSpacing: 4,
+  Widget _buildParamBox(
+    String label,
+    String value,
+    ValueChanged<String> onChanged,
+  ) {
+    return EditorResponsiveInputField(
+      label: label,
+      labelSpacing: 4,
       builder: (context, decoration) => TextField(
         controller: TextEditingController(text: value),
         keyboardType: TextInputType.number,
-        decoration: decoration.copyWith(isDense: true,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8)),
-        onChanged: onChanged),
+        decoration: decoration.copyWith(
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 8,
+            vertical: 8,
+          ),
+        ),
+        onChanged: onChanged,
+      ),
     );
   }
 
   Widget _buildGridPreview() {
-    final (rows, cols) = LevelParser.getGridDimensionsFromFile(widget.levelFile);
+    final (rows, cols) = LevelParser.getGridDimensionsFromFile(
+      widget.levelFile,
+    );
     final size = _currentSet.matrixSize;
     final theme = Theme.of(context);
     const refCols = 9;
@@ -514,139 +650,243 @@ class _StatueMazeModuleScreenState extends State<StatueMazeModuleScreen>
     final offsetCol = (refCols - size) ~/ 2;
     final offsetRow = (refRows - size) ~/ 2;
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text('${size}x${size} statues on ${rows}x${cols} lawn',
-        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
-      const SizedBox(height: 8),
-      Center(child: ConstrainedBox(
+    return Center(
+      child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 500),
-        child: AspectRatio(aspectRatio: cols / rows,
-          child: LayoutBuilder(builder: (context, constraints) {
-            final w = constraints.maxWidth;
-            final h = constraints.maxHeight;
-            final cellW = w / cols;
-            final cellH = h / rows;
-            return Container(
-              decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark ? const Color(0xFF31383B) : const Color(0xFFD7ECF1),
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: const Color(0xFF6B899A))),
-              clipBehavior: Clip.antiAlias,
-              child: Stack(children: [
-                Column(children: List.generate(rows, (row) => Expanded(
-                  child: Row(children: List.generate(cols, (col) => Expanded(
-                    child: Container(margin: const EdgeInsets.all(0.5),
-                      decoration: BoxDecoration(border: Border.all(color: const Color(0xFF6B899A), width: 0.5)))))),
-                ))),
-                Positioned(
-                  left: 0, top: 0, width: w, height: h,
-                  child: Transform.rotate(
-                    angle: _visualRotationAngle,
-                    alignment: Alignment(
-                      ((offsetCol + size / 2) * cellW / w) * 2 - 1,
-                      ((offsetRow + size / 2) * cellH / h) * 2 - 1,
-                    ),
-                    child: Stack(children: [
-                      for (var i = 0; i < size * size; i++)
-                        Positioned(
-                          left: (offsetCol + _currentPositions[i].dx) * cellW,
-                          top: (offsetRow + _currentPositions[i].dy) * cellH,
-                          width: cellW,
-                          height: cellH,
-                          child: Padding(padding: const EdgeInsets.all(2),
-                            child: Transform.rotate(
-                              angle: -_visualRotationAngle,
-                              child: Image.asset('assets/images/griditems/renai_statue_zombie1.webp',
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => Icon(Icons.account_balance, size: 16,
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.6))))),
-                        ),
-                    ]),
-                  ),
+        child: AspectRatio(
+          aspectRatio: cols / rows,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final w = constraints.maxWidth;
+              final h = constraints.maxHeight;
+              final cellW = w / cols;
+              final cellH = h / rows;
+              return Container(
+                decoration: BoxDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? const Color(0xFF31383B)
+                      : const Color(0xFFD7ECF1),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: const Color(0xFF6B899A)),
                 ),
-              ]),
-            );
-          }),
+                clipBehavior: Clip.antiAlias,
+                child: Stack(
+                  children: [
+                    Column(
+                      children: List.generate(
+                        rows,
+                        (row) => Expanded(
+                          child: Row(
+                            children: List.generate(
+                              cols,
+                              (col) => Expanded(
+                                child: Container(
+                                  margin: const EdgeInsets.all(0.5),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: const Color(0xFF6B899A),
+                                      width: 0.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      width: w,
+                      height: h,
+                      child: Transform.rotate(
+                        angle: _visualRotationAngle,
+                        alignment: Alignment(
+                          ((offsetCol + size / 2) * cellW / w) * 2 - 1,
+                          ((offsetRow + size / 2) * cellH / h) * 2 - 1,
+                        ),
+                        child: Stack(
+                          children: [
+                            for (var i = 0; i < size * size; i++)
+                              Positioned(
+                                left:
+                                    (offsetCol + _currentPositions[i].dx) *
+                                    cellW,
+                                top:
+                                    (offsetRow + _currentPositions[i].dy) *
+                                    cellH,
+                                width: cellW,
+                                height: cellH,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(2),
+                                  child: Transform.rotate(
+                                    angle: -_visualRotationAngle,
+                                    child: Image.asset(
+                                      'assets/images/griditems/renai_statue_zombie1.webp',
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (_, __, ___) => Icon(
+                                        Icons.account_balance,
+                                        size: 16,
+                                        color: theme.colorScheme.primary
+                                            .withValues(alpha: 0.6),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
-      )),
-    ]);
+      ),
+    );
   }
 
   Widget _buildRotationSection(AppLocalizations? l10n) {
     final theme = Theme.of(context);
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [
-        Text(l10n?.statueMazeRotations ?? 'Rotations',
-          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
-        const Spacer(),
-        Text('${_currentSet.matrixInfos.length}',
-          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-      ]),
-      const SizedBox(height: 8),
-      if (_currentSet.matrixInfos.isEmpty)
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Text(l10n?.statueMazeNoRotations ?? 'No rotations added',
-            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+    final textScaler = MediaQuery.textScalerOf(context);
+    final cardWidth = textScaler.scale(72).clamp(72.0, double.infinity);
+    final cardHeight = textScaler.scale(80).clamp(80.0, double.infinity);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              l10n?.statueMazeRotations ?? 'Rotations',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              '${_currentSet.matrixInfos.length}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
         ),
-      SizedBox(height: 80,
-        child: ListView.separated(scrollDirection: Axis.horizontal,
-              itemCount: _currentSet.matrixInfos.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                if (index == _currentSet.matrixInfos.length) {
-                  return GestureDetector(onTap: _addRotation,
-                    child: Container(width: 72, height: 72,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.5)),
-                        borderRadius: BorderRadius.circular(8)),
-                      child: Icon(Icons.add, color: theme.colorScheme.onSurfaceVariant)));
-                }
-                final info = _currentSet.matrixInfos[index];
-                final cw = info.type == 'c';
-                final active = _animatingRotationIndex == index;
+        const SizedBox(height: 8),
+        if (_currentSet.matrixInfos.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              l10n?.statueMazeNoRotations ?? 'No rotations added',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        SizedBox(
+          height: cardHeight,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _currentSet.matrixInfos.length + 1,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              if (index == _currentSet.matrixInfos.length) {
                 return GestureDetector(
-                  onTap: () => _editRotationParams(index),
-                  onLongPressStart: (_) => setState(() => _longPressedRotationIndex = index),
-                  onLongPressEnd: (_) {
-                    setState(() => _longPressedRotationIndex = -1);
-                    _removeRotation(index);
-                  },
-                  onLongPressCancel: () => setState(() => _longPressedRotationIndex = -1),
-                  child: AnimatedContainer(duration: const Duration(milliseconds: 200),
-                    width: 72, height: 72,
+                  onTap: _addRotation,
+                  child: Container(
+                    width: cardWidth,
+                    height: cardHeight,
                     decoration: BoxDecoration(
-                      color: _longPressedRotationIndex == index
-                          ? theme.colorScheme.errorContainer
-                          : active
-                              ? theme.colorScheme.primary.withValues(alpha: 0.2)
-                              : theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: _longPressedRotationIndex == index
-                            ? theme.colorScheme.error
-                            : active
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.outline.withValues(alpha: 0.3),
-                        width: _longPressedRotationIndex == index || active ? 2 : 1)),
-                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      GestureDetector(
-                        onTap: () => _toggleRotationType(index),
-                        child: Icon(cw ? Icons.rotate_right : Icons.rotate_left, size: 22,
-                          color: cw ? theme.colorScheme.primary : theme.colorScheme.tertiary)),
-                      const SizedBox(height: 2),
-                      Text(cw ? 'C' : 'AC', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold,
-                        color: cw ? theme.colorScheme.primary : theme.colorScheme.tertiary)),
-                      const SizedBox(height: 2),
-                      Text('${info.waitDuration}s / ${info.rotateTime}s',
-                        style: theme.textTheme.bodySmall?.copyWith(fontSize: 8,
-                          color: theme.colorScheme.onSurfaceVariant)),
-                    ]),
+                        color: theme.colorScheme.outline.withValues(alpha: 0.5),
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.add,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 );
-              }),
-      ),
-    ]);
+              }
+              final info = _currentSet.matrixInfos[index];
+              final cw = info.type == 'c';
+              final active = _animatingRotationIndex == index;
+              return GestureDetector(
+                onTap: () => _editRotationParams(index),
+                onLongPressStart: (_) =>
+                    setState(() => _longPressedRotationIndex = index),
+                onLongPressEnd: (_) {
+                  setState(() => _longPressedRotationIndex = -1);
+                  _removeRotation(index);
+                },
+                onLongPressCancel: () =>
+                    setState(() => _longPressedRotationIndex = -1),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: cardWidth,
+                  height: cardHeight,
+                  decoration: BoxDecoration(
+                    color: _longPressedRotationIndex == index
+                        ? theme.colorScheme.errorContainer
+                        : active
+                        ? theme.colorScheme.primary.withValues(alpha: 0.2)
+                        : theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: _longPressedRotationIndex == index
+                          ? theme.colorScheme.error
+                          : active
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.outline.withValues(alpha: 0.3),
+                      width: _longPressedRotationIndex == index || active
+                          ? 2
+                          : 1,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () => _toggleRotationType(index),
+                        child: Icon(
+                          cw ? Icons.rotate_right : Icons.rotate_left,
+                          size: 22,
+                          color: cw
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.tertiary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        cw ? 'C' : 'AC',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: cw
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.tertiary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${info.waitDuration}s / ${info.rotateTime}s',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontSize: 8,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildRotationHint(AppLocalizations? l10n) {
@@ -654,7 +894,8 @@ class _StatueMazeModuleScreenState extends State<StatueMazeModuleScreen>
     return Padding(
       padding: const EdgeInsets.only(top: 6),
       child: Text(
-        l10n?.statueMazeRotationsHint ?? 'Tap arrow ↻/↺ to change direction. Tap card to edit wait & rotate time. Long-press card to delete.',
+        l10n?.statueMazeRotationsHint ??
+            'Tap the arrow to switch rotation direction. Tap a card to edit that step’s parameters. Long-press a card to delete the step.',
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
           fontSize: 11,
@@ -664,26 +905,37 @@ class _StatueMazeModuleScreenState extends State<StatueMazeModuleScreen>
   }
 
   Widget _buildAnimationControls(AppLocalizations? l10n) {
-    final theme = Theme.of(context);
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      SizedBox(width: 36, height: 36,
-        child: IconButton.filled(
-          onPressed: _isAnimating ? _togglePause : _playAnimation,
-          iconSize: 18,
-          padding: EdgeInsets.zero,
-          icon: Icon(_isAnimating
-            ? (_isPaused ? Icons.play_arrow : Icons.pause)
-            : Icons.play_arrow))),
-      if (_isAnimating) ...[
-        const SizedBox(width: 8),
-        SizedBox(width: 36, height: 36,
-          child: IconButton.outlined(
-            onPressed: _stopAnimation,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 36,
+          height: 36,
+          child: IconButton.filled(
+            onPressed: _isAnimating ? _togglePause : _playAnimation,
             iconSize: 18,
             padding: EdgeInsets.zero,
-            icon: const Icon(Icons.stop))),
+            icon: Icon(
+              _isAnimating
+                  ? (_isPaused ? Icons.play_arrow : Icons.pause)
+                  : Icons.play_arrow,
+            ),
+          ),
+        ),
+        if (_isAnimating) ...[
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 36,
+            height: 36,
+            child: IconButton.outlined(
+              onPressed: _stopAnimation,
+              iconSize: 18,
+              padding: EdgeInsets.zero,
+              icon: const Icon(Icons.stop),
+            ),
+          ),
+        ],
       ],
-    ]);
+    );
   }
 }
-

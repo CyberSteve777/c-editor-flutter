@@ -1,11 +1,16 @@
+import 'package:c_editor/data/statue_maze_validation.dart';
+import 'package:c_editor/data/oak_train_utils.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/glacier_module_presets.dart';
+import 'package:c_editor/data/camel_minigame_utils.dart';
+import 'package:c_editor/data/zombie_display_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/data/repository/plant_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
+import 'package:c_editor/data/repository/zomboss_mech_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
@@ -87,7 +92,7 @@ class LevelIssueContext {
             isCurrentLevel: true,
           ),
         );
-      } else {
+      } else if (info.source == 'LevelModules') {
         final ref = ReferenceRepository.instance.objectForAlias(info.alias);
         final objClass = ref?.objClass ?? _objClassForStockAlias(info.alias);
         if (objClass == null) continue;
@@ -132,10 +137,6 @@ class LevelIssueContext {
   bool hasModuleOrObject(String objClass) =>
       moduleObjClasses.contains(objClass) ||
       objectObjClasses.contains(objClass);
-
-  /// Classes present either as wired modules or as objects in the file.
-  /// Used for missing-essential checks (matches the editor's historical scan).
-  Set<String> get presentClasses => {...moduleObjClasses, ...objectObjClasses};
 
   bool get hasTunnelDefend => modules.any(
     (m) => m.objClass == 'TunnelDefendModuleProperties' && !m.isExpeditionTiles,
@@ -343,6 +344,7 @@ class LevelIssueRegistry {
   static const glacierModule = 'GlacierModuleProperties';
   static const zombossBattleModule = 'ZombossBattleModuleProperties';
   static const seeingStarsModule = 'PVZ1SeeingStarsModuleProperties';
+  static const statueMazeModule = 'StatueMazeModuleProperties';
   static const zombiesDeadWinCon = 'ZombiesDeadWinConProperties';
   static const bronzeDeadWinCon = 'BronzeDeadWinConProperties';
 
@@ -391,6 +393,13 @@ class LevelIssueRegistry {
         'StandardLevelIntroProperties',
       },
       descriptionKey: 'conflictDesc_SingleHandedTutorialIntro',
+    ),
+    ModuleConflictRule(
+      conflictingClasses: {
+        'CamelMinigameProperties',
+        'StandardLevelIntroProperties',
+      },
+      descriptionKey: 'conflictDesc_CamelMinigameIntro',
     ),
     ModuleConflictRule(
       conflictingClasses: {'EvilDaveProperties', 'ZombiesDeadWinConProperties'},
@@ -463,6 +472,24 @@ class LevelIssueRegistry {
     // --- Conflicts (errors) ---
     ...conflictModuleRules.map(_conflictRule),
     LevelIssueRule(
+      id: 'statueMazeMissingRotations',
+      severity: LevelIssueSeverity.error,
+      emit: (context, l10n, ctx) => [
+        for (final module in ctx.modules.where(
+          (m) => m.objClass == statueMazeModule,
+        ))
+          if (statueMazeRoundsWithoutRotations(module.objData).isNotEmpty)
+            LevelIssue(
+              id: 'statueMazeMissingRotations_${module.rtid}',
+              severity: LevelIssueSeverity.error,
+              title: l10n.conflictTitle_ModuleLogic,
+              message: l10n.statueMazeMissingRotationsWarning(
+                statueMazeRoundsWithoutRotations(module.objData).join(', '),
+              ),
+            ),
+      ],
+    ),
+    LevelIssueRule(
       id: 'conflict_winConditionExclusive',
       severity: LevelIssueSeverity.error,
       isActive: (ctx) =>
@@ -511,6 +538,89 @@ class LevelIssueRegistry {
 
     // --- Advisories ---
     LevelIssueRule(
+      id: 'camelMinigameChooserConflict',
+      severity: LevelIssueSeverity.error,
+      isActive: (ctx) =>
+          ctx.hasModule(CamelMinigameUtils.moduleClass) &&
+          ctx.modules.any(
+            (module) =>
+                module.objClass == 'SeedBankProperties' &&
+                module.objData is Map &&
+                ((module.objData as Map)['SelectionMethod'] ?? 'chooser') ==
+                    'chooser',
+          ),
+      title: (_, l10n) => l10n.conflictTitle_ModuleLogic,
+      message: (_, l10n) => l10n.conflictDesc_CamelMinigameChooser,
+    ),
+    LevelIssueRule(
+      id: 'camelMinigameNonTouchZombies',
+      emit: (context, l10n, ctx) {
+        if (!ctx.hasModule(CamelMinigameUtils.moduleClass)) return [];
+        final zombies = CamelMinigameUtils.incompatibleZombies(ctx.levelFile);
+        if (zombies.isEmpty) return [];
+        return [
+          LevelIssue(
+            id: 'camelMinigameNonTouchZombies',
+            severity: LevelIssueSeverity.error,
+            title: l10n.conflictTitle_ModuleLogic,
+            message: l10n.conflictDesc_CamelMinigameNonTouchZombies(
+              zombies
+                  .map(
+                    (id) => ZombieDisplayUtils.localizedName(
+                      context,
+                      typeOrRtid: id,
+                      levelFile: ctx.levelFile,
+                    ),
+                  )
+                  .join(', '),
+            ),
+          ),
+        ];
+      },
+    ),
+    LevelIssueRule(
+      id: 'oakTrainTutorialIntroWarning',
+      isActive: (ctx) =>
+          ctx.hasModule('OakTrainIntroProperties') &&
+          ctx.hasModule('StandardLevelIntroProperties'),
+      title: (_, l10n) => l10n.oakTrainTutorialIntroWarningTitle,
+      message: (_, l10n) => l10n.oakTrainTutorialIntroWarning,
+    ),
+    LevelIssueRule(
+      id: 'oakTrainUnderwaterWarning',
+      isActive: (ctx) =>
+          ctx.hasModule('OakTrainProperties') &&
+          OakTrainUtils.needsOxygenSupport(ctx.levelFile),
+      title: (_, l10n) => l10n.oakTrainUnderwaterWarningTitle,
+      message: (_, l10n) => l10n.oakTrainUnderwaterWarning,
+    ),
+    LevelIssueRule(
+      id: 'targetZombieInWaveManagerWarning',
+      isActive: (ctx) =>
+          ctx.hasModule('WaveManagerModuleProperties') &&
+          OakTrainUtils.hasIncompatibleWaveSpawns(ctx.levelFile),
+      title: (_, l10n) => l10n.targetZombieInWaveManagerWarningTitle,
+      message: (_, l10n) => l10n.targetZombieInWaveManagerWarning,
+    ),
+    LevelIssueRule(
+      id: 'goldRoadNonLostCityLawnWarning',
+      isActive: (ctx) =>
+          ctx.hasModule('GoldRoadProperties') &&
+          LevelParser.resolveStageObjdata(ctx.levelDef, ctx.levelFile) !=
+              null &&
+          !LevelParser.usesLostCityBackground(ctx.levelDef, ctx.levelFile),
+      title: (_, l10n) => l10n.goldRoadNonLostCityLawnWarningTitle,
+      message: (_, l10n) => l10n.goldRoadNonLostCityLawnWarning,
+    ),
+    LevelIssueRule(
+      id: 'goldRoadDeepseaLawnWarning',
+      isActive: (ctx) =>
+          ctx.hasModule('GoldRoadProperties') &&
+          LevelParser.usesDeepSeaBackground(ctx.levelDef, ctx.levelFile),
+      title: (_, l10n) => l10n.goldRoadDeepseaLawnWarningTitle,
+      message: (_, l10n) => l10n.goldRoadDeepseaLawnWarning,
+    ),
+    LevelIssueRule(
       id: 'cowboyMinigameConveyorWarning',
       isActive: (ctx) =>
           ctx.hasModule('CowboyMinigameProperties') &&
@@ -522,7 +632,10 @@ class LevelIssueRegistry {
       id: 'seeingStarsWinConWarning',
       isActive: (ctx) =>
           ctx.hasModule(seeingStarsModule) &&
-          (ctx.hasModule(zombiesDeadWinCon) || ctx.hasModule(bronzeDeadWinCon)),
+          (ctx.hasModule(zombiesDeadWinCon) ||
+              ctx.hasModule(bronzeDeadWinCon) ||
+              ctx.hasModule('ZombieRushModuleProperties') ||
+              ctx.hasModule(statueMazeModule)),
       title: (_, l10n) => l10n.seeingStarsWinConWarningTitle,
       message: (_, l10n) => l10n.seeingStarsWinConWarning,
     ),
@@ -537,9 +650,14 @@ class LevelIssueRegistry {
     LevelIssueRule(
       id: 'glacierModuleCompatibilityWarning',
       isActive: (ctx) =>
-          GlacierModulePropertiesData.shouldShowCompatibilityWarning(
-            levelFile: ctx.levelFile,
-            moduleObjClasses: ctx.moduleObjClasses,
+          ctx.hasModule(glacierModule) &&
+          !ctx.modules.any(
+            (module) =>
+                module.objClass == zombossBattleModule &&
+                module.objData is Map &&
+                ZombossMechRepository.isIceAgeMechVariation(
+                  (module.objData as Map)['ZombossMechType'] as String?,
+                ),
           ),
       title: (_, l10n) => l10n.glacierModuleCompatibilityWarningTitle,
       message: (_, l10n) => l10n.glacierModuleCompatibilityWarning,
@@ -547,21 +665,23 @@ class LevelIssueRegistry {
     LevelIssueRule(
       id: 'glacierModuleUnderwaterWarning',
       isActive: (ctx) =>
-          ctx.hasModuleOrObject(glacierModule) &&
+          ctx.hasModule(glacierModule) &&
           LevelParser.isDeepSeaLawn(ctx.levelDef, ctx.levelFile),
       title: (_, l10n) => l10n.glacierModuleUnderwaterWarningTitle,
       message: (_, l10n) => l10n.glacierModuleUnderwaterWarning,
     ),
     LevelIssueRule(
       id: 'iceAgePlantPuzzleWarning',
-      isActive: (ctx) {
-        if (!ctx.hasModuleOrObject(glacierModule)) return false;
-        final battle = ctx.firstObject(zombossBattleModule);
-        if (battle?.objData is! Map) return false;
-        final variation =
-            (battle!.objData as Map)['ZombossMechType'] as String?;
-        return GlacierModulePresets.isPlantPuzzleVariation(variation);
-      },
+      isActive: (ctx) =>
+          ctx.hasModule(glacierModule) &&
+          ctx.modules.any(
+            (module) =>
+                module.objClass == zombossBattleModule &&
+                module.objData is Map &&
+                GlacierModulePresets.isPlantPuzzleVariation(
+                  (module.objData as Map)['ZombossMechType'] as String?,
+                ),
+          ),
       title: (_, l10n) => l10n.iceAgePlantPuzzleVariationWarningTitle,
       message: (_, l10n) => l10n.iceAgePlantPuzzleVariationWarning,
     ),
@@ -573,7 +693,7 @@ class LevelIssueRegistry {
             alias != 'UnchartedMausoleum2Stage') {
           return false;
         }
-        return !ctx.hasTunnelDefend;
+        return !ctx.hasTunnelDefend && !ctx.hasExpeditionTiles;
       },
       title: (_, l10n) => l10n.recommendedTunnelDefendTitle,
       message: (_, l10n) => l10n.recommendedTunnelDefendBody,
@@ -582,6 +702,11 @@ class LevelIssueRegistry {
       id: 'recommendedExpeditionTiles',
       isActive: (ctx) =>
           !ctx.hasExpeditionTiles &&
+          !ctx.hasTunnelDefend &&
+          !LevelParser.isUnderwaterWorldSixRowLawn(
+            ctx.levelDef,
+            ctx.levelFile,
+          ) &&
           LevelParser.isSouDaCheLawn(ctx.levelDef, ctx.levelFile),
       title: (_, l10n) => l10n.recommendedExpeditionTilesTitle,
       message: (_, l10n) => l10n.recommendedExpeditionTilesBody,
@@ -729,7 +854,9 @@ class LevelIssueRegistry {
   }
 
   static List<String> _missingEssentialClasses(LevelIssueContext ctx) {
-    final existing = ctx.presentClasses;
+    // Only wired modules take effect. Leftover objects must neither satisfy a
+    // requirement nor suppress a recommendation for the current configuration.
+    final existing = ctx.moduleObjClasses;
     final isVaseBreaker =
         existing.contains('VaseBreakerPresetProperties') ||
         existing.contains('VaseBreakerArcadeModuleProperties') ||
@@ -756,8 +883,7 @@ class LevelIssueRegistry {
     if (!existing.contains('ZombiesAteYourBrainsProperties') && !isEvilDave) {
       missing.add('ZombiesAteYourBrainsProperties');
     }
-    if (!existing.contains(zombiesDeadWinCon) &&
-        !existing.contains(bronzeDeadWinCon) &&
+    if (!existing.any((cls) => cls.endsWith('WinConProperties')) &&
         !isEvilDave &&
         !isZombossMechBattle &&
         !isZombossBattle &&
@@ -770,8 +896,10 @@ class LevelIssueRegistry {
         !isCowboyMinigame &&
         !isSingleHanded &&
         !isSingleHandedTutorial &&
+        !ctx.hasModule('OakTrainIntroProperties') &&
         !isZombossMechBattle &&
-        !isZombossBattle) {
+        !isZombossBattle &&
+        !existing.contains(CamelMinigameUtils.moduleClass)) {
       missing.add('StandardLevelIntroProperties');
     }
     if (isVaseBreaker) {
@@ -801,9 +929,9 @@ class LevelIssueRegistry {
         missing.add('ZombossBattleIntroProperties');
       }
     }
-    if (isZombossBattle &&
-        !existing.contains('ZombossLastStandMinigameProperties')) {
-      missing.add('ZombossLastStandMinigameProperties');
+    if (ctx.hasModule('OakTrainIntroProperties') &&
+        !ctx.hasModule('OakTrainProperties')) {
+      missing.add('OakTrainProperties');
     }
     if (isLastStand && !existing.contains('SeedBankProperties')) {
       missing.add('SeedBankProperties');
@@ -813,7 +941,14 @@ class LevelIssueRegistry {
         .where(
           (cls) =>
               ModuleRegistry.getMetadata(cls).titleKey !=
-              ModuleRegistry.defaultMetadataKey,
+                  ModuleRegistry.defaultMetadataKey &&
+              !conflictModuleRules.any(
+                (rule) =>
+                    rule.conflictingClasses.contains(cls) &&
+                    rule.conflictingClasses.every(
+                      (other) => other == cls || existing.contains(other),
+                    ),
+              ),
         )
         .toList();
   }
@@ -832,6 +967,8 @@ class LevelIssueRegistry {
         return l10n.conflictDesc_SingleHandedIntro;
       case 'conflictDesc_SingleHandedTutorialIntro':
         return l10n.conflictDesc_SingleHandedTutorialIntro;
+      case 'conflictDesc_CamelMinigameIntro':
+        return l10n.conflictDesc_CamelMinigameIntro;
       case 'conflictDesc_EvilDaveZombieDrop':
         return l10n.conflictDesc_EvilDaveZombieDrop;
       case 'conflictDesc_EvilDaveVictory':

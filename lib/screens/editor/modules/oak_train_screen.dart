@@ -1,12 +1,10 @@
+import 'package:c_editor/widgets/oak_train_warnings.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart'
-    show
-        EditorResponsiveInputField,
-        HelpSectionData,
-        showEditorHelpDialog;
+    show EditorResponsiveInputField, HelpSectionData, showEditorHelpDialog;
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
 class OakTrainScreen extends StatefulWidget {
@@ -77,7 +75,9 @@ class _OakTrainScreenState extends State<OakTrainScreen> {
     }
     _totalLifeCtrl = TextEditingController(text: _data.totalLife.toString());
     _arrowScoreCtrl = TextEditingController(text: _data.arrowScore.toString());
-    _wizardScoreCtrl = TextEditingController(text: _data.wizardScore.toString());
+    _wizardScoreCtrl = TextEditingController(
+      text: _data.wizardScore.toString(),
+    );
     _archmageScoreCtrl = TextEditingController(
       text: _data.archmageScore.toString(),
     );
@@ -102,7 +102,11 @@ class _OakTrainScreenState extends State<OakTrainScreen> {
   }
 
   void _sync() {
-    _moduleObj.objData = _data.toJson();
+    _moduleObj.objData = {
+      if (_moduleObj.objData is Map)
+        ...Map<String, dynamic>.from(_moduleObj.objData as Map),
+      ..._data.toJson(),
+    };
     widget.onChanged();
     setState(() {});
   }
@@ -111,7 +115,7 @@ class _OakTrainScreenState extends State<OakTrainScreen> {
     final n = int.tryParse(_initNormalCtrl.text) ?? 0;
     final p = int.tryParse(_initPowerCtrl.text) ?? 0;
     final s = int.tryParse(_initSplitCtrl.text) ?? 0;
-    _data.initArrowsNum = [n, p, s];
+    _data.initArrowsNum = [n, p, s, ..._data.initArrowsNum.skip(3)];
     _sync();
   }
 
@@ -143,7 +147,7 @@ class _OakTrainScreenState extends State<OakTrainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -162,27 +166,23 @@ class _OakTrainScreenState extends State<OakTrainScreen> {
             onPressed: () => showEditorHelpDialog(
               context,
               isEvent: false,
-              title:
-                  l10n?.moduleTitle_OakTrainProperties ??
-                  'Oak Archer Headshots',
+              title: l10n.moduleTitle_OakTrainProperties,
               sections: [
                 HelpSectionData(
-                  title: l10n?.overview ?? 'Overview',
-                  body:
-                      l10n?.moduleHelpOakTrainOverviewBody ??
-                      'Oak archer shooting minigame.',
+                  title: l10n.overview,
+                  body: l10n.moduleHelpOakTrainOverviewBody,
                 ),
                 HelpSectionData(
-                  title: l10n?.impact ?? 'Scores',
-                  body:
-                      l10n?.moduleHelpOakTrainScoresBody ??
-                      'Score values for enemy types.',
+                  title: l10n.oakTrainHelpArrowsTitle,
+                  body: l10n.moduleHelpOakTrainArrowsBody,
                 ),
                 HelpSectionData(
-                  title: l10n?.logic ?? 'Arrows & Healing',
-                  body:
-                      l10n?.moduleHelpOakTrainArrowsBody ??
-                      'Arrow replenishment and healing.',
+                  title: l10n.oakTrainHelpScoresTitle,
+                  body: l10n.moduleHelpOakTrainScoresBody,
+                ),
+                HelpSectionData(
+                  title: l10n.oakTrainHelpZombiesTitle,
+                  body: l10n.moduleHelpOakTrainZombiesBody,
                 ),
               ],
             ),
@@ -202,154 +202,147 @@ class _OakTrainScreenState extends State<OakTrainScreen> {
               onChanged: widget.onChanged,
             ),
             const SizedBox(height: 16),
-            _buildSection(
-              context,
-              l10n?.editing ?? 'General',
-              [
-                _buildIntField(
-                  l10n?.oakTrainTotalLife ?? 'Total HP',
-                  _totalLifeCtrl,
-                  (v) {
-                    final n = int.tryParse(v);
-                    if (n != null && n >= 0) {
-                      _data.totalLife = n;
-                      _sync();
-                    }
-                  },
-                ),
-                _buildIntField(
-                  l10n?.oakTrainHealNum ?? 'Heal amount',
-                  _healNumCtrl,
-                  (v) {
-                    final n = int.tryParse(v);
-                    if (n != null && n >= 0) {
-                      _data.healNum = n;
-                      _sync();
-                    }
-                  },
-                ),
-              ],
-            ),
+            OakTrainWarnings(levelFile: widget.levelFile),
+            _buildSection(context, l10n.oakTrainHealthTitle, [
+              _buildIntFieldWithIcon(
+                'assets/images/plants/icon_oakshooter.webp',
+                l10n.oakTrainTotalLife,
+                _totalLifeCtrl,
+                (v) {
+                  final n = int.tryParse(v);
+                  if (n != null && n >= 0) {
+                    _data.totalLife = n;
+                    _sync();
+                  }
+                },
+              ),
+              _buildIntFieldWithIcon(
+                'assets/images/zombies/zombie_target_bottle.webp',
+                l10n.oakTrainHealNum,
+                _healNumCtrl,
+                (v) {
+                  final n = int.tryParse(v);
+                  if (n != null && n >= 0) {
+                    _data.healNum = n;
+                    _sync();
+                  }
+                },
+              ),
+            ]),
             const SizedBox(height: 12),
-            _buildSection(
-              context,
-              l10n?.impact ?? 'Scores',
-              [
-                _buildIntField(
-                  l10n?.oakTrainArrowScore ?? 'Base attack score',
-                  _arrowScoreCtrl,
-                  (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data.arrowScore = n;
-                      _sync();
-                    }
-                  },
-                ),
-                _buildIntField(
-                  l10n?.oakTrainWizardScore ?? 'Wizard kill score',
-                  _wizardScoreCtrl,
-                  (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data.wizardScore = n;
-                      _sync();
-                    }
-                  },
-                ),
-                _buildIntField(
-                  l10n?.oakTrainArchmageScore ?? 'Archmage kill score',
-                  _archmageScoreCtrl,
-                  (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data.archmageScore = n;
-                      _sync();
-                    }
-                  },
-                ),
-                _buildIntField(
-                  l10n?.oakTrainBossScore ?? 'Boss kill score',
-                  _bossScoreCtrl,
-                  (v) {
-                    final n = int.tryParse(v);
-                    if (n != null) {
-                      _data.bossScore = n;
-                      _sync();
-                    }
-                  },
-                ),
-              ],
-            ),
+            _buildSection(context, l10n.oakTrainScoresTitle, [
+              _buildIntFieldWithIcon(
+                'assets/images/others/oaktrain_normal.webp',
+                l10n.oakTrainArrowScore,
+                _arrowScoreCtrl,
+                (v) {
+                  final n = int.tryParse(v);
+                  if (n != null) {
+                    _data.arrowScore = n;
+                    _sync();
+                  }
+                },
+              ),
+              _buildIntFieldWithIcon(
+                'assets/images/zombies/zombie_dark_wizard.webp',
+                l10n.oakTrainWizardScore,
+                _wizardScoreCtrl,
+                (v) {
+                  final n = int.tryParse(v);
+                  if (n != null) {
+                    _data.wizardScore = n;
+                    _sync();
+                  }
+                },
+              ),
+              _buildIntFieldWithIcon(
+                'assets/images/zombies/zombie_dark_archmage.webp',
+                l10n.oakTrainArchmageScore,
+                _archmageScoreCtrl,
+                (v) {
+                  final n = int.tryParse(v);
+                  if (n != null) {
+                    _data.archmageScore = n;
+                    _sync();
+                  }
+                },
+              ),
+              _buildIntFieldWithIcon(
+                'assets/images/zombies/zombie_dark_gargantuar.webp',
+                l10n.oakTrainBossScore,
+                _bossScoreCtrl,
+                (v) {
+                  final n = int.tryParse(v);
+                  if (n != null) {
+                    _data.bossScore = n;
+                    _sync();
+                  }
+                },
+              ),
+            ]),
             const SizedBox(height: 12),
-            _buildSection(
-              context,
-              l10n?.logic ?? 'Arrows',
-              [
-                _buildIntField(
-                  l10n?.oakTrainArrowPowerNum ?? 'Power arrows/cycle',
-                  _arrowPowerNumCtrl,
-                  (v) {
-                    final n = int.tryParse(v);
-                    if (n != null && n >= 0) {
-                      _data.arrowPowerNum = n;
-                      _sync();
-                    }
-                  },
-                ),
-                _buildIntField(
-                  l10n?.oakTrainArrowMultipleNum ?? 'Split arrows/cycle',
-                  _arrowMultipleNumCtrl,
-                  (v) {
-                    final n = int.tryParse(v);
-                    if (n != null && n >= 0) {
-                      _data.arrowMultipleNum = n;
-                      _sync();
-                    }
-                  },
-                ),
-              ],
-            ),
+            _buildSection(context, l10n.oakTrainArrowsTitle, [
+              _buildIntFieldWithIcon(
+                'assets/images/zombies/zombie_target_arrow_blue.webp',
+                l10n.oakTrainArrowPowerNum,
+                _arrowPowerNumCtrl,
+                (v) {
+                  final n = int.tryParse(v);
+                  if (n != null && n >= 0) {
+                    _data.arrowPowerNum = n;
+                    _sync();
+                  }
+                },
+              ),
+              _buildIntFieldWithIcon(
+                'assets/images/zombies/zombie_target_arrow_yellow.webp',
+                l10n.oakTrainArrowMultipleNum,
+                _arrowMultipleNumCtrl,
+                (v) {
+                  final n = int.tryParse(v);
+                  if (n != null && n >= 0) {
+                    _data.arrowMultipleNum = n;
+                    _sync();
+                  }
+                },
+              ),
+            ]),
             const SizedBox(height: 12),
-            _buildSection(
-              context,
-              l10n?.oakTrainInitArrowsNum ?? 'Initial arrows',
-              [
-                _buildIntFieldWithIcon(
-                  'assets/images/others/oaktrain_normal.png',
-                  l10n?.oakTrainInitArrowNormal ?? 'Normal arrows',
-                  _initNormalCtrl,
-                  (v) {
-                    final n = int.tryParse(v);
-                    if (n != null && n >= 0) {
-                      _syncInitArrows();
-                    }
-                  },
-                ),
-                _buildIntFieldWithIcon(
-                  'assets/images/others/oaktrain_power.png',
-                  l10n?.oakTrainInitArrowPower ?? 'Power arrows',
-                  _initPowerCtrl,
-                  (v) {
-                    final n = int.tryParse(v);
-                    if (n != null && n >= 0) {
-                      _syncInitArrows();
-                    }
-                  },
-                ),
-                _buildIntFieldWithIcon(
-                  'assets/images/others/oaktrain_triple.png',
-                  l10n?.oakTrainInitArrowSplit ?? 'Split arrows',
-                  _initSplitCtrl,
-                  (v) {
-                    final n = int.tryParse(v);
-                    if (n != null && n >= 0) {
-                      _syncInitArrows();
-                    }
-                  },
-                ),
-              ],
-            ),
+            _buildSection(context, l10n.oakTrainInitArrowsNum, [
+              _buildIntFieldWithIcon(
+                'assets/images/others/oaktrain_normal.webp',
+                l10n.oakTrainInitArrowNormal,
+                _initNormalCtrl,
+                (v) {
+                  final n = int.tryParse(v);
+                  if (n != null && n >= 0) {
+                    _syncInitArrows();
+                  }
+                },
+              ),
+              _buildIntFieldWithIcon(
+                'assets/images/others/oaktrain_power.webp',
+                l10n.oakTrainInitArrowPower,
+                _initPowerCtrl,
+                (v) {
+                  final n = int.tryParse(v);
+                  if (n != null && n >= 0) {
+                    _syncInitArrows();
+                  }
+                },
+              ),
+              _buildIntFieldWithIcon(
+                'assets/images/others/oaktrain_triple.webp',
+                l10n.oakTrainInitArrowSplit,
+                _initSplitCtrl,
+                (v) {
+                  final n = int.tryParse(v);
+                  if (n != null && n >= 0) {
+                    _syncInitArrows();
+                  }
+                },
+              ),
+            ]),
           ],
         ),
       ),
@@ -369,32 +362,13 @@ class _OakTrainScreenState extends State<OakTrainScreen> {
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             ...children,
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildIntField(
-    String label,
-    TextEditingController ctrl,
-    ValueChanged<String> onChanged,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: EditorResponsiveInputField(
-        label: label,
-        builder: (context, decoration) => TextField(
-          controller: ctrl,
-          keyboardType: TextInputType.number,
-          decoration: decoration,
-          onChanged: onChanged,
         ),
       ),
     );
@@ -412,7 +386,14 @@ class _OakTrainScreenState extends State<OakTrainScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: Image.asset(iconPath, width: 32, height: 32, fit: BoxFit.contain),
+            child: ClipOval(
+              child: Image.asset(
+                iconPath,
+                width: 32,
+                height: 32,
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
           Expanded(
             child: EditorResponsiveInputField(

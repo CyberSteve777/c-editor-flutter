@@ -284,12 +284,19 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(l10n.gravityHelpParameters), findsOneWidget);
       expect(find.text(l10n.gravitySequentialNotice), findsOneWidget);
-      expect(
-        find.text(
-          '${l10n.gravityTargetPlant}: ${l10n.gravityPlantRangeHint}\n${l10n.gravityTargetGrid}: ${l10n.gravityGridRangeHint}',
-        ),
-        findsOneWidget,
-      );
+      final help = find.byType(AlertDialog);
+      for (final text in [
+        l10n.gravityTargetType,
+        l10n.gravityRestrictions,
+        l10n.gravityPlantRangeHint,
+        l10n.gravityGridRangeHint,
+        l10n.gravityRestrictionHint,
+      ]) {
+        expect(
+          find.descendant(of: help, matching: find.textContaining(text)),
+          findsNothing,
+        );
+      }
       expect(l10n.gravityHelpAnti, isNot(contains('ZombieForwardDistance')));
       expect(tester.takeException(), isNull);
     },
@@ -390,6 +397,91 @@ void main() {
         'unknown_custom_type',
         'moon',
       ]);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'wide controls share rows and keep active edits when resized to a phone',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1400, 1000);
+      addTearDown(tester.view.reset);
+      final object = _event(1);
+      await tester.pumpWidget(
+        _app(PvzLevelFile(objects: [object]), locale: 'ru', scale: 1.3),
+      );
+      await tester.pumpAndSettle();
+      await _tap(tester, 'gravity-advanced-settings');
+
+      const pairs = [
+        ('level-anti', 'level-heavy'),
+        ('target-plant', 'target-grid'),
+        ('ActivationDelay', 'Duration'),
+        ('TargetX', 'TargetY'),
+        ('RangeX', 'RangeY'),
+        ('RangeWidth', 'RangeHeight'),
+        ('DeployDuration', 'ChargeDuration'),
+        ('PlantExitDelay', 'ZombieRiseDuration'),
+        ('ZombieTranslateDuration', 'ZombieFallDuration'),
+        ('ZombieLiftHeight', 'ZombieForwardDistance'),
+      ];
+      for (final (first, second) in pairs) {
+        final firstRect = tester.getRect(
+          find.byKey(ValueKey('gravity-$first')),
+        );
+        final secondRect = tester.getRect(
+          find.byKey(ValueKey('gravity-$second')),
+        );
+        expect(firstRect.top, closeTo(secondRect.top, 0.1), reason: first);
+        expect(
+          firstRect.right,
+          lessThanOrEqualTo(secondRect.left),
+          reason: first,
+        );
+      }
+
+      final field = find.byKey(const ValueKey('gravity-ActivationDelay'));
+      await tester.ensureVisible(field);
+      await tester.showKeyboard(field);
+      final editable = find.descendant(
+        of: field,
+        matching: find.byType(EditableText),
+      );
+      final focus = tester.widget<EditableText>(editable).focusNode;
+      tester.testTextInput.updateEditingValue(
+        const TextEditingValue(
+          text: '1.',
+          selection: TextSelection.collapsed(offset: 2),
+        ),
+      );
+      await tester.pumpAndSettle();
+      tester.view.physicalSize = const Size(380, 850);
+      await tester.pumpAndSettle();
+      expect(tester.widget<EditableText>(editable).focusNode, same(focus));
+      expect(focus.hasFocus, isTrue);
+      expect(tester.widget<TextField>(field).controller!.text, '1.');
+      for (final (first, second) in pairs) {
+        final firstRect = tester.getRect(
+          find.byKey(ValueKey('gravity-$first')),
+        );
+        final secondRect = tester.getRect(
+          find.byKey(ValueKey('gravity-$second')),
+        );
+        expect(
+          firstRect.bottom,
+          lessThanOrEqualTo(secondRect.top),
+          reason: first,
+        );
+      }
+      tester.testTextInput.updateEditingValue(
+        const TextEditingValue(
+          text: '1.25',
+          selection: TextSelection.collapsed(offset: 4),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(object.objData['ActivationDelay'], 1.25);
       expect(tester.takeException(), isNull);
     },
   );

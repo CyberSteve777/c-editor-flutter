@@ -297,7 +297,7 @@ void main() {
   });
 
   testWidgets(
-    'Roman Glory mower precedes Moon and is recognized after export',
+    'Roman Glory mower follows Qin Ghost and is recognized after export',
     (tester) async {
       final object = PvzObject(
         objClass: 'LevelDefinition',
@@ -319,11 +319,15 @@ void main() {
       await tester.pumpAndSettle();
       final roman = find.text('Roman Glory lawn mower');
       await tester.scrollUntilVisible(roman, 400);
-      await tester.ensureVisible(find.text('Moon BaseZ lawn mower'));
+      final qinGhost = find.text(
+        'Underground Palace Spirit Suppression lawn mower',
+      );
+      await tester.ensureVisible(qinGhost);
       expect(
         tester.getTopLeft(roman).dy,
-        lessThan(tester.getTopLeft(find.text('Moon BaseZ lawn mower')).dy),
+        greaterThan(tester.getTopLeft(qinGhost).dy),
       );
+      await tester.ensureVisible(roman);
       await tester.tap(roman);
       await tester.pumpAndSettle();
       final exported = PvzLevelFile.fromJson(level.toJson());

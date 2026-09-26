@@ -156,6 +156,12 @@ class _EagleStandardEventScreenState extends State<EagleStandardEventScreen> {
                   body: l10n?.eventHelpEagleStandardBody ?? '',
                 ),
                 HelpSectionData(
+                  title:
+                      l10n?.eventHelpEagleStandardEligibleZombiesTitle ??
+                      'Eligible zombies',
+                  body: l10n?.eventHelpEagleStandardEligibleZombiesBody ?? '',
+                ),
+                HelpSectionData(
                   title: l10n?.usage ?? 'Usage',
                   body: l10n?.eventHelpEagleStandardUsage ?? '',
                 ),

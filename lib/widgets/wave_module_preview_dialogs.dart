@@ -181,7 +181,7 @@ Future<void> showRenaiWavePreviewDialog(
   if (isEmpty) {
     children.add(
       Text(
-        'Empty (roller/tiles only)',
+        l10n?.renaiWavePreviewEmpty ?? 'Empty (roller/tiles only)',
         style: Theme.of(context).textTheme.bodyMedium,
       ),
     );

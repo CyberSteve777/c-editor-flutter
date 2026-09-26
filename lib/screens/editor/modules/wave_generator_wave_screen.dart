@@ -1,3 +1,5 @@
+import 'package:c_editor/data/oak_archery_preview.dart';
+import 'package:c_editor/widgets/wave_generator_position_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/custom_zombie_level_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
@@ -796,6 +798,10 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
           title: l10n?.columnsDragged ?? 'Columns dragged',
           body: l10n?.waveGeneratorBlackHoleFieldHint ?? '',
         ),
+        HelpSectionData(
+          title: l10n?.waveGeneratorWaveSpawnTime ?? 'Wave spawn delay',
+          body: l10n?.waveGeneratorWaveSpawnTimeHint ?? '',
+        ),
       ],
     };
 
@@ -854,6 +860,9 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
 
   String _settingsSummary(AppLocalizations? l10n) {
     final parts = <String>[];
+    if (_wave.waveSpawnTime != null) {
+      parts.add(waveSpawnDelaySummary(l10n!, _generatorData, _wave));
+    }
     if (_wave.waitUntilAllZombiesDie == true) {
       parts.add(l10n?.waveGeneratorWaitStatus ?? 'Wait for previous wave');
     }
@@ -888,7 +897,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(summary, maxLines: 2, overflow: TextOverflow.ellipsis),
+        subtitle: Text(summary),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,
       ),
@@ -1325,7 +1334,8 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
   ) {
     final l10n = AppLocalizations.of(context);
     final alias = _zombieBaseId(zombie.type);
-    final isTargetZombie = alias.startsWith('zombie_target_arrow') ||
+    final isTargetZombie =
+        alias.startsWith('zombie_target_arrow') ||
         alias.startsWith('zombie_target_bottle');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1360,64 +1370,20 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
           ),
         const SizedBox(height: 12),
         if (_generatorData.isRiseFromGroundMode)
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  initialValue: zombie.riseGridX ?? '',
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText:
-                        l10n?.waveGeneratorZombieRiseGridX ??
-                        'Rise GridX (Rise_GridX)',
-                    helperText: l10n?.waveGeneratorZombieRiseGridXHint,
-                    helperMaxLines: 3,
-                  ),
-                  onChanged: (v) {
-                    final current = _wave.zombies[index];
-                    _updateZombie(
-                      index,
-                      WaveGeneratorZombieEntryData(
-                        type: current.type,
-                        row: current.row,
-                        level: current.level,
-                        targetValidTime: current.targetValidTime,
-                        riseGridX: v.isEmpty ? null : v,
-                        riseGridY: current.riseGridY,
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: TextFormField(
-                  initialValue: zombie.riseGridY ?? '',
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText:
-                        l10n?.waveGeneratorZombieRiseGridY ??
-                        'Rise GridY (Rise_GridY)',
-                    helperText: l10n?.waveGeneratorZombieRiseGridYHint,
-                    helperMaxLines: 3,
-                  ),
-                  onChanged: (v) {
-                    final current = _wave.zombies[index];
-                    _updateZombie(
-                      index,
-                      WaveGeneratorZombieEntryData(
-                        type: current.type,
-                        row: current.row,
-                        level: current.level,
-                        targetValidTime: current.targetValidTime,
-                        riseGridX: current.riseGridX,
-                        riseGridY: v.isEmpty ? null : v,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+          WaveGeneratorPositionFields(
+            rows: _rowCount,
+            columns: LevelParser.getGridDimensionsFromFile(widget.levelFile).$2,
+            x: _wave.zombies[index].riseGridX,
+            y: _wave.zombies[index].riseGridY,
+            onChanged: (x, y) {
+              final current = _wave.zombies[index];
+              final updated =
+                  WaveGeneratorZombieEntryData.fromJson(current.toJson())
+                    ..riseGridX = x
+                    ..riseGridY = y;
+              _updateZombie(index, updated);
+              setModalState(() {});
+            },
           ),
       ],
     );
@@ -1565,7 +1531,12 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                         ),
                     ],
                     const SizedBox(height: 12),
-                    _buildZombieEditSheetFields(ctx, index, zombie, setModalState),
+                    _buildZombieEditSheetFields(
+                      ctx,
+                      index,
+                      zombie,
+                      setModalState,
+                    ),
                     const SizedBox(height: 12),
                     Row(
                       children: [
@@ -1576,9 +1547,10 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
                               final copy = WaveGeneratorZombieEntryData(
                                 type: zombie.type,
                                 row: rowStr,
-                                targetValidTime: zombie.targetValidTime,
-                                riseGridX: zombie.riseGridX,
-                                riseGridY: zombie.riseGridY,
+                                targetValidTime:
+                                    _wave.zombies[index].targetValidTime,
+                                riseGridX: _wave.zombies[index].riseGridX,
+                                riseGridY: _wave.zombies[index].riseGridY,
                               );
                               final newIndex = _wave.zombies.length;
                               _setZombieLevelInMemory(

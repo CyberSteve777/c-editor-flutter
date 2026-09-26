@@ -297,14 +297,11 @@ class _PVZ1SeeingStarsModuleScreenState
                           ),
                         ],
                       ),
-                      action: Tooltip(
-                        message: l10n.pvz1SeeingStarsHelpMatchPlants,
-                        child: EditorFilledButton(
-                          key: const ValueKey('seeingStarsAddPlantButton'),
-                          onPressed: _addPlant,
-                          icon: const Icon(Icons.add, size: 18),
-                          label: Text(l10n.addPlant),
-                        ),
+                      action: EditorFilledButton(
+                        key: const ValueKey('seeingStarsAddPlantButton'),
+                        onPressed: _addPlant,
+                        icon: const Icon(Icons.add, size: 18),
+                        label: Text(l10n.addPlant),
                       ),
                     ),
                     const SizedBox(height: 16),

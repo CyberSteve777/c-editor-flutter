@@ -38,7 +38,16 @@ void main() {
           contains(warning),
           reason: locale,
         );
-        expect(arb['gladiatorHelpTips'], contains(warning), reason: locale);
+        // Help may summarize the incompatibility without repeating the banner.
+        expect(
+          arb['gladiatorHelpTips'],
+          contains(switch (locale) {
+            'zh' => '波次生成器下也不会生效',
+            'en' => 'does not work with Wave Generator',
+            _ => 'не работает с Генератором волн',
+          }),
+          reason: locale,
+        );
         expect(arb['gladiatorCompatibilityWarningTitle'], isNotEmpty);
         expect(arb['waveGeneratorModuleHelpIncompat'], isNotEmpty);
       }
