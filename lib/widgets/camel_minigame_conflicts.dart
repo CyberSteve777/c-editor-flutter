@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/issue_registry.dart';
+import 'package:c_editor/theme/app_theme.dart' show editorErrorIcon;
 
 /// The same detected conflicts as the level settings and export validation.
 class CamelMinigameConflicts extends StatelessWidget {
@@ -40,12 +41,21 @@ class CamelMinigameConflicts extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      issue.title,
-                      style: TextStyle(
-                        color: colors.onErrorContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(editorErrorIcon, color: colors.onErrorContainer),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            issue.title,
+                            style: TextStyle(
+                              color: colors.onErrorContainer,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     Text(

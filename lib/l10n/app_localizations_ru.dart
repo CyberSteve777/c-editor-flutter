@@ -9462,19 +9462,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get gravityLevel => 'Состояние гравитации (GravityLevel)';
 
   @override
-  String get gravityAnti => 'Антигравитация';
+  String get gravityAnti => 'Антигравитация (anti)';
 
   @override
-  String get gravityHeavy => 'Гипергравитация';
+  String get gravityHeavy => 'Гипергравитация (heavy)';
 
   @override
   String get gravityTargetType => 'Тип цели (TargetType)';
 
   @override
-  String get gravityTargetPlant => 'Случайное растение';
+  String get gravityTargetPlant => 'Случайное растение (plant)';
 
   @override
-  String get gravityTargetGrid => 'Заданная клетка';
+  String get gravityTargetGrid => 'Заданная клетка (grid)';
 
   @override
   String get gravityRangeX => 'Смещение по горизонтали (Range.mX)';

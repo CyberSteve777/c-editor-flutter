@@ -9500,19 +9500,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gravityLevel => 'Gravity state (GravityLevel)';
 
   @override
-  String get gravityAnti => 'Anti-Gravity';
+  String get gravityAnti => 'Anti-Gravity (anti)';
 
   @override
-  String get gravityHeavy => 'Hypergravity';
+  String get gravityHeavy => 'Hypergravity (heavy)';
 
   @override
   String get gravityTargetType => 'Target type (TargetType)';
 
   @override
-  String get gravityTargetPlant => 'Random plant';
+  String get gravityTargetPlant => 'Random plant (plant)';
 
   @override
-  String get gravityTargetGrid => 'Fixed grid cell';
+  String get gravityTargetGrid => 'Fixed grid cell (grid)';
 
   @override
   String get gravityRangeX => 'Horizontal offset (Range.mX)';

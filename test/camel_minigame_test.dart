@@ -8,6 +8,8 @@ import 'package:c_editor/data/repository/reference_repository.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/modules/camel_minigame_screen.dart';
 import 'package:c_editor/screens/editor/modules/seed_bank_properties_screen.dart';
+import 'package:c_editor/theme/app_theme.dart' show editorErrorIcon;
+import 'package:c_editor/widgets/camel_minigame_conflicts.dart';
 import 'package:c_editor/widgets/camel_spawn_distance_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -265,6 +267,45 @@ void main() {
   });
 
   for (final language in ['zh', 'en', 'ru']) {
+    testWidgets('$language: conflict icons and titles fit narrow large text', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 850);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        _app(
+          _editor(_level(selection: 'chooser', zombies: ['tutorial'])),
+          language: language,
+          scale: 2,
+        ),
+      );
+      await tester.pumpAndSettle();
+      final conflicts = find.byType(CamelMinigameConflicts);
+      final cards = find.descendant(of: conflicts, matching: find.byType(Card));
+      expect(cards, findsNWidgets(2));
+      for (var i = 0; i < 2; i++) {
+        final card = cards.at(i);
+        final icon = find.descendant(
+          of: card,
+          matching: find.byIcon(editorErrorIcon),
+        );
+        expect(icon, findsOneWidget);
+        final title = find
+            .descendant(of: card, matching: find.byType(Text))
+            .first;
+        expect(
+          tester.getRect(icon).right,
+          lessThan(tester.getRect(title).left),
+        );
+        expect(
+          tester.getRect(title).right,
+          lessThanOrEqualTo(tester.getRect(card).right),
+        );
+      }
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets(
       '$language: conflicts are active, localized and clear after fixing',
       (tester) async {

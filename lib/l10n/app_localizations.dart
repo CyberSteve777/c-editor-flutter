@@ -16578,13 +16578,13 @@ abstract class AppLocalizations {
   /// No description provided for @gravityAnti.
   ///
   /// In en, this message translates to:
-  /// **'Anti-Gravity'**
+  /// **'Anti-Gravity (anti)'**
   String get gravityAnti;
 
   /// No description provided for @gravityHeavy.
   ///
   /// In en, this message translates to:
-  /// **'Hypergravity'**
+  /// **'Hypergravity (heavy)'**
   String get gravityHeavy;
 
   /// No description provided for @gravityTargetType.
@@ -16596,13 +16596,13 @@ abstract class AppLocalizations {
   /// No description provided for @gravityTargetPlant.
   ///
   /// In en, this message translates to:
-  /// **'Random plant'**
+  /// **'Random plant (plant)'**
   String get gravityTargetPlant;
 
   /// No description provided for @gravityTargetGrid.
   ///
   /// In en, this message translates to:
-  /// **'Fixed grid cell'**
+  /// **'Fixed grid cell (grid)'**
   String get gravityTargetGrid;
 
   /// No description provided for @gravityRangeX.

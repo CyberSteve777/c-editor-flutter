@@ -39,6 +39,7 @@ class _GravityGeneratorEventScreenState
   late PvzObject _object;
   late GravityGeneratorWaveActionPropsData _data;
   final _controllers = <String, TextEditingController>{};
+  final _fieldKeys = <String, GlobalKey>{};
 
   @override
   void initState() {
@@ -119,32 +120,52 @@ class _GravityGeneratorEventScreenState
       key,
       () => TextEditingController(text: '$value'),
     );
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: EditorResponsiveInputField(
-        label: label,
-        builder: (context, decoration) => TextField(
-          key: ValueKey('gravity-$key'),
-          controller: controller,
-          decoration: decoration,
-          keyboardType: TextInputType.numberWithOptions(
-            decimal: !integer,
-            signed: signed,
-          ),
-          onChanged: (text) {
-            final parsed = integer ? int.tryParse(text) : num.tryParse(text);
-            if (parsed == null ||
-                !parsed.isFinite ||
-                (!signed && parsed < minimum)) {
-              return;
-            }
-            change(parsed);
-            _sync();
-          },
+    return EditorResponsiveInputField(
+      // Keep the input mounted when responsive rows switch to columns.
+      key: _fieldKeys.putIfAbsent(key, () => GlobalKey()),
+      label: label,
+      builder: (context, decoration) => TextField(
+        key: ValueKey('gravity-$key'),
+        controller: controller,
+        decoration: decoration,
+        keyboardType: TextInputType.numberWithOptions(
+          decimal: !integer,
+          signed: signed,
         ),
+        onChanged: (text) {
+          final parsed = integer ? int.tryParse(text) : num.tryParse(text);
+          if (parsed == null ||
+              !parsed.isFinite ||
+              (!signed && parsed < minimum)) {
+            return;
+          }
+          change(parsed);
+          _sync();
+        },
       ),
     );
   }
+
+  double get _fieldBreakpoint =>
+      600 *
+      (MediaQuery.textScalerOf(context).scale(16) / 16).clamp(
+        1,
+        double.infinity,
+      );
+
+  Widget _fieldRows(List<Widget> fields) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      for (var i = 0; i < fields.length; i += 2)
+        Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: EditorResponsiveFieldRow(
+            breakpoint: _fieldBreakpoint,
+            children: fields.skip(i).take(2).toList(),
+          ),
+        ),
+    ],
+  );
 
   Widget _card(List<Widget> children) => Card(
     child: Padding(
@@ -176,7 +197,9 @@ class _GravityGeneratorEventScreenState
         _sync();
       }
     },
-    child: Column(
+    child: EditorResponsiveFieldRow(
+      breakpoint: _fieldBreakpoint,
+      spacing: 0,
       children: options.entries
           .map(
             (entry) => RadioListTile<String>(
@@ -353,8 +376,7 @@ class _GravityGeneratorEventScreenState
                   if (v == 'grid') _data.targetGrid ??= TileLocationData();
                 },
               ),
-              parameter('ActivationDelay'),
-              parameter('Duration'),
+              _fieldRows([parameter('ActivationDelay'), parameter('Duration')]),
             ]),
             const SizedBox(height: 12),
             _card([
@@ -381,58 +403,61 @@ class _GravityGeneratorEventScreenState
               Text(
                 '${_data.gravityLevel == 'heavy' ? l10n.gravityHeavy : l10n.gravityAnti} · ${l10n.gravityCenterLegend}',
               ),
-              if (gridMode) ...[
+              if (gridMode)
+                _fieldRows([
+                  _number(
+                    'TargetX',
+                    l10n.gravityTargetX,
+                    _data.targetGrid?.mx ?? 0,
+                    (n) => (_data.targetGrid ??= TileLocationData()).mx = n
+                        .toInt(),
+                    integer: true,
+                    signed: true,
+                  ),
+                  _number(
+                    'TargetY',
+                    l10n.gravityTargetY,
+                    _data.targetGrid?.my ?? 0,
+                    (n) => (_data.targetGrid ??= TileLocationData()).my = n
+                        .toInt(),
+                    integer: true,
+                    signed: true,
+                  ),
+                ]),
+              _fieldRows([
                 _number(
-                  'TargetX',
-                  l10n.gravityTargetX,
-                  _data.targetGrid?.mx ?? 0,
-                  (n) =>
-                      (_data.targetGrid ??= TileLocationData()).mx = n.toInt(),
+                  'RangeX',
+                  l10n.gravityRangeX,
+                  _data.range.mX,
+                  (n) => _data.range.mX = n.toInt(),
                   integer: true,
                   signed: true,
                 ),
                 _number(
-                  'TargetY',
-                  l10n.gravityTargetY,
-                  _data.targetGrid?.my ?? 0,
-                  (n) =>
-                      (_data.targetGrid ??= TileLocationData()).my = n.toInt(),
+                  'RangeY',
+                  l10n.gravityRangeY,
+                  _data.range.mY,
+                  (n) => _data.range.mY = n.toInt(),
                   integer: true,
                   signed: true,
                 ),
-              ],
-              _number(
-                'RangeX',
-                l10n.gravityRangeX,
-                _data.range.mX,
-                (n) => _data.range.mX = n.toInt(),
-                integer: true,
-                signed: true,
-              ),
-              _number(
-                'RangeY',
-                l10n.gravityRangeY,
-                _data.range.mY,
-                (n) => _data.range.mY = n.toInt(),
-                integer: true,
-                signed: true,
-              ),
-              _number(
-                'RangeWidth',
-                l10n.gravityRangeWidth,
-                _data.range.mWidth,
-                (n) => _data.range.mWidth = n.toInt(),
-                integer: true,
-                minimum: 1,
-              ),
-              _number(
-                'RangeHeight',
-                l10n.gravityRangeHeight,
-                _data.range.mHeight,
-                (n) => _data.range.mHeight = n.toInt(),
-                integer: true,
-                minimum: 1,
-              ),
+                _number(
+                  'RangeWidth',
+                  l10n.gravityRangeWidth,
+                  _data.range.mWidth,
+                  (n) => _data.range.mWidth = n.toInt(),
+                  integer: true,
+                  minimum: 1,
+                ),
+                _number(
+                  'RangeHeight',
+                  l10n.gravityRangeHeight,
+                  _data.range.mHeight,
+                  (n) => _data.range.mHeight = n.toInt(),
+                  integer: true,
+                  minimum: 1,
+                ),
+              ]),
             ]),
             const SizedBox(height: 12),
             _card([
@@ -464,30 +489,34 @@ class _GravityGeneratorEventScreenState
                 title: _heading(l10n.gravityAdvancedSettings),
                 childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 children: [
-                  for (final key in [
-                    'DeployDuration',
-                    'ChargeDuration',
-                    'RetractDuration',
-                  ])
-                    parameter(key),
+                  _fieldRows([
+                    for (final key in [
+                      'DeployDuration',
+                      'ChargeDuration',
+                      'RetractDuration',
+                    ])
+                      parameter(key),
+                  ]),
                   const SizedBox(height: 16),
                   _heading(
                     _data.gravityLevel == 'heavy'
                         ? l10n.gravityHeavy
                         : l10n.gravityAnti,
                   ),
-                  if (_data.gravityLevel == 'heavy')
-                    parameter('HeavyPlantSinkDuration')
-                  else
-                    for (final key in [
-                      'PlantExitDelay',
-                      'ZombieRiseDuration',
-                      'ZombieTranslateDuration',
-                      'ZombieFallDuration',
-                      'ZombieLiftHeight',
-                      'ZombieForwardDistance',
-                    ])
-                      parameter(key),
+                  _fieldRows([
+                    if (_data.gravityLevel == 'heavy')
+                      parameter('HeavyPlantSinkDuration')
+                    else
+                      for (final key in [
+                        'PlantExitDelay',
+                        'ZombieRiseDuration',
+                        'ZombieTranslateDuration',
+                        'ZombieFallDuration',
+                        'ZombieLiftHeight',
+                        'ZombieForwardDistance',
+                      ])
+                        parameter(key),
+                  ]),
                 ],
               ),
             ),

@@ -781,10 +781,6 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
       ],
       _WaveGeneratorWaveSection.settings => [
         HelpSectionData(
-          title: l10n?.waveGeneratorWaveSpawnTime ?? 'Wave spawn delay',
-          body: l10n?.waveGeneratorWaveSpawnTimeHint ?? '',
-        ),
-        HelpSectionData(
           title:
               l10n?.waveGeneratorWaitUntilAllDie ??
               'Wait until all zombies die',
@@ -801,6 +797,10 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
         HelpSectionData(
           title: l10n?.columnsDragged ?? 'Columns dragged',
           body: l10n?.waveGeneratorBlackHoleFieldHint ?? '',
+        ),
+        HelpSectionData(
+          title: l10n?.waveGeneratorWaveSpawnTime ?? 'Wave spawn delay',
+          body: l10n?.waveGeneratorWaveSpawnTimeHint ?? '',
         ),
       ],
     };

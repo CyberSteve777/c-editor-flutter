@@ -386,11 +386,13 @@ class _OakTrainScreenState extends State<OakTrainScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: Image.asset(
-              iconPath,
-              width: 32,
-              height: 32,
-              fit: BoxFit.contain,
+            child: ClipOval(
+              child: Image.asset(
+                iconPath,
+                width: 32,
+                height: 32,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           Expanded(
