@@ -9,6 +9,7 @@ import 'dart:math' as math;
 import 'package:c_editor/widgets/editor_components.dart'
     show HorizontalTagScroller, isDesktopPlatform;
 import 'package:c_editor/data/zombie_conditions.dart';
+import 'package:c_editor/data/condition_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/lunar_mine_vein_type_catalog.dart';
 import 'package:c_editor/data/music_suffix_catalog.dart';
@@ -79,6 +80,9 @@ class LevelOverviewDialog extends StatefulWidget {
   final bool showOpenLevel;
   final VoidCallback onClose;
 
+  /// Read-only grid embedded by the preview image generator.
+  final bool initialLawnOnly;
+
   const LevelOverviewDialog({
     super.key,
     required this.levelFile,
@@ -87,6 +91,7 @@ class LevelOverviewDialog extends StatefulWidget {
     required this.onClose,
     this.filePath,
     this.showOpenLevel = false,
+    this.initialLawnOnly = false,
   });
 
   @override
@@ -298,6 +303,8 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         return l10n.moduleTitle_RoofProperties;
       case GridPreviewModuleKind.speedUpTile:
         return l10n.moduleTitle_SpeedUpTileModuleProperties;
+      case GridPreviewModuleKind.wizardCauldron:
+        return l10n.moduleTitle_InitialGridItemWizardCrucibleProps;
       case GridPreviewModuleKind.tunnelDefend:
         return l10n.moduleTitle_TunnelDefendModuleProperties;
       case GridPreviewModuleKind.expeditionTiles:
@@ -364,6 +371,22 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     final theme = Theme.of(context);
     final levelDef = widget.parsed.levelDef;
     final isDesktop = isDesktopPlatform(context);
+
+    if (widget.initialLawnOnly) {
+      final (rows, cols) = getGridDimensions(widget.levelFile);
+      return IgnorePointer(
+        child: LayoutBuilder(
+          builder: (context, constraints) => _buildInitialLawnOverview(
+            rows,
+            cols,
+            resolveGridStyle(
+              context,
+              GridPreviewModuleKind.initialLawnOverview,
+            ).copyWith(maxWidth: constraints.maxWidth),
+          ),
+        ),
+      );
+    }
 
     if (_isLoadingRepos) {
       // Prefer Dialog over AlertDialog: AlertDialog wraps content in
@@ -713,10 +736,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                 MusicSuffixCatalog.resourceKey(musicSuffixCode),
             musicSuffixCode,
           );
-    final musicSuffixDisplay =
-        musicSuffixCode.isEmpty || musicSuffixName == musicSuffixCode
-        ? musicSuffixName
-        : '$musicSuffixName ($musicSuffixCode)';
+    final musicSuffixDisplay = musicSuffixName;
 
     final musicTypeCode = def.musicType.isEmpty
         ? MusicTypeCatalog.mainPath
@@ -734,9 +754,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           ? musicSuffixName
           : musicTypeCode,
     );
-    final musicTypeDisplay = musicTypeName == musicTypeCode
-        ? musicTypeName
-        : '$musicTypeName ($musicTypeCode)';
+    final musicTypeDisplay = musicTypeName;
 
     int startingSun = def.startingSun ?? 0;
     int pfCount = PlantFoodDiscovery.getStartingPlantFood(
@@ -3244,6 +3262,30 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         );
       case GridPreviewModuleKind.common:
         return _buildCommonGridItemsPreview(rows, cols, style);
+      case GridPreviewModuleKind.wizardCauldron:
+        final items = widget.levelFile.objects
+            .where((o) => o.objClass == 'InitialGridItemWizardCrucibleProps')
+            .expand(
+              (o) =>
+                  ((o.objData as Map)['InitialGridItemWizardCrucibles']
+                              as List? ??
+                          [])
+                      .whereType<Map>(),
+            );
+        return _buildCompositeLawnGrid(
+          rows: rows,
+          cols: cols,
+          style: style,
+          cellBuilder: (col, row) =>
+              items.any((item) => item['GridX'] == col && item['GridY'] == row)
+              ? GridItemIcon(
+                  id: 'wizard_crucible',
+                  size: 30,
+                  isGrid: true,
+                  levelFile: widget.levelFile,
+                )
+              : null,
+        );
       case GridPreviewModuleKind.initialLawnOverview:
         return _buildInitialLawnOverview(rows, cols, style);
       case GridPreviewModuleKind.piratePlank:
@@ -4924,80 +4966,76 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                 ],
               ),
               const SizedBox(height: 12),
-              ...((_challengesExpanded ? featureInfos : featureInfos.take(3))
-                  .map((info) {
-                    final isClickable = targetChallengeClasses.contains(
-                      info.objClass,
-                    );
-                    final param = _getChallengeParam(
-                      info.objClass,
-                      info.objData,
-                    );
-                    final title =
-                        param != null &&
-                            info.objClass != 'StarChallengeDisablePlantProps'
-                        ? '${info.title} ($param)'
-                        : info.title;
+              ...((_challengesExpanded ? featureInfos : featureInfos.take(3)).map((
+                info,
+              ) {
+                final isClickable = targetChallengeClasses.contains(
+                  info.objClass,
+                );
+                final param = _getChallengeParam(info.objClass, info.objData);
+                final title = param != null
+                    ? '${info.title} (${info.objClass == 'StarChallengeDisablePlantProps' ? ChallengeResourceL10n.profession(context, param) : param})'
+                    : info.title;
 
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.start,
-                        spacing: 10,
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    spacing: 10,
+                    runSpacing: 4,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Icon(
+                          info.icon,
+                          size: 16,
+                          color: info.icon == Icons.star
+                              ? Colors.amber
+                              : Colors.greenAccent,
+                        ),
+                      ),
+                      Wrap(
+                        spacing: 8,
                         runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2),
-                            child: Icon(
-                              info.icon,
-                              size: 16,
-                              color: info.icon == Icons.star
-                                  ? Colors.amber
-                                  : Colors.greenAccent,
-                            ),
-                          ),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 4,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              isClickable
-                                  ? InkWell(
-                                      onTap: () => _showChallengeDetails(
-                                        context,
-                                        info.objClass,
-                                        info.objData,
-                                        info.title,
-                                      ),
-                                      borderRadius: BorderRadius.circular(4),
-                                      child: Text(
-                                        title,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.blueAccent,
-                                        ),
-                                      ),
-                                    )
-                                  : Text(
-                                      title,
-                                      style: const TextStyle(fontSize: 15),
-                                    ),
-                              if (info.objClass ==
-                                      'StarChallengeDisablePlantProps' &&
-                                  param != null)
-                                AssetImageWidget(
-                                  assetPath: StarChallengeProfessions.iconAsset(
-                                    param,
+                          isClickable
+                              ? InkWell(
+                                  onTap: () => _showChallengeDetails(
+                                    context,
+                                    info.objClass,
+                                    info.objData,
+                                    info.title,
                                   ),
-                                  width: 20,
-                                  height: 20,
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: Text(
+                                    title,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.blueAccent,
+                                    ),
+                                  ),
+                                )
+                              : Text(
+                                  title,
+                                  style: const TextStyle(fontSize: 15),
                                 ),
-                            ],
-                          ),
+                          if (info.objClass ==
+                                  'StarChallengeDisablePlantProps' &&
+                              param != null)
+                            AssetImageWidget(
+                              assetPath: StarChallengeProfessions.iconAsset(
+                                param,
+                              ),
+                              width: 20,
+                              height: 20,
+                            ),
                         ],
                       ),
-                    );
-                  })),
+                    ],
+                  ),
+                );
+              })),
             ],
             if (riftThemes.isNotEmpty) ...[
               if (activeModules.isNotEmpty || featureInfos.isNotEmpty)
@@ -5286,7 +5324,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           children.add(const SizedBox(height: 8));
           for (var c in conditions) {
             final id = c.toString();
-            final name = ResourceNames.lookup(context, id);
+            final name = ConditionL10n.zombieLabel(context, id);
             children.add(
               Padding(
                 padding: const EdgeInsets.only(bottom: 6),
@@ -5297,15 +5335,16 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                       name != id ? name : id,
                       style: const TextStyle(fontSize: 14),
                     ),
-                    Text(
-                      id,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: theme.colorScheme.onSurface.withValues(
-                          alpha: 0.4,
+                    if (name != id)
+                      Text(
+                        id,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.4,
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -5357,7 +5396,11 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    ResourceNames.lookup(context, 'plant_$plantId'),
+                    ResourceNames.lookupOrFallback(
+                      context,
+                      'plant_$plantId',
+                      plantId,
+                    ),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
@@ -5472,7 +5515,11 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                               widget.levelFile,
                             )
                         ? itemType
-                        : ResourceNames.lookup(context, 'griditem_$itemType'),
+                        : ResourceNames.lookupOrFallback(
+                            context,
+                            'griditem_$itemType',
+                            itemType,
+                          ),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,

@@ -14,6 +14,7 @@ class AppLinks {
     this.releasesApi = '',
     this.releases = '',
     this.baiduDownload = '',
+    this.updateBilibili = '',
   });
 
   static const assetPath = 'assets/meta/links.json';
@@ -27,6 +28,7 @@ class AppLinks {
   final String releasesApi;
   final String releases;
   final String baiduDownload;
+  final String updateBilibili;
 
   static AppLinks? _cached;
 
@@ -45,6 +47,7 @@ class AppLinks {
       releasesApi: raw['releasesApi'] as String? ?? '',
       releases: raw['releases'] as String? ?? '',
       baiduDownload: raw['baiduDownload'] as String? ?? '',
+      updateBilibili: raw['updateBilibili'] as String? ?? '',
     );
     return _cached!;
   }

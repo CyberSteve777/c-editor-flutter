@@ -80,6 +80,7 @@ LevelPreviewGridStyle resolveGridStyle(
 
   switch (kind) {
     case GridPreviewModuleKind.plants:
+    case GridPreviewModuleKind.wizardCauldron:
       gridBg = greenBg;
       borderColor = greenBorder;
       cellBorderColor = greenCellBorder;
@@ -249,6 +250,7 @@ enum GridPreviewModuleKind {
   renaissance,
   roofProperties,
   speedUpTile,
+  wizardCauldron,
   tunnelDefend,
   expeditionTiles,
   gulliverTunnel,
@@ -354,6 +356,7 @@ const initialTerrainModuleKinds = <String, GridPreviewModuleKind>{
   'PiratePlankProperties': GridPreviewModuleKind.piratePlank,
   'TunnelDefendModuleProperties': GridPreviewModuleKind.tunnelDefend,
   'SpeedUpTileModuleProperties': GridPreviewModuleKind.speedUpTile,
+  'InitialGridItemWizardCrucibleProps': GridPreviewModuleKind.wizardCauldron,
   'PowerTileProperties': GridPreviewModuleKind.powerTile,
   'RailcartProperties': GridPreviewModuleKind.railcart,
   'MechanismPlankProperties': GridPreviewModuleKind.mechanismPlank,
@@ -517,6 +520,14 @@ List<GridPreviewCategoryOption> collectGridPreviewCategories(
       GridPreviewCategoryOption(
         kind: GridPreviewModuleKind.initialLawnOverview,
         label: l10n.previewTabInitialLawnOverview,
+      ),
+    );
+  }
+  if (levelHasModule(levelFile, 'InitialGridItemWizardCrucibleProps')) {
+    categories.add(
+      GridPreviewCategoryOption(
+        kind: GridPreviewModuleKind.wizardCauldron,
+        label: l10n.moduleTitle_InitialGridItemWizardCrucibleProps,
       ),
     );
   }
@@ -1331,6 +1342,8 @@ String? findLawnMowerAlias(LevelDefinitionData def) {
     'RenaiMowers',
     'HeianMowers',
     'RomanMowers2',
+    'RomanMowers',
+    'HalloweenMowers',
     'MoonMowers',
     'FairyTaleMowers',
     'ZCorpMowers',

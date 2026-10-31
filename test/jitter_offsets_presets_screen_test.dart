@@ -147,7 +147,12 @@ void main() {
       final onCard = brightness == Brightness.dark
           ? Colors.white
           : Colors.black87;
-      expect(tester.widget<Card>(card).color, theme.colorScheme.secondary);
+      expect(
+        tester.widget<Card>(card).color,
+        brightness == Brightness.dark
+            ? theme.colorScheme.secondary
+            : Colors.blue.shade100,
+      );
       expect(tester.widget<Text>(title).style?.color, onCard);
       expect(
         tester.widget<Text>(title).style?.fontSize,

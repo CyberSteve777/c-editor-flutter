@@ -9,6 +9,23 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get updateNotNeededTitle => 'No update needed';
+
+  @override
+  String get updateCheckFailedLinks =>
+      'You can also check for editor updates using the links below:';
+
+  @override
+  String get updateOpenBilibili => 'Open Bilibili post';
+
+  @override
+  String get updateJoinDiscord => 'Join the Discord server';
+
+  @override
+  String get speedUpTileCompatibilityWarning =>
+      'Speed-Up Tiles are covered by tiles placed by Underground Palace Pathways or Expedition Tiles and will not work. Do not use these modules together.';
+
+  @override
   String get updateSaveWorkGuidance =>
       'Automatic saving applies when leaving supported editors normally. Browser refresh or closure may skip it. Before updating, verify that your level and JSON are saved and all test packages and preview images have finished exporting. This dialog does not save or restart anything.';
 
@@ -814,6 +831,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get renameFail => 'Rename failed, file already exists';
 
   @override
+  String get renameEventFail =>
+      'Cannot rename event: this alias is already used by an object in the level.';
+
+  @override
+  String get renameModuleFail =>
+      'Cannot rename module: this alias is already used by an object in the level.';
+
+  @override
+  String get renameCustomZombieFail =>
+      'Cannot rename custom zombie: this alias is already used by an object in the level.';
+
+  @override
+  String get renameAliasFail =>
+      'Cannot rename: this alias is already used by an object in the level.';
+
+  @override
+  String get copyEventAliasFail =>
+      'Cannot copy event: this alias is already used by an object in the level.';
+
+  @override
   String get uploadLevel => 'Upload to Creative Courtyard';
 
   @override
@@ -1345,7 +1382,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get levelBasicInfoHelpRestrictionsBody =>
-      'This section provides switches for disabling Pea Vine\'s Pea Symbiosis and Artifacts. Artifacts are disabled automatically when the Creative Courtyard module is enabled, so you do not need to enable the disable switch manually.';
+      'This section provides switches for disabling Pea Symbiosis and Artifacts. Pea Symbiosis is Pea Vine\'s Level 5 ability. If a player owns a Level 5 Pea Vine and has enabled this ability on their account, planting a pea plant immediately adds one Pea Vine; this may affect the intended experience of levels that use pea plants. In Creative Courtyard levels, Artifacts are disabled automatically, so the disable switch does not need to be enabled manually.';
 
   @override
   String get waveTimelineJitterOffsetsTitle => 'Spawn Position Offset Presets';
@@ -2462,6 +2499,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get disablePeavine => 'Disable Pea Vine\'s Pea Symbiosis';
 
   @override
+  String get peaSymbiosisWarningTitle => 'Consider disabling Pea Symbiosis';
+
+  @override
+  String get peaSymbiosisWarning =>
+      'The following pea plants can be used in this level. For players who own a Level 5 Pea Vine and have Pea Symbiosis enabled on their account, planting any of them also plants a Pea Vine automatically and may affect the intended gameplay. Go to \"Basic Information\" and disable Pea Symbiosis.';
+
+  @override
+  String peaSymbiosisAffectedPlants(String plants) {
+    return 'Affected plants: $plants';
+  }
+
+  @override
   String get disableArtifact =>
       'Disable Artifact (auto-applied when Creative Courtyard module is enabled)';
 
@@ -3316,7 +3365,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventDesc_SpawnModernPortalsWaveActionProps =>
-      'Summons spacetime portals at set locations';
+      'Summons spacetime portals at set positions';
 
   @override
   String get eventTitle_StormZombieSpawnerProps => 'Storm Raid';
@@ -3344,7 +3393,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventDesc_ZombieAtlantisShellActionProps =>
-      'Spawns atlantis seashells at set positions';
+      'Spawns Atlantis Seashells at set positions';
 
   @override
   String get eventTitle_SpawnEagleFlagsWaveActionProps =>
@@ -3352,11 +3401,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventDesc_SpawnEagleFlagsWaveActionProps =>
-      'Spawn Eagle Standards at specified positions';
+      'Spawns Eagle Standards at set positions';
 
   @override
   String get eventHelpEagleStandardBody =>
-      'This event spawns Eagle Standards at specified positions. Zombies that pass by can pick up the Eagle Standard. When the carrier is defeated, the standard drops to the ground, allowing subsequent zombies to pick it up again repeatedly. A zombie carrying the Eagle Standard grants zombies within a 3×3 area damage reduction and immunity to control effects.\nRegular plants cannot attack the Eagle Standard. Once it has been dropped, Magnet-shroom and Gold Magnet can destroy it.';
+      'This event spawns Eagle Standards at set positions. Zombies that pass by can pick up the Eagle Standard. When the carrier is defeated, the standard drops to the ground, allowing subsequent zombies to pick it up again repeatedly. A zombie carrying the Eagle Standard grants zombies within a 3×3 area damage reduction and immunity to control effects.\nRegular plants cannot attack the Eagle Standard. Once it has been dropped, Magnet-shroom and Gold Magnet can destroy it.';
 
   @override
   String get eventHelpEagleStandardEligibleZombiesTitle => 'Eligible zombies';
@@ -3370,18 +3419,26 @@ class AppLocalizationsEn extends AppLocalizations {
       'Select a grid cell and tap \"+\" to add an Eagle Standard. Multiple standards can be placed on the same tile and removed using the cards below. The grid adapts to the current lawn, and standards outside the lawn are listed separately.';
 
   @override
+  String get eventTitle_SpawnPumpkinScarecrowWaveActionProps =>
+      'Scarecrow Spawn';
+
+  @override
+  String get eventDesc_SpawnPumpkinScarecrowWaveActionProps =>
+      'Spawns Pumpkin Scarecrows at set positions';
+
+  @override
   String get eventTitle_PumpkinHouseActionProps => 'Pumpkin House Spawn';
 
   @override
   String get eventDesc_PumpkinHouseActionProps =>
-      'Spawns pumpkin houses on the lawn at set positions';
+      'Spawns Pumpkin Houses at set positions';
 
   @override
   String get eventTitle_WaveActionZombieTentProps => 'Zombie Tent Spawn';
 
   @override
   String get eventDesc_WaveActionZombieTentProps =>
-      'Spawn zombie tents at specified positions and configure the zombies they summon';
+      'Spawns zombie tents at set positions and configure the zombies they summon';
 
   @override
   String get eventTitle_SpawnGravestonesWaveActionProps => 'Grid Item Spawn';
@@ -3678,7 +3735,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groundTrackNormal => 'Normal ground (ground_swatch)';
 
   @override
-  String get groundTrackNone => 'None (null)';
+  String get groundTrackNone => 'None';
 
   @override
   String get appearanceBehavior => 'Appearance & Behavior';
@@ -4514,7 +4571,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpShellBody =>
-      'Spawns atlantis seashells at specified positions. Seashells start in a closed state. When a zombie steps on a seashell, it opens, launches the zombie forward, and closes again after 10 seconds. While open, seashells can be attacked by plants and block straight-shot projectiles. Each time a seashell opens, it generates a random item, including a Plant Food, a Cuttlefish, a plant seed packet, or a Relic Imp. After being triggered by zombies 3 times, the seashell will swim toward the seed bank and replace a random seed slot with a seashell seed packet. After the seashell has been planted 3 times, the seed slot will revert to its original plant.';
+      'Spawns Atlantis Seashells at set positions. Seashells start in a closed state. When a zombie steps on a seashell, it opens, launches the zombie forward, and closes again after 10 seconds. While open, seashells can be attacked by plants and block straight-shot projectiles. Each time a seashell opens, it generates a random item, including a Plant Food, a Cuttlefish, a plant seed packet, or a Relic Imp. After being triggered by zombies 3 times, the seashell will swim toward the seed bank and replace a random seed slot with a seashell seed packet. After the seashell has been planted 3 times, the seed slot will revert to its original plant.';
 
   @override
   String get eventHelpShellUsage =>
@@ -4522,7 +4579,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpPumpkinHouseBody =>
-      'Spawns pumpkin houses at specified positions. Zombies that pass through the Pumpkin House are transformed into Pumpkin House Ghosts. Pumpkin House Ghosts have a separate health pool and can only be damaged by lobbed plants. When their health is depleted, they revert to their original zombie form. The Pumpkin House itself also has its own health and can be destroyed by concentrated fire.';
+      'Spawns Pumpkin Houses at set positions. Zombies that pass through the Pumpkin House are transformed into Pumpkin House Ghosts. Pumpkin House Ghosts have a separate health pool and can only be damaged by lobbed plants. When their health is depleted, they revert to their original zombie form. The Pumpkin House itself also has its own health and can be destroyed by concentrated fire.';
 
   @override
   String get eventHelpPumpkinHouseUsage =>
@@ -4530,7 +4587,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpZombieTentBody =>
-      'This event force spawns zombie tents from Memory Lane directly on the lawn. Unlike the tents carried by Imp Porters, these tents do not require Gold Tiles. They appear at the specified positions and continually summon zombies until destroyed. The level can only be won after every zombie tent on the lawn has been destroyed.';
+      'This event force spawns zombie tents from Memory Lane directly on the lawn. Unlike the tents carried by Imp Porters, these tents do not require Gold Tiles. They appear at the set positions and continually summon zombies until destroyed. The level can only be won after every zombie tent on the lawn has been destroyed.';
 
   @override
   String get eventHelpZombieTentUsage =>
@@ -4963,6 +5020,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zombieFromLeft => 'From left';
+
+  @override
+  String get zombieFromRight => 'Appear from the right side of the lawn';
+
+  @override
+  String get zombieEntrySideLabel => 'Spawn side (Direction)';
+
+  @override
+  String get zombieRandomSide => 'Appear from a random side';
+
+  @override
+  String get zombieRandomSideDescription =>
+      'Each zombie independently chooses the left or right side of the lawn when it is created.';
 
   @override
   String get eventMagicMirror => 'Event: Magic Mirror';
@@ -7226,6 +7296,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sets mower styles (doesn\'t work in Creative Courtyard)';
 
   @override
+  String get moduleTitle_InitialGridItemWizardCrucibleProps =>
+      'Wizard Cauldron';
+
+  @override
+  String get moduleDesc_InitialGridItemWizardCrucibleProps =>
+      'Configures Fairy Forest Wizard Cauldrons';
+
+  @override
   String get moduleTitle_SpeedUpTileModuleProperties => 'Speed-Up Tiles';
 
   @override
@@ -7334,11 +7412,38 @@ class AppLocalizationsEn extends AppLocalizations {
       'This will remove all Gulliver Tunnels outside the 5×9 lawn. This action cannot be undone.';
 
   @override
+  String get wizardCauldronBoilingDuration =>
+      'Boiling time after Plant Food (BoilingDuration, seconds)';
+
+  @override
+  String get wizardCauldronExplosionDamage =>
+      'Cauldron explosion damage (ExplodeDamageAmount)';
+
+  @override
+  String get wizardCauldronVenomDamagePerSecond =>
+      'Cauldron venom damage per second (VenomDamageAmountPerSecond)';
+
+  @override
+  String get wizardCauldronVenomDuration =>
+      'Cauldron venom duration (VenomExistDuration, seconds)';
+
+  @override
+  String get wizardCauldronHelpOverview =>
+      'Pre-places Wizard Cauldrons on the lawn, commonly used in Fairy Forest. Plant Food makes a cauldron boil briefly.\nDuring boiling, inserted plants yield the same number and level of random plants of the next quality: White to Green, Green to Blue, Blue to Purple; Orange yields other Orange plants.\nAt zero health, the cauldron explodes, damages nearby targets and leaves a temporary ring of poison that continuously damages nearby plants.\nYou can customize each cauldron’s hitpoints, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.';
+
+  @override
+  String get wizardCauldronPositions => 'Cauldron placement positions';
+
+  @override
+  String get wizardCauldronHitpoints =>
+      'Cauldron hitpoints (CrucibleHitpoints)';
+
+  @override
   String get speedUpTileTitle => 'Speed-Up Tiles';
 
   @override
   String get speedUpTileHelpOverview =>
-      'Place Speed-Up Tiles on selected tiles to make eligible ground zombies move quickly in the arrow\'s direction. These tiles commonly appear in the Need for Speed racing secret realm. Zombies resume normal walking when they leave the road. Gargantuars and zombies with special movement behavior ignore Speed-Up Tiles.';
+      'Places Speed-Up Tiles on selected tiles to make eligible ground zombies move quickly in the arrow\'s direction. These tiles commonly appear in the Need for Speed racing secret realm. Zombies resume normal walking when they leave the road. Gargantuars and zombies with special movement behavior ignore Speed-Up Tiles.';
 
   @override
   String get speedUpTileHelpUsageTitle => 'Usage';
@@ -8608,7 +8713,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get armrackModuleHelpOverviewBody =>
-      'Places weapon stands from Kongfu World at specified positions on the lawn. Kongfu Zombies and Monk Zombies that pass by a Weapon Stand will pick up the weapon on it, transform into the corresponding special zombie, and fully restore their health. The weapon stand will break and disappear either when its own health is depleted or when the weapon on it is picked up.\nThis module also ensures that Weapon Stands display correctly in both the editor and the game, preventing them from incorrectly appearing with a sun texture.';
+      'Places weapon stands from Kongfu World at set positions on the lawn. Kongfu Zombies and Monk Zombies that pass by a Weapon Stand will pick up the weapon on it, transform into the corresponding special zombie, and fully restore their health. The weapon stand will break and disappear either when its own health is depleted or when the weapon on it is picked up.\nThis module also ensures that Weapon Stands display correctly in both the editor and the game, preventing them from incorrectly appearing with a sun texture.';
 
   @override
   String get armrackModuleHelpPlacement => 'Placement';
@@ -8641,7 +8746,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get energyGridModuleHelpOverviewBody =>
-      'Generates Taiji Tiles at specified positions on the lawn, commonly used in Kongfu World. When a plant is placed on a Taiji Tile, the Taiji emblem begins to flash and generates one Plant Food after 1000 ÷ the plant\'s sun cost seconds, then disappears. If the plant\'s sun cost is 0, no Plant Food will be generated.';
+      'Generates Taiji Tiles at set positions on the lawn, commonly used in Kongfu World. When a plant is placed on a Taiji Tile, the Taiji emblem begins to flash and generates one Plant Food after 1000 ÷ the plant\'s sun cost seconds, then disappears. If the plant\'s sun cost is 0, no Plant Food will be generated.';
 
   @override
   String get energyGridModuleHelpPlacement => 'Placement';
@@ -10130,11 +10235,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'Targeted plants are pressed halfway into the ground. While in this state, they cannot attack but can still be eaten by zombies. Targeted zombies advance steadily and become immune to knockback effects.\nCosmic Saucer can remove Hypergravity from zombies and put them into the Floating state instead. It can also remove Hypergravity from plants, restoring them to normal.';
 
   @override
+  String get pumpkinScarecrowSpawnCount => 'Scarecrow spawn count (Count)';
+
+  @override
+  String get pumpkinScarecrowCrowLevel => 'Crow level (Level, 0-index)';
+
+  @override
+  String get pumpkinScarecrowHelpOverview =>
+      'Places Pumpkin Scarecrows at selected positions, commonly used in Haunting Halloween levels. Crows periodically fly off the scarecrows to carry away plants. Each departing crow is replaced by a new one flying in from outside the lawn, so crows will continue to appear until the scarecrow is destroyed. The health of each scarecrow and the level of its summoned crows can be customized in this event.';
+
+  @override
+  String get pumpkinScarecrowPositions => 'Scarecrow spawn positions';
+
+  @override
+  String get pumpkinScarecrowHitpoints => 'Scarecrow hitpoints (Hitpoints)';
+
+  @override
   String get rocketLandingHelpTitle => 'Rocket Landing';
 
   @override
   String get rocketLandingHelpOverview =>
-      'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies.';
+      'An event commonly used in Moon BaseZ. It spawns rockets at set positions as objectives contested by both plants and zombies.';
 
   @override
   String get rocketLandingHelpPlantsTitle => 'Plants take control';

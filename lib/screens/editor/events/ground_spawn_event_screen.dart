@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
@@ -26,7 +28,7 @@ class GroundSpawnEventScreen extends StatelessWidget {
   onRequestZombieSelection;
   final void Function(void Function(String) onSelected)?
   onRequestPlantSelection;
-  final void Function(String rtid)? onEditCustomZombie;
+  final FutureOr<void> Function(String rtid)? onEditCustomZombie;
   final String? Function(String alias)? onInjectCustomZombie;
   final Future<void> Function(String rtid)? onOpenReferencedEvent;
 

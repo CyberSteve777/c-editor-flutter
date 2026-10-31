@@ -8,12 +8,138 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('zombie entry-side mapping follows the game facing direction', () {
-    expect(ZombieSpawnData.entersFromLeft('right'), isTrue);
-    expect(ZombieSpawnData.entersFromLeft('left'), isFalse);
-    expect(ZombieSpawnData.entersFromLeft(null), isFalse);
-    expect(ZombieSpawnData.directionForEntrySide(true), 'right');
-    expect(ZombieSpawnData.directionForEntrySide(false), isNull);
+  for (final underwater in [false, true]) {
+    for (final initial in <String?>[null, 'right', 'left', 'random']) {
+      testWidgets(
+        '${underwater ? 'underwater' : 'ordinary'} entry-side controls preserve and switch $initial',
+        (tester) async {
+          final fishes = [
+            {
+              'Type': 'RTID(fish@CreatureTypes)',
+              'Position': {'mX': 5, 'mY': 2},
+            },
+          ];
+          final event = PvzObject(
+            aliases: ['SideTest'],
+            objClass: underwater
+                ? 'SpawnZombiesFishWaveActionProps'
+                : 'SpawnZombiesJitteredWaveActionProps',
+            objData: {
+              'Zombies': [
+                {
+                  'Type': 'RTID(zombie@ZombieTypes)',
+                  'Level': 1,
+                  'Row': 1,
+                  if (initial != null) 'Direction': initial,
+                },
+              ],
+              if (underwater) 'Fishes': fishes,
+            },
+          );
+          final level = PvzLevelFile(objects: [event]);
+          await _pumpEditor(
+            tester,
+            underwater
+                ? ZombieFishWaveEventScreen(
+                    rtid: 'RTID(SideTest@CurrentLevel)',
+                    levelFile: level,
+                    onChanged: () {},
+                    onBack: () {},
+                    onRequestZombieSelection: (_) {},
+                  )
+                : ZombieSpawnEventScreen(
+                    rtid: 'RTID(SideTest@CurrentLevel)',
+                    levelFile: level,
+                    onChanged: () {},
+                    onBack: () {},
+                    eventSubtitle: 'Basic Spawner',
+                    isGroundSpawner: false,
+                    onRequestZombieSelection: (_) {},
+                  ),
+          );
+          final card = find.byType(ZombieIconCard);
+          await tester.ensureVisible(card);
+          await tester.tap(card);
+          await tester.pumpAndSettle();
+          final random = find.byKey(const ValueKey('zombieRandomEntrySide'));
+          final left = find.byKey(const ValueKey('zombieLeftEntrySide'));
+          String? savedDirection() =>
+              ((event.objData as Map)['Zombies'] as List).single['Direction']
+                  as String?;
+          expect(
+            tester.widget<SwitchListTile>(random).value,
+            initial == 'random',
+          );
+          expect(tester.widget<SwitchListTile>(left).value, initial == 'left');
+          expect(savedDirection(), initial);
+          if (initial == 'random') {
+            expect(tester.widget<SwitchListTile>(left).onChanged, isNull);
+            await tester.tap(random);
+            await tester.pumpAndSettle();
+            expect(savedDirection(), isNull);
+          } else {
+            await tester.tap(random);
+            await tester.pumpAndSettle();
+            expect(savedDirection(), 'random');
+            expect(tester.widget<SwitchListTile>(left).onChanged, isNull);
+            final row = find.byType(DropdownButtonFormField<int>);
+            await tester.tap(row);
+            await tester.pumpAndSettle();
+            await tester.tap(find.text('第2行').last);
+            await tester.pumpAndSettle();
+            expect(savedDirection(), 'random');
+            await tester.tap(random);
+            await tester.pumpAndSettle();
+            expect(savedDirection(), initial);
+          }
+          if (!tester.widget<SwitchListTile>(left).value) {
+            await tester.tap(left);
+            await tester.pumpAndSettle();
+          }
+          expect(savedDirection(), 'left');
+          await tester.tap(random);
+          await tester.pumpAndSettle();
+          expect(savedDirection(), 'random');
+          await tester.tap(random);
+          await tester.pumpAndSettle();
+          expect(savedDirection(), 'left');
+          await tester.tap(random);
+          await tester.pumpAndSettle();
+          Navigator.of(tester.element(left)).pop();
+          await tester.pumpAndSettle();
+          await tester.ensureVisible(card);
+          await tester.tap(card);
+          await tester.pumpAndSettle();
+          expect(tester.widget<SwitchListTile>(random).value, isTrue);
+          expect(savedDirection(), 'random');
+          if (underwater) expect((event.objData as Map)['Fishes'], fishes);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+  test(
+    'ordinary and underwater instructions share three entry-side values',
+    () {
+      expect(ZombieSpawnData.entersFromLeft('left'), isTrue);
+      expect(ZombieSpawnData.entersFromLeft('right'), isFalse);
+      expect(ZombieSpawnData.entersFromLeft(null), isFalse);
+      expect(ZombieSpawnData.entersFromLeft('random'), isFalse);
+      expect(ZombieSpawnData.directionForEntrySide(true), 'left');
+      expect(ZombieSpawnData.directionForEntrySide(false), isNull);
+      expect(
+        ZombieSpawnData.directionForEntrySide(false, random: true),
+        'random',
+      );
+    },
+  );
+
+  test('no ground track label contains no JSON null notation', () {
+    for (final locale in ['zh', 'en', 'ru']) {
+      final l10n = lookupAppLocalizations(Locale(locale));
+      expect(l10n.groundTrackNone, isNot(contains('null')));
+    }
+    expect(lookupAppLocalizations(const Locale('zh')).groundTrackNone, '无');
   });
 
   testWidgets(
@@ -164,7 +290,7 @@ void main() {
               'Type': 'RTID(zombie@ZombieTypes)',
               'Level': 1,
               'Row': 1,
-              'Direction': 'right',
+              'Direction': 'left',
               'Titles': <String>['ZTSpeed1'],
             },
           ],
@@ -204,7 +330,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('第2行').last);
       await tester.pumpAndSettle();
-      _expectFishZombieFields(event, direction: 'right', row: 2);
+      _expectFishZombieFields(event, direction: 'left', row: 2);
 
       await tester.tap(directionTile);
       await tester.pumpAndSettle();
@@ -212,7 +338,7 @@ void main() {
 
       await tester.tap(directionTile);
       await tester.pumpAndSettle();
-      _expectFishZombieFields(event, direction: 'right', row: 2);
+      _expectFishZombieFields(event, direction: 'left', row: 2);
 
       Navigator.of(tester.element(directionTile)).pop();
       await tester.pumpAndSettle();
@@ -222,7 +348,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(FilledButton, '一键应用').last);
       await tester.pumpAndSettle();
-      _expectFishZombieFields(event, direction: 'right', row: 2);
+      _expectFishZombieFields(event, direction: 'left', row: 2);
       expect(tester.takeException(), isNull);
     },
   );
@@ -239,14 +365,14 @@ void main() {
               'Type': 'RTID(zombie@ZombieTypes)',
               'Level': 1,
               'Row': 1,
-              'Direction': 'right',
+              'Direction': 'left',
               'Titles': <String>['ZTSpeed1'],
             },
             <String, dynamic>{
               'Type': 'RTID(conehead@ZombieTypes)',
               'Level': 2,
               'Row': 2,
-              'Direction': 'left',
+              'Direction': 'right',
             },
           ],
         },
@@ -294,7 +420,16 @@ void main() {
       expect(edited, isNot(contains('Direction')));
       expect(edited['Titles'], <String>['ZTSpeed1']);
       expect(untouched['Row'], 2);
-      expect(untouched['Direction'], 'left');
+      expect(untouched['Direction'], 'right');
+      await tester.tap(directionTile);
+      await tester.pumpAndSettle();
+      final saved = ((event.objData as Map)['Zombies'] as List).cast<Map>();
+      final savedEdited = saved.singleWhere(
+        (entry) => entry['Type'] == 'RTID(zombie@ZombieTypes)',
+      );
+      expect(savedEdited['Direction'], 'left');
+      expect(savedEdited['Row'], 3);
+      expect(savedEdited['Titles'], <String>['ZTSpeed1']);
       expect(tester.takeException(), isNull);
     },
   );

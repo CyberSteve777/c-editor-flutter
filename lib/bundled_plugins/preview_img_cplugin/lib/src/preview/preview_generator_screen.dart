@@ -1087,6 +1087,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       sourceLabelStyle: layer.sourceLabelStyle,
       lawnRows: layer.lawnRows,
       lawnCols: layer.lawnCols,
+      hasInitialLawn: layer.initialLawnJson != null,
       iconAlign: layer.iconAlign,
     );
     final maxHeight = ((1.0 - layer.bounds.top) / layer.scale.clamp(0.25, 4.0))
@@ -1390,8 +1391,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
       context: context,
       session: _moduleInfoPickerSession,
       classes: classes,
-      titleForClass: (ctx, objClass) =>
-          ModuleRegistry.getMetadata(objClass).getTitle(ctx),
+      titleForClass: (ctx, objClass) => previewModuleInfoTitle(ctx, objClass),
       t: _t,
     );
     if (objClass == null || !mounted) return;
@@ -1399,8 +1399,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     await loadPreviewModuleResourceNames();
     if (!mounted) return;
 
-    final meta = ModuleRegistry.getMetadata(objClass);
-    final title = meta.getTitle(context);
+    final title = previewModuleInfoTitle(context, objClass);
     String l10n(String key, String fallback, [Map<String, Object?>? args]) =>
         _t(key, fallback, args);
     final payload = previewModuleInfoBuild(
@@ -1416,7 +1415,9 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
     final canGrid = payload.sections.isNotEmpty;
 
     String? mode;
-    if (canGrid) {
+    if (objClass == previewInitialLawnOverviewOption) {
+      mode = 'grid';
+    } else if (canGrid) {
       mode = await showDialog<String>(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -1491,6 +1492,7 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
           showChrome: true,
           lawnRows: payload.lawnRows,
           lawnCols: payload.lawnCols,
+          initialLawnJson: payload.initialLawnJson,
           bounds: payload.isLawnGrid
               ? const Rect.fromLTWH(0.04, 0.12, 0.42, 0.72)
               : const Rect.fromLTWH(0.05, 0.2, 0.55, 0.55),
@@ -1498,6 +1500,9 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
           items: [for (final s in sections) ...s.items],
         ),
       );
+      if (payload.initialLawnJson != null) {
+        _resizeIconGridToContent(doc.layerById(id)!);
+      }
       _selectedLayerId = id;
       _selectedTextPart = null;
       _tool = PreviewEditTool.select;

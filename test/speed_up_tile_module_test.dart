@@ -72,6 +72,43 @@ Future<void> _tapCell(WidgetTester tester, int x, int y) async {
 }
 
 void main() {
+  testWidgets(
+    'narrow direction selector fits two choices per row and warns about conflicting tiles',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 1200);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final level = PvzLevelFile(
+        objects: [
+          _module({'Roads': []}),
+        ],
+      );
+      await tester.pumpWidget(_screen(level, locale: 'zh', textScale: 1.5));
+      await tester.pumpAndSettle();
+      final left = find.byKey(
+        ValueKey('speedUpTileDirection_${SpeedUpTileCatalog.left}'),
+      );
+      final right = find.byKey(
+        ValueKey('speedUpTileDirection_${SpeedUpTileCatalog.right}'),
+      );
+      final up = find.byKey(
+        ValueKey('speedUpTileDirection_${SpeedUpTileCatalog.up}'),
+      );
+      await tester.ensureVisible(left);
+      await tester.pumpAndSettle();
+      expect(
+        tester.getTopLeft(left).dy,
+        closeTo(tester.getTopLeft(right).dy, .1),
+      );
+      expect(tester.getTopLeft(up).dy, greaterThan(tester.getTopLeft(left).dy));
+      expect(
+        find.text('加速带会被「地宫坑道」或「远征地砖」模块添加的地块覆盖，从而无法生效，请勿同时使用。'),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
   test('official roads retain zero-based coordinates and list order', () {
     final original = <String, dynamic>{'Roads': _officialRoads()};
     final data = SpeedUpTileModulePropertiesData.fromJson(original);

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
@@ -41,7 +43,7 @@ class GridItemSpawnEventScreen extends StatefulWidget {
   onRequestGridItemSelection;
   final void Function(void Function(String) onSelected)
   onRequestZombieSelection;
-  final void Function(String rtid)? onEditCustomZombie;
+  final FutureOr<void> Function(String rtid)? onEditCustomZombie;
   final String? Function(String alias)? onInjectCustomZombie;
   final Future<void> Function(String rtid)? onOpenReferencedEvent;
 

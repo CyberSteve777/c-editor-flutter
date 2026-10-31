@@ -67,13 +67,14 @@ void main() {
         'assets/images/others/last.webp',
       ]);
       expect(kPreviewStickerTags.last, 'others');
-      expect(kPreviewStickerTags.take(7), [
+      expect(kPreviewStickerTags.take(8), [
         'plants',
         'zombies',
         'griditems',
         'creatures',
         'tool_packets',
         'components',
+        'npcs',
         'round_icons',
       ]);
     },
@@ -249,6 +250,29 @@ void main() {
     expect(_messages('en')['previewStickerNameJamNone'], 'Level Jam — None');
     expect(_messages('zh')['previewStickerNameJamNone'], '魔音音乐切换（默认/无）');
     expect(_messages('ru')['previewStickerNameJamNone'], 'Level Jam — нет');
+  });
+
+  test('mode and NPC icons use dedicated tags and three-language names', () {
+    for (final entry in kPreviewModeStickerLabels.entries) {
+      final path = 'assets/images/round_icons/${entry.key}.webp';
+      final sticker = stickers.singleWhere((item) => item.assetPath == path);
+      expect(sticker.tag, 'round_icons', reason: path);
+      expect(sticker.labelKey, entry.value, reason: path);
+      expect(sticker.searchTerms, contains(entry.key), reason: path);
+      for (final locale in ['en', 'zh', 'ru']) {
+        expect(_messages(locale)[entry.value], isNotEmpty, reason: path);
+      }
+    }
+    for (final entry in kPreviewNpcStickerLabels.entries) {
+      final path = 'assets/images/npcs/${entry.key}.webp';
+      final sticker = stickers.singleWhere((item) => item.assetPath == path);
+      expect(sticker.tag, 'npcs', reason: path);
+      expect(sticker.labelKey, entry.value, reason: path);
+      expect(sticker.searchTerms, contains(entry.key), reason: path);
+      for (final locale in ['en', 'zh', 'ru']) {
+        expect(_messages(locale)[entry.value], isNotEmpty, reason: path);
+      }
+    }
   });
 
   test('lawn components keep their module labels and internal ordering', () {

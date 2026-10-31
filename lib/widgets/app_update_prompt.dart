@@ -80,7 +80,7 @@ Future<void> checkForAppUpdates(
           context: context,
           builder: (context) => AlertDialog(
             scrollable: true,
-            title: Text(AppLocalizations.of(context)!.checkForUpdates),
+            title: Text(AppLocalizations.of(context)!.updateNotNeededTitle),
             content: Text(AppLocalizations.of(context)!.updateAlreadyLatest),
             actions: [
               TextButton(
@@ -205,22 +205,29 @@ class AppUpdateDialog extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(errorMessage ?? l10n.updateAvailableBody(version!)),
-          const SizedBox(height: 12),
-          Text(l10n.updateSaveWorkGuidance),
+          if (errorMessage != null) ...[
+            const SizedBox(height: 12),
+            Text(l10n.updateCheckFailedLinks),
+          ] else ...[
+            const SizedBox(height: 12),
+            Text(l10n.updateSaveWorkGuidance),
+          ],
           if (kIsWeb && errorMessage == null) ...[
             const SizedBox(height: 12),
             Text(l10n.webUpdateSaveAndRefresh),
           ],
-          if (!kIsWeb) ...[
-            const SizedBox(height: 20),
-            Text(l10n.updateDownload),
-            const SizedBox(height: 4),
-            Text(
-              l10n.updateDownloadDescription,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+          if (!kIsWeb || errorMessage != null) ...[
+            if (errorMessage == null) ...[
+              const SizedBox(height: 20),
+              Text(l10n.updateDownload),
+              const SizedBox(height: 4),
+              Text(
+                l10n.updateDownloadDescription,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
+            ],
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -238,6 +245,24 @@ class AppUpdateDialog extends StatelessWidget {
                     onPressed: () => _open(context, links.baiduDownload),
                     icon: const Icon(Icons.cloud_download_outlined),
                     label: Text(l10n.updateBaiduDownload),
+                  ),
+                if (errorMessage != null &&
+                    chinese &&
+                    links.updateBilibili.isNotEmpty)
+                  OutlinedButton.icon(
+                    key: const ValueKey('appUpdateBilibili'),
+                    onPressed: () => _open(context, links.updateBilibili),
+                    icon: const Icon(Icons.open_in_new),
+                    label: Text(l10n.updateOpenBilibili),
+                  ),
+                if (errorMessage != null &&
+                    !chinese &&
+                    links.cEditorInviteLink.isNotEmpty)
+                  OutlinedButton.icon(
+                    key: const ValueKey('appUpdateDiscord'),
+                    onPressed: () => _open(context, links.cEditorInviteLink),
+                    icon: const Icon(Icons.forum_outlined),
+                    label: Text(l10n.updateJoinDiscord),
                   ),
               ],
             ),

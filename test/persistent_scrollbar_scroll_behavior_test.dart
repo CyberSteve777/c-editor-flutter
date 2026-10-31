@@ -68,7 +68,8 @@ void main() {
       final content = tester.getRect(find.byKey(const ValueKey('helpBody')));
       final bar = tester.getRect(_persistentBar);
       expect(content.right, lessThanOrEqualTo(bar.right - 20));
-      expect(content.left, bar.left);
+      expect(content.left, greaterThanOrEqualTo(bar.left + 20));
+      expect(content.center.dx, closeTo(bar.center.dx, 0.01));
       expect(tester.takeException(), isNull);
     }
   });
@@ -177,7 +178,8 @@ void main() {
     final bar = tester.getRect(find.byKey(const ValueKey('leftScrollbar')));
     expect(find.byType(Scrollbar), findsOneWidget);
     expect(viewport.left, greaterThanOrEqualTo(bar.left + 20));
-    expect(viewport.right, bar.right);
+    expect(viewport.right, lessThanOrEqualTo(bar.right - 20));
+    expect(viewport.center.dx, closeTo(bar.center.dx, 0.01));
     expect(tester.takeException(), isNull);
   });
 

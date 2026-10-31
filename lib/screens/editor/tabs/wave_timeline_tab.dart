@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:c_editor/data/gladiator_row_utils.dart';
 import 'package:c_editor/data/jitter_offsets_utils.dart';
 import 'package:c_editor/bloc/settings/settings_cubit.dart';
@@ -173,7 +175,7 @@ class WaveTimelineTab extends StatefulWidget {
   final void Function(int waveIndex) onAddEvent;
   final VoidCallback onEditWaveManagerSettings;
   final VoidCallback? onEditJitterOffsets;
-  final void Function(String rtid)? onEditCustomZombie;
+  final FutureOr<void> Function(String rtid)? onEditCustomZombie;
   final void Function(String rtid)? onEditCustomFish;
   final OpenModuleCallback? onOpenModule;
   final ValueNotifier<({int waveIndex, String? rtid})?>? openWaveSheetNotifier;
@@ -635,21 +637,23 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: theme.colorScheme.secondary,
+      color: theme.brightness == Brightness.dark
+          ? theme.colorScheme.secondary
+          : Colors.blue.shade100,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: widget.onEditJitterOffsets,
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.speed, color: onCard),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
+              Row(
+                children: [
+                  Icon(Icons.speed, color: onCard),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
                       l10n?.waveTimelineJitterOffsetsTitle ??
                           'Spawn Position Offset Presets',
                       style: theme.textTheme.bodyMedium?.copyWith(
@@ -657,22 +661,22 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: onCard.withValues(alpha: 0.9),
-                      ),
-                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  if (unused > 0) ...[
+                    Icon(Icons.warning_amber_rounded, size: 18, color: onCard),
+                    const SizedBox(width: 4),
                   ],
+                  Icon(Icons.arrow_forward_ios, size: 16, color: onCard),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                subtitle,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: onCard.withValues(alpha: 0.9),
                 ),
               ),
-              const SizedBox(width: 8),
-              if (unused > 0) ...[
-                Icon(Icons.warning_amber_rounded, size: 18, color: onCard),
-                const SizedBox(width: 4),
-              ],
-              Icon(Icons.arrow_forward_ios, size: 16, color: onCard),
             ],
           ),
         ),
@@ -2057,7 +2061,8 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      l10n?.renameFail ?? 'Rename failed, alias already exists',
+                      l10n?.renameEventFail ??
+                          'Cannot rename event: this alias is already used in the level.',
                     ),
                   ),
                 );
@@ -2193,7 +2198,8 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      l10n?.renameFail ?? 'Rename failed, alias already exists',
+                      l10n?.copyEventAliasFail ??
+                          'Cannot copy event: this alias is already used in the level.',
                     ),
                   ),
                 );

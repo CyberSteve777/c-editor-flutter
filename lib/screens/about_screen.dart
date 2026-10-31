@@ -282,6 +282,9 @@ class _AboutScreenState extends State<AboutScreen> {
                             ),
                             TextButton.icon(
                               key: const ValueKey('aboutCheckForUpdates'),
+                              style: TextButton.styleFrom(
+                                textStyle: versionStyle,
+                              ),
                               onPressed: _checkingForUpdates
                                   ? null
                                   : _checkForUpdates,

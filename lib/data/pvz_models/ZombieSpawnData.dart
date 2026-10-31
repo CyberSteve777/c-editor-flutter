@@ -13,19 +13,15 @@ class ZombieSpawnData extends PvzModel {
   int? level;
   int? row;
 
-  /// Zombie facing/movement direction. `left` normally enters from the right
-  /// side of the lawn; `right` normally enters from the left. Null uses the
-  /// game's default left-facing direction.
+  /// Spawn side shared by ordinary and underwater spawners: right (default),
+  /// left, or random (chosen independently for each zombie at creation).
   String? direction;
 
-  /// UI entry-side mapping: a right-facing zombie normally enters from the
-  /// left side of the lawn.
-  static bool entersFromLeft(String? direction) => direction == 'right';
+  static bool entersFromLeft(String? direction) => direction == 'left';
 
-  /// Converts the editor's "from left" switch back to the game-facing field.
-  /// The off state omits the field so the game's left-facing default applies.
-  static String? directionForEntrySide(bool fromLeft) =>
-      fromLeft ? 'right' : null;
+  /// Omit the default right side; random is a real string, not editor RNG.
+  static String? directionForEntrySide(bool fromLeft, {bool random = false}) =>
+      random ? 'random' : (fromLeft ? 'left' : null);
 
   /// Ztalemate Escape perk aliases (e.g. ZTSpeed1, ZTAttack1).
   List<String>? titles;

@@ -16,11 +16,12 @@ final _links = AppLinks(
   source: '',
   issues: '',
   pvzDiscordInviteLink: '',
-  cEditorInviteLink: '',
+  cEditorInviteLink: 'https://discord.gg/test',
   recommendedLevels: '',
   levelUpload: '',
   releases: 'https://github.com/International2C/c-editor-flutter/releases',
   baiduDownload: 'https://pan.baidu.com/s/test',
+  updateBilibili: 'https://www.bilibili.com/opus/test',
 );
 
 void main() {
@@ -81,6 +82,8 @@ void main() {
           locale == 'zh' ? findsOneWidget : findsNothing,
         );
         expect(tester.takeException(), isNull);
+        expect(find.byKey(const ValueKey('appUpdateBilibili')), findsNothing);
+        expect(find.byKey(const ValueKey('appUpdateDiscord')), findsNothing);
       }
     },
   );
@@ -120,6 +123,77 @@ void main() {
       );
     },
   );
+
+  testWidgets(
+    'failure only shows localized fallback links without update guidance',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      for (final locale in ['zh', 'en', 'ru']) {
+        final l10n = lookupAppLocalizations(Locale(locale));
+        await pumpApp(
+          tester,
+          AppUpdateDialog(
+            links: _links,
+            errorMessage: l10n.networkConnectionAdvice,
+          ),
+          locale: locale,
+        );
+        expect(find.text(l10n.updateCheckFailedLinks), findsOneWidget);
+        expect(find.text(l10n.updateSaveWorkGuidance), findsNothing);
+        expect(find.text(l10n.updateDownload), findsNothing);
+        expect(find.text(l10n.updateDownloadDescription), findsNothing);
+        expect(
+          find.byKey(const ValueKey('appUpdateBilibili')),
+          locale == 'zh' ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(const ValueKey('appUpdateDiscord')),
+          locale == 'zh' ? findsNothing : findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      }
+    },
+  );
+
+  testWidgets('manual up-to-date result has its own title', (tester) async {
+    final prefs = await SharedPreferences.getInstance();
+    final service = AppUpdateService(
+      client: MockClient(
+        (_) async => http.Response(
+          jsonEncode({
+            'tag_name': '1.0.0',
+            'html_url': 'https://github.com/releases/1.0.0',
+            'draft': false,
+            'prerelease': false,
+          }),
+          200,
+        ),
+      ),
+      preferences: () async => prefs,
+      currentVersion: () async => '1.0.0',
+      releasesApi: () async =>
+          Uri.parse('https://api.github.com/releases/latest'),
+    );
+    addTearDown(service.close);
+    await pumpApp(
+      tester,
+      Builder(
+        builder: (context) => TextButton(
+          onPressed: () => checkForAppUpdates(context, service: service),
+          child: const Text('Check'),
+        ),
+      ),
+      locale: 'zh',
+    );
+    await tester.tap(find.text('Check'));
+    await tester.pumpAndSettle();
+    expect(find.text('无需更新'), findsOneWidget);
+    expect(find.text('当前已是最新正式版。'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets(
     'automatic failures stay silent and disabled setting makes no request',

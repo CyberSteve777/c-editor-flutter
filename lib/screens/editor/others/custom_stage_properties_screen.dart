@@ -338,6 +338,12 @@ class _CustomStagePropertiesScreenState
           onSelected: (option) {
             _objdata['BackgroundImagePrefix'] = option.imagePrefix;
             _objdata['BackgroundResourceGroup'] = option.delayLoadGroup;
+            _objdata.addAll(
+              StageCatalogRepository.backgroundTextures(
+                option.delayLoadGroup,
+                option.imagePrefix,
+              ),
+            );
             _sync();
             Navigator.pop(ctx);
           },
@@ -718,10 +724,8 @@ class _CustomStagePropertiesScreenState
                       controller: _aliasCtrl,
                       decoration: decoration,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) => aliasCharacterValidationError(
-                        l10n,
-                        value ?? '',
-                      ),
+                      validator: (value) =>
+                          aliasCharacterValidationError(l10n, value ?? ''),
                       onChanged: (value) {
                         if (aliasCharacterValidationError(l10n, value) !=
                             null) {

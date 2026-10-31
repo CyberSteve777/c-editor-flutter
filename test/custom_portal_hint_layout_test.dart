@@ -100,7 +100,7 @@ void main() {
     });
   }
 
-  testWidgets('portal section headings and selected values share styles', (
+  testWidgets('only portal section headings are green and bold', (
     tester,
   ) async {
     addTearDown(tester.view.resetPhysicalSize);
@@ -119,14 +119,14 @@ void main() {
     for (final picker in tester.widgetList<SeparatedOptionPickerField<String>>(
       find.byType(SeparatedOptionPickerField<String>),
     )) {
-      expect(picker.selectedTextStyle?.fontWeight, FontWeight.bold);
+      expect(picker.selectedTextStyle?.fontWeight, FontWeight.normal);
     }
     expect(
       tester
           .widget<DropdownButton<String>>(find.byType(DropdownButton<String>))
           .style
           ?.fontWeight,
-      FontWeight.bold,
+      FontWeight.normal,
     );
     expect(tester.takeException(), isNull);
   });

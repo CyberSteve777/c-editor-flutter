@@ -1,4 +1,5 @@
 import 'package:c_editor/data/level_parser.dart';
+import 'package:c_editor/data/challenge_resource_l10n.dart';
 import 'package:c_editor/data/music_suffix_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
@@ -32,24 +33,24 @@ const _copy =
         zombies: 'Preset zombies',
         conveyor: 'Conveyor plants',
         lawn: 'Lawn',
-        musicModule: 'Ancient Egypt (Egypt)',
-        musicType: 'Ancient Egypt - Ultimate Battle (MiniGame_A)',
+        musicModule: 'Ancient Egypt',
+        musicType: 'Ancient Egypt - Ultimate Battle',
       ),
       'zh': (
         plants: '预选植物',
         zombies: '预选僵尸',
         conveyor: '传送带植物',
         lawn: '地图',
-        musicModule: '神秘埃及 (Egypt)',
-        musicType: '神秘埃及-终“僵”之战 / Ultimate Battle (MiniGame_A)',
+        musicModule: '神秘埃及',
+        musicType: '神秘埃及-终“僵”之战 / Ultimate Battle',
       ),
       'ru': (
         plants: 'Предустановленные растения',
         zombies: 'Предустановленные зомби',
         conveyor: 'Растения конвейера',
         lawn: 'Поле',
-        musicModule: 'Древний Египет (Egypt)',
-        musicType: 'Древний Египет — решающая битва (MiniGame_A)',
+        musicModule: 'Древний Египет',
+        musicType: 'Древний Египет — решающая битва',
       ),
     };
 
@@ -175,6 +176,94 @@ void main() {
       expect(l10n.plantsAvailableAtStart, editorDescriptions[entry.key]);
     }
   });
+
+  for (final locale in ['zh', 'en', 'ru']) {
+    testWidgets(
+      'challenge overview localizes states and professions in $locale',
+      (tester) async {
+        tester.view.physicalSize = const Size(1200, 1800);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        final level = _level(zombieMode: false);
+        level.objects.addAll([
+          PvzObject(
+            aliases: ['Challenges'],
+            objClass: 'StarChallengeModuleProperties',
+            objData: {
+              'Challenges': [
+                [
+                  'RTID(Conditions@CurrentLevel)',
+                  'RTID(Profession@CurrentLevel)',
+                ],
+              ],
+            },
+          ),
+          PvzObject(
+            aliases: ['Conditions'],
+            objClass: 'ApplyZombieConditionsChallengeProps',
+            objData: {
+              'NumZombieConditionsToApply': 6,
+              'ConditionToInflict': [
+                'stun',
+                'freeze',
+                'future_unknown_condition',
+              ],
+            },
+          ),
+          PvzObject(
+            aliases: ['Profession'],
+            objClass: 'StarChallengeDisablePlantProps',
+            objData: {'Profession': 'warrior'},
+          ),
+        ]);
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: Locale(locale),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: LevelOverviewDialog(
+              levelFile: level,
+              parsed: LevelParser.parseLevel(level),
+              fileName: 'challenge.json',
+              onClose: () {},
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final context = tester.element(find.byType(LevelOverviewDialog));
+        final profession = ChallengeResourceL10n.profession(context, 'warrior');
+        final professionTitle = ChallengeResourceL10n.title(
+          context,
+          'StarChallengeDisablePlantProps',
+        );
+        expect(find.text('$professionTitle ($profession)'), findsOneWidget);
+        final title = find.text(
+          ChallengeResourceL10n.title(
+            context,
+            'ApplyZombieConditionsChallengeProps',
+          ),
+        );
+        await tester.ensureVisible(title);
+        await tester.tap(title);
+        await tester.pumpAndSettle();
+        for (final id in ['stun', 'freeze']) {
+          final localized = ResourceNames.lookupWithLocale(
+            locale,
+            'zombieCondition_$id',
+          );
+          expect(localized, isNot('zombieCondition_$id'));
+          expect(find.text(localized), findsOneWidget);
+          expect(find.text(id), findsOneWidget);
+        }
+        expect(find.text('future_unknown_condition'), findsOneWidget);
+        expect(
+          find.text('zombieCondition_future_unknown_condition'),
+          findsNothing,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   for (final entry in _copy.entries) {
     for (final zombieMode in [false, true]) {
@@ -309,7 +398,7 @@ void main() {
           expect(
             find.text(
               '${lookupAppLocalizations(locale).musicType}: '
-              '$moduleName ($track)',
+              '$moduleName',
             ),
             findsOneWidget,
           );

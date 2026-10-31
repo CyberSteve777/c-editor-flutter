@@ -211,7 +211,7 @@ class _CustomPortalPropertiesScreenState
     );
     final selectedValueStyle = theme.textTheme.bodyLarge?.copyWith(
       color: theme.colorScheme.onSurface,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.normal,
     );
 
     return PopScope(
@@ -358,9 +358,8 @@ class _CustomPortalPropertiesScreenState
                     ),
                     const SizedBox(height: 16),
                     ZombossMechWeightedZombieListEditor(
-                      headingStyle: theme.textTheme.titleSmall?.copyWith(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.bold,
+                      headingStyle: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                       fieldLabel: _portalPropertyLabel(
                         l10n?.customPortalZombieTypes ?? 'Zombie types',
@@ -398,9 +397,8 @@ class _CustomPortalPropertiesScreenState
                                         'Spawn interval',
                                     'TimeBetweenSpawns',
                                   ),
-                                  style: theme.textTheme.titleSmall?.copyWith(
-                                    color: theme.colorScheme.primary,
-                                    fontWeight: FontWeight.bold,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 const SizedBox(height: 4),

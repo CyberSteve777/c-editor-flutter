@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:c_editor/widgets/oak_train_warnings.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,7 @@ import 'package:c_editor/widgets/zombie_row_lane_drag_drop_editor.dart';
 import 'package:c_editor/widgets/zombie_row_lane_utils.dart';
 import 'package:c_editor/widgets/zombie_selection_flow.dart';
 import 'package:c_editor/widgets/zombie_ztalemate_perks_editor.dart';
+import 'package:c_editor/widgets/zombie_entry_side_fields.dart';
 
 /// Zombie spawn event editor for JitteredWave and GroundSpawner.
 /// Ported from Z-Editor-master JitteredWaveEventEP.kt, SpawnZombiesFromGroundEventEP.kt
@@ -48,7 +51,7 @@ class ZombieSpawnEventScreen extends StatefulWidget {
   onRequestZombieSelection;
   final void Function(void Function(String) onSelected)?
   onRequestPlantSelection;
-  final void Function(String rtid)? onEditCustomZombie;
+  final FutureOr<void> Function(String rtid)? onEditCustomZombie;
   final String? Function(String alias)? onInjectCustomZombie;
   final Future<void> Function(String rtid)? onOpenReferencedEvent;
 
@@ -524,7 +527,6 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
         int rowValue = currentZombie.row ?? 0;
         int levelValue = currentZombie.level ?? 0;
         var direction = currentZombie.direction;
-        bool fromLeft = ZombieSpawnData.entersFromLeft(direction);
         var titles = List<String>.from(currentZombie.titles ?? []);
         return StatefulBuilder(
           builder: (ctx, setModalState) {
@@ -661,13 +663,12 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                         ),
                     ],
                     const SizedBox(height: 12),
-                    SwitchListTile(
-                      title: Text(l10n?.zombieFromLeft ?? 'From left'),
-                      value: fromLeft,
+                    ZombieEntrySideFields(
+                      key: const ValueKey('zombieEntrySide'),
+                      direction: direction,
                       onChanged: (v) {
                         setModalState(() {
-                          fromLeft = v;
-                          direction = ZombieSpawnData.directionForEntrySide(v);
+                          direction = v;
                         });
                         updateCurrentZombie(
                           currentZombie.copyWith(
@@ -742,7 +743,14 @@ class _ZombieSpawnEventScreenState extends State<ZombieSpawnEventScreen> {
                         levelFile: widget.levelFile,
                         baseType: baseType,
                         currentRtid: currentZombie.type,
-                        onEditCustomZombie: widget.onEditCustomZombie,
+                        onEditCustomZombie: widget.onEditCustomZombie == null
+                            ? null
+                            : (rtid) async {
+                                await widget.onEditCustomZombie!(rtid);
+                                if (!mounted) return;
+                                _loadData();
+                                setState(() {});
+                              },
                         onInjectCustomZombie: widget.onInjectCustomZombie,
                         onCloseSheet: () => Navigator.pop(ctx),
                         onRtidSelected: (rtid) {

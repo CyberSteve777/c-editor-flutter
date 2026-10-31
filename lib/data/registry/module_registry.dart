@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/halloween_content.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/data/pvz_models.dart';
 
@@ -228,6 +229,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_ManholePipelineModuleProperties;
       case 'moduleTitle_RoofProperties':
         return l10n.moduleTitle_RoofProperties;
+      case 'moduleTitle_InitialGridItemWizardCrucibleProps':
+        return l10n.moduleTitle_InitialGridItemWizardCrucibleProps;
       case 'moduleTitle_TideProperties':
         return l10n.moduleTitle_TideProperties;
       case 'moduleTitle_BombProperties':
@@ -414,6 +417,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_ManholePipelineModuleProperties;
       case 'moduleDesc_RoofProperties':
         return l10n.moduleDesc_RoofProperties;
+      case 'moduleDesc_InitialGridItemWizardCrucibleProps':
+        return l10n.moduleDesc_InitialGridItemWizardCrucibleProps;
       case 'moduleDesc_TideProperties':
         return l10n.moduleDesc_TideProperties;
       case 'moduleDesc_BombProperties':
@@ -1267,11 +1272,20 @@ class ModuleRegistry {
       initialDataFactory: () => RoofPropertiesData(),
       routeId: 'RoofProperties',
     ),
+    cauldronClass: ModuleMetadata(
+      titleKey: 'moduleTitle_InitialGridItemWizardCrucibleProps',
+      descriptionKey: 'moduleDesc_InitialGridItemWizardCrucibleProps',
+      icon: Icons.soup_kitchen,
+      isCore: true,
+      category: ModuleCategory.scene,
+      defaultAlias: 'EventItemPlacement',
+      routeId: cauldronClass,
+      initialDataFactory: () => HalloweenContentData(cauldron: true),
+    ),
     'SpeedUpTileModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_SpeedUpTileModuleProperties',
       descriptionKey: 'moduleDesc_SpeedUpTileModuleProperties',
       icon: Icons.fast_forward,
-      assetIconPath: 'assets/images/tunnels/speed_up_tile_left.webp',
       isCore: true,
       category: ModuleCategory.scene,
       defaultAlias: 'SpeedUpTile',

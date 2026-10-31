@@ -116,6 +116,7 @@ class EditorAliasInputField extends StatefulWidget {
     this.accentColor,
     this.onChanged,
     this.wrapInCard = true,
+    this.duplicateMessage,
   });
 
   final String alias;
@@ -124,6 +125,7 @@ class EditorAliasInputField extends StatefulWidget {
   final Color? accentColor;
   final VoidCallback? onChanged;
   final bool wrapInCard;
+  final String? duplicateMessage;
 
   @override
   State<EditorAliasInputField> createState() => _EditorAliasInputFieldState();
@@ -194,7 +196,8 @@ class _EditorAliasInputFieldState extends State<EditorAliasInputField> {
       if (!mounted) return;
       AppMessage.show(
         context,
-        l10n?.aliasAlreadyExists ?? 'Alias already exists in this level.',
+        widget.duplicateMessage ??
+            aliasRenameFailureMessage(widget.levelFile, widget.alias, l10n),
         icon: Icons.warning_amber_rounded,
       );
       if (mounted) {
@@ -463,6 +466,27 @@ String aliasFromRtid(String rtid) {
   return RtidParser.parse(rtid)?.alias ?? rtid;
 }
 
+String aliasRenameFailureMessage(
+  PvzLevelFile level,
+  String alias,
+  AppLocalizations? l10n,
+) {
+  final matches = level.objects.where(
+    (o) => o.aliases?.contains(alias) == true,
+  );
+  final objClass = matches.firstOrNull?.objClass ?? '';
+  if (objClass.contains('WaveAction')) {
+    return l10n?.renameEventFail ??
+        'Cannot rename event: this alias is already used in the level.';
+  }
+  if (ModuleRegistry.registry.containsKey(objClass)) {
+    return l10n?.renameModuleFail ??
+        'Cannot rename module: this alias is already used in the level.';
+  }
+  return l10n?.renameAliasFail ??
+      'Cannot rename: this alias is already used in the level.';
+}
+
 bool isLevelModulesRtid(String rtid) {
   return RtidParser.parse(rtid)?.source == 'LevelModules';
 }
@@ -520,6 +544,7 @@ class ModuleAliasInputField extends StatelessWidget {
       accentColor: accentColor,
       onChanged: onChanged,
       wrapInCard: wrapInCard,
+      duplicateMessage: AppLocalizations.of(context)?.renameModuleFail,
     );
   }
 }

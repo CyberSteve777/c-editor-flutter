@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
@@ -412,8 +413,48 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       return;
     }
 
-    _scrollToLine(match.lineIndex);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          !_verticalController.hasClients ||
+          _matches.isEmpty ||
+          _currentMatchIndex != safeIndex) {
+        return;
+      }
+      RenderParagraph? paragraph;
+      void findParagraph(RenderObject object) {
+        if (object is RenderParagraph) {
+          paragraph = object;
+        } else {
+          object.visitChildren(findParagraph);
+        }
+      }
+
+      final renderObject = _readTextKey.currentContext?.findRenderObject();
+      if (renderObject == null) return;
+      findParagraph(renderObject);
+      final textParagraph = paragraph;
+      if (textParagraph == null) return;
+      final boxes = textParagraph.getBoxesForSelection(
+        TextSelection(baseOffset: match.start, extentOffset: match.end),
+      );
+      if (boxes.isEmpty) return;
+      final position = _verticalController.position;
+      final viewport = RenderAbstractViewport.of(textParagraph);
+      final top = viewport.getOffsetToReveal(textParagraph, 0).offset;
+      final target =
+          (top +
+                  boxes.first.toRect().center.dy -
+                  position.viewportDimension / 2)
+              .clamp(position.minScrollExtent, position.maxScrollExtent);
+      _verticalController.animateTo(
+        target.toDouble(),
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
+    });
   }
+
+  final _readTextKey = GlobalKey();
 
   void _scrollToLine(int lineIndex) {
     if (!_verticalController.hasClients) return;
@@ -1392,6 +1433,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
               contextMenuBuilder: _buildReadSelectionContextMenu,
               child: Text.rich(
                 TextSpan(children: documentSpans),
+                key: _readTextKey,
                 style: baseStyle,
                 strutStyle: strutStyle,
                 textHeightBehavior: textHeightBehavior,

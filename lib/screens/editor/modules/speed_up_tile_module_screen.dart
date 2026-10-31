@@ -331,6 +331,13 @@ class _SpeedUpTileModuleScreenState extends State<SpeedUpTileModuleScreen> {
               ),
             ),
             const SizedBox(height: 16),
+            EditorWarningBanner(
+              key: const ValueKey('speedUpTileCompatibilityWarning'),
+              message:
+                  l10n?.speedUpTileCompatibilityWarning ??
+                  'Speed-Up Tiles are covered by Underground Palace Pathways or Expedition Tiles and will not work. Do not use these modules together.',
+            ),
+            const SizedBox(height: 16),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -400,7 +407,7 @@ class _SpeedUpTileModuleScreenState extends State<SpeedUpTileModuleScreen> {
                         ) {
                           final selected = direction == _selectedDirection;
                           return SizedBox(
-                            width: constraints.maxWidth
+                            width: ((constraints.maxWidth - 12) / 2)
                                 .clamp(0, 160)
                                 .toDouble(),
                             child: Semantics(

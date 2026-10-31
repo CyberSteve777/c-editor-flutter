@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:c_editor/widgets/oak_train_warnings.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +47,7 @@ class ZombieFishWaveEventScreen extends StatefulWidget {
   onRequestZombieSelection;
   final void Function(void Function(String) onSelected)?
   onRequestPlantSelection;
-  final void Function(String rtid)? onEditCustomZombie;
+  final FutureOr<void> Function(String rtid)? onEditCustomZombie;
   final String? Function(String baseType)? onInjectCustomZombie;
   final void Function(String rtid)? onEditCustomFish;
   final String? Function(String baseFishAlias)? onInjectCustomFish;
@@ -725,7 +727,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
       isElite: isElite,
       rowValue: zombie.row ?? 0,
       levelValue: zombie.level ?? 1,
-      fromLeft: ZombieSpawnData.entersFromLeft(currentZombie.direction),
+      direction: currentZombie.direction,
       onChangeType: () {
         Future.microtask(() async {
           if (!mounted) return;
@@ -741,8 +743,7 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
           currentZombie.copyWith(row: row, clearRow: row == 0),
         );
       },
-      onDirectionChanged: (fromLeft) {
-        final direction = ZombieSpawnData.directionForEntrySide(fromLeft);
+      onDirectionChanged: (direction) {
         updateCurrentZombie(
           currentZombie.copyWith(
             direction: direction,
@@ -789,7 +790,14 @@ class _ZombieFishWaveEventScreenState extends State<ZombieFishWaveEventScreen> {
               levelFile: widget.levelFile,
               baseType: baseType,
               currentRtid: zombie.type,
-              onEditCustomZombie: widget.onEditCustomZombie,
+              onEditCustomZombie: widget.onEditCustomZombie == null
+                  ? null
+                  : (rtid) async {
+                      await widget.onEditCustomZombie!(rtid);
+                      if (!mounted) return;
+                      _loadData();
+                      setState(() {});
+                    },
               onInjectCustomZombie: widget.onInjectCustomZombie,
               onCloseSheet: () {
                 if (mounted) Navigator.of(context).pop();

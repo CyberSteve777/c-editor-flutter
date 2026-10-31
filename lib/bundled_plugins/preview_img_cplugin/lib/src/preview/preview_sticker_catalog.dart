@@ -36,11 +36,48 @@ const kPreviewStickerTags = <String>[
   'creatures',
   'tool_packets',
   'components',
+  'npcs',
   'round_icons',
   'ui',
   'worlds',
   'others',
 ];
+
+const kPreviewModeStickerLabels = <String, String>{
+  'Mode_Endless': 'previewStickerNameModeEndless',
+  'Mode_MemoryLane': 'previewStickerNameModeMemoryLane',
+  'Mode_MemoryLaneS27': 'previewStickerNameModeMemoryLaneS27',
+  'Mode_MemoryLaneS28': 'previewStickerNameModeMemoryLaneS28',
+  'Mode_MemoryLaneS29': 'previewStickerNameModeMemoryLaneS29',
+  'Mode_MemoryLaneS30': 'previewStickerNameModeMemoryLaneS30',
+  'Mode_MemoryLaneS31': 'previewStickerNameModeMemoryLaneS31',
+  'Mode_MemoryLaneS32': 'previewStickerNameModeMemoryLaneS32',
+  'Mode_NewPvP': 'previewStickerNameModeNewPvP',
+  'Mode_PennysPursuit': 'previewStickerNameModePennysPursuit',
+  'Mode_PinataParty': 'previewStickerNameModePinataParty',
+  'Mode_PlantEncounter': 'previewStickerNameModePlantEncounter',
+  'Mode_PvP': 'previewStickerNameModePvP',
+  'Mode_SecretRealm': 'previewStickerNameModeSecretRealm',
+  'Mode_TravelLog': 'previewStickerNameModeTravelLog',
+  'Mode_Tutorial': 'previewStickerNameModeTutorial',
+  'Mode_ZenGarden': 'previewStickerNameModeZenGarden',
+};
+
+const kPreviewNpcStickerLabels = <String, String>{
+  'npc_astronautcrazydave': 'previewStickerNameNpcAstronautCrazyDave',
+  'npc_crazydave': 'previewStickerNameNpcCrazyDave',
+  'npc_crazydaveicon': 'previewStickerNameNpcCrazyDaveIcon',
+  'npc_evilcrazydave': 'previewStickerNameNpcEvilCrazyDave',
+  'npc_newyearcrazydave': 'previewStickerNameNpcNewYearCrazyDave',
+  'npc_no42crazydave': 'previewStickerNameNpcNo42CrazyDave',
+  'npc_no42zombossicon': 'previewStickerNameNpcNo42ZombossIcon',
+  'npc_researchercrazydave': 'previewStickerNameNpcResearcherCrazyDave',
+  'npc_specialwinnie': 'previewStickerNameNpcSpecialWinnie',
+  'npc_winnie': 'previewStickerNameNpcWinnie',
+  'npc_winnieicon': 'previewStickerNameNpcWinnieIcon',
+  'npc_zbcommander': 'previewStickerNameNpcZbCommander',
+  'npc_zombossicon': 'previewStickerNameNpcZombossIcon',
+};
 
 class PreviewSticker {
   const PreviewSticker({
@@ -545,6 +582,26 @@ Future<List<PreviewSticker>> loadPreviewStickerCatalog() async {
       ),
     );
   }
+  for (final entry in kPreviewModeStickerLabels.entries) {
+    ordered.add(
+      PreviewSticker(
+        assetPath: 'assets/images/round_icons/${entry.key}.webp',
+        tag: 'round_icons',
+        labelKey: entry.value,
+        searchTerms: [entry.key],
+      ),
+    );
+  }
+  for (final entry in kPreviewNpcStickerLabels.entries) {
+    ordered.add(
+      PreviewSticker(
+        assetPath: 'assets/images/npcs/${entry.key}.webp',
+        tag: 'npcs',
+        labelKey: entry.value,
+        searchTerms: [entry.key, entry.key.replaceFirst('npc_', '')],
+      ),
+    );
+  }
 
   for (final card in ToolRepository.toolCards) {
     if (card.icon == null) continue;
@@ -713,6 +770,10 @@ Iterable<PreviewSticker> _supplementalStickers() sync* {
     'griditems/lunar_mine_vein_radiation': 'griditem_lunar_mine_vein_radiation',
     'griditems/radiation_meteor_ore': 'griditem_radiation_meteor_ore',
     'griditems/pumpkin_house': 'griditem_pumpkin_house',
+    'griditems/pumpkin_scarecrow': 'griditem_pumpkin_scarecrow',
+    'griditems/living_armor_left': 'griditem_living_armor_left',
+    'griditems/living_armor_right': 'griditem_living_armor_right',
+    'griditems/wizard_crucible': 'griditem_wizard_crucible',
     'griditems/magic_mirror': 'griditem_magic_mirror',
     'griditems/magic_mirror1': 'griditem_magic_mirror1',
     'griditems/magic_mirror2': 'griditem_magic_mirror2',

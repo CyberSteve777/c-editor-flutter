@@ -18,7 +18,14 @@ void main() {
   });
 
   test('catalog contains every guide and supplemental module', () {
-    expect(MusicTypeCatalog.modules, hasLength(35));
+    expect(MusicTypeCatalog.modules, hasLength(36));
+    final halloween = MusicTypeCatalog.forSuffix('Halloween')!;
+    expect(halloween.choices.map((choice) => choice.value), [
+      'MainPath',
+      'MiniGame_A',
+      'MiniGame_B',
+    ]);
+    expect(halloween.noteKeys, contains('musicTypeNote_regularBossNoIntro'));
     expect(MusicTypeCatalog.forSuffix('modern')?.suffix, 'modern');
     expect(MusicTypeCatalog.forSuffix('Modern')?.suffix, 'modern');
     expect(MusicTypeCatalog.forSuffix('MAUSOLEUM')?.suffix, 'Mausoleum');
@@ -225,8 +232,17 @@ void main() {
     final currentChoice = find.text('法老王的琨曲诅咒 (MainPath)');
     expect(
       tester.widget<Text>(currentChoice).style?.fontWeight,
-      FontWeight.bold,
+      isNot(FontWeight.bold),
     );
+    final victoryChoice = find.textContaining('(VictoryOutro)');
+    final musicStyle = DefaultTextStyle.of(
+      tester.element(currentChoice),
+    ).style.merge(tester.widget<Text>(currentChoice).style);
+    final victoryStyle = DefaultTextStyle.of(
+      tester.element(victoryChoice),
+    ).style.merge(tester.widget<Text>(victoryChoice).style);
+    expect(musicStyle.fontSize, victoryStyle.fontSize);
+    expect(musicStyle.fontWeight, victoryStyle.fontWeight);
     await tester.ensureVisible(currentChoice);
     await tester.tap(currentChoice);
     await tester.pumpAndSettle();

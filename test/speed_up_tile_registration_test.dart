@@ -26,6 +26,8 @@ void main() {
     final metadata = ModuleRegistry.getMetadata(_speedUpTileClass);
 
     expect(metadata.objClass, _speedUpTileClass);
+    expect(metadata.assetIconPath, isNull);
+    expect(metadata.icon, Icons.fast_forward);
     expect(metadata.isCore, isTrue);
     expect(metadata.category, ModuleCategory.scene);
     expect(metadata.defaultAlias, 'SpeedUpTile');

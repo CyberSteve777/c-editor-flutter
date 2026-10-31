@@ -9,6 +9,22 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get updateNotNeededTitle => '无需更新';
+
+  @override
+  String get updateCheckFailedLinks => '也可通过以下链接检查编辑器是否有更新：';
+
+  @override
+  String get updateOpenBilibili => '打开B站动态';
+
+  @override
+  String get updateJoinDiscord => '加入Discord服务器';
+
+  @override
+  String get speedUpTileCompatibilityWarning =>
+      '加速带会被「地宫坑道」或「远征地砖」模块添加的地块覆盖，从而无法生效，请勿同时使用。';
+
+  @override
   String get updateSaveWorkGuidance =>
       '自动保存会在正常退出支持的编辑页面时执行，刷新或关闭网页可能跳过此流程。更新前请确认关卡和 JSON 已保存，测试包和预览图已导出完成。此弹窗不会代为保存，也不会自动刷新或重启。';
 
@@ -791,6 +807,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get renameFail => '重命名失败，已有同名文件';
 
   @override
+  String get renameEventFail => '事件代号修改失败，关卡中已有对象使用该代号。';
+
+  @override
+  String get renameModuleFail => '模块代号修改失败，关卡中已有对象使用该代号。';
+
+  @override
+  String get renameCustomZombieFail => '自定义僵尸代号修改失败，关卡中已有对象使用该代号。';
+
+  @override
+  String get renameAliasFail => '代号修改失败，关卡中已有对象使用该代号。';
+
+  @override
+  String get copyEventAliasFail => '事件复制失败，关卡中已有对象使用该代号。';
+
+  @override
   String get uploadLevel => '上传至创意庭院';
 
   @override
@@ -1307,7 +1338,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get levelBasicInfoHelpRestrictionsBody =>
-      '这里提供禁用豆藤共生和神器开关。在庭院模块下神器自动禁用，无需手动开启禁用开关。';
+      '这里提供禁用豆藤共生和神器的开关。豆藤共生是豌豆藤蔓的五阶技能，账户中拥有五阶豌豆藤蔓的玩家在开启该技能后，种植豌豆类植物时会立即附带种植1棵豌豆藤蔓，可能影响使用豌豆类植物的关卡的游玩体验。 在庭院模块下神器自动禁用，无需手动开启禁用开关。';
 
   @override
   String get waveTimelineJitterOffsetsTitle => '出怪位置偏移预设';
@@ -2386,6 +2417,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get disablePeavine => '禁用豆藤共生';
 
   @override
+  String get peaSymbiosisWarningTitle => '建议禁用豆藤共生';
+
+  @override
+  String get peaSymbiosisWarning =>
+      '检测到本关可以使用以下豌豆类植物。拥有五阶豌豆藤蔓且已在账户中启用豆藤共生的玩家种植这些植物时，会自动附带种植豌豆藤蔓，可能影响关卡体验。建议前往「关卡基本信息」，禁用豆藤共生。';
+
+  @override
+  String peaSymbiosisAffectedPlants(String plants) {
+    return '涉及植物：$plants';
+  }
+
+  @override
   String get disableArtifact => '禁用神器（庭院模式下自动生效）';
 
   @override
@@ -2958,7 +3001,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '点击格子可在空地（可种植）与霉菌（不可种植）之间切换。网格上方会显示当前选中的行列位置。';
 
   @override
-  String get moduleTitle_ZombiePotionModuleProperties => '僵尸药水';
+  String get moduleTitle_ZombiePotionModuleProperties => '邪恶药水';
 
   @override
   String get moduleDesc_ZombiePotionModuleProperties => '配置黑暗时代药水自动生成机制';
@@ -3196,6 +3239,12 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get eventHelpEagleStandardUsage =>
       '选中网格中的格子，点击“+”添加鹰旗。可在同一格放置多面鹰旗，并通过下方卡片删除。网格会根据当前草坪调整大小，草坪外的鹰旗会单独列出。';
+
+  @override
+  String get eventTitle_SpawnPumpkinScarecrowWaveActionProps => '稻草人生成';
+
+  @override
+  String get eventDesc_SpawnPumpkinScarecrowWaveActionProps => '在指定位置生成南瓜稻草人';
 
   @override
   String get eventTitle_PumpkinHouseActionProps => '南瓜屋生成';
@@ -3480,7 +3529,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get groundTrackNormal => '普通地面 (ground_swatch)';
 
   @override
-  String get groundTrackNone => '无 (null)';
+  String get groundTrackNone => '无';
 
   @override
   String get appearanceBehavior => '外观与行为设置';
@@ -4718,6 +4767,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zombieFromLeft => '从场地左侧出现';
 
   @override
+  String get zombieFromRight => '从场地右侧出现';
+
+  @override
+  String get zombieEntrySideLabel => '出现侧 (Direction)';
+
+  @override
+  String get zombieRandomSide => '随机一侧出现';
+
+  @override
+  String get zombieRandomSideDescription => '每只僵尸在创建时独立随机选择场地左侧或右侧。';
+
+  @override
   String get eventMagicMirror => '事件类型：魔镜传送';
 
   @override
@@ -4772,10 +4833,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get weatherModule => '环境天气模块说明';
 
   @override
-  String get zombiePotion => '僵尸药水模块';
+  String get zombiePotion => '邪恶药水模块';
 
   @override
-  String get zombiePotionHelpTitle => '僵尸药水模块说明';
+  String get zombiePotionHelpTitle => '邪恶药水模块说明';
 
   @override
   String get eventTimeRift => '事件类型：时空裂缝';
@@ -6872,6 +6933,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleDesc_LawnMowerProperties => '设置小推车样式，注意在庭院中不生效';
 
   @override
+  String get moduleTitle_InitialGridItemWizardCrucibleProps => '巫师坩埚';
+
+  @override
+  String get moduleDesc_InitialGridItemWizardCrucibleProps => '配置童话森林的巫师坩埚';
+
+  @override
   String get moduleTitle_SpeedUpTileModuleProperties => '加速带';
 
   @override
@@ -6966,6 +7033,31 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get gulliverTunnelDeleteOutsideConfirmMessage =>
       '将移除 5×9 场地之外的格列佛隧道，此操作不可撤销。';
+
+  @override
+  String get wizardCauldronBoilingDuration =>
+      '投入能量豆后沸腾的时间 (BoilingDuration，单位：秒)';
+
+  @override
+  String get wizardCauldronExplosionDamage => '坩埚爆炸伤害 (ExplodeDamageAmount)';
+
+  @override
+  String get wizardCauldronVenomDamagePerSecond =>
+      '坩埚毒液每秒伤害 (VenomDamageAmountPerSecond)';
+
+  @override
+  String get wizardCauldronVenomDuration =>
+      '坩埚毒液遗留时间 (VenomExistDuration，单位：秒)';
+
+  @override
+  String get wizardCauldronHelpOverview =>
+      '在场地上预先放置巫师坩埚，常用于童话森林地图。投入能量豆后，坩埚会短暂沸腾。\n沸腾时投入植物，会随机生成相同数量、相同阶数的更高一级品质植物：白色变绿色，绿色变蓝色，蓝色变紫色；橙色则随机生成其他橙色植物。\n生命值归零时，坩埚会爆炸，对附近造成伤害，并产生一圈短暂存在的毒液，持续伤害范围内的植物。\n可以自定义每个坩埚的生命值、投入能量豆后沸腾的时间、爆炸对植物和僵尸的伤害、毒液遗留时间和毒液每秒的伤害。';
+
+  @override
+  String get wizardCauldronPositions => '坩埚放置位置';
+
+  @override
+  String get wizardCauldronHitpoints => '坩埚生命值 (CrucibleHitpoints)';
 
   @override
   String get speedUpTileTitle => '加速带';
@@ -9596,6 +9688,22 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get gravityHelpHeavy =>
       '被锁定的植物将其一半压入土中，期间无法攻击，可被僵尸啃食；被锁定的僵尸稳固行进，免疫击退效果。\n宇宙飞碟瓜可以解除僵尸的超重力状态，并使其进入悬浮态；同时还可以解除植物的超重力状态，使其恢复正常。';
+
+  @override
+  String get pumpkinScarecrowSpawnCount => '稻草人生成数量 (Count)';
+
+  @override
+  String get pumpkinScarecrowCrowLevel => '乌鸦阶级 (Level，从0开始计数)';
+
+  @override
+  String get pumpkinScarecrowHelpOverview =>
+      '常见于惊魂万圣夜秘境，在指定位置生成南瓜稻草人。每隔一段时间，稻草人上的僵尸乌鸦就会飞走并叼走植物。乌鸦离开后，新的乌鸦会从场外飞入，因此只要稻草人未被破坏，乌鸦就会持续出现。可自定义稻草人的生命值及乌鸦阶级。';
+
+  @override
+  String get pumpkinScarecrowPositions => '稻草人生成位置';
+
+  @override
+  String get pumpkinScarecrowHitpoints => '稻草人生命值 (Hitpoints)';
 
   @override
   String get rocketLandingHelpTitle => '火箭降落';

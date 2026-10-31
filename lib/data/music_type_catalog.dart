@@ -463,6 +463,15 @@ abstract final class MusicTypeCatalog {
       noteKeys: ['musicTypeNote_romanBossWithIntro'],
     ),
     MusicTypeModule(
+      suffix: 'Halloween',
+      choices: [
+        MusicTypeChoice(value: mainPath, labelKey: 'musicSuffix_Halloween'),
+        MusicTypeChoice(value: miniGameA, labelKey: 'musicSuffix_Halloween'),
+        MusicTypeChoice(value: miniGameB, labelKey: 'musicSuffix_Halloween'),
+      ],
+      noteKeys: ['musicTypeNote_regularBossNoIntro'],
+    ),
+    MusicTypeModule(
       suffix: 'Gnomiverse',
       choices: [
         MusicTypeChoice(

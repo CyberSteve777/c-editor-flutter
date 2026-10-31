@@ -1,4 +1,5 @@
 import 'package:c_editor/widgets/autosave.dart';
+import 'package:c_editor/screens/editor/halloween_placement_screen.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:collection/collection.dart';
@@ -1870,6 +1871,21 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
 
+    if (objClass == 'SpawnPumpkinScarecrowWaveActionProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => HalloweenPlacementScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            cauldron: false,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
     if (objClass == 'PumpkinHouseActionProps') {
       await Navigator.push(
         context,
@@ -2265,9 +2281,9 @@ class _EditorScreenState extends State<EditorScreen> {
     }
   }
 
-  void _handleEditCustomZombie(String rtid) {
+  Future<void> _handleEditCustomZombie(String rtid) async {
     if (_ec.state.levelFile == null) return;
-    Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CustomZombiePropertiesScreen(
@@ -3678,6 +3694,22 @@ class _EditorScreenState extends State<EditorScreen> {
           builder: (context) => PowerTilePropertiesScreen(
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
+        objClass == 'InitialGridItemWizardCrucibleProps') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => HalloweenPlacementScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            cauldron: true,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
           ),

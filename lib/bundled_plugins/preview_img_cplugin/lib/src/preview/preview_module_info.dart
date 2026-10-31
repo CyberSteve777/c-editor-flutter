@@ -1,7 +1,10 @@
 import 'package:c_editor/data/oak_archery_preview.dart';
+import 'package:c_editor/data/halloween_content.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/app_localizations_en.dart';
 import 'dart:math' as math;
+import 'dart:convert';
+import 'package:flutter/widgets.dart';
 
 import 'package:collection/collection.dart';
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_document.dart';
@@ -20,6 +23,14 @@ import 'package:c_editor/screens/common/level_preview_grid_helpers.dart';
 typedef PreviewModuleL10n =
     String Function(String key, String fallback, [Map<String, Object?>? args]);
 
+/// An editor-only composite option, never registered as a game module.
+const previewInitialLawnOverviewOption = '__initialLawnOverview__';
+
+String previewModuleInfoTitle(BuildContext context, String objClass) =>
+    objClass == previewInitialLawnOverviewOption
+    ? AppLocalizations.of(context)!.previewTabInitialLawnOverview
+    : ModuleRegistry.getMetadata(objClass).getTitle(context);
+
 /// Structured module-info payload for text labels and/or icon grids.
 class PreviewModuleInfoPayload {
   const PreviewModuleInfoPayload({
@@ -28,6 +39,7 @@ class PreviewModuleInfoPayload {
     this.sections = const [],
     this.lawnRows,
     this.lawnCols,
+    this.initialLawnJson,
   });
 
   /// Full human-readable lines for text-label mode (includes cells, counts…).
@@ -43,6 +55,7 @@ class PreviewModuleInfoPayload {
   /// When set with [lawnCols], the icon-grid is a mini lawn like level preview.
   final int? lawnRows;
   final int? lawnCols;
+  final String? initialLawnJson;
 
   String get textBody => lines.where((l) => l.trim().isNotEmpty).join('\n');
 
@@ -56,7 +69,8 @@ class PreviewModuleInfoPayload {
       lawnCols != null &&
       lawnRows! > 0 &&
       lawnCols! > 0 &&
-      sections.any((s) => s.items.any((i) => i.hasCell));
+      (initialLawnJson != null ||
+          sections.any((s) => s.items.any((i) => i.hasCell)));
 }
 
 /// Builds informative content for a module present on the level.
@@ -70,6 +84,15 @@ PreviewModuleInfoPayload previewModuleInfoBuild({
   final name = resourceName ?? _fallbackResourceName;
   final l10n = appL10n ?? AppLocalizationsEn();
   switch (objClass) {
+    case previewInitialLawnOverviewOption:
+      final (rows, cols) = getGridDimensions(levelFile);
+      return PreviewModuleInfoPayload(
+        lines: [l10n.previewTabInitialLawnOverview],
+        lawnRows: rows,
+        lawnCols: cols,
+        initialLawnJson: jsonEncode(levelFile.toJson()),
+        sections: [PreviewIconSection(items: [])],
+      );
     case 'OakTrainProperties':
       final raw = _objMap(levelFile, objClass);
       if (raw == null) return const PreviewModuleInfoPayload(lines: []);
@@ -171,6 +194,45 @@ PreviewModuleInfoPayload previewModuleInfoBuild({
       return _tunnelDefend(levelFile, t);
     case 'SpeedUpTileModuleProperties':
       return _speedUpTiles(levelFile, t);
+    case 'InitialGridItemWizardCrucibleProps':
+      final data = _objMap(levelFile, objClass);
+      final items = (data?['InitialGridItemWizardCrucibles'] as List? ?? [])
+          .whereType<Map>()
+          .toList();
+      final (rows, cols) = _lawnDims(levelFile);
+      final label = l10n.moduleTitle_InitialGridItemWizardCrucibleProps;
+      final fields = {
+        'CrucibleHitpoints': l10n.wizardCauldronHitpoints,
+        'BoilingDuration': l10n.wizardCauldronBoilingDuration,
+        'ExplodeDamageAmount': l10n.wizardCauldronExplosionDamage,
+        'VenomDamageAmountPerSecond': l10n.wizardCauldronVenomDamagePerSecond,
+        'VenomExistDuration': l10n.wizardCauldronVenomDuration,
+      };
+      return PreviewModuleInfoPayload(
+        lines: [
+          for (final item in items) ...[
+            '$label ${_cell(t, (item['GridX'] as num).toInt(), (item['GridY'] as num).toInt())}',
+            for (final field in fields.entries)
+              '${field.value}: ${item[field.key] ?? newCauldron(0, 0)[field.key]}',
+          ],
+        ],
+        lawnRows: rows,
+        lawnCols: cols,
+        sections: [
+          PreviewIconSection(
+            items: [
+              for (var i = 0; i < items.length; i++)
+                PreviewItem(
+                  id: 'wizard_crucible_$i',
+                  assetPath: 'assets/images/griditems/wizard_crucible.webp',
+                  label: label,
+                  gridX: (items[i]['GridX'] as num).toInt(),
+                  gridY: (items[i]['GridY'] as num).toInt(),
+                ),
+            ],
+          ),
+        ],
+      );
     case 'ManholePipelineModuleProperties':
       return _manholePipeline(levelFile, t);
     case 'MoldColonyChallengeProps':
@@ -273,6 +335,7 @@ List<String> previewPresentModuleObjClasses(PvzLevelFile levelFile) {
     'RenaiModuleProperties',
     'TunnelDefendModuleProperties',
     'SpeedUpTileModuleProperties',
+    'InitialGridItemWizardCrucibleProps',
     'ManholePipelineModuleProperties',
     'MoldColonyChallengeProps',
     'SunDropperProperties',
@@ -284,8 +347,14 @@ List<String> previewPresentModuleObjClasses(PvzLevelFile levelFile) {
   };
 
   final preferredPresent = present.where(preferred.contains).toList()..sort();
-  if (preferredPresent.isNotEmpty) return preferredPresent;
-  return present.toList()..sort();
+  final options = preferredPresent.isNotEmpty
+      ? preferredPresent
+      : (present.toList()..sort());
+  return [
+    if (initialLawnOverviewKinds(levelFile).length >= 2)
+      previewInitialLawnOverviewOption,
+    ...options,
+  ];
 }
 
 // --- helpers -----------------------------------------------------------------

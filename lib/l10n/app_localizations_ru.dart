@@ -9,6 +9,23 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get updateNotNeededTitle => 'Обновление не требуется';
+
+  @override
+  String get updateCheckFailedLinks =>
+      'Проверить наличие обновлений редактора также можно по следующим ссылкам:';
+
+  @override
+  String get updateOpenBilibili => 'Открыть публикацию Bilibili';
+
+  @override
+  String get updateJoinDiscord => 'Присоединиться к серверу Discord';
+
+  @override
+  String get speedUpTileCompatibilityWarning =>
+      'Плитки модулей «Дорожки подземного дворца» и «Плитки экспедиции» перекрывают ускоряющие плитки, из-за чего те не работают. Не используйте эти модули одновременно.';
+
+  @override
   String get updateSaveWorkGuidance =>
       'Автосохранение работает при обычном выходе из поддерживаемых редакторов. Обновление или закрытие страницы может пропустить его. Перед обновлением проверьте сохранение уровня и JSON, завершите экспорт тестовых пакетов и изображений. Этот диалог не сохраняет работу и не перезапускает приложение.';
 
@@ -825,6 +842,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String get renameFail => 'Ошибка переименования, файл уже существует';
 
   @override
+  String get renameEventFail =>
+      'Не удалось изменить псевдоним события: он уже используется объектом уровня.';
+
+  @override
+  String get renameModuleFail =>
+      'Не удалось изменить псевдоним модуля: он уже используется объектом уровня.';
+
+  @override
+  String get renameCustomZombieFail =>
+      'Не удалось изменить псевдоним пользовательского зомби: он уже используется объектом уровня.';
+
+  @override
+  String get renameAliasFail =>
+      'Не удалось изменить псевдоним: он уже используется объектом уровня.';
+
+  @override
+  String get copyEventAliasFail =>
+      'Не удалось скопировать событие: этот псевдоним уже используется объектом уровня.';
+
+  @override
   String get uploadLevel => 'Опубликовать на Креаторскую Площадку';
 
   @override
@@ -1360,7 +1397,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get levelBasicInfoHelpRestrictionsBody =>
-      'Здесь находятся переключатели для отключения взаимодействия с гороховой лозой и артефактов. При включённом модуле Творческого двора артефакты отключаются автоматически, поэтому вручную включать переключатель отключения не требуется.';
+      'Здесь находятся переключатели для отключения «Симбиоза гороховой лозы» и артефактов. «Симбиоз гороховой лозы» — навык гороховой лозы 5-го уровня. Если у игрока есть гороховая лоза 5-го уровня и этот навык включён в аккаунте, при посадке растения семейства гороха сразу же дополнительно высаживается одна гороховая лоза, что может повлиять на прохождение уровней с гороховыми растениями. В режиме Творческого двора артефакты отключаются автоматически, поэтому вручную включать переключатель не требуется.';
 
   @override
   String get waveTimelineJitterOffsetsTitle =>
@@ -2481,6 +2518,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get disablePeavine => 'Отключить гороховую лозу';
 
   @override
+  String get peaSymbiosisWarningTitle =>
+      'Рекомендуется отключить симбиоз гороховой лозы';
+
+  @override
+  String get peaSymbiosisWarning =>
+      'На этом уровне доступны следующие гороховые растения. Если у игрока есть Гороховая Лоза 5-го уровня и в учётной записи включён её симбиоз, при посадке любого из них автоматически высаживается Гороховая Лоза, что может повлиять на задуманный игровой процесс. Перейдите в «Основные данные уровня» и отключите симбиоз гороховой лозы.';
+
+  @override
+  String peaSymbiosisAffectedPlants(String plants) {
+    return 'Затронутые растения: $plants';
+  }
+
+  @override
   String get disableArtifact => 'Отключить артефакты';
 
   @override
@@ -3372,6 +3422,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Выберите клетку и нажмите «+», чтобы добавить орлиный штандарт. В одной клетке можно разместить несколько штандартов и удалять их с помощью карточек ниже. Размер сетки зависит от текущего газона; штандарты за его пределами отображаются отдельно.';
 
   @override
+  String get eventTitle_SpawnPumpkinScarecrowWaveActionProps =>
+      'Появление пугал';
+
+  @override
+  String get eventDesc_SpawnPumpkinScarecrowWaveActionProps =>
+      'Создать тыквенные пугала в указанных клетках';
+
+  @override
   String get eventTitle_PumpkinHouseActionProps =>
       'Появление тыквенных домиков';
 
@@ -3673,7 +3731,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get groundTrackNormal => 'Обычная земля (ground_swatch)';
 
   @override
-  String get groundTrackNone => 'Нет (null)';
+  String get groundTrackNone => 'Нет';
 
   @override
   String get appearanceBehavior => 'Внешний вид и поведение';
@@ -4936,6 +4994,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombieFromLeft => 'Слева';
+
+  @override
+  String get zombieFromRight => 'Появляться с правой стороны поля';
+
+  @override
+  String get zombieEntrySideLabel => 'Сторона появления (Direction)';
+
+  @override
+  String get zombieRandomSide => 'Появляться со случайной стороны';
+
+  @override
+  String get zombieRandomSideDescription =>
+      'При создании каждый зомби независимо выбирает левую или правую сторону поля.';
 
   @override
   String get eventMagicMirror => 'Событие волшебного зеркала';
@@ -7199,6 +7270,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moduleDesc_LawnMowerProperties => 'Стиль газонокосилок для уровня';
 
   @override
+  String get moduleTitle_InitialGridItemWizardCrucibleProps => 'Ведьмин котёл';
+
+  @override
+  String get moduleDesc_InitialGridItemWizardCrucibleProps =>
+      'Настроить котлы Сказочного леса';
+
+  @override
   String get moduleTitle_SpeedUpTileModuleProperties => 'Ускоряющие плитки';
 
   @override
@@ -7304,6 +7382,32 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get gulliverTunnelDeleteOutsideConfirmMessage =>
       'Удалить размещения тоннелей за пределами сетки 5×9.';
+
+  @override
+  String get wizardCauldronBoilingDuration =>
+      'Кипение после подкормки (BoilingDuration, единица: секунды)';
+
+  @override
+  String get wizardCauldronExplosionDamage =>
+      'Урон взрыва котла (ExplodeDamageAmount)';
+
+  @override
+  String get wizardCauldronVenomDamagePerSecond =>
+      'Урон яда котла в секунду (VenomDamageAmountPerSecond)';
+
+  @override
+  String get wizardCauldronVenomDuration =>
+      'Время существования яда котла (VenomExistDuration, единица: секунды)';
+
+  @override
+  String get wizardCauldronHelpOverview =>
+      'Разместите котлы Сказочного леса. Подкормка ненадолго заставляет котёл кипеть.\nВо время кипения растения заменяются случайными растениями следующего качества с тем же количеством и уровнем: белые на зелёные, зелёные на синие, синие на фиолетовые; оранжевые на другие оранжевые.\nПри потере здоровья котёл взрывается и оставляет временное кольцо яда, повреждающее растения.\nДля каждого котла можно настроить здоровье, время кипения после подкормки, урон взрыва растениям и зомби, время существования яда и его урон в секунду.';
+
+  @override
+  String get wizardCauldronPositions => 'Позиции котлов';
+
+  @override
+  String get wizardCauldronHitpoints => 'Здоровье котла (CrucibleHitpoints)';
 
   @override
   String get speedUpTileTitle => 'Ускоряющие плитки';
@@ -10099,6 +10203,22 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get gravityHelpHeavy =>
       'Выбранные растения наполовину вдавливаются в землю. В этом состоянии они не могут атаковать, но зомби по-прежнему могут их есть. Выбранные зомби уверенно движутся вперёд и становятся невосприимчивыми к отбрасыванию.\nКосмическая Тарелка снимает гипергравитацию с зомби и переводит их в состояние парения. Она также снимает гипергравитацию с растений, возвращая их в нормальное состояние.';
+
+  @override
+  String get pumpkinScarecrowSpawnCount => 'Количество пугал (Count)';
+
+  @override
+  String get pumpkinScarecrowCrowLevel => 'Уровень воронов (Level, отсчёт с 0)';
+
+  @override
+  String get pumpkinScarecrowHelpOverview =>
+      'Встречается на уровнях Хэллоуина. Вороны периодически покидают пугало и уносят растения. На место улетевших прилетают новые вороны, пока пугало не уничтожено. Можно настроить здоровье пугала и уровень воронов.';
+
+  @override
+  String get pumpkinScarecrowPositions => 'Позиции появления пугал';
+
+  @override
+  String get pumpkinScarecrowHitpoints => 'Здоровье пугала (Hitpoints)';
 
   @override
   String get rocketLandingHelpTitle => 'Приземление раке';

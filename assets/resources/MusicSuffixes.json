@@ -33,6 +33,7 @@
     "TeamBossRoman",
     "SilkRoad",
     "Roman",
+    "Halloween",
     "Sportz",
     "Gnomiverse",
     "rift"
@@ -71,6 +72,7 @@
     "Sportz": "Stage_DaveCup.webp",
     "Gnomiverse": "Suffix_Gnomiverse.webp",
     "Roman": "Suffix_Roman.webp",
+    "Halloween": "Suffix_Halloween.webp",
     "ZCorp": "Stage_ZCorp.webp",
     "rift": "Suffix_rift.webp"
   }

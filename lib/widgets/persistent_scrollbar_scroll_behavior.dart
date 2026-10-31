@@ -95,9 +95,8 @@ class PersistentScrollbarScrollBehavior extends MaterialScrollBehavior {
     final safePadding = MediaQuery.paddingOf(context);
     final safeInset = onLeft ? safePadding.left : safePadding.right;
     final width = math.max(20.0, thickness + margin * 2 + 4) + safeInset;
-    return onLeft
-        ? EdgeInsets.only(left: width)
-        : EdgeInsets.only(right: width);
+    // Keep centered content centered while reserving room for the thumb.
+    return EdgeInsets.symmetric(horizontal: width);
   }
 
   @override
