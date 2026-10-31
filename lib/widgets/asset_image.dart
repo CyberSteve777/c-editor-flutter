@@ -11,6 +11,18 @@ const List<String> kImageExtensions = [
   '.bmp',
 ];
 
+/// Display-only trims for the original 390×390 armor sprites. Keep all
+/// nontransparent pixels (including the sword, feet, and faint shadow).
+Rect? livingArmorDisplayCrop(String assetPath) {
+  if (assetPath == 'assets/images/griditems/living_armor_left.webp') {
+    return const Rect.fromLTWH(114, 40, 172, 346);
+  }
+  if (assetPath == 'assets/images/griditems/living_armor_right.webp') {
+    return const Rect.fromLTWH(104, 40, 172, 342);
+  }
+  return null;
+}
+
 /// Returns alternate asset paths for fallback when primary path fails.
 /// Prefers .gif first so animated icons display correctly.
 List<String> imageAltCandidates(String assetPath) {
@@ -66,10 +78,7 @@ class AssetImageWidget extends StatefulWidget {
     _preloadComplete = true;
   }
 
-  static String? resolvePath(
-    String assetPath, [
-    List<String>? altCandidates,
-  ]) {
+  static String? resolvePath(String assetPath, [List<String>? altCandidates]) {
     final cacheKey = '$assetPath|${altCandidates?.join(",") ?? ""}';
     if (_pathCache.containsKey(cacheKey)) {
       return _pathCache[cacheKey];
@@ -199,6 +208,33 @@ class _AssetImageWidgetState extends State<AssetImageWidget> {
     }
     if (_resolvedPath == null) {
       return placeholder;
+    }
+    final crop = livingArmorDisplayCrop(_resolvedPath!);
+    if (crop != null) {
+      return SizedBox(
+        width: widget.width,
+        height: widget.height,
+        child: FittedBox(
+          fit: BoxFit.contain,
+          child: SizedBox(
+            width: crop.width,
+            height: crop.height,
+            child: ClipRect(
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: -crop.left,
+                    top: -crop.top,
+                    width: 390,
+                    height: 390,
+                    child: Image.asset(_resolvedPath!, fit: BoxFit.fill),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
     }
     return Image.asset(
       _resolvedPath!,

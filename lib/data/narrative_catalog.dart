@@ -20,6 +20,293 @@ enum NarrativeCategory {
   }
 }
 
+/// Stable second-level groups used by the narrative picker.
+///
+/// These ids are deliberately independent of localized titles so catalogue
+/// entries stay grouped the same way in every language.
+enum NarrativeSectionId {
+  tutorialYard,
+  ancientEgypt,
+  pirateSeas,
+  wildWest,
+  kongfuWorld,
+  farFuture,
+  darkAges,
+  bigWaveBeach,
+  frostbiteCaves,
+  skyCity,
+  lostCity,
+  neonMixtapeTour,
+  jurassicMarsh,
+  modernDay,
+  steamAges,
+  renaissanceAges,
+  heianAges,
+  underwaterWorld,
+  moonBase,
+  memoryImport,
+  memorySeason27,
+  memorySeason28,
+  memorySeason29,
+  memorySeason30,
+  memorySeason31,
+  memorySeason32,
+  secretRealm,
+  twoPlayerDuel,
+  pennysPursuit,
+  endlessModes,
+  pvpMode,
+  cardClash,
+  plantEncounter,
+  travelLog,
+  zenGarden,
+  pinataParty,
+  systemTutorials,
+}
+
+class NarrativeSection {
+  const NarrativeSection({
+    required this.id,
+    required this.category,
+    required this.iconAsset,
+    required this.labelKey,
+  });
+
+  final NarrativeSectionId id;
+  final NarrativeCategory category;
+  final String iconAsset;
+  final String labelKey;
+}
+
+const _narrativeSections = <NarrativeSection>[
+  NarrativeSection(
+    id: NarrativeSectionId.tutorialYard,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Mode_Tutorial.webp',
+    labelKey: 'sectionTutorialYard',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.ancientEgypt,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Egypt.webp',
+    labelKey: 'sectionAncientEgypt',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.pirateSeas,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Pirate.webp',
+    labelKey: 'sectionPirateSeas',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.wildWest,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_West.webp',
+    labelKey: 'sectionWildWest',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.kongfuWorld,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Kongfu.webp',
+    labelKey: 'sectionKongfuWorld',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.farFuture,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Future.webp',
+    labelKey: 'sectionFarFuture',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.darkAges,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Dark.webp',
+    labelKey: 'sectionDarkAges',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.bigWaveBeach,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Beach.webp',
+    labelKey: 'sectionBigWaveBeach',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.frostbiteCaves,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Iceage.webp',
+    labelKey: 'sectionFrostbiteCaves',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.skyCity,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Skycity.webp',
+    labelKey: 'sectionSkyCity',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.lostCity,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_LostCity.webp',
+    labelKey: 'sectionLostCity',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.neonMixtapeTour,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Eighties.webp',
+    labelKey: 'sectionNeonMixtapeTour',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.jurassicMarsh,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Dino.webp',
+    labelKey: 'sectionJurassicMarsh',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.modernDay,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Modern.webp',
+    labelKey: 'sectionModernDay',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.steamAges,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Steam.webp',
+    labelKey: 'sectionSteamAges',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.renaissanceAges,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Renai.webp',
+    labelKey: 'sectionRenaissanceAges',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.heianAges,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Heian.webp',
+    labelKey: 'sectionHeianAges',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.underwaterWorld,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Atlantis.webp',
+    labelKey: 'sectionUnderwaterWorld',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.moonBase,
+    category: NarrativeCategory.mainWorlds,
+    iconAsset: 'assets/images/round_icons/Stage_Moon.webp',
+    labelKey: 'sectionMoonBase',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.memoryImport,
+    category: NarrativeCategory.memoryLane,
+    iconAsset: 'assets/images/round_icons/Mode_MemoryLane.webp',
+    labelKey: 'sectionMemoryImport',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.memorySeason27,
+    category: NarrativeCategory.memoryLane,
+    iconAsset: 'assets/images/round_icons/Mode_MemoryLaneS27.webp',
+    labelKey: 'sectionMemorySeason27',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.memorySeason28,
+    category: NarrativeCategory.memoryLane,
+    iconAsset: 'assets/images/round_icons/Mode_MemoryLaneS28.webp',
+    labelKey: 'sectionMemorySeason28',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.memorySeason29,
+    category: NarrativeCategory.memoryLane,
+    iconAsset: 'assets/images/round_icons/Mode_MemoryLaneS29.webp',
+    labelKey: 'sectionMemorySeason29',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.memorySeason30,
+    category: NarrativeCategory.memoryLane,
+    iconAsset: 'assets/images/round_icons/Mode_MemoryLaneS30.webp',
+    labelKey: 'sectionMemorySeason30',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.memorySeason31,
+    category: NarrativeCategory.memoryLane,
+    iconAsset: 'assets/images/round_icons/Mode_MemoryLaneS31.webp',
+    labelKey: 'sectionMemorySeason31',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.memorySeason32,
+    category: NarrativeCategory.memoryLane,
+    iconAsset: 'assets/images/round_icons/Mode_MemoryLaneS32.webp',
+    labelKey: 'sectionMemorySeason32',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.secretRealm,
+    category: NarrativeCategory.otherModes,
+    iconAsset: 'assets/images/round_icons/Mode_SecretRealm.webp',
+    labelKey: 'sectionSecretRealm',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.twoPlayerDuel,
+    category: NarrativeCategory.otherModes,
+    iconAsset: 'assets/images/round_icons/Mode_NewPvP.webp',
+    labelKey: 'sectionTwoPlayerDuel',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.pennysPursuit,
+    category: NarrativeCategory.otherModes,
+    iconAsset: 'assets/images/round_icons/Mode_PennysPursuit.webp',
+    labelKey: 'sectionPennysPursuit',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.endlessModes,
+    category: NarrativeCategory.otherModes,
+    iconAsset: 'assets/images/round_icons/Mode_Endless.webp',
+    labelKey: 'sectionEndlessModes',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.pvpMode,
+    category: NarrativeCategory.otherModes,
+    iconAsset: 'assets/images/round_icons/Mode_PvP.webp',
+    labelKey: 'sectionPvpMode',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.cardClash,
+    category: NarrativeCategory.otherModes,
+    iconAsset: 'assets/images/round_icons/Mode_CardClash.webp',
+    labelKey: 'sectionCardClash',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.plantEncounter,
+    category: NarrativeCategory.otherModes,
+    iconAsset: 'assets/images/round_icons/Mode_PlantEncounter.webp',
+    labelKey: 'sectionPlantEncounter',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.travelLog,
+    category: NarrativeCategory.otherModes,
+    iconAsset: 'assets/images/round_icons/Mode_TravelLog.webp',
+    labelKey: 'sectionTravelLog',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.zenGarden,
+    category: NarrativeCategory.otherModes,
+    iconAsset: 'assets/images/round_icons/Mode_ZenGarden.webp',
+    labelKey: 'sectionZenGarden',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.pinataParty,
+    category: NarrativeCategory.otherModes,
+    iconAsset: 'assets/images/round_icons/Mode_PinataParty.webp',
+    labelKey: 'sectionPinataParty',
+  ),
+  NarrativeSection(
+    id: NarrativeSectionId.systemTutorials,
+    category: NarrativeCategory.systemTutorials,
+    iconAsset: 'assets/images/round_icons/Mode_Tutorial.webp',
+    labelKey: 'sectionSystemTutorials',
+  ),
+];
+
+final _narrativeSectionById = {
+  for (final section in _narrativeSections) section.id: section,
+};
+
 enum NarrativeLineKind {
   speech,
   stage,
@@ -169,6 +456,12 @@ class NarrativeStrings {
     NarrativeCategory.systemTutorials => this['tagSystemTutorials'],
   };
 
+  String sectionLabel(NarrativeSection section) => this[section.labelKey];
+
+  String dialogueCount(int count) {
+    return this['dialogueCount'].replaceAll('{count}', '$count');
+  }
+
   String searchGroupLabel(String key, int count) {
     return this[key].replaceAll('{count}', '$count');
   }
@@ -181,7 +474,31 @@ class NarrativeCatalog {
     required this.dialogues,
   }) : _byValue = {
          for (final dialogue in dialogues) dialogue.valueKey: dialogue,
-       };
+       } {
+    final sourceIndexes = <String, int>{};
+    final sectionIds = <String, NarrativeSectionId>{};
+    final entriesBySection = <NarrativeSectionId, List<NarrativeEntry>>{
+      for (final section in _narrativeSections) section.id: [],
+    };
+    for (var index = 0; index < dialogues.length; index++) {
+      final dialogue = dialogues[index];
+      final sectionId = _resolveNarrativeSectionId(dialogue);
+      sourceIndexes[dialogue.groupId] = index;
+      sectionIds[dialogue.groupId] = sectionId;
+      entriesBySection[sectionId]!.add(dialogue);
+    }
+    for (final entry in entriesBySection.entries) {
+      entry.value.sort(
+        (a, b) => _compareSectionEntries(entry.key, a, b, sourceIndexes),
+      );
+    }
+    _sectionIdByGroupId = Map.unmodifiable(sectionIds);
+    _entriesBySection =
+        Map<NarrativeSectionId, List<NarrativeEntry>>.unmodifiable({
+          for (final entry in entriesBySection.entries)
+            entry.key: List<NarrativeEntry>.unmodifiable(entry.value),
+        });
+  }
 
   factory NarrativeCatalog.fromJson(Map<String, dynamic> json) {
     final dialogues = (json['dialogues'] as List<dynamic>? ?? const [])
@@ -207,6 +524,8 @@ class NarrativeCatalog {
   final NarrativeStrings strings;
   final List<NarrativeEntry> dialogues;
   final Map<String, NarrativeEntry> _byValue;
+  late final Map<String, NarrativeSectionId> _sectionIdByGroupId;
+  late final Map<NarrativeSectionId, List<NarrativeEntry>> _entriesBySection;
 
   static String localeCodeFor(Locale locale) => switch (locale.languageCode) {
     'zh' => 'zh',
@@ -249,9 +568,179 @@ class NarrativeCatalog {
   List<NarrativeEntry> forCategory(NarrativeCategory category) {
     if (category == NarrativeCategory.all) return dialogues;
     return dialogues
-        .where((dialogue) => dialogue.category == category)
+        .where((dialogue) => displayCategory(dialogue) == category)
         .toList(growable: false);
   }
+
+  List<NarrativeSection> sectionsForCategory(NarrativeCategory category) {
+    if (category == NarrativeCategory.all) return _narrativeSections;
+    return _narrativeSections
+        .where((section) => section.category == category)
+        .toList(growable: false);
+  }
+
+  NarrativeSection sectionForEntry(NarrativeEntry entry) {
+    final id =
+        _sectionIdByGroupId[entry.groupId] ??
+        NarrativeSectionId.systemTutorials;
+    return _narrativeSectionById[id]!;
+  }
+
+  List<NarrativeEntry> entriesForSection(NarrativeSectionId id) {
+    return _entriesBySection[id] ?? const [];
+  }
+
+  NarrativeCategory displayCategory(NarrativeEntry entry) {
+    return sectionForEntry(entry).category;
+  }
+
+  String displayIcon(NarrativeEntry entry) {
+    return sectionForEntry(entry).iconAsset;
+  }
+}
+
+NarrativeSectionId _resolveNarrativeSectionId(NarrativeEntry entry) {
+  final id = entry.groupId;
+  final number = entry.number;
+
+  if (entry.category == NarrativeCategory.mainWorlds) {
+    if (id == 'TUTORIAL_EGYPT6_INTRO' || id == 'TUTORIAL_EGYPT8_INTRO') {
+      return NarrativeSectionId.ancientEgypt;
+    }
+    if (number.startsWith('1.1.')) return NarrativeSectionId.tutorialYard;
+    if (number.startsWith('1.3.')) return NarrativeSectionId.ancientEgypt;
+    if (number.startsWith('1.4.')) return NarrativeSectionId.pirateSeas;
+    if (number.startsWith('1.5.')) {
+      return id == 'COWBOY_OUTRO_ZOMBOSS_INTRO'
+          ? NarrativeSectionId.farFuture
+          : NarrativeSectionId.wildWest;
+    }
+    if (number.startsWith('2.1.')) return NarrativeSectionId.kongfuWorld;
+    if (number.startsWith('1.6.')) return NarrativeSectionId.farFuture;
+    if (number.startsWith('1.7.')) return NarrativeSectionId.darkAges;
+    if (number.startsWith('1.8.')) return NarrativeSectionId.bigWaveBeach;
+    if (number.startsWith('1.9.')) return NarrativeSectionId.frostbiteCaves;
+    if (number.startsWith('2.2.')) return NarrativeSectionId.skyCity;
+    if (number.startsWith('1.10.')) return NarrativeSectionId.lostCity;
+    if (number.startsWith('1.11.')) {
+      return NarrativeSectionId.neonMixtapeTour;
+    }
+    if (number.startsWith('1.12.')) return NarrativeSectionId.jurassicMarsh;
+    if (number.startsWith('1.13.')) return NarrativeSectionId.modernDay;
+    if (number.startsWith('2.3.')) return NarrativeSectionId.steamAges;
+    if (number.startsWith('2.4.')) return NarrativeSectionId.renaissanceAges;
+    if (number.startsWith('2.5.')) return NarrativeSectionId.heianAges;
+    if (number.startsWith('2.6.')) return NarrativeSectionId.underwaterWorld;
+    if (number.startsWith('2.7.')) return NarrativeSectionId.moonBase;
+    return NarrativeSectionId.systemTutorials;
+  }
+
+  if (entry.category == NarrativeCategory.memoryLane) {
+    if (id == 'TUTORIAL_PVZ1_INTRO' || number.startsWith('3.7.')) {
+      return NarrativeSectionId.memoryImport;
+    }
+    if (number.startsWith('3.1.')) return NarrativeSectionId.memorySeason27;
+    if (number.startsWith('3.2.')) return NarrativeSectionId.memorySeason28;
+    if (number.startsWith('3.3.')) return NarrativeSectionId.memorySeason29;
+    if (number.startsWith('3.4.')) return NarrativeSectionId.memorySeason30;
+    if (number.startsWith('3.5.')) return NarrativeSectionId.memorySeason31;
+    if (number.startsWith('3.6.')) return NarrativeSectionId.memorySeason32;
+    return NarrativeSectionId.systemTutorials;
+  }
+
+  if (id == 'TUTORIAL_TRAVELLOG_INTRO' ||
+      id == 'QUEST_INTRO' ||
+      id.startsWith('EPIC_QUEST_')) {
+    return NarrativeSectionId.travelLog;
+  }
+
+  if (entry.category == NarrativeCategory.otherModes) {
+    if (id == 'TUTORIAL_PVZ2_UNCHARTED_MODE_INTRO' ||
+        entry.iconAsset.endsWith('/Mode_SecretRealm.webp') ||
+        id.startsWith('HALLOWEEN_')) {
+      return NarrativeSectionId.secretRealm;
+    }
+    if (id == 'TUTORIAL_NEW_PVP_INTRO' || id.startsWith('NEW_PVP_')) {
+      return NarrativeSectionId.twoPlayerDuel;
+    }
+    if (id == 'TUTORIAL_PVP_INTRO' ||
+        id.startsWith('PVP_') ||
+        id.startsWith('MAP_PVP')) {
+      return NarrativeSectionId.pvpMode;
+    }
+    if (id == 'TUTORIAL_RIFT_INTRO' || id.startsWith('RIFT_WORLD_')) {
+      return NarrativeSectionId.pennysPursuit;
+    }
+    if (id == 'TUTORIAL_CARD_GAME_INTRO' || id.startsWith('CARD_GAME_')) {
+      return NarrativeSectionId.cardClash;
+    }
+    if (id.startsWith('PLANTTRIAL_')) {
+      return NarrativeSectionId.plantEncounter;
+    }
+    if (id == 'NEW_DANGER_ROOM_INTRO' ||
+        id.startsWith('DANGER_ROOM_') ||
+        id.startsWith('DANGERROOM_')) {
+      return NarrativeSectionId.endlessModes;
+    }
+    if (id.startsWith('ZEN_GARDEN_')) return NarrativeSectionId.zenGarden;
+    if (entry.iconAsset.endsWith('/Mode_PinataParty.webp')) {
+      return NarrativeSectionId.pinataParty;
+    }
+  }
+
+  return NarrativeSectionId.systemTutorials;
+}
+
+int _compareSectionEntries(
+  NarrativeSectionId sectionId,
+  NarrativeEntry a,
+  NarrativeEntry b,
+  Map<String, int> sourceIndexes,
+) {
+  if (sectionId != NarrativeSectionId.systemTutorials) {
+    final tutorialOrder = _modeTutorialPriority(
+      a,
+    ).compareTo(_modeTutorialPriority(b));
+    if (tutorialOrder != 0) return tutorialOrder;
+  }
+  if (sectionId == NarrativeSectionId.secretRealm) {
+    final releaseOrder = _secretRealmReleaseOrder(
+      a,
+    ).compareTo(_secretRealmReleaseOrder(b));
+    if (releaseOrder != 0) return releaseOrder;
+  }
+  return (sourceIndexes[a.groupId] ?? 0).compareTo(
+    sourceIndexes[b.groupId] ?? 0,
+  );
+}
+
+int _modeTutorialPriority(NarrativeEntry entry) {
+  if (entry.groupId.startsWith('TUTORIAL_')) return 0;
+  if (entry.groupId == 'QUEST_INTRO') return 1;
+  return 2;
+}
+
+int _secretRealmReleaseOrder(NarrativeEntry entry) {
+  final id = entry.groupId;
+  if (id == 'TUTORIAL_PVZ2_UNCHARTED_MODE_INTRO') return 0;
+  if (id == 'ANNIVERSARY_UNCHARTED_EVENT_TUTORIAL' ||
+      id.startsWith('HALLOWEEN_')) {
+    return 2;
+  }
+  if (id.startsWith('CHILDRENSDAY_')) return 4;
+  if (id.startsWith('SPECIAL_UNCHARTED_')) return 5;
+  if (id.startsWith('CHRISTMAS_202512_') ||
+      id.startsWith('ICEAGE_UNCHARTED_') ||
+      id.startsWith('UNCHARTED_ICEAGE_')) {
+    return 7;
+  }
+  if (id.startsWith('SPRING_FESTIVAL_2024_')) return 8;
+  if (id.startsWith('ARBORDAY_')) return 9;
+  if (id.startsWith('NEEDFORSPEED_')) return 10;
+  if (id.startsWith('NO42_') || id.startsWith('UNCHARTED_NO42_')) return 11;
+  if (id.startsWith('MAUSOLEUM_')) return 15;
+  if (id.startsWith('ARENA_')) return 16;
+  return 99;
 }
 
 String? _nonEmptyString(Object? value) {

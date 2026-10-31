@@ -117,6 +117,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(testCase.expected), findsOneWidget);
+      expect(
+        tester.widget<Text>(find.text(testCase.expected)).textAlign,
+        TextAlign.start,
+      );
+      expect(tester.widget<Text>(find.text('Body')).textAlign, TextAlign.start);
       expect(tester.takeException(), isNull);
     });
   }

@@ -745,11 +745,16 @@ class LevelIssueRegistry {
       message: (_, l10n) => l10n.peaSymbiosisWarning,
       bulletPoints: (context, l10n, ctx) {
         final repo = PlantRepository();
-        final names = ctx.enabledPeaPlantIds
+        final enabled = ctx.enabledPeaPlantIds;
+        final ordered = [
+          for (final plant in repo.allPlants)
+            if (enabled.contains(plant.id)) plant.id,
+          ...enabled.where((id) => !repo.allPlants.any((p) => p.id == id)),
+        ];
+        final names = ordered
             .map((id) => _plantDisplayName(context, repo, id))
             .toSet()
             .toList();
-        names.sort();
         final languageCode = Localizations.localeOf(context).languageCode;
         final separator = languageCode == 'zh' ? '、' : ', ';
         return [l10n.peaSymbiosisAffectedPlants(names.join(separator))];

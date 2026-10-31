@@ -125,6 +125,8 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
         controller: controller,
         keyboardType: keyboardType,
         maxLines: maxLines,
+        textAlign: TextAlign.start,
+        textAlignVertical: TextAlignVertical.top,
         decoration: decoration,
         onChanged: (_) => onChanged(),
       ),
@@ -188,6 +190,7 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
         builder: (routeContext) => NarrativeSelectionScreen(
           catalog: catalog,
           currentValue: currentValue,
+          stateBucketId: 'level:${identityHashCode(widget.levelFile)}',
           onSelected: (value) {
             Navigator.of(routeContext).pop();
             if (!mounted) return;
@@ -219,7 +222,7 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
     final displayTitle = value == null
         ? catalog.strings.noDialogue
         : entry?.title ?? value.toString();
-    final iconAsset = entry?.iconAsset;
+    final iconAsset = entry == null ? null : catalog.displayIcon(entry);
 
     return Card(
       key: ValueKey('narrative-setting-$fieldName'),

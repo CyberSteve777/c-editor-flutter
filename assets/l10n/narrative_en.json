@@ -23,7 +23,45 @@
     "selectDialogue": "Select dialogue",
     "clearDialogue": "Set to no dialogue",
     "unavailableDialogue": "This dialogue has no usable starting text and cannot be selected",
-    "loadError": "Failed to load narrative data"
+    "loadError": "Failed to load narrative data",
+    "dialogueCount": "{count} dialogues",
+    "sectionTutorialYard": "Player's House",
+    "sectionAncientEgypt": "Ancient Egypt",
+    "sectionPirateSeas": "Pirate Seas",
+    "sectionWildWest": "Wild West",
+    "sectionKongfuWorld": "Kongfu World",
+    "sectionFarFuture": "Far Future",
+    "sectionDarkAges": "Dark Ages",
+    "sectionBigWaveBeach": "Big Wave Beach",
+    "sectionFrostbiteCaves": "Frostbite Caves",
+    "sectionSkyCity": "Sky City",
+    "sectionLostCity": "Lost City",
+    "sectionNeonMixtapeTour": "Neon Mixtape Tour",
+    "sectionJurassicMarsh": "Jurassic Marsh",
+    "sectionModernDay": "Modern Day",
+    "sectionSteamAges": "Steam Ages",
+    "sectionRenaissanceAges": "Renaissance Ages",
+    "sectionHeianAges": "Heian Ages",
+    "sectionUnderwaterWorld": "Underwater World",
+    "sectionMoonBase": "Moon BaseZ",
+    "sectionMemoryImport": "Imported Dialogue",
+    "sectionMemorySeason27": "Season 27",
+    "sectionMemorySeason28": "Season 28",
+    "sectionMemorySeason29": "Season 29",
+    "sectionMemorySeason30": "Season 30",
+    "sectionMemorySeason31": "Season 31",
+    "sectionMemorySeason32": "Season 32",
+    "sectionSecretRealm": "Secret Realm",
+    "sectionPvpMode": "PvP Mode",
+    "sectionCardClash": "Card Clash",
+    "sectionTwoPlayerDuel": "Two-Player Duel",
+    "sectionPennysPursuit": "Penny's Pursuit",
+    "sectionPlantEncounter": "Plant Encounter",
+    "sectionEndlessModes": "Endless Zone / Endless Challenge",
+    "sectionTravelLog": "Travel Log",
+    "sectionZenGarden": "Zen Garden",
+    "sectionPinataParty": "Piñata Party",
+    "sectionSystemTutorials": "System Tutorials"
   },
   "dialogues": [
     {
@@ -22207,7 +22245,7 @@
         {
           "key": "NARRATIVE_PVZ1MODE_1_INTRO_2",
           "kind": "speech",
-          "text": "Warning: Abnormal fluctuations in space-time energy, dangerous signal detected.",
+          "text": "Warning: Abnormal fluctuations in spacetime energy, dangerous signal detected.",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -22269,21 +22307,21 @@
         {
           "key": "NARRATIVE_PVZ1MODE_2_INTRO_3",
           "kind": "speech",
-          "text": "The detector shows that the surrounding space-time energy is even more chaotic.",
+          "text": "The detector shows that the surrounding spacetime energy is even more chaotic.",
           "speaker": "Penny",
           "npc": "winnie"
         },
         {
           "key": "NARRATIVE_PVZ1MODE_2_INTRO_4",
           "kind": "speech",
-          "text": "There is also a space-time stabilizer in the trunk!",
+          "text": "There is also a spacetime stabilizer in the trunk!",
           "speaker": "Crazy Dave",
           "npc": "crazydave"
         },
         {
           "key": "NARRATIVE_PVZ1MODE_2_INTRO_5",
           "kind": "speech",
-          "text": "Those lingering zombies are here again, let me activate the space-time stabilizer.",
+          "text": "Those lingering zombies are here again, let me activate the spacetime stabilizer.",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -23622,7 +23660,7 @@
         {
           "key": "NARRATIVE_FLICK_1",
           "kind": "speech",
-          "text": "I have a new discovery! When you access the time stream at the right moment, you can even adjust the space-time hyperparticles.",
+          "text": "I have a new discovery! When you access the time stream at the right moment, you can even adjust the spacetime hyperparticles.",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -24542,7 +24580,7 @@
       "number": "4.1.55",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "System Tutorial - Spacetime Secret Realm",
+      "title": "System Tutorial - Secret Realm",
       "characters": [
         "winnie",
         "crazydave"
@@ -30085,7 +30123,7 @@
         {
           "key": "NARRATIVE_SUPER_ACCESSORY_TUTORIAL_1",
           "kind": "speech",
-          "text": "You've obtained a new pendant. This one is special: you can enhance it with Space-Time Crystals!",
+          "text": "You've obtained a new pendant. This one is special: you can enhance it with spacetime Crystals!",
           "speaker": "Researcher Crazy Dave",
           "emotion": "playful",
           "npc": "researchercrazydave"
@@ -31910,7 +31948,7 @@
         {
           "key": "NARRATIVE_RIFT_WORLD_OPEN_TUTORIAL_2",
           "kind": "speech",
-          "text": "Oh my god! Dr. Zomboss kidnaps Dave! I have to recharge my new fuel cell and dive into the space-time rift!",
+          "text": "Oh my god! Dr. Zomboss kidnaps Dave! I have to recharge my new fuel cell and dive into the spacetime rift!",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -32674,7 +32712,7 @@
         {
           "key": "NARRATIVE_NO42_UNIVERSE_UNCHARTED_EVENT_TUTORIAL_2",
           "kind": "speech",
-          "text": "Data suggests that this is a new vortex black hole formed due to the chaos of time fluctuations within the space-time canal.",
+          "text": "Data suggests that this is a new vortex black hole formed due to the chaos of time fluctuations within the spacetime canal.",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"

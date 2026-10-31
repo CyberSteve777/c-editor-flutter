@@ -2388,6 +2388,7 @@ void showEditorHelpDialog(
             Expanded(
               child: Text(
                 displayTitle,
+                textAlign: TextAlign.start,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -2426,6 +2427,7 @@ void showEditorHelpDialog(
                           padding: const EdgeInsets.only(left: 12),
                           child: Text(
                             s.body,
+                            textAlign: TextAlign.start,
                             style: TextStyle(
                               fontSize: 13,
                               color: Theme.of(ctx).colorScheme.onSurfaceVariant,

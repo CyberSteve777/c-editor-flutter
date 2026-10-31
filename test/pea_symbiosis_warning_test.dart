@@ -83,6 +83,48 @@ void main() {
       isTrue,
     );
   });
+  testWidgets(
+    'unrestricted affected plants follow Plants.json rather than translated names',
+    (tester) async {
+      final level = _level(
+        moduleAliases: ['SeedBank'],
+        objects: [
+          _object('SeedBank', 'SeedBankProperties', {
+            'SelectionMethod': 'chooser',
+          }),
+        ],
+      );
+      late LevelIssue warning;
+      late List<String> names;
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) {
+              warning = LevelIssueRegistry.forLevel(context, level).singleWhere(
+                (i) => i.id == kPeaSymbiosisDisableRecommendedIssueId,
+              );
+              final ids = LevelIssueContext.fromLevel(level).enabledPeaPlantIds;
+              names = PlantRepository().allPlants
+                  .where((p) => ids.contains(p.id))
+                  .map((p) => ResourceNames.lookup(context, p.name))
+                  .toSet()
+                  .toList();
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
+      expect(names.first, 'Peashooter');
+      expect(warning.bulletPoints, [
+        lookupAppLocalizations(
+          const Locale('en'),
+        ).peaSymbiosisAffectedPlants(names.join(', ')),
+      ]);
+    },
+  );
 
   test('bundled templates with usable pea plants disable Pea Symbiosis', () {
     final templateDirectory = Directory('assets/reference/template');
@@ -380,7 +422,7 @@ void main() {
 
     expect(find.text('建议禁用豆藤共生'), findsOneWidget);
     expect(find.textContaining('检测到本关可以使用以下豌豆类植物'), findsOneWidget);
-    expect(find.text('• 涉及植物：双重射手、豌豆射手'), findsOneWidget);
+    expect(find.text('• 涉及植物：豌豆射手、双重射手'), findsOneWidget);
     expect(find.text('• 豌豆射手'), findsNothing);
     expect(find.text('• 双重射手'), findsNothing);
     expect(find.textContaining('pea'), findsNothing);

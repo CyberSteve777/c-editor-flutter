@@ -5,11 +5,15 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/basic_info_screen.dart';
 import 'package:c_editor/screens/select/narrative_selection_screen.dart';
+import 'package:c_editor/utils/selection_view_memory.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  setUp(NarrativeCatalog.clearCacheForTesting);
+  setUp(() {
+    NarrativeCatalog.clearCacheForTesting();
+    SelectionViewMemoryStore.clear();
+  });
 
   testWidgets('basic info selects integer, string, and no-dialogue values', (
     tester,
@@ -50,6 +54,10 @@ void main() {
     for (final tag in const ['全部', '主线世界', '回忆之旅', '其他模式', '系统教学']) {
       expect(find.text(tag), findsOneWidget);
     }
+    expect(find.text('铲子引导'), findsNothing);
+
+    await tester.tap(find.text('教程庭院'));
+    await tester.pumpAndSettle();
     expect(find.text('铲子引导'), findsOneWidget);
 
     await tester.tap(find.text('铲子引导'));
@@ -79,6 +87,10 @@ void main() {
     await tester.tap(
       find.byKey(const ValueKey('narrative-setting-FirstIntroNarrative')),
     );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.clear));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
     await tester.tap(find.text('无对话'));
     await tester.pumpAndSettle();
@@ -115,6 +127,9 @@ void main() {
       ),
     );
     await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('教程庭院'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('${entry.number} ·'), findsNothing);

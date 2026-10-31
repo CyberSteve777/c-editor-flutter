@@ -11,6 +11,7 @@ import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/halloween_placement_screen.dart';
 import 'package:c_editor/screens/editor_screen.dart';
+import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/preview_module_info.dart';
 
 void main() {
@@ -19,7 +20,7 @@ void main() {
     'scarecrow and cauldron labels use separate namespaces and established terminology',
     () async {
       for (final locale in ['zh', 'en', 'ru']) {
-      final raw = await File('assets/l10n/app_$locale.arb').readAsString();
+        final raw = await File('assets/l10n/app_$locale.arb').readAsString();
         final copy = jsonDecode(raw) as Map;
         expect(
           copy.keys.where((key) => key.toString().startsWith('halloween')),
@@ -219,6 +220,14 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        expect(
+          find.text(cauldron ? cauldronClass : scarecrowClass),
+          findsOneWidget,
+        );
+        if (cauldron) {
+          await tester.tap(find.widgetWithText(OutlinedButton, '添加'));
+          await tester.pumpAndSettle();
+        }
         final cell = find
             .descendant(
               of: find.byType(GridView),
@@ -237,14 +246,48 @@ void main() {
         expect(position[cauldron ? 'GridX' : 'mX'], 0);
         expect(position[cauldron ? 'GridY' : 'mY'], 0);
         expect(data['FutureField'], 42);
+        expect(find.byType(GridItemIcon), findsWidgets);
+        if (!cauldron) {
+          await tester.tap(cell);
+          await tester.pumpAndSettle();
+          expect(data['SpawnPositionsPool'], isEmpty);
+          await tester.tap(cell);
+          await tester.pumpAndSettle();
+        }
         if (cauldron) {
+          await tester.tap(find.byKey(const ValueKey('placementCell_1_0')));
+          await tester.pumpAndSettle();
+          expect(
+            (data['InitialGridItemWizardCrucibles'] as List),
+            hasLength(2),
+          );
+          expect(position['GridX'], 0);
+          await tester.tap(cell);
+          await tester.pumpAndSettle();
+          expect(
+            (data['InitialGridItemWizardCrucibles'] as List),
+            hasLength(2),
+          );
           final preview = previewModuleInfoBuild(
             levelFile: level,
             objClass: cauldronClass,
             t: (key, fallback, [args]) => fallback,
           );
-          expect(preview.sections.single.items.single.gridX, 0);
+          expect(preview.sections.single.items.last.gridX, 1);
         }
+        tester.view.physicalSize = const Size(320, 900);
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        await tester.tap(find.byIcon(Icons.help_outline));
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsOneWidget);
+        final strings = lookupAppLocalizations(const Locale('zh'));
+        final body = find.text(
+          cauldron
+              ? strings.wizardCauldronHelpOverview
+              : strings.pumpkinScarecrowHelpOverview,
+        );
+        expect(tester.widget<Text>(body).textAlign, TextAlign.start);
         expect(tester.takeException(), isNull);
       },
     );

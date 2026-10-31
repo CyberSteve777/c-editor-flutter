@@ -1724,8 +1724,14 @@ class _PreviewGeneratorScreenState extends State<PreviewGeneratorScreen> {
               builder: (dialogContext) => AlertDialog(
                 key: const ValueKey('previewGeneratorExitDialog'),
                 scrollable: true,
-                title: Text(_t('previewGenExitTitle')),
-                content: Text(_t('previewGenExitHint')),
+                title: Text(
+                  _t('previewGenExitTitle'),
+                  textAlign: TextAlign.start,
+                ),
+                content: Text(
+                  _t('previewGenExitHint'),
+                  textAlign: TextAlign.start,
+                ),
                 actions: [
                   TextButton(
                     key: const ValueKey('previewGeneratorCancelExitButton'),

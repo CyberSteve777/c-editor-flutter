@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/data/halloween_content.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
@@ -62,156 +64,254 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
 
   Widget number(Map target, String key, String label) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 8),
-    child: TextFormField(
-      key: ValueKey('${identityHashCode(target)}_$key'),
-      initialValue: '${target[key] ?? 0}',
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+    child: EditorResponsiveInputField(
+      label: label,
+      decoration: const InputDecoration(border: OutlineInputBorder()),
+      builder: (context, decoration) => TextFormField(
+        key: ValueKey('${identityHashCode(target)}_$key'),
+        initialValue: '${target[key] ?? 0}',
+        textAlign: TextAlign.start,
+        decoration: decoration,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        onChanged: (text) {
+          final value = num.tryParse(text);
+          if (value == null || !value.isFinite || value < 0) return;
+          if ((key == 'Level' || key == 'Count') && value != value.truncate()) {
+            return;
+          }
+          target[key] = key == 'Level' || key == 'Count'
+              ? value.toInt()
+              : value;
+          sync();
+        },
       ),
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      onChanged: (text) {
-        final value = num.tryParse(text);
-        if (value == null || !value.isFinite || value < 0) return;
-        if ((key == 'Level' || key == 'Count') && value != value.truncate()) {
-          return;
-        }
-        target[key] = key == 'Level' || key == 'Count' ? value.toInt() : value;
-        sync();
-      },
     ),
   );
+
+  Widget card(List<Widget> children) => Card(
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: children,
+      ),
+    ),
+  );
+
+  void editCell(int x, int y) {
+    if (widget.cauldron) {
+      final index = positions.indexWhere(
+        (p) => p['GridX'] == x && p['GridY'] == y,
+      );
+      if (index >= 0) {
+        selected = index;
+      } else {
+        positions.add(newCauldron(x, y));
+        selected = positions.length - 1;
+      }
+    } else {
+      final index = positions.indexWhere((p) => p['mX'] == x && p['mY'] == y);
+      if (index >= 0) {
+        positions.removeWhere((p) => p['mX'] == x && p['mY'] == y);
+      } else {
+        positions.add({'mX': x, 'mY': y});
+      }
+    }
+    sync();
+  }
+
+  Widget grid() {
+    final dims = LevelParser.getGridDimensionsFromFile(widget.levelFile);
+    final rows = dims.$1, cols = dims.$2;
+    final theme = Theme.of(context);
+    return scaleTableForDesktop(
+      context: context,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: AspectRatio(
+          aspectRatio: cols / rows,
+          child: Container(
+            key: ValueKey(
+              widget.cauldron
+                  ? 'wizardCauldronGrid'
+                  : 'scarecrowPositionPoolGrid',
+            ),
+            decoration: BoxDecoration(
+              color: theme.brightness == Brightness.dark
+                  ? const Color(0xFF2A2A2A)
+                  : const Color(0xFFD7CCC8),
+              border: Border.all(color: Colors.brown),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: GridView.count(
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: cols,
+              children: List.generate(rows * cols, (i) {
+                final x = i % cols, y = i ~/ cols;
+                final matches = positions.asMap().entries.where(
+                  (e) =>
+                      e.value[widget.cauldron ? 'GridX' : 'mX'] == x &&
+                      e.value[widget.cauldron ? 'GridY' : 'mY'] == y,
+                );
+                final highlighted = widget.cauldron
+                    ? matches.any((e) => e.key == selected)
+                    : matches.isNotEmpty;
+                return InkWell(
+                  key: ValueKey('placementCell_${x}_$y'),
+                  onTap: () => editCell(x, y),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.brown.withValues(alpha: .5),
+                        width: .5,
+                      ),
+                      color: highlighted
+                          ? theme.colorScheme.primary.withValues(alpha: .3)
+                          : null,
+                    ),
+                    child: matches.isEmpty
+                        ? null
+                        : GridItemIcon(
+                            typeName: widget.cauldron
+                                ? 'wizard_crucible'
+                                : 'pumpkin_scarecrow',
+                            size: 40,
+                            fit: BoxFit.contain,
+                          ),
+                  ),
+                );
+              }),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget identity(String type) => Row(
+    children: [
+      GridItemIcon(typeName: type, size: 48, fit: BoxFit.contain),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              ResourceNames.lookupOrFallback(context, 'griditem_$type', type),
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            Text(type, style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ),
+      ),
+    ],
+  );
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final title = widget.cauldron
         ? l.moduleTitle_InitialGridItemWizardCrucibleProps
         : l.eventTitle_SpawnPumpkinScarecrowWaveActionProps;
-    final dimensions = LevelParser.getGridDimensionsFromFile(widget.levelFile);
-    final rows = dimensions.$1, cols = dimensions.$2;
-    final xKey = widget.cauldron ? 'GridX' : 'mX',
-        yKey = widget.cauldron ? 'GridY' : 'mY';
+    final objClass = widget.cauldron ? cauldronClass : scarecrowClass;
+    final count = widget.cauldron
+        ? positions.length
+        : (data['PumpkinScarecrowPool'] as List).fold<int>(
+            0,
+            (sum, e) => sum + (e['Count'] as num? ?? 0).toInt(),
+          );
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: l.back,
           onPressed: widget.onBack,
         ),
-        title: Text(title),
+        title: buildEditorObjectAppBarTitle(
+          context: context,
+          localizedName: title,
+          isEvent: !widget.cauldron,
+          objClass: objClass,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
-            onPressed: () => showDialog<void>(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                title: Text(title),
-                scrollable: true,
-                content: Text(
-                  widget.cauldron
+            tooltip: widget.cauldron
+                ? l.tooltipAboutModule
+                : l.tooltipAboutEvent,
+            onPressed: () => showEditorHelpDialog(
+              context,
+              title: title,
+              isEvent: !widget.cauldron,
+              sections: [
+                HelpSectionData(
+                  title: l.overview,
+                  body: widget.cauldron
                       ? l.wizardCauldronHelpOverview
                       : l.pumpkinScarecrowHelpOverview,
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    child: Text(l.ok),
-                  ),
-                ],
-              ),
+              ],
             ),
           ),
         ],
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1000),
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (widget.cauldron)
+              ModuleAliasInputField(
+                rtid: widget.rtid,
+                alias: alias,
+                levelFile: widget.levelFile,
+                onAliasChanged: rename,
+              )
+            else
               EditorAliasInputField(
                 alias: alias,
                 levelFile: widget.levelFile,
-                onAliasChanged: (value) {
-                  renameLevelObjectAlias(
-                    levelFile: widget.levelFile,
-                    oldAlias: alias,
-                    newAlias: value,
-                    onChanged: widget.onChanged,
-                  );
-                  setState(() => alias = value);
-                },
+                onAliasChanged: rename,
               ),
-              const SizedBox(height: 16),
-              Text(
-                widget.cauldron
-                    ? l.wizardCauldronPositions
-                    : l.pumpkinScarecrowPositions,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 12),
-              AspectRatio(
-                aspectRatio: cols / rows,
-                child: GridView.count(
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: cols,
-                  children: List.generate(rows * cols, (i) {
-                    final x = i % cols, y = i ~/ cols;
-                    final index = positions.indexWhere(
-                      (p) => p[xKey] == x && p[yKey] == y,
-                    );
-                    return InkWell(
-                      onTap: () {
-                        if (index < 0) {
-                          positions.add(
-                            widget.cauldron
-                                ? newCauldron(x, y)
-                                : {'mX': x, 'mY': y},
-                          );
-                          selected = positions.length - 1;
-                        } else {
-                          selected = index;
-                        }
-                        sync();
-                      },
-                      onLongPress: () {
-                        if (index >= 0) {
-                          positions.removeAt(index);
+            const SizedBox(height: 16),
+            if (widget.cauldron) ...[
+              HorizontalTagScroller(
+                padding: const EdgeInsets.only(bottom: 14),
+                children: [
+                  for (var i = 0; i < positions.length; i++)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: Text(
+                          '${l.moduleTitle_InitialGridItemWizardCrucibleProps} ${i + 1}',
+                        ),
+                        selected: i == selected,
+                        onSelected: (_) => setState(() => selected = i),
+                        onDeleted: () {
+                          positions.removeAt(i);
                           selected = 0;
                           sync();
-                        }
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.all(1),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          color: index >= 0
-                              ? Colors.orange.withValues(alpha: .35)
-                              : null,
-                        ),
-                        child: index < 0
-                            ? null
-                            : Icon(
-                                widget.cauldron
-                                    ? Icons.soup_kitchen
-                                    : Icons.cruelty_free,
-                              ),
+                        },
                       ),
-                    );
-                  }),
-                ),
+                    ),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      positions.add(newCauldron(0, 0));
+                      selected = positions.length - 1;
+                      sync();
+                    },
+                    icon: const Icon(Icons.add),
+                    label: Text(l.add),
+                  ),
+                ],
               ),
-              if (!widget.cauldron) ...[
-                number(data, 'Hitpoints', l.pumpkinScarecrowHitpoints),
-                number(data, 'Level', l.pumpkinScarecrowCrowLevel),
-                for (final pool in data['PumpkinScarecrowPool'] as List)
-                  number(pool, 'Count', l.pumpkinScarecrowSpawnCount),
-              ],
-              if (positions.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Text(
-                  '${positions[selected][xKey] + 1}, ${positions[selected][yKey] + 1}',
-                ),
-                if (widget.cauldron) ...[
+              card([grid()]),
+              const SizedBox(height: 16),
+              if (positions.isNotEmpty)
+                card([
+                  identity('wizard_crucible'),
+                  const SizedBox(height: 12),
                   number(
                     positions[selected],
                     'CrucibleHitpoints',
@@ -237,21 +337,63 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
                     'VenomExistDuration',
                     l.wizardCauldronVenomDuration,
                   ),
-                ],
-                OutlinedButton.icon(
-                  onPressed: () {
-                    positions.removeAt(selected);
-                    selected = 0;
-                    sync();
-                  },
-                  icon: const Icon(Icons.delete),
-                  label: Text(l.delete),
+                ]),
+            ] else ...[
+              card([
+                Text(
+                  l.positionPoolSpawnPositions,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ],
+                const SizedBox(height: 4),
+                Text(
+                  l.tapCellsSelectDeselect,
+                  textAlign: TextAlign.start,
+                  style: theme.textTheme.bodySmall,
+                ),
+                const SizedBox(height: 16),
+                grid(),
+                const SizedBox(height: 8),
+                EditorResponsiveFieldRow(
+                  breakpoint: 480,
+                  children: [
+                    Text(l.positionsCount(positions.length)),
+                    Text(l.totalItemsCount(count)),
+                  ],
+                ),
+                if (count > positions.length)
+                  Text(
+                    l.itemCountExceedsPositionsWarning,
+                    textAlign: TextAlign.start,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
+              ]),
+              const SizedBox(height: 16),
+              card([
+                identity('pumpkin_scarecrow'),
+                const SizedBox(height: 12),
+                for (final pool in data['PumpkinScarecrowPool'] as List)
+                  number(pool, 'Count', l.pumpkinScarecrowSpawnCount),
+                number(data, 'Hitpoints', l.pumpkinScarecrowHitpoints),
+                number(data, 'Level', l.pumpkinScarecrowCrowLevel),
+              ]),
             ],
-          ),
+          ],
         ),
       ),
     );
+  }
+
+  void rename(String value) {
+    renameLevelObjectAlias(
+      levelFile: widget.levelFile,
+      oldAlias: alias,
+      newAlias: value,
+      onChanged: widget.onChanged,
+    );
+    setState(() => alias = value);
   }
 }

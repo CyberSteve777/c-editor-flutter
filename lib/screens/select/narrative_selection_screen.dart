@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/narrative_catalog.dart';
 import 'package:c_editor/screens/select/narrative_preview_screen.dart';
+import 'package:c_editor/utils/selection_view_memory.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/selection_grid_layout.dart';
 
 class NarrativeSearchResults {
   const NarrativeSearchResults({
@@ -58,11 +60,17 @@ class NarrativeSelectionScreen extends StatefulWidget {
     required this.currentValue,
     required this.onSelected,
     required this.catalog,
+    this.stateBucketId,
   });
 
   final Object? currentValue;
   final ValueChanged<Object?> onSelected;
   final NarrativeCatalog catalog;
+
+  /// Keeps browsing state local to the level being edited. Intro and outro
+  /// intentionally share this bucket so returning to the picker resumes the
+  /// same section and scroll position.
+  final String? stateBucketId;
 
   @override
   State<NarrativeSelectionScreen> createState() =>
@@ -72,106 +80,332 @@ class NarrativeSelectionScreen extends StatefulWidget {
 class _NarrativeSelectionScreenState extends State<NarrativeSelectionScreen> {
   NarrativeCategory _category = NarrativeCategory.all;
   String _query = '';
+  NarrativeSectionId? _selectedSectionId;
+  late final SelectionViewMemory _memory;
+  late final ScrollController _scrollController;
+  NarrativeSearchResults? _cachedSearchResults;
+  String? _cachedSearchKey;
+  final Map<String, bool> _expandedSearchGroups = {
+    'title': true,
+    'content': true,
+    'speaker': true,
+  };
+
+  bool get _searching => _query.trim().isNotEmpty;
+
+  NarrativeSection? get _selectedSection {
+    final id = _selectedSectionId;
+    if (id == null) return null;
+    for (final section in widget.catalog.sectionsForCategory(
+      NarrativeCategory.all,
+    )) {
+      if (section.id == id) return section;
+    }
+    return null;
+  }
+
+  String get _memoryKey {
+    final bucket =
+        widget.stateBucketId ?? 'catalog:${identityHashCode(widget.catalog)}';
+    return '$bucket:narrative-selection';
+  }
+
+  String get _viewKey {
+    if (_searching) return 'search:${_category.name}';
+    final section = _selectedSection;
+    if (section != null) return 'section:${section.id.name}';
+    if (_category == NarrativeCategory.systemTutorials) {
+      return 'section:${NarrativeSectionId.systemTutorials.name}';
+    }
+    return 'grid:${_category.name}';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _memory = SelectionViewMemoryStore.forKey(_memoryKey);
+    _query = _memory.query;
+    final categoryName = _memory.filters['category'] as String?;
+    _category = NarrativeCategory.values.firstWhere(
+      (category) => category.name == categoryName,
+      orElse: () => NarrativeCategory.all,
+    );
+    final sectionName = _memory.filters['section'] as String?;
+    if (sectionName != null) {
+      for (final id in NarrativeSectionId.values) {
+        if (id.name == sectionName) {
+          _selectedSectionId = id;
+          break;
+        }
+      }
+    }
+    if (_selectedSection != null &&
+        _category != NarrativeCategory.all &&
+        _selectedSection!.category != _category) {
+      _selectedSectionId = null;
+    }
+    for (final name in _expandedSearchGroups.keys) {
+      final remembered = _memory.filters['searchExpanded:$name'];
+      if (remembered is bool) _expandedSearchGroups[name] = remembered;
+    }
+    _scrollController = ScrollController(
+      initialScrollOffset: _memory.scrollOffsets[_viewKey] ?? 0,
+    )..addListener(_rememberScrollOffset);
+  }
+
+  @override
+  void dispose() {
+    _rememberScrollOffset();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _rememberScrollOffset() {
+    if (_scrollController.hasClients) {
+      _memory.scrollOffsets[_viewKey] = _scrollController.offset;
+    }
+  }
+
+  void _restoreScrollOffset({bool reset = false}) {
+    if (reset) _memory.scrollOffsets[_viewKey] = 0;
+    final target = _memory.scrollOffsets[_viewKey] ?? 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      final position = _scrollController.position;
+      _scrollController.jumpTo(
+        target
+            .clamp(position.minScrollExtent, position.maxScrollExtent)
+            .toDouble(),
+      );
+    });
+  }
+
+  void _changeView(VoidCallback change, {bool resetScroll = false}) {
+    _rememberScrollOffset();
+    setState(change);
+    _memory.query = _query;
+    _memory.filters['category'] = _category.name;
+    _memory.filters['section'] = _selectedSectionId?.name;
+    _restoreScrollOffset(reset: resetScroll);
+  }
+
+  void _setCategory(NarrativeCategory category) {
+    if (_category == category && _selectedSectionId == null) return;
+    _changeView(() {
+      _category = category;
+      _selectedSectionId = null;
+      _cachedSearchResults = null;
+    });
+  }
+
+  void _setQuery(String value) {
+    if (_query == value) return;
+    _changeView(() {
+      _query = value;
+      _cachedSearchResults = null;
+    }, resetScroll: value.trim().isNotEmpty);
+  }
+
+  void _openSection(NarrativeSection section) {
+    _changeView(() => _selectedSectionId = section.id);
+  }
+
+  void _closeSection() {
+    if (_selectedSectionId == null) return;
+    _changeView(() => _selectedSectionId = null);
+  }
+
+  NarrativeSearchResults get _searchResults {
+    final cacheKey = '${_category.name}\u0000$_query';
+    if (_cachedSearchKey != cacheKey || _cachedSearchResults == null) {
+      _cachedSearchKey = cacheKey;
+      _cachedSearchResults = searchNarratives(
+        widget.catalog,
+        _category,
+        _query,
+      );
+    }
+    return _cachedSearchResults!;
+  }
+
+  void _toggleSearchGroup(String name) {
+    setState(() {
+      final expanded = !(_expandedSearchGroups[name] ?? true);
+      _expandedSearchGroups[name] = expanded;
+      _memory.filters['searchExpanded:$name'] = expanded;
+    });
+  }
+
+  void _handleBack() {
+    if (!_searching && _selectedSectionId != null) {
+      _closeSection();
+    } else {
+      Navigator.of(context).maybePop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final catalog = widget.catalog;
     final strings = catalog.strings;
-    final results = searchNarratives(catalog, _category, _query);
-    final searching = _query.trim().isNotEmpty;
+    final selectedSection = _selectedSection;
+    final canCloseSection = !_searching && selectedSection != null;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(onPressed: () => Navigator.of(context).maybePop()),
-        title: Text(strings.selectTitle),
-      ),
-      body: Column(
-        children: [
-          Material(
-            color:
-                Theme.of(context).appBarTheme.backgroundColor ??
-                Theme.of(context).colorScheme.surface,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: SelectionSearchField(
-                    hintText: strings.searchHint,
-                    query: _query,
-                    onChanged: (value) => setState(() => _query = value),
-                    onClear: () => setState(() => _query = ''),
+    return PopScope(
+      canPop: !canCloseSection,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && canCloseSection) _closeSection();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: BackButton(onPressed: _handleBack),
+          title: Text(
+            canCloseSection
+                ? strings.sectionLabel(selectedSection)
+                : strings.selectTitle,
+          ),
+        ),
+        body: Column(
+          children: [
+            Material(
+              color:
+                  Theme.of(context).appBarTheme.backgroundColor ??
+                  Theme.of(context).colorScheme.surface,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: SelectionSearchField(
+                      hintText: strings.searchHint,
+                      query: _query,
+                      onChanged: _setQuery,
+                      onClear: () => _setQuery(''),
+                    ),
                   ),
-                ),
-                HorizontalTagScroller(
-                  onAccentBar: true,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
+                  HorizontalTagScroller(
+                    onAccentBar: true,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
+                    initialScrollOffset: _memory.tagScrollOffset,
+                    onScrollOffsetChanged: (offset) {
+                      _memory.tagScrollOffset = offset;
+                    },
+                    children: [
+                      for (final category in NarrativeCategory.values)
+                        AccentBarChoiceChip(
+                          label: strings.categoryLabel(category),
+                          selected: _category == category,
+                          onSelected: (_) => _setCategory(category),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                        ),
+                    ],
                   ),
-                  children: [
-                    for (final category in NarrativeCategory.values)
-                      AccentBarChoiceChip(
-                        label: strings.categoryLabel(category),
-                        selected: _category == category,
-                        onSelected: (_) => setState(() => _category = category),
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                      ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: searching
-                ? _NarrativeSearchResultList(
-                    catalog: catalog,
-                    results: results,
-                    currentValue: widget.currentValue,
-                    onSelected: widget.onSelected,
-                  )
-                : _NarrativeFlatList(
-                    catalog: catalog,
-                    entries: results.byTitle,
-                    currentValue: widget.currentValue,
-                    onSelected: widget.onSelected,
-                  ),
-          ),
-        ],
+            Expanded(child: _buildContent(catalog, selectedSection)),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildContent(
+    NarrativeCatalog catalog,
+    NarrativeSection? selectedSection,
+  ) {
+    if (_searching) {
+      return _NarrativeSearchResultList(
+        controller: _scrollController,
+        catalog: catalog,
+        results: _searchResults,
+        expandedGroups: _expandedSearchGroups,
+        onToggleGroup: _toggleSearchGroup,
+        currentValue: widget.currentValue,
+        onSelected: widget.onSelected,
+      );
+    }
+
+    if (selectedSection != null) {
+      return _NarrativeFlatList(
+        key: ValueKey('narrative-section-list-${selectedSection.id.name}'),
+        controller: _scrollController,
+        catalog: catalog,
+        entries: catalog.entriesForSection(selectedSection.id),
+        iconAsset: selectedSection.iconAsset,
+        currentValue: widget.currentValue,
+        onSelected: widget.onSelected,
+      );
+    }
+
+    if (_category == NarrativeCategory.systemTutorials) {
+      final section = catalog.sectionsForCategory(_category).single;
+      return _NarrativeFlatList(
+        key: const ValueKey('narrative-system-tutorial-list'),
+        controller: _scrollController,
+        catalog: catalog,
+        entries: catalog.entriesForSection(section.id),
+        iconAsset: section.iconAsset,
+        includeNoDialogue: true,
+        currentValue: widget.currentValue,
+        onSelected: widget.onSelected,
+      );
+    }
+
+    return _NarrativeSectionGrid(
+      key: ValueKey('narrative-section-grid-${_category.name}'),
+      controller: _scrollController,
+      catalog: catalog,
+      sections: catalog.sectionsForCategory(_category),
+      noDialogueSelected: widget.currentValue == null,
+      onNoDialogueSelected: () => widget.onSelected(null),
+      onSectionSelected: _openSection,
     );
   }
 }
 
 class _NarrativeFlatList extends StatelessWidget {
   const _NarrativeFlatList({
+    super.key,
+    required this.controller,
     required this.catalog,
     required this.entries,
+    required this.iconAsset,
     required this.currentValue,
     required this.onSelected,
+    this.includeNoDialogue = false,
   });
 
+  final ScrollController controller;
   final NarrativeCatalog catalog;
   final List<NarrativeEntry> entries;
+  final String iconAsset;
   final Object? currentValue;
   final ValueChanged<Object?> onSelected;
+  final bool includeNoDialogue;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      controller: controller,
       padding: const EdgeInsets.all(16),
-      itemCount: entries.length + 1,
+      itemCount: entries.length + (includeNoDialogue ? 1 : 0),
       itemBuilder: (context, index) {
-        if (index == 0) {
+        if (includeNoDialogue && index == 0) {
           return _NoNarrativeCard(
             label: catalog.strings.noDialogue,
             selected: currentValue == null,
             onTap: () => onSelected(null),
           );
         }
-        final entry = entries[index - 1];
+        final entry = entries[index - (includeNoDialogue ? 1 : 0)];
         return _NarrativeCard(
+          key: ValueKey('narrative-entry-${entry.groupId}'),
           catalog: catalog,
           entry: entry,
+          iconAsset: iconAsset,
           selected: currentValue?.toString() == entry.valueKey,
           onSelected: onSelected,
         );
@@ -182,14 +416,20 @@ class _NarrativeFlatList extends StatelessWidget {
 
 class _NarrativeSearchResultList extends StatelessWidget {
   const _NarrativeSearchResultList({
+    required this.controller,
     required this.catalog,
     required this.results,
+    required this.expandedGroups,
+    required this.onToggleGroup,
     required this.currentValue,
     required this.onSelected,
   });
 
+  final ScrollController controller;
   final NarrativeCatalog catalog;
   final NarrativeSearchResults results;
+  final Map<String, bool> expandedGroups;
+  final ValueChanged<String> onToggleGroup;
   final Object? currentValue;
   final ValueChanged<Object?> onSelected;
 
@@ -208,82 +448,257 @@ class _NarrativeSearchResultList extends StatelessWidget {
       );
     }
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-      children: [
-        _NarrativeSearchGroup(
-          label: catalog.strings.searchGroupLabel(
-            'searchByTitle',
-            results.byTitle.length,
-          ),
-          entries: results.byTitle,
-          catalog: catalog,
-          currentValue: currentValue,
-          onSelected: onSelected,
+    final groups = <(String, String, List<NarrativeEntry>)>[
+      (
+        'title',
+        catalog.strings.searchGroupLabel(
+          'searchByTitle',
+          results.byTitle.length,
         ),
-        _NarrativeSearchGroup(
-          label: catalog.strings.searchGroupLabel(
-            'searchByContent',
-            results.byContent.length,
-          ),
-          entries: results.byContent,
-          catalog: catalog,
-          currentValue: currentValue,
-          onSelected: onSelected,
+        results.byTitle,
+      ),
+      (
+        'content',
+        catalog.strings.searchGroupLabel(
+          'searchByContent',
+          results.byContent.length,
         ),
-        _NarrativeSearchGroup(
-          label: catalog.strings.searchGroupLabel(
-            'searchBySpeaker',
-            results.bySpeaker.length,
-          ),
-          entries: results.bySpeaker,
-          catalog: catalog,
-          currentValue: currentValue,
-          onSelected: onSelected,
+        results.byContent,
+      ),
+      (
+        'speaker',
+        catalog.strings.searchGroupLabel(
+          'searchBySpeaker',
+          results.bySpeaker.length,
         ),
+        results.bySpeaker,
+      ),
+    ];
+
+    return CustomScrollView(
+      key: const ValueKey('narrative-search-results'),
+      controller: controller,
+      slivers: [
+        const SliverPadding(padding: EdgeInsets.only(top: 8)),
+        for (final group in groups) ...[
+          SliverToBoxAdapter(
+            child: _NarrativeSearchGroupHeader(
+              key: ValueKey('narrative-search-header-${group.$1}'),
+              label: group.$2,
+              expanded: expandedGroups[group.$1] ?? true,
+              onTap: () => onToggleGroup(group.$1),
+            ),
+          ),
+          if (expandedGroups[group.$1] ?? true)
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverList.builder(
+                itemCount: group.$3.length,
+                itemBuilder: (context, index) {
+                  final entry = group.$3[index];
+                  return _NarrativeCard(
+                    key: ValueKey(
+                      'narrative-search-${group.$1}-${entry.groupId}',
+                    ),
+                    catalog: catalog,
+                    entry: entry,
+                    iconAsset: catalog.displayIcon(entry),
+                    selected: currentValue?.toString() == entry.valueKey,
+                    onSelected: onSelected,
+                  );
+                },
+              ),
+            ),
+        ],
+        const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
       ],
     );
   }
 }
 
-class _NarrativeSearchGroup extends StatelessWidget {
-  const _NarrativeSearchGroup({
+class _NarrativeSearchGroupHeader extends StatelessWidget {
+  const _NarrativeSearchGroupHeader({
+    super.key,
     required this.label,
-    required this.entries,
-    required this.catalog,
-    required this.currentValue,
-    required this.onSelected,
+    required this.expanded,
+    required this.onTap,
   });
 
   final String label;
-  final List<NarrativeEntry> entries;
-  final NarrativeCatalog catalog;
-  final Object? currentValue;
-  final ValueChanged<Object?> onSelected;
+  final bool expanded;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionTile(
-      key: PageStorageKey('narrative-search-$label'),
-      initiallyExpanded: true,
-      controlAffinity: ListTileControlAffinity.leading,
-      tilePadding: const EdgeInsets.symmetric(horizontal: 4),
-      childrenPadding: EdgeInsets.zero,
-      title: Text(
-        label,
-        style: Theme.of(
-          context,
-        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 4, 16, 4),
+        child: Row(
+          children: [
+            Icon(expanded ? Icons.expand_more : Icons.chevron_right),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                label,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
       ),
-      children: [
-        for (final entry in entries)
-          _NarrativeCard(
-            catalog: catalog,
-            entry: entry,
-            selected: currentValue?.toString() == entry.valueKey,
-            onSelected: onSelected,
+    );
+  }
+}
+
+class _NarrativeSectionGrid extends StatelessWidget {
+  const _NarrativeSectionGrid({
+    super.key,
+    required this.controller,
+    required this.catalog,
+    required this.sections,
+    required this.noDialogueSelected,
+    required this.onNoDialogueSelected,
+    required this.onSectionSelected,
+  });
+
+  final ScrollController controller;
+  final NarrativeCatalog catalog;
+  final List<NarrativeSection> sections;
+  final bool noDialogueSelected;
+  final VoidCallback onNoDialogueSelected;
+  final ValueChanged<NarrativeSection> onSectionSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      key: const ValueKey('narrative-section-grid'),
+      controller: controller,
+      padding: const EdgeInsets.all(16),
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 180,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        mainAxisExtent: responsiveSelectionGridTileExtent(
+          context,
+          baseExtent: 196,
+        ),
+      ),
+      itemCount: sections.length + 1,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return _NarrativeSectionCard.noDialogue(
+            label: catalog.strings.noDialogue,
+            selected: noDialogueSelected,
+            onTap: onNoDialogueSelected,
+          );
+        }
+        final section = sections[index - 1];
+        return _NarrativeSectionCard(
+          key: ValueKey('narrative-section-${section.id.name}'),
+          label: catalog.strings.sectionLabel(section),
+          subtitle: catalog.strings.dialogueCount(
+            catalog.entriesForSection(section.id).length,
           ),
-      ],
+          iconAsset: section.iconAsset,
+          selected: false,
+          onTap: () => onSectionSelected(section),
+        );
+      },
+    );
+  }
+}
+
+class _NarrativeSectionCard extends StatelessWidget {
+  const _NarrativeSectionCard({
+    super.key,
+    required this.label,
+    required this.subtitle,
+    required this.iconAsset,
+    required this.selected,
+    required this.onTap,
+  }) : noDialogue = false;
+
+  const _NarrativeSectionCard.noDialogue({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  }) : subtitle = '',
+       iconAsset = '',
+       noDialogue = true,
+       super(key: const ValueKey('narrative-no-dialogue-grid'));
+
+  final String label;
+  final String subtitle;
+  final String iconAsset;
+  final bool selected;
+  final VoidCallback onTap;
+  final bool noDialogue;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      color: selected ? theme.colorScheme.primaryContainer : null,
+      shape: _cardShape(theme, selected),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ClipOval(
+                child: SizedBox(
+                  width: 96,
+                  height: 96,
+                  child: noDialogue
+                      ? ColoredBox(
+                          color: theme.colorScheme.surfaceContainerHighest,
+                          child: Icon(
+                            Icons.block,
+                            size: 42,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        )
+                      : AssetImageWidget(
+                          assetPath: iconAsset,
+                          altCandidates: imageAltCandidates(iconAsset),
+                          width: 96,
+                          height: 96,
+                          fit: BoxFit.cover,
+                        ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              if (subtitle.isNotEmpty)
+                Text(
+                  subtitle,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              if (selected)
+                Icon(Icons.check_circle, color: theme.colorScheme.primary),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -341,14 +756,17 @@ class _NoNarrativeCard extends StatelessWidget {
 
 class _NarrativeCard extends StatelessWidget {
   const _NarrativeCard({
+    super.key,
     required this.catalog,
     required this.entry,
+    required this.iconAsset,
     required this.selected,
     required this.onSelected,
   });
 
   final NarrativeCatalog catalog;
   final NarrativeEntry entry;
+  final String iconAsset;
   final bool selected;
   final ValueChanged<Object?> onSelected;
 
@@ -373,8 +791,8 @@ class _NarrativeCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: AssetImageWidget(
-                    assetPath: entry.iconAsset,
-                    altCandidates: imageAltCandidates(entry.iconAsset),
+                    assetPath: iconAsset,
+                    altCandidates: imageAltCandidates(iconAsset),
                     width: 56,
                     height: 56,
                     fit: BoxFit.cover,

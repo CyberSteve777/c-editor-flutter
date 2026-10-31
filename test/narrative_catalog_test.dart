@@ -34,7 +34,7 @@ void main() {
         );
         expect(
           catalog.forCategory(NarrativeCategory.mainWorlds),
-          hasLength(329),
+          hasLength(302),
         );
         expect(
           catalog.forCategory(NarrativeCategory.memoryLane),
@@ -42,11 +42,11 @@ void main() {
         );
         expect(
           catalog.forCategory(NarrativeCategory.otherModes),
-          hasLength(177),
+          hasLength(141),
         );
         expect(
           catalog.forCategory(NarrativeCategory.systemTutorials),
-          hasLength(67),
+          hasLength(130),
         );
       }
 
