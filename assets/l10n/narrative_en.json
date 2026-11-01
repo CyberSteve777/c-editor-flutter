@@ -32775,7 +32775,7 @@
         {
           "key": "NARRATIVE_NO42_UNIVERSE_UNCHARTED_EVENT2_TUTORIAL_2",
           "kind": "speech",
-          "text": "A talking car made of scrap metal? It seems that this guy from another universe still has no artistic flair.",
+          "text": "A talking car made of scrap metal? Looks like that guy from another universe still has no artistic flair.",
           "speaker": "Handsome Zomboss",
           "npc": "no42zombossicon"
         },
@@ -32787,7 +32787,7 @@
         {
           "key": "NARRATIVE_NO42_UNIVERSE_UNCHARTED_EVENT2_TUTORIAL_3",
           "kind": "speech",
-          "text": "Stop talking nonsense, Handsome Zomboss! You stole the wig, a treasure from the Mini Fossil Museum! I will never forgive you!",
+          "text": "Stop talking nonsense, Handsome Zomboss! You stole the wig, a treasure from the Mini Fossil Museum! I'll never forgive you!",
           "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
@@ -32795,14 +32795,14 @@
         {
           "key": "NARRATIVE_NO42_UNIVERSE_UNCHARTED_EVENT2_TUTORIAL_4",
           "kind": "speech",
-          "text": "It seems that this disturbance didn't bring you any decent helpers. You'd better take good care of your face!",
+          "text": "Looks like this disturbance didn't bring you any decent helpers. You'd better watch your face!",
           "speaker": "Handsome Zomboss",
           "npc": "no42zombossicon"
         },
         {
           "key": "NARRATIVE_NO42_UNIVERSE_UNCHARTED_EVENT2_TUTORIAL_5",
           "kind": "speech",
-          "text": "It's because you stole the wig! You destroyed the stability of the parallel world! I must catch you!",
+          "text": "It's because you stole the wig! You've disrupted the stability of the parallel world! I must catch you!",
           "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
@@ -32844,7 +32844,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_TUTORIAL_2",
           "kind": "speech",
-          "text": "Although the plants and zombies here seem to be the same, they actually have surprising changes.",
+          "text": "Although the plants and zombies here look the same, they actually have some surprising differences.",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -32865,7 +32865,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_TUTORIAL_4",
           "kind": "speech",
-          "text": "Scan** User... Mr. Tough Dave, registration completed.",
+          "text": "Scanning... User... Mr. Tough Dave. Registration complete.",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -32873,7 +32873,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_TUTORIAL_5",
           "kind": "speech",
-          "text": "Data shows that user Tough Dave comes from parallel universe No. 42, and his thoughts are 42% synchronized with Crazy Dave.",
+          "text": "Data shows that User Tough Dave comes from Parallel Universe No. 42, and his thoughts are 42% synchronized with Crazy Dave.",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -32881,7 +32881,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_TUTORIAL_6",
           "kind": "speech",
-          "text": "I don't understand what you are talking about. I don't care. Come and help deal with the handsome guy Zongbo!",
+          "text": "I don't understand what you're talking about, and I don't care! Come help me deal with Handsome Zomboss!",
           "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
@@ -32929,7 +32929,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_2",
           "kind": "speech",
-          "text": "Our universe is what it is and has never changed.",
+          "text": "Our universe has always been this way. It's never changed.",
           "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
@@ -32937,7 +32937,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_3",
           "kind": "speech",
-          "text": "I hope I can find User Dave as soon as possible and find a way to go back...",
+          "text": "Hopefully we can find User Dave soon and figure out a way back...",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -32958,14 +32958,14 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_5",
           "kind": "speech",
-          "text": "Fool! Are you the only one who wants to capture me?",
+          "text": "Fool! You think you can catch someone as magnificent as me?",
           "speaker": "Handsome Zomboss",
           "npc": "no42zombossicon"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_6",
           "kind": "speech",
-          "text": "Handsome Mr. Zombo, how do we go back?",
+          "text": "Mr. Handsome Zomboss, could you please tell us how we can get back?",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -32973,14 +32973,14 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_7",
           "kind": "speech",
-          "text": "Idiot! This young master will never tell you! It was me who caused this commotion! I will never tell you! The key to going back is my wise wig!",
+          "text": "Idiot! I'll never tell you! I'm the one who caused all this chaos! And I'll never tell you that the key to getting back is my brilliant wig!",
           "speaker": "Handsome Zomboss",
           "npc": "no42zombossicon"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_8",
           "kind": "speech",
-          "text": "Even if you don't tell me! I'll find out for myself too!",
+          "text": "Even if you won't tell me, I'll figure it out myself!",
           "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
@@ -32988,7 +32988,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_9",
           "kind": "speech",
-          "text": "The similarity of 42% is neither low nor high...",
+          "text": "A 42% similarity... not exactly low, but not exactly high either...",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -33035,7 +33035,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_END_2",
           "kind": "speech",
-          "text": "It doesn't matter! I must find Handsome Zomboss! Send the wig back to the museum!",
+          "text": "It doesn't matter! I have to find Handsome Zomboss and return the wig to the museum!",
           "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
@@ -33043,7 +33043,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_END_3",
           "kind": "speech",
-          "text": "...I can only do it. First grab Handsome Zomboss and get the wig back...",
+          "text": "...I guess we have no choice. First, let's catch Handsome Zomboss and get the wig back...",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -33076,14 +33076,14 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_OUTRO_ZOMBOSS_END_1",
           "kind": "speech",
-          "text": "Just wait for me! Even without a wig, this young master is so glamorous and beautiful!",
+          "text": "Just you wait! Even without my wig, I'm still as magnificent and gorgeous as ever!",
           "speaker": "Handsome Zomboss",
           "npc": "no42zombossicon"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_OUTRO_ZOMBOSS_END_2",
           "kind": "speech",
-          "text": "I will come back to teach you idiots a lesson!",
+          "text": "I'll come back and teach you idiots a lesson!",
           "speaker": "Handsome Zomboss",
           "npc": "no42zombossicon"
         },
