@@ -241,6 +241,10 @@ abstract final class MusicTypeCatalog {
         _main,
         MusicTypeChoice(value: miniGameA, labelKey: 'musicTypeLabel_moonUb'),
         MusicTypeChoice(value: miniGameB, labelKey: 'musicTypeLabel_moonMg'),
+        MusicTypeChoice(
+          value: miniGameC,
+          labelKey: 'musicTypeLabel_moonDay24FinalWave',
+        ),
       ],
     ),
     MusicTypeModule(

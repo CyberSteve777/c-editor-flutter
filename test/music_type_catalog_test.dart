@@ -80,6 +80,7 @@ void main() {
       MusicTypeCatalog.mainPath,
       MusicTypeCatalog.miniGameA,
       MusicTypeCatalog.miniGameB,
+      MusicTypeCatalog.miniGameC,
     ]);
     final moonMain = moon.choices.singleWhere(
       (choice) => choice.value == MusicTypeCatalog.mainPath,
@@ -90,9 +91,17 @@ void main() {
     final moonB = moon.choices.singleWhere(
       (choice) => choice.value == MusicTypeCatalog.miniGameB,
     );
+    final moonC = moon.choices.singleWhere(
+      (choice) => choice.value == MusicTypeCatalog.miniGameC,
+    );
     expect(moonMain.labelKey, 'musicTypeLabel_main');
     expect(moonA.labelKey, 'musicTypeLabel_moonUb');
     expect(moonB.labelKey, 'musicTypeLabel_moonMg');
+    expect(moonC.labelKey, 'musicTypeLabel_moonDay24FinalWave');
+    expect(
+      ResourceNames.lookupWithLocale('zh', moonC.labelKey),
+      '月球基地-第24天（最后一波音乐变奏）',
+    );
     expect(
       ResourceNames.lookupWithLocale('zh', moonA.labelKey),
       '月球基地-终“僵”之战 / Ultimate Battle',
@@ -281,7 +290,7 @@ void main() {
   });
 
   testWidgets(
-    'Moon picker offers only three tracks and localizes the main path',
+    'Moon picker includes the confirmed day 24 track and localizes the main path',
     (tester) async {
       final definition = LevelDefinitionData(
         stageModule: 'RTID(CustomMoonStage@CurrentLevel)',
@@ -324,9 +333,14 @@ void main() {
       expect(find.text('主线音乐'), findsOneWidget);
       expect(find.text('月球基地-终“僵”之战 / Ultimate Battle'), findsOneWidget);
       expect(find.text('月球基地-趣味小游戏 / Demonstration Mini Game'), findsOneWidget);
-      expect(find.text('MiniGame_C'), findsNothing);
+      expect(find.text('MiniGame_C'), findsOneWidget);
+      expect(find.text('月球基地-第24天（最后一波音乐变奏）'), findsOneWidget);
       expect(find.text('MiniGame_D'), findsNothing);
       expect(find.text('MiniGame_E'), findsNothing);
+      await tester.ensureVisible(find.text('MiniGame_C'));
+      await tester.tap(find.text('MiniGame_C'));
+      await tester.pumpAndSettle();
+      expect(definition.musicType, MusicTypeCatalog.miniGameC);
       expect(tester.takeException(), isNull);
     },
   );
@@ -411,7 +425,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('imported Moon tracks remain intact without expanding choices', (
+  testWidgets('imported Moon day 24 track retains its localized choice', (
     tester,
   ) async {
     final data = await _pumpCustomMusicScreen(
@@ -426,9 +440,10 @@ void main() {
       'MainPath',
       'MiniGame_A',
       'MiniGame_B',
+      'MiniGame_C',
     ]);
 
-    final currentChoice = find.text('MiniGame_C');
+    final currentChoice = find.text('月球基地-第24天（最后一波音乐变奏） (MiniGame_C)');
     await tester.ensureVisible(currentChoice);
     await tester.tap(currentChoice);
     await tester.pumpAndSettle();
@@ -437,8 +452,9 @@ void main() {
         of: find.byType(BottomSheet),
         matching: find.text('MiniGame_C'),
       ),
-      findsNothing,
+      findsOneWidget,
     );
+    expect(find.text('月球基地-第24天（最后一波音乐变奏）'), findsOneWidget);
     expect(find.text('主线音乐'), findsOneWidget);
 
     Navigator.of(tester.element(find.byType(BottomSheet))).pop();

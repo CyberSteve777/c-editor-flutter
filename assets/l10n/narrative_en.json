@@ -30487,21 +30487,21 @@
         {
           "key": "NARRATIVE_HALLOWEEN_1_INTRO_2",
           "kind": "speech",
-          "text": "Negative, the detection target is a magic changing room with mysterious power.",
+          "text": "Negative. Scans identify it as a magical changing room imbued with mysterious power.",
           "speaker": "Penny",
           "npc": "winnie"
         },
         {
           "key": "NARRATIVE_HALLOWEEN_1_INTRO_3 | 重复项 1/2 | 源行 54626",
           "kind": "speech",
-          "text": "The body of the target entering it will disappear, leaving only the head floating.",
+          "text": "Anything that enters it loses its body, leaving only its head floating around.",
           "speaker": "Penny",
           "npc": "winnie"
         },
         {
           "key": "NARRATIVE_HALLOWEEN_1_INTRO_4",
           "kind": "speech",
-          "text": "I dare say they must be non-body theorists!",
+          "text": "I bet they're all no-body-ists!",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydave"
@@ -30509,7 +30509,7 @@
         {
           "key": "NARRATIVE_HALLOWEEN_1_INTRO_3 | 重复项 2/2 | 源行 54632",
           "kind": "speech",
-          "text": "The magic of the pumpkin house can be broken by hitting the head of the pumpkin ghost by throwing bullets. Please switch to a throwing shooter!",
+          "text": "Hitting the Pumpkin Ghosts' heads with lobbed projectiles can break the Pumpkin House's magic. Switch to some lobber plants!",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -30542,7 +30542,7 @@
         {
           "key": "NARRATIVE_HALLOWEEN_4_INTRO_1",
           "kind": "speech",
-          "text": "Penny, what is that thing flying in the sky?",
+          "text": "Penny, what's that thing flying around up there?",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydave"
@@ -30550,21 +30550,21 @@
         {
           "key": "NARRATIVE_HALLOWEEN_4_INTRO_2",
           "kind": "speech",
-          "text": "The scan is completed, it's the scary witch. It is said that she only appears on Halloween.",
+          "text": "Beep* Scan complete. That is a Fright Witch. She is said to appear only on Halloween.",
           "speaker": "Penny",
           "npc": "winnie"
         },
         {
           "key": "NARRATIVE_HALLOWEEN_4_INTRO_3",
           "kind": "speech",
-          "text": "When it appears, it will ride on a broom and dash forward, throwing potions downwards. Many plants have been hit on the head.",
+          "text": "She rides around on her broom, constantly dashing and hurling potions downward. Many plants have already taken one to the head.",
           "speaker": "Penny",
           "npc": "winnie"
         },
         {
           "key": "NARRATIVE_HALLOWEEN_4_INTRO_4",
           "kind": "speech",
-          "text": "Aha! I have a super helmet, I'm going to catch her!",
+          "text": "Aha! I've got my super steel helmet! I'll go catch her!",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydave"
@@ -30572,14 +30572,14 @@
         {
           "key": "NARRATIVE_HALLOWEEN_4_INTRO_5",
           "kind": "speech",
-          "text": "Unwise choice, you can't catch her with your height.",
+          "text": "Unwise choice. At your height, you will be unable to catch her.",
           "speaker": "Penny",
           "npc": "winnie"
         },
         {
           "key": "NARRATIVE_HALLOWEEN_4_INTRO_6",
           "kind": "speech",
-          "text": "Maybe only a tall man can stop the witch...",
+          "text": "Perhaps only tall plants can stop the witch...",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -30612,7 +30612,7 @@
         {
           "key": "NARRATIVE_HALLOWEEN_6_INTRO_1",
           "kind": "speech",
-          "text": "Who is that guy? The pumpkin knight without his mount!",
+          "text": "Is that...? A Pumpkin Knight without his mount!",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydave"
@@ -30620,14 +30620,14 @@
         {
           "key": "NARRATIVE_HALLOWEEN_6_INTRO_2",
           "kind": "speech",
-          "text": "Negative, after testing, this unit and the Pumpkin Knight are different individuals with a genetic relationship.",
+          "text": "Negative. Scans indicate that this unit is a relative of the Pumpkin Knight, but a different individual.",
           "speaker": "Penny",
           "npc": "winnie"
         },
         {
           "key": "NARRATIVE_HALLOWEEN_6_INTRO_3",
           "kind": "speech",
-          "text": "It's like tacos and a spatula, right?",
+          "text": "Like tacos and iron spatulas, right?",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydave"
@@ -30649,14 +30649,14 @@
         {
           "key": "NARRATIVE_HALLOWEEN_6_INTRO_6",
           "kind": "speech",
-          "text": "If you don't wake up with coffee beans or Plant Food in time, terrible things may happen!",
+          "text": "If they are not awakened with Coffee Bean or Plant Food in time, something terrible may happen!",
           "speaker": "Penny",
           "npc": "winnie"
         },
         {
           "key": "NARRATIVE_HALLOWEEN_6_INTRO_7",
           "kind": "speech",
-          "text": "Please handle it with caution!",
+          "text": "Please proceed with caution!",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -30688,7 +30688,7 @@
         {
           "key": "NARRATIVE_NEW_DANGER_ROOM_INTRO_1",
           "kind": "speech",
-          "text": "space and time are trembling, and the door to the dark world has been opened to resist thousands of zombie armies. Do you dare to fight?",
+          "text": "Spacetime trembles, the gate to the dark world has opened. Can you withstand an army of thousands upon thousands of zombies and take on the challenge?",
           "speaker": "Crazy Dave",
           "emotion": "playful",
           "npc": "crazydave"
@@ -32763,7 +32763,7 @@
         {
           "key": "NARRATIVE_NO42_UNIVERSE_UNCHARTED_EVENT2_TUTORIAL_1",
           "kind": "stage",
-          "text": "(No. 42 Handsome Zomboss appears.)"
+          "text": "(Handsome Zomboss appears.)"
         },
         {
           "key": "NARRATIVE_NO42_UNIVERSE_UNCHARTED_EVENT2_TUTORIAL_1",
@@ -32782,13 +32782,13 @@
         {
           "key": "NARRATIVE_NO42_UNIVERSE_UNCHARTED_EVENT2_TUTORIAL_3",
           "kind": "stage",
-          "text": "(No. 42 Tough-Guy Dave appears.)"
+          "text": "(Tough Dave appears.)"
         },
         {
           "key": "NARRATIVE_NO42_UNIVERSE_UNCHARTED_EVENT2_TUTORIAL_3",
           "kind": "speech",
           "text": "Stop talking nonsense, Handsome Zomboss! You stole the wig, a treasure from the Mini Fossil Museum! I will never forgive you!",
-          "speaker": "No. 42 Tough-Guy Dave",
+          "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
         },
@@ -32803,14 +32803,14 @@
           "key": "NARRATIVE_NO42_UNIVERSE_UNCHARTED_EVENT2_TUTORIAL_5",
           "kind": "speech",
           "text": "It's because you stole the wig! You destroyed the stability of the parallel world! I must catch you!",
-          "speaker": "No. 42 Tough-Guy Dave",
+          "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
         },
         {
           "key": "NARRATIVE_NO42_UNIVERSE_UNCHARTED_EVENT2_TUTORIAL_5",
           "kind": "stage",
-          "text": "(No. 42 Handsome Zomboss and No. 42 Tough-Guy Dave leave.)"
+          "text": "(Handsome Zomboss and Tough Dave leave.)"
         }
       ]
     },
@@ -32852,20 +32852,20 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_TUTORIAL_3",
           "kind": "stage",
-          "text": "(No. 42 Tough-Guy Dave appears.)"
+          "text": "(Tough Dave appears.)"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_TUTORIAL_3",
           "kind": "speech",
           "text": "Who is this talking car?",
-          "speaker": "No. 42 Tough-Guy Dave",
+          "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_TUTORIAL_4",
           "kind": "speech",
-          "text": "Scan** User... Mr. Tough Guy Dave, registration completed.",
+          "text": "Scan** User... Mr. Tough Dave, registration completed.",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -32873,7 +32873,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_TUTORIAL_5",
           "kind": "speech",
-          "text": "Data shows that user Tough Guy Dave comes from parallel universe No. 42, and his thoughts are 42% synchronized with Crazy Dave.",
+          "text": "Data shows that user Tough Dave comes from parallel universe No. 42, and his thoughts are 42% synchronized with Crazy Dave.",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -32882,14 +32882,14 @@
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_TUTORIAL_6",
           "kind": "speech",
           "text": "I don't understand what you are talking about. I don't care. Come and help deal with the handsome guy Zongbo!",
-          "speaker": "No. 42 Tough-Guy Dave",
+          "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_TUTORIAL_6",
           "kind": "stage",
-          "text": "(Penny and No. 42 Tough-Guy Dave leave.)"
+          "text": "(Penny and Tough Dave leave.)"
         }
       ]
     },
@@ -32924,20 +32924,20 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_2",
           "kind": "stage",
-          "text": "(No. 42 Tough-Guy Dave appears.)"
+          "text": "(Tough Dave appears.)"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_2",
           "kind": "speech",
           "text": "Our universe is what it is and has never changed.",
-          "speaker": "No. 42 Tough-Guy Dave",
+          "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_3",
           "kind": "speech",
-          "text": "I hope I can find user Dave as soon as possible and find a way to go back...",
+          "text": "I hope I can find User Dave as soon as possible and find a way to go back...",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -32945,21 +32945,21 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_4",
           "kind": "speech",
-          "text": "Continue! Chasing the handsome guy Zombo!",
-          "speaker": "No. 42 Tough-Guy Dave",
+          "text": "Continue! Chase the Handsome Zomboss!",
+          "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_5",
           "kind": "stage",
-          "text": "(No. 42 Handsome Zomboss appears.)"
+          "text": "(Handsome Zomboss appears.)"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_5",
           "kind": "speech",
           "text": "Fool! Are you the only one who wants to capture me?",
-          "speaker": "No. 42 Handsome Zomboss",
+          "speaker": "Handsome Zomboss",
           "npc": "no42zombossicon"
         },
         {
@@ -32974,14 +32974,14 @@
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_7",
           "kind": "speech",
           "text": "Idiot! This young master will never tell you! It was me who caused this commotion! I will never tell you! The key to going back is my wise wig!",
-          "speaker": "No. 42 Handsome Zomboss",
+          "speaker": "Handsome Zomboss",
           "npc": "no42zombossicon"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_8",
           "kind": "speech",
           "text": "Even if you don't tell me! I'll find out for myself too!",
-          "speaker": "No. 42 Tough-Guy Dave",
+          "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
         },
@@ -32996,7 +32996,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_MAIN_9",
           "kind": "stage",
-          "text": "(Penny, No. 42 Tough-Guy Dave, and No. 42 Handsome Zomboss leave.)"
+          "text": "(Penny, Tough Dave, and Handsome Zomboss leave.)"
         }
       ]
     },
@@ -33030,13 +33030,13 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_END_2",
           "kind": "stage",
-          "text": "(No. 42 Tough-Guy Dave appears.)"
+          "text": "(Tough Dave appears.)"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_END_2",
           "kind": "speech",
           "text": "It doesn't matter! I must find Handsome Zomboss! Send the wig back to the museum!",
-          "speaker": "No. 42 Tough-Guy Dave",
+          "speaker": "Tough Dave",
           "emotion": "playful",
           "npc": "no42crazydave"
         },
@@ -33051,7 +33051,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_INTRO_ZOMBOSS_END_3",
           "kind": "stage",
-          "text": "(Penny and No. 42 Tough-Guy Dave leave.)"
+          "text": "(Penny and Tough Dave leave.)"
         }
       ]
     },
@@ -33071,26 +33071,26 @@
         {
           "key": "NARRATIVE_UNCHARTED_NO42_OUTRO_ZOMBOSS_END_1",
           "kind": "stage",
-          "text": "(No. 42 Handsome Zomboss appears.)"
+          "text": "(Handsome Zomboss appears.)"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_OUTRO_ZOMBOSS_END_1",
           "kind": "speech",
           "text": "Just wait for me! Even without a wig, this young master is so glamorous and beautiful!",
-          "speaker": "No. 42 Handsome Zomboss",
+          "speaker": "Handsome Zomboss",
           "npc": "no42zombossicon"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_OUTRO_ZOMBOSS_END_2",
           "kind": "speech",
           "text": "I will come back to teach you idiots a lesson!",
-          "speaker": "No. 42 Handsome Zomboss",
+          "speaker": "Handsome Zomboss",
           "npc": "no42zombossicon"
         },
         {
           "key": "NARRATIVE_UNCHARTED_NO42_OUTRO_ZOMBOSS_END_2",
           "kind": "stage",
-          "text": "(No. 42 Handsome Zomboss leaves.)"
+          "text": "(Handsome Zomboss leaves.)"
         }
       ]
     },
