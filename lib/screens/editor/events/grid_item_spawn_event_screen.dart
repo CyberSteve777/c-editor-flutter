@@ -30,6 +30,7 @@ class GridItemSpawnEventScreen extends StatefulWidget {
     required this.onBack,
     required this.onRequestGridItemSelection,
     required this.onRequestZombieSelection,
+    this.onRequestZombieMultiSelection,
     this.onEditCustomZombie,
     this.onInjectCustomZombie,
     this.onOpenReferencedEvent,
@@ -43,6 +44,8 @@ class GridItemSpawnEventScreen extends StatefulWidget {
   onRequestGridItemSelection;
   final void Function(void Function(String) onSelected)
   onRequestZombieSelection;
+  final void Function(void Function(String) onSelected)?
+  onRequestZombieMultiSelection;
   final FutureOr<void> Function(String rtid)? onEditCustomZombie;
   final String? Function(String alias)? onInjectCustomZombie;
   final Future<void> Function(String rtid)? onOpenReferencedEvent;
@@ -145,7 +148,9 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
   }
 
   void _addZombie() {
-    widget.onRequestZombieSelection((id) {
+    (widget.onRequestZombieMultiSelection ?? widget.onRequestZombieSelection)((
+      id,
+    ) {
       final aliases = ZombieRepository().buildZombieAliases(id);
       final rtid = RtidParser.build(aliases, 'ZombieTypes');
       final isElite =

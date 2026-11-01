@@ -44,7 +44,7 @@
     "sectionHeianAges": "平安时代",
     "sectionUnderwaterWorld": "海底世界",
     "sectionMoonBase": "月球基地",
-    "sectionMemoryImport": "导入剧情",
+    "sectionMemoryImport": "引入剧情",
     "sectionMemorySeason27": "第27赛季",
     "sectionMemorySeason28": "第28赛季",
     "sectionMemorySeason29": "第29赛季",
@@ -17530,11 +17530,6 @@
           "key": "NARRATIVE_GRAVITY_TUTORIAL_3_2",
           "kind": "stage",
           "text": "（宇航员戴夫、潘妮离场。）"
-        },
-        {
-          "key": "GRAVITY_TUTORIAL_PLANT_COSMICSAUCER",
-          "kind": "system",
-          "text": "【操作提示】把宇宙飞碟瓜拖至目标地块上"
         }
       ]
     },
@@ -22221,7 +22216,7 @@
       "number": "3.7.1",
       "tag": "memoryLane",
       "icon": "assets/images/round_icons/Mode_MemoryLane.webp",
-      "title": "回忆之旅 - 导入剧情1",
+      "title": "回忆之旅 - 引入剧情1",
       "characters": [
         "crazydave",
         "winnie"
@@ -22276,7 +22271,7 @@
       "number": "3.7.2",
       "tag": "memoryLane",
       "icon": "assets/images/round_icons/Mode_MemoryLane.webp",
-      "title": "回忆之旅 - 导入剧情2",
+      "title": "回忆之旅 - 引入剧情2",
       "characters": [
         "crazydave",
         "winnie"
@@ -25141,7 +25136,7 @@
       "number": "4.2.7",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_PinataParty.webp",
-      "title": "第二次夏夜彩陶盛宴（爆炸草莓教学）",
+      "title": "第二次夏夜彩陶盛宴（爆炸草莓说明）",
       "characters": [
         "winnie"
       ],
@@ -26570,7 +26565,7 @@
       "number": "4.6.1",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "无尽地带 - 失败剧情",
+      "title": "无尽地带 - 过关失败",
       "characters": [
         "crazydave"
       ],
@@ -26692,7 +26687,7 @@
       "number": "4.6.4",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "无尽地带 - 节庆",
+      "title": "无尽挑战（旧版）",
       "characters": [
         "crazydave"
       ],
@@ -26731,7 +26726,7 @@
       "number": "4.6.5",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "无尽地带 - 节庆第1关",
+      "title": "无尽挑战 - 第1层（旧版）",
       "characters": [
         "crazydave"
       ],
@@ -26770,7 +26765,7 @@
       "number": "4.6.6",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "无尽地带 - 节庆第2关",
+      "title": "无尽挑战 - 第2层（旧版）",
       "characters": [
         "crazydave"
       ],
@@ -26809,7 +26804,7 @@
       "number": "4.6.7",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "无尽地带 - 节庆第3关",
+      "title": "无尽挑战 - 第3层（旧版）",
       "characters": [
         "crazydave"
       ],
@@ -26848,7 +26843,7 @@
       "number": "4.6.8",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "无尽地带 - 节庆第4关",
+      "title": "无尽挑战 - 第4层（旧版）",
       "characters": [
         "crazydave"
       ],
@@ -26927,7 +26922,7 @@
       "number": "4.6.10",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "无尽地带 - 世界选择完成",
+      "title": "无尽地带 - 植物选择完成",
       "characters": [
         "crazydave"
       ],
@@ -27007,7 +27002,7 @@
       "number": "4.6.12",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "无尽地带 - 成功剧情",
+      "title": "无尽地带 - 过关成功",
       "characters": [
         "crazydave"
       ],
@@ -27077,7 +27072,7 @@
       "number": "4.6.13",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "无尽地带 - 初始植物选择教学",
+      "title": "无尽地带 - 初始植物选择",
       "characters": [
         "winnie"
       ],
@@ -31258,7 +31253,7 @@
       "number": "5.2.15",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_PvP.webp",
-      "title": "对战模式 - 虫洞入口",
+      "title": "对战模式 - 开场",
       "characters": [
         "winnie",
         "crazydave"
@@ -32613,11 +32608,6 @@
           "key": "NARRATIVE_ARENA_TUTORIAL_1_2",
           "kind": "stage",
           "text": "（疯狂戴夫、潘妮离场。）"
-        },
-        {
-          "key": "ARENA_TUTORIAL_PLANT_PEASHOOTER",
-          "kind": "system",
-          "text": "【操作提示】把豌豆射手拖至目标地块上"
         }
       ]
     },

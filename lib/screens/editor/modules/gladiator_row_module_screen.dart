@@ -80,31 +80,39 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
     setState(() {});
   }
 
-  Future<void> _pickZombie(ValueChanged<String> change) async {
-    final type = await Navigator.push<String>(
+  Future<void> _pickZombie(
+    ValueChanged<String> change, {
+    bool multiSelect = false,
+  }) async {
+    final types = await Navigator.push<List<String>>(
       context,
       MaterialPageRoute(
         builder: (pickerContext) => ZombieSelectionScreen(
           stateBucketId: 'gladiator-row',
-          onZombieSelected: (id) => Navigator.pop(pickerContext, id),
+          multiSelect: multiSelect,
+          levelFile: widget.levelFile,
+          onZombieSelected: (id) => Navigator.pop(pickerContext, [id]),
+          onMultiZombieSelected: (ids) => Navigator.pop(pickerContext, ids),
           onBack: () => Navigator.pop(pickerContext),
         ),
       ),
     );
-    if (type == null || !mounted) return;
+    if (types == null || types.isEmpty || !mounted) return;
     await ZombiePropertiesRepository.init();
     if (!mounted) return;
-    final original = ZombiePropertiesRepository.getOriginalTypeObject(
-      ZombiePropertiesRepository.getTypeNameByAlias(type),
-    );
-    final groups = original?.objData is Map
-        ? (original!.objData as Map)['ResourceGroups']
-        : null;
-    _data.addResourceGroups([
-      'GladiatorRow',
-      if (groups is List) ...groups.whereType<String>(),
-    ]);
-    change(type);
+    for (final type in types) {
+      final original = ZombiePropertiesRepository.getOriginalTypeObject(
+        ZombiePropertiesRepository.getTypeNameByAlias(type),
+      );
+      final groups = original?.objData is Map
+          ? (original!.objData as Map)['ResourceGroups']
+          : null;
+      _data.addResourceGroups([
+        'GladiatorRow',
+        if (groups is List) ...groups.whereType<String>(),
+      ]);
+      change(type);
+    }
     _sync();
   }
 
@@ -552,6 +560,7 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
                     (type) => encounter.spawns.add(
                       GladiatorSpawnData(zombieType: type),
                     ),
+                    multiSelect: true,
                   ),
                   icon: const Icon(Icons.add),
                   label: Text(l10n.gladiatorAddSpawn),
@@ -571,6 +580,7 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
                   (type) => _data.punishmentPool.add(
                     GladiatorPunishmentZombieData(zombieType: type),
                   ),
+                  multiSelect: true,
                 ),
                 icon: const Icon(Icons.add),
                 label: Text(l10n.gladiatorAddPunishment),

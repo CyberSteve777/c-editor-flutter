@@ -114,6 +114,7 @@ class _NarrativeSelectionScreenState extends State<NarrativeSelectionScreen> {
     if (_searching) return 'search:${_category.name}';
     final section = _selectedSection;
     if (section != null) return 'section:${section.id.name}';
+    if (_category == NarrativeCategory.all) return 'list:all';
     if (_category == NarrativeCategory.systemTutorials) {
       return 'section:${NarrativeSectionId.systemTutorials.name}';
     }
@@ -142,6 +143,9 @@ class _NarrativeSelectionScreenState extends State<NarrativeSelectionScreen> {
     if (_selectedSection != null &&
         _category != NarrativeCategory.all &&
         _selectedSection!.category != _category) {
+      _selectedSectionId = null;
+    }
+    if (_category == NarrativeCategory.all) {
       _selectedSectionId = null;
     }
     for (final name in _expandedSearchGroups.keys) {
@@ -328,6 +332,18 @@ class _NarrativeSelectionScreenState extends State<NarrativeSelectionScreen> {
       );
     }
 
+    if (_category == NarrativeCategory.all) {
+      return _NarrativeFlatList(
+        key: const ValueKey('narrative-all-dialogue-list'),
+        controller: _scrollController,
+        catalog: catalog,
+        entries: catalog.forCategory(NarrativeCategory.all),
+        includeNoDialogue: true,
+        currentValue: widget.currentValue,
+        onSelected: widget.onSelected,
+      );
+    }
+
     if (selectedSection != null) {
       return _NarrativeFlatList(
         key: ValueKey('narrative-section-list-${selectedSection.id.name}'),
@@ -372,16 +388,16 @@ class _NarrativeFlatList extends StatelessWidget {
     required this.controller,
     required this.catalog,
     required this.entries,
-    required this.iconAsset,
     required this.currentValue,
     required this.onSelected,
+    this.iconAsset,
     this.includeNoDialogue = false,
   });
 
   final ScrollController controller;
   final NarrativeCatalog catalog;
   final List<NarrativeEntry> entries;
-  final String iconAsset;
+  final String? iconAsset;
   final Object? currentValue;
   final ValueChanged<Object?> onSelected;
   final bool includeNoDialogue;
@@ -405,7 +421,7 @@ class _NarrativeFlatList extends StatelessWidget {
           key: ValueKey('narrative-entry-${entry.groupId}'),
           catalog: catalog,
           entry: entry,
-          iconAsset: iconAsset,
+          iconAsset: iconAsset ?? catalog.displayIcon(entry),
           selected: currentValue?.toString() == entry.valueKey,
           onSelected: onSelected,
         );
@@ -491,7 +507,7 @@ class _NarrativeSearchResultList extends StatelessWidget {
           ),
           if (expandedGroups[group.$1] ?? true)
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
               sliver: SliverList.builder(
                 itemCount: group.$3.length,
                 itemBuilder: (context, index) {
@@ -640,6 +656,7 @@ class _NarrativeSectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final preserveIconBounds = iconAsset.contains('/Mode_MemoryLane');
     return Card(
       color: selected ? theme.colorScheme.primaryContainer : null,
       shape: _cardShape(theme, selected),
@@ -651,27 +668,40 @@ class _NarrativeSectionCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ClipOval(
-                child: SizedBox(
-                  width: 96,
-                  height: 96,
-                  child: noDialogue
-                      ? ColoredBox(
+              SizedBox(
+                width: 96,
+                height: 96,
+                child: noDialogue
+                    ? ClipOval(
+                        child: ColoredBox(
                           color: theme.colorScheme.surfaceContainerHighest,
                           child: Icon(
                             Icons.block,
                             size: 42,
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
-                        )
-                      : AssetImageWidget(
+                        ),
+                      )
+                    : preserveIconBounds
+                    ? Padding(
+                        padding: const EdgeInsets.all(3),
+                        child: AssetImageWidget(
+                          assetPath: iconAsset,
+                          altCandidates: imageAltCandidates(iconAsset),
+                          width: 90,
+                          height: 90,
+                          fit: BoxFit.contain,
+                        ),
+                      )
+                    : ClipOval(
+                        child: AssetImageWidget(
                           assetPath: iconAsset,
                           altCandidates: imageAltCandidates(iconAsset),
                           width: 96,
                           height: 96,
                           fit: BoxFit.cover,
                         ),
-                ),
+                      ),
               ),
               const SizedBox(height: 6),
               Text(
@@ -773,6 +803,7 @@ class _NarrativeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final preserveIconBounds = iconAsset.contains('/Mode_MemoryLane');
     return Opacity(
       opacity: entry.selectable ? 1 : 0.6,
       child: Card(
@@ -788,16 +819,28 @@ class _NarrativeCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: AssetImageWidget(
-                    assetPath: iconAsset,
-                    altCandidates: imageAltCandidates(iconAsset),
-                    width: 56,
-                    height: 56,
-                    fit: BoxFit.cover,
+                if (preserveIconBounds)
+                  Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: AssetImageWidget(
+                      assetPath: iconAsset,
+                      altCandidates: imageAltCandidates(iconAsset),
+                      width: 52,
+                      height: 52,
+                      fit: BoxFit.contain,
+                    ),
+                  )
+                else
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: AssetImageWidget(
+                      assetPath: iconAsset,
+                      altCandidates: imageAltCandidates(iconAsset),
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(

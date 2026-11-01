@@ -110,6 +110,121 @@ void main() {
     ]);
   });
 
+  for (final combined in [false, true]) {
+    testWidgets(
+      'cauldrons fill their overview cells with combined layout $combined',
+      (tester) async {
+        _setLargeViewport(tester);
+        final level = PvzLevelFile(
+          objects: [
+            PvzObject(
+              aliases: const ['WizardCauldrons'],
+              objClass: 'InitialGridItemWizardCrucibleProps',
+              objData: const {
+                'InitialGridItemWizardCrucibles': [
+                  {'GridX': 2, 'GridY': 1},
+                ],
+              },
+            ),
+            if (combined)
+              PvzObject(
+                aliases: const ['SpeedUpTile'],
+                objClass: 'SpeedUpTileModuleProperties',
+                objData: const {'Roads': []},
+              ),
+          ],
+        );
+        await tester.pumpWidget(_preview(level));
+        await tester.pumpAndSettle();
+        if (combined) {
+          final category = find.descendant(
+            of: find.byType(ListView),
+            matching: find.text('Initial Lawn Overview'),
+          );
+          await tester.ensureVisible(category);
+          await tester.tap(category);
+          await tester.pumpAndSettle();
+        } else {
+          expect(
+            find.descendant(
+              of: find.byKey(const ValueKey('gridSubCategoryScrollbar')),
+              matching: find.text('Wizard Cauldron'),
+            ),
+            findsOneWidget,
+          );
+        }
+        final lawn = find.byType(LawnGrid);
+        await tester.ensureVisible(lawn);
+        await tester.pumpAndSettle();
+        final icon = find.descendant(
+          of: lawn,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is GridItemIcon && widget.id == 'wizard_crucible',
+          ),
+        );
+        expect(icon, findsOneWidget);
+        final grid = tester.widget<LawnGrid>(lawn);
+        final rect = tester.getRect(
+          find.descendant(of: lawn, matching: find.byType(GridView)),
+        );
+        final cellWidth = rect.width / grid.cols;
+        expect(tester.getSize(icon).width, closeTo(cellWidth * 0.9, 1));
+        expect(tester.getSize(icon).height, closeTo(cellWidth * 0.9, 1));
+        expect(
+          tester.getCenter(icon).dx,
+          closeTo(rect.left + 2.5 * cellWidth, 1),
+        );
+        expect(
+          tester.getCenter(icon).dy,
+          closeTo(rect.top + 1.5 * cellWidth, 1),
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets('single module retains its name above multiple wave tabs', (
+    tester,
+  ) async {
+    _setLargeViewport(tester);
+    await tester.pumpWidget(
+      _preview(
+        PvzLevelFile(
+          objects: [
+            PvzObject(
+              aliases: const ['Meteor'],
+              objClass: 'RadiationMeteorModuleProperties',
+              objData: const {
+                'SpawnSchedule': [
+                  {'Wave': 2, 'GridX': 0, 'GridY': 0},
+                  {'Wave': 5, 'GridX': 1, 'GridY': 1},
+                ],
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final l10n = lookupAppLocalizations(const Locale('en'));
+    expect(
+      find.text(l10n.moduleTitle_RadiationMeteorModuleProperties),
+      findsOneWidget,
+    );
+    final tabs = find.byKey(const ValueKey('gridSubCategoryScrollbar'));
+    for (final wave in [2, 5]) {
+      expect(
+        find.descendant(
+          of: tabs,
+          matching: find.text(l10n.customZombieWaveItem(wave)),
+        ),
+        findsOneWidget,
+      );
+    }
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('overview renders speed-up arrows at zero-based grid positions', (
     tester,
   ) async {
@@ -134,6 +249,17 @@ void main() {
     );
     await tester.pumpWidget(_preview(level));
     await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('gridSubCategoryScrollbar')),
+        matching: find.text(
+          lookupAppLocalizations(
+            const Locale('en'),
+          ).moduleTitle_SpeedUpTileModuleProperties,
+        ),
+      ),
+      findsOneWidget,
+    );
     await tester.ensureVisible(find.byType(LawnGrid));
     await tester.pumpAndSettle();
 

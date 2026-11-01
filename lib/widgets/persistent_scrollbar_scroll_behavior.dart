@@ -95,8 +95,9 @@ class PersistentScrollbarScrollBehavior extends MaterialScrollBehavior {
     final safePadding = MediaQuery.paddingOf(context);
     final safeInset = onLeft ? safePadding.left : safePadding.right;
     final width = math.max(20.0, thickness + margin * 2 + 4) + safeInset;
-    // Keep centered content centered while reserving room for the thumb.
-    return EdgeInsets.symmetric(horizontal: width);
+    return onLeft
+        ? EdgeInsets.only(left: width)
+        : EdgeInsets.only(right: width);
   }
 
   @override
@@ -105,8 +106,15 @@ class PersistentScrollbarScrollBehavior extends MaterialScrollBehavior {
     Widget child,
     ScrollableDetails details,
   ) {
+    final scrollable = context.widget;
+    // Lists and grids that scroll with their parent should not add another
+    // scrollbar or gutter inside the page.
+    final physics =
+        details.physics ??
+        (scrollable is Scrollable ? scrollable.physics : null);
     if (axisDirectionToAxis(details.direction) == Axis.horizontal ||
-        details.controller == null) {
+        details.controller == null ||
+        physics?.allowUserScrolling == false) {
       return child;
     }
 

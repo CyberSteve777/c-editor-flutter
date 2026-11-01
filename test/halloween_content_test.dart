@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:c_editor/data/halloween_content.dart';
@@ -45,9 +46,14 @@ void main() {
           expect(copy['pumpkinScarecrowCrowLevel'], contains('从0开始计数'));
           expect(copy['wizardCauldronBoilingDuration'], contains('单位：秒'));
           expect(
-            copy['wizardCauldronHelpOverview'],
-            endsWith('可以自定义每个坩埚的生命值、投入能量豆后沸腾的时间、爆炸对植物和僵尸的伤害、毒液遗留时间和毒液每秒的伤害。'),
+            copy['wizardCauldronHelpUsage'],
+            endsWith(
+              '放置坩埚后，可自定义该坩埚的生命值、投入能量豆后沸腾的时间、爆炸对植物和僵尸的伤害、毒液遗留时间和毒液每秒的伤害。',
+            ),
           );
+          expect(copy['wizardCauldronHelpOverview'], isNot(contains('自定义')));
+          expect(copy['rocketLandingHelpLogic'], contains('生成火箭'));
+          expect(copy['pumpkinScarecrowHelpLogic'], contains('生成稻草人'));
         }
         if (locale == 'en') {
           expect(
@@ -228,12 +234,7 @@ void main() {
           await tester.tap(find.widgetWithText(OutlinedButton, '添加'));
           await tester.pumpAndSettle();
         }
-        final cell = find
-            .descendant(
-              of: find.byType(GridView),
-              matching: find.byType(InkWell),
-            )
-            .first;
+        final cell = find.byKey(const ValueKey('placementCell_0_0'));
         await tester.tap(cell);
         await tester.pumpAndSettle();
         final data = object.objData as Map;
@@ -248,6 +249,27 @@ void main() {
         expect(data['FutureField'], 42);
         expect(find.byType(GridItemIcon), findsWidgets);
         if (!cauldron) {
+          expect(
+            find.descendant(of: cell, matching: find.byType(GridItemIcon)),
+            findsNothing,
+          );
+          final check = tester.widget<Icon>(
+            find.descendant(of: cell, matching: find.byIcon(Icons.check)),
+          );
+          expect(check.color, Colors.white);
+          final background =
+              tester
+                      .widget<Container>(
+                        find
+                            .descendant(
+                              of: cell,
+                              matching: find.byType(Container),
+                            )
+                            .first,
+                      )
+                      .decoration
+                  as BoxDecoration;
+          expect(background.color, const Color(0xFF2E7D32));
           await tester.tap(cell);
           await tester.pumpAndSettle();
           expect(data['SpawnPositionsPool'], isEmpty);
@@ -274,10 +296,53 @@ void main() {
             t: (key, fallback, [args]) => fallback,
           );
           expect(preview.sections.single.items.last.gridX, 1);
+          // The add button must also respect one cauldron per cell.
+          await tester.tap(find.widgetWithText(OutlinedButton, '添加'));
+          await tester.pumpAndSettle();
+          final cauldrons = data['InitialGridItemWizardCrucibles'] as List;
+          expect(cauldrons, hasLength(3));
+          expect(cauldrons.last['GridX'], 2);
+          expect(cauldrons.last['GridY'], 0);
+          cauldrons.last['CrucibleHitpoints'] = 1234;
+          await tester.tap(
+            find.byKey(const ValueKey('placementCell_1_0')),
+            buttons: kSecondaryMouseButton,
+          );
+          await tester.pumpAndSettle();
+          expect(cauldrons, hasLength(2));
+          expect(cauldrons.last['CrucibleHitpoints'], 1234);
+          await tester.longPress(cell);
+          await tester.pumpAndSettle();
+          expect(cauldrons, hasLength(1));
+          expect(cauldrons.single['GridX'], 2);
         }
-        tester.view.physicalSize = const Size(320, 900);
-        await tester.pumpAndSettle();
-        expect(tester.takeException(), isNull);
+        // Every cell fills the original lawn, including when SafeArea padding
+        // would otherwise be inherited by a nested scrollable grid.
+        tester.view.padding = const FakeViewPadding(
+          left: 12,
+          right: 12,
+          bottom: 24,
+        );
+        for (final size in [const Size(1600, 1200), const Size(320, 900)]) {
+          tester.view.physicalSize = size;
+          await tester.pumpAndSettle();
+          final gridRect = tester.getRect(
+            find.byKey(
+              ValueKey(
+                cauldron ? 'wizardCauldronGrid' : 'scarecrowPositionPoolGrid',
+              ),
+            ),
+          );
+          final firstCellRect = tester.getRect(cell);
+          final lastCellRect = tester.getRect(
+            find.byKey(const ValueKey('placementCell_8_4')),
+          );
+          expect(firstCellRect.left - gridRect.left, lessThanOrEqualTo(1));
+          expect(firstCellRect.top - gridRect.top, lessThanOrEqualTo(1));
+          expect(gridRect.right - lastCellRect.right, lessThanOrEqualTo(1));
+          expect(gridRect.bottom - lastCellRect.bottom, lessThanOrEqualTo(1));
+          expect(tester.takeException(), isNull);
+        }
         await tester.tap(find.byIcon(Icons.help_outline));
         await tester.pumpAndSettle();
         expect(find.byType(AlertDialog), findsOneWidget);
@@ -288,6 +353,14 @@ void main() {
               : strings.pumpkinScarecrowHelpOverview,
         );
         expect(tester.widget<Text>(body).textAlign, TextAlign.start);
+        expect(
+          find.text(
+            cauldron
+                ? strings.wizardCauldronHelpUsage
+                : strings.pumpkinScarecrowHelpLogic,
+          ),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
       },
     );

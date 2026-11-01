@@ -6,6 +6,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/basic_info_screen.dart';
 import 'package:c_editor/screens/select/narrative_selection_screen.dart';
 import 'package:c_editor/utils/selection_view_memory.dart';
+import 'package:c_editor/widgets/asset_image.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -54,10 +55,6 @@ void main() {
     for (final tag in const ['全部', '主线世界', '回忆之旅', '其他模式', '系统教学']) {
       expect(find.text(tag), findsOneWidget);
     }
-    expect(find.text('铲子引导'), findsNothing);
-
-    await tester.tap(find.text('教程庭院'));
-    await tester.pumpAndSettle();
     expect(find.text('铲子引导'), findsOneWidget);
 
     await tester.tap(find.text('铲子引导'));
@@ -89,8 +86,6 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.clear));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
     await tester.tap(find.text('无对话'));
     await tester.pumpAndSettle();
@@ -129,9 +124,6 @@ void main() {
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('教程庭院'));
-    await tester.pumpAndSettle();
-
     expect(find.textContaining('${entry.number} ·'), findsNothing);
     expect(find.text(entry.id), findsOneWidget);
 
@@ -143,6 +135,40 @@ void main() {
     expect(find.text('调用值: ${entry.id}'), findsOneWidget);
     expect(find.text('那些豌豆射手被迷惑了，会挡住道路。'), findsOneWidget);
     expect(find.byKey(const ValueKey('npc-avatar-crazydave')), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('unknown narrative rawId uses the shared unknown image', (
+    tester,
+  ) async {
+    final levelDef = LevelDefinitionData()
+      ..firstIntroNarrative = 'UNKNOWN_NARRATIVE_RAW_ID';
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('zh'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: BasicInfoScreen(
+          levelFile: PvzLevelFile(objects: []),
+          levelDef: levelDef,
+          onBack: () {},
+          onStageTap: null,
+          onChanged: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final settingCard = find.byKey(
+      const ValueKey('narrative-setting-FirstIntroNarrative'),
+    );
+    await tester.ensureVisible(settingCard);
+    final image = tester.widget<AssetImageWidget>(
+      find.descendant(of: settingCard, matching: find.byType(AssetImageWidget)),
+    );
+    expect(image.assetPath, 'assets/images/others/unknown.webp');
+    expect(find.text('UNKNOWN_NARRATIVE_RAW_ID'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

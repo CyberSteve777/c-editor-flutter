@@ -20,6 +20,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
+import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/fish_type_repository.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/screens/select/event_selection_screen.dart';
@@ -3521,7 +3522,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         final listSize = _expectationDialogListSize(ctx);
         return AlertDialog(
           title: Text(
-            '${l10n?.waveLabel ?? "Wave"} $waveIndex ${l10n?.expectation ?? "Expectation"}',
+            '${l10n?.customZombieWaveItem(waveIndex) ?? "Wave $waveIndex"} ${l10n?.expectation ?? "Expectation"}',
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -3548,6 +3549,9 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                       itemBuilder: (_, i) {
                         final e = items[i];
                         final typeName = e.key;
+                        final cost = ZombiePropertiesRepository.getStats(
+                          typeName,
+                        ).cost;
                         final info = ZombieRepository().getZombieById(typeName);
                         final nameKey =
                             info?.name ?? ZombieRepository().getName(typeName);
@@ -3605,6 +3609,11 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                                               ctx,
                                             ).colorScheme.onSurfaceVariant,
                                           ),
+                                    ),
+                                    Text(
+                                      l10n?.zombiePointCost(cost) ??
+                                          'Point cost: $cost',
+                                      style: Theme.of(ctx).textTheme.bodySmall,
                                     ),
                                   ],
                                 ),

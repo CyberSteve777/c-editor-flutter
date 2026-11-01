@@ -370,15 +370,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get networkTimeoutAdvice =>
-      'The request timed out. Check your connection and try again. Access to GitHub may require a proxy or a different network.';
+      'The request timed out. Check your connection and try again.';
 
   @override
   String get networkRateLimitAdvice =>
-      'GitHub\'s request limit has been reached, or access was refused. Wait and try again, or use a different network or proxy.';
+      'GitHub\'s request limit has been reached, or access was refused. Wait and try again later.';
 
   @override
   String get networkConnectionAdvice =>
-      'Could not connect to the server. Check your connection and try again. Access to GitHub may require a proxy or a different network.';
+      'Could not connect to the server. Check your connection and try again.';
 
   @override
   String get networkServiceAdvice =>
@@ -2521,6 +2521,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectAll => 'Select ALL';
 
   @override
+  String get deselectAll => 'Deselect ALL';
+
+  @override
+  String zombiePointCost(int cost) {
+    return 'Point cost: $cost';
+  }
+
+  @override
   String get searchPlant => 'Search plant';
 
   @override
@@ -4616,7 +4624,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zombieTentTypeFestival => 'New Year tent';
 
   @override
-  String get zombieTentHitpoints => 'Tent hitpoints (Hitpoints)';
+  String get zombieTentHitpoints => 'Tent health (Hitpoints)';
 
   @override
   String get zombieTentProductionInterval =>
@@ -4675,7 +4683,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventHelpGravestoneLogic =>
-      'Selects valid tiles from the pool above to spawn grid items. The total number of grid items cannot exceed the number of available tiles, or excess spawns will fail.';
+      'This event selects valid tiles from the pool above to spawn grid items. The total number of grid items cannot exceed the number of available tiles, or excess spawns will fail.';
 
   @override
   String get eventHelpGravestoneMissingAssets =>
@@ -7429,14 +7437,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wizardCauldronHelpOverview =>
-      'Pre-places Wizard Cauldrons on the lawn, commonly used in Fairy Forest. Plant Food makes a cauldron boil briefly.\nDuring boiling, inserted plants yield the same number and level of random plants of the next quality: White to Green, Green to Blue, Blue to Purple; Orange yields other Orange plants.\nAt zero health, the cauldron explodes, damages nearby targets and leaves a temporary ring of poison that continuously damages nearby plants.\nYou can customize each cauldron’s hitpoints, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.';
+      'Pre-places Wizard Cauldrons on the lawn, commonly used in Fairy Forest. Plant Food makes a cauldron boil briefly.\nDuring boiling, inserted plants yield the same number and level of random plants of the next quality: White to Green, Green to Blue, Blue to Purple; Orange yields other Orange plants.\nAt zero health, the cauldron explodes, damages nearby targets and leaves a temporary ring of poison that continuously damages nearby plants.';
+
+  @override
+  String get wizardCauldronHelpUsage =>
+      'Click an empty cell to place a Wizard Cauldron, with at most one cauldron per cell. Right-click on desktop or long-press on mobile to remove the cauldron in that cell.\nAfter placing a cauldron, you can customize its health, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.';
 
   @override
   String get wizardCauldronPositions => 'Cauldron placement positions';
 
   @override
-  String get wizardCauldronHitpoints =>
-      'Cauldron hitpoints (CrucibleHitpoints)';
+  String get wizardCauldronHitpoints => 'Cauldron health (CrucibleHitpoints)';
 
   @override
   String get speedUpTileTitle => 'Speed-Up Tiles';
@@ -10245,10 +10256,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Places Pumpkin Scarecrows at selected positions, commonly used in Haunting Halloween levels. Crows periodically fly off the scarecrows to carry away plants. Each departing crow is replaced by a new one flying in from outside the lawn, so crows will continue to appear until the scarecrow is destroyed. The health of each scarecrow and the level of its summoned crows can be customized in this event.';
 
   @override
+  String get pumpkinScarecrowHelpLogic =>
+      'This event selects valid tiles from the pool above to spawn scarecrows. The total number of grid items cannot exceed the number of available tiles, or excess spawns will fail.';
+
+  @override
   String get pumpkinScarecrowPositions => 'Scarecrow spawn positions';
 
   @override
-  String get pumpkinScarecrowHitpoints => 'Scarecrow hitpoints (Hitpoints)';
+  String get pumpkinScarecrowHitpoints => 'Scarecrow health (Hitpoints)';
 
   @override
   String get rocketLandingHelpTitle => 'Rocket Landing';
@@ -10256,6 +10271,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get rocketLandingHelpOverview =>
       'An event commonly used in Moon BaseZ. It spawns rockets at set positions as objectives contested by both plants and zombies.';
+
+  @override
+  String get rocketLandingHelpLogic =>
+      'This event selects valid tiles from the pool above to spawn rockets. The total number of grid items cannot exceed the number of available tiles, or excess spawns will fail.';
 
   @override
   String get rocketLandingHelpPlantsTitle => 'Plants take control';
@@ -10666,4 +10685,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get spawnGravestonesCrashProneItemsWarning =>
       'Spawning Heavy Shield or Cavalry Lance through the Grid Item Spawn event causes the level to crash. Please spawn it another way.';
+
+  @override
+  String startupPluginResources(int completed, int total) {
+    return 'Plugin resources $completed/$total';
+  }
 }

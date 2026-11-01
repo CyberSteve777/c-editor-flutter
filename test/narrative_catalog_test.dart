@@ -121,6 +121,43 @@ void main() {
     );
   });
 
+  test('related system tutorials remain in gameplay order', () async {
+    const powerGestures = ['PINCH', 'FLICK', 'WIZARDFINGER'];
+    const plantPuzzle = [
+      'ELIMINATE_BLOCK_INTRO',
+      'ELIMINATE_COLOR_INTRO',
+      'ELIMINATE_INTRO',
+      'ZOMBIE_INTRO_ELIMINATE_MISSIONFINISH',
+      'ZOMBIE_INTRO_ELIMINATE_FREEZINGWIND',
+      'ZOMBIE_INTRO_ELIMINATE_SPAWNSHIELD',
+      'ZOMBIE_INTRO_ELIMINATE_STAGE11',
+      'ZOMBIE_INTRO_ELIMINATE_STAGE12',
+      'ZOMBIE_INTRO_ELIMINATE_STAGE21',
+      'ZOMBIE_INTRO_ELIMINATE_STAGE22',
+      'ZOMBIE_INTRO_ELIMINATE_STAGE31',
+      'ZOMBIE_INTRO_ELIMINATE_STAGE32',
+      'ZOMBIE_INTRO_ELIMINATE_STAGE41',
+      'ZOMBIE_INTRO_ELIMINATE_STAGE42',
+    ];
+
+    for (final locale in const [Locale('zh'), Locale('en'), Locale('ru')]) {
+      final catalog = await NarrativeCatalog.load(locale);
+      final ids = catalog
+          .entriesForSection(NarrativeSectionId.systemTutorials)
+          .map((entry) => entry.groupId)
+          .toList(growable: false);
+
+      void expectConsecutive(List<String> expected) {
+        final start = ids.indexOf(expected.first);
+        expect(start, isNonNegative);
+        expect(ids.sublist(start, start + expected.length), expected);
+      }
+
+      expectConsecutive(powerGestures);
+      expectConsecutive(plantPuzzle);
+    }
+  });
+
   test('Russian catalogue has no substantive English fallbacks', () async {
     final en = await NarrativeCatalog.load(const Locale('en'));
     final ru = await NarrativeCatalog.load(const Locale('ru'));

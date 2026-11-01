@@ -32,6 +32,8 @@ class ZombossMechZombieTypeListEditor extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (ctx) => ZombieSelectionScreen(
+          multiSelect: isList,
+          excludeIds: isList ? zombieIds : const [],
           onZombieSelected: (id) {
             Navigator.pop(ctx);
             if (isList) {
@@ -41,6 +43,14 @@ class ZombossMechZombieTypeListEditor extends StatelessWidget {
             } else {
               onChanged([id]);
             }
+          },
+          onMultiZombieSelected: (ids) {
+            Navigator.pop(ctx);
+            if (ids.isEmpty) return;
+            onChanged([
+              ...zombieIds,
+              ...ids.where((id) => !zombieIds.contains(id)),
+            ]);
           },
           onBack: () => Navigator.pop(ctx),
         ),

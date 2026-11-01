@@ -30,19 +30,19 @@ String localizeDynamicDownloadError(
       return host.localize(
         context,
         'dynamicNoConnection',
-        'Could not connect to GitHub. Check your network and proxy settings, then try again. A proxy may be needed on your network.',
+        'Could not connect to GitHub. Check your network connection, then try again.',
       );
     case DownloadErrorKind.connectionLost:
       return host.localize(
         context,
         'dynamicConnectionLost',
-        'The download connection was interrupted. Check your network and proxy settings, then try again.',
+        'The download connection was interrupted. Check your network connection, then try again.',
       );
     case DownloadErrorKind.timeout:
       return host.localize(
         context,
         'dynamicTimeout',
-        'The connection timed out. Check your network and proxy settings, then try again. A proxy may be needed on your network.',
+        'The connection timed out. Check your network connection, then try again.',
       );
     case DownloadErrorKind.rateLimited:
       return host.localize(
@@ -54,7 +54,7 @@ String localizeDynamicDownloadError(
       return host.localize(
         context,
         'dynamicAccessDenied',
-        'GitHub refused this request. Check your network or proxy settings and try again later.',
+        'GitHub refused this request. Please try again later.',
       );
     case DownloadErrorKind.notFound:
       return host.localize(
@@ -66,7 +66,7 @@ String localizeDynamicDownloadError(
       return host.localize(
         context,
         'dynamicInvalidResponse',
-        'The server returned unexpected data. Check whether your network or proxy is intercepting GitHub requests, then try again later.',
+        'The server returned unexpected data. Please try again later.',
       );
     case DownloadErrorKind.storage:
       return host.localize(

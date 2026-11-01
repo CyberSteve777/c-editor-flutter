@@ -21,6 +21,7 @@ import 'package:c_editor/data/models/custom_stage_preset.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
+import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
@@ -294,6 +295,7 @@ class _EditorScreenState extends State<EditorScreen> {
           rtid: glacierRtid,
           levelFile: levelFile,
           onChanged: _markDirty,
+          onRequestZombieMultiSelection: _openZombieSelection,
           onBack: () => Navigator.pop(context),
           onRequestZombieSelection: (onSelected) {
             Navigator.push(
@@ -1041,28 +1043,7 @@ class _EditorScreenState extends State<EditorScreen> {
               _setActiveTab(EditorTabType.timeline);
               Navigator.pop(context);
             },
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1081,28 +1062,7 @@ class _EditorScreenState extends State<EditorScreen> {
               _setActiveTab(EditorTabType.timeline);
               Navigator.pop(context);
             },
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1123,28 +1083,7 @@ class _EditorScreenState extends State<EditorScreen> {
             },
             onEditCustomZombie: _handleEditCustomZombie,
             onInjectCustomZombie: _injectCustomZombie,
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1341,49 +1280,8 @@ class _EditorScreenState extends State<EditorScreen> {
             onInjectCustomFish: _injectCustomFish,
             onOpenReferencedEvent: (targetRtid) =>
                 _handleEditEvent(targetRtid, 0),
-            onRequestPlantSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PlantSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    isMultiSelect: false,
-                    onPlantSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiPlantSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                  ),
-                ),
-              );
-            },
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onRequestPlantSelection: _openPlantMultiSelection,
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1406,49 +1304,8 @@ class _EditorScreenState extends State<EditorScreen> {
             onInjectCustomZombie: _injectCustomZombie,
             onOpenReferencedEvent: (targetRtid) =>
                 _handleEditEvent(targetRtid, 0),
-            onRequestPlantSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PlantSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    isMultiSelect: false,
-                    onPlantSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiPlantSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                  ),
-                ),
-              );
-            },
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onRequestPlantSelection: _openPlantMultiSelection,
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1471,49 +1328,8 @@ class _EditorScreenState extends State<EditorScreen> {
             onInjectCustomZombie: _injectCustomZombie,
             onOpenReferencedEvent: (targetRtid) =>
                 _handleEditEvent(targetRtid, 0),
-            onRequestPlantSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PlantSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    isMultiSelect: false,
-                    onPlantSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiPlantSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                  ),
-                ),
-              );
-            },
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onRequestPlantSelection: _openPlantMultiSelection,
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1531,27 +1347,7 @@ class _EditorScreenState extends State<EditorScreen> {
             onBack: () => Navigator.pop(context),
             onAddModule: (objClass) =>
                 _addModule(ModuleRegistry.getMetadata(objClass)),
-            onRequestPlantSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PlantSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    isMultiSelect: false,
-                    onPlantSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiPlantSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                  ),
-                ),
-              );
-            },
+            onRequestPlantSelection: _openPlantMultiSelection,
             onRequestToolSelection: (onSelected) {
               Navigator.push(
                 context,
@@ -1624,28 +1420,7 @@ class _EditorScreenState extends State<EditorScreen> {
             },
             onEditCustomZombie: _handleEditCustomZombie,
             onInjectCustomZombie: _injectCustomZombie,
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1750,6 +1525,7 @@ class _EditorScreenState extends State<EditorScreen> {
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
+            onRequestZombieMultiSelection: _openZombieSelection,
             onBack: () {
               _setActiveTab(EditorTabType.timeline);
               Navigator.pop(context);
@@ -1909,6 +1685,7 @@ class _EditorScreenState extends State<EditorScreen> {
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
+            onRequestZombieMultiSelection: _openZombieSelection,
             onBack: () => Navigator.pop(context),
             onRequestZombieSelection: (onSelected) {
               Navigator.push(
@@ -2156,7 +1933,34 @@ class _EditorScreenState extends State<EditorScreen> {
     await _handleEditEvent(selectedEventRtid, 0);
   }
 
-  void _openZombieSelection(void Function(String) onSelected) {
+  void _openPlantMultiSelection(void Function(String) onSelected) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PlantSelectionScreen(
+          stateBucketId: _selectionStateBucketId,
+          isMultiSelect: true,
+          levelFile: _ec.state.levelFile,
+          onAddModule: (objClass) {
+            _addModule(ModuleRegistry.getMetadata(objClass));
+          },
+          onPlantSelected: (_) {},
+          onMultiPlantSelected: (ids) {
+            Navigator.pop(context);
+            for (final id in ids) {
+              onSelected(id);
+            }
+          },
+          onBack: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
+  void _openZombieSelection(
+    void Function(String) onSelected, {
+    bool pointPoolOnly = false,
+  }) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -2167,12 +1971,28 @@ class _EditorScreenState extends State<EditorScreen> {
           onAddModule: (objClass) {
             _addModule(ModuleRegistry.getMetadata(objClass));
           },
-          multiSelect: false,
-          onZombieSelected: (id) {
+          excludeIds: pointPoolOnly
+              ? ZombieRepository().allZombies
+                    .where(
+                      (zombie) =>
+                          ZombieRepository().isElite(zombie.id) ||
+                          const [
+                            'yeti',
+                            'treasureyeti',
+                            'treasureyeti_egypt',
+                          ].contains(zombie.id),
+                    )
+                    .map((zombie) => zombie.id)
+                    .toList()
+              : const [],
+          multiSelect: true,
+          onZombieSelected: (_) {},
+          onMultiZombieSelected: (ids) {
             Navigator.pop(context);
-            onSelected(id);
+            for (final id in ids) {
+              onSelected(id);
+            }
           },
-          onMultiZombieSelected: (_) {},
           onBack: () => Navigator.pop(context),
         ),
       ),
@@ -2194,7 +2014,8 @@ class _EditorScreenState extends State<EditorScreen> {
           levelFile: _ec.state.levelFile!,
           onChanged: _markDirty,
           onBack: () => Navigator.pop(context),
-          onRequestZombieSelection: _openZombieSelection,
+          onRequestZombieSelection: (onSelected) =>
+              _openZombieSelection(onSelected, pointPoolOnly: true),
         ),
       ),
     ).then((_) => _setActiveTab(EditorTabType.waveGenerator));
@@ -2211,6 +2032,8 @@ class _EditorScreenState extends State<EditorScreen> {
           onChanged: _markDirty,
           onBack: () => Navigator.pop(context),
           onRequestZombieSelection: _openZombieSelection,
+          onRequestPoolZombieSelection: (onSelected) =>
+              _openZombieSelection(onSelected, pointPoolOnly: true),
         ),
       ),
     ).then((_) => _setActiveTab(EditorTabType.waveGenerator));
@@ -3101,26 +2924,7 @@ class _EditorScreenState extends State<EditorScreen> {
             onBack: () => Navigator.pop(context),
             onAddModule: (objClass) =>
                 _addModule(ModuleRegistry.getMetadata(objClass)),
-            onRequestPlantSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PlantSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    isMultiSelect: false,
-                    onPlantSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onBack: () => Navigator.pop(context),
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                  ),
-                ),
-              );
-            },
+            onRequestPlantSelection: _openPlantMultiSelection,
             onRequestToolSelection: (onSelected) {
               Navigator.push(
                 context,
@@ -3439,6 +3243,7 @@ class _EditorScreenState extends State<EditorScreen> {
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
+            onRequestZombieMultiSelection: _openZombieSelection,
             onBack: () => Navigator.pop(context),
             onRequestZombieSelection: (onSelected) {
               Navigator.push(
@@ -3848,7 +3653,8 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
-            onRequestZombieSelection: _openZombieSelection,
+            onRequestZombieSelection: (onSelected) =>
+                _openZombieSelection(onSelected, pointPoolOnly: true),
             onOpenWaveTimeline: () {
               Navigator.pop(context);
               _setActiveTab(EditorTabType.timeline);
@@ -3868,7 +3674,8 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
-            onRequestZombieSelection: _openZombieSelection,
+            onRequestZombieSelection: (onSelected) =>
+                _openZombieSelection(onSelected, pointPoolOnly: true),
           ),
         ),
       );

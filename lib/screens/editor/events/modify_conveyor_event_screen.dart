@@ -111,7 +111,10 @@ class _ModifyConveyorEventScreenState extends State<ModifyConveyorEventScreen> {
         iLevel: existing >= 0 ? _data.addList[existing].iLevel : null,
         iAvatar: existing >= 0 ? _data.addList[existing].iAvatar : null,
       );
-      _showModifyEntryDialog(base, isTool: false);
+      if (existing < 0) {
+        _data.addList.add(base);
+        _sync();
+      }
     });
   }
 

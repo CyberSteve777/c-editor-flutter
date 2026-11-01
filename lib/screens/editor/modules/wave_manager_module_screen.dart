@@ -618,6 +618,7 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
                 final nameKey =
                     info?.name ?? ZombieRepository().getName(typeName);
                 final displayName = ResourceNames.lookup(context, nameKey);
+                final cost = ZombiePropertiesRepository.getStats(typeName).cost;
                 final level = _firstGroup.zombieLevel.elementAt(idx);
                 final iconPath = info?.iconAssetPath;
                 final details = Row(
@@ -661,6 +662,10 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            l10n?.zombiePointCost(cost) ?? 'Point cost: $cost',
+                            style: theme.textTheme.bodySmall,
                           ),
                           Text(
                             l10n?.levelFormat(level) ?? 'Level: $level',

@@ -293,6 +293,9 @@ bool levelHasPrePlacedGridPreview(PvzLevelFile levelFile) {
   if (levelHasPrePlacedPlants(levelFile)) return true;
   if (levelHasPrePlacedZombies(levelFile)) return true;
   if (levelHasModule(levelFile, 'InitialGridItemProperties')) return true;
+  if (levelHasModule(levelFile, 'InitialGridItemWizardCrucibleProps')) {
+    return true;
+  }
   if (levelHasModule(levelFile, 'PiratePlankProperties')) return true;
   if (levelHasModule(levelFile, 'RailcartProperties')) return true;
   if (levelHasModule(levelFile, 'MechanismPlankProperties')) return true;

@@ -21,6 +21,11 @@ class NarrativePreviewScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final strings = catalog.strings;
     final theme = Theme.of(context);
+    final visibleLines = dialogue.lines
+        .where((line) => !NarrativeLineView.isOperationHint(line))
+        .toList(growable: false);
+    final displayIcon = catalog.displayIcon(dialogue);
+    final preserveIconBounds = displayIcon.contains('/Mode_MemoryLane');
 
     return Scaffold(
       appBar: AppBar(
@@ -50,23 +55,37 @@ class NarrativePreviewScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: AssetImageWidget(
-                          assetPath: dialogue.iconAsset,
-                          altCandidates: imageAltCandidates(dialogue.iconAsset),
-                          width: 72,
-                          height: 72,
-                          fit: BoxFit.cover,
+                      if (preserveIconBounds)
+                        Padding(
+                          padding: const EdgeInsets.all(3),
+                          child: AssetImageWidget(
+                            assetPath: displayIcon,
+                            altCandidates: imageAltCandidates(displayIcon),
+                            width: 66,
+                            height: 66,
+                            fit: BoxFit.contain,
+                          ),
+                        )
+                      else
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: AssetImageWidget(
+                            assetPath: displayIcon,
+                            altCandidates: imageAltCandidates(displayIcon),
+                            width: 72,
+                            height: 72,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              dialogue.title,
+                              NarrativeLineView.normalizeDisplayText(
+                                dialogue.title,
+                              ),
                               style: theme.textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -94,12 +113,12 @@ class NarrativePreviewScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  for (var index = 0; index < dialogue.lines.length; index++)
+                  for (var index = 0; index < visibleLines.length; index++)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 14),
                       child: NarrativeLineView(
                         key: ValueKey('narrative-line-$index'),
-                        line: dialogue.lines[index],
+                        line: visibleLines[index],
                         localeCode: catalog.localeCode,
                       ),
                     ),
@@ -125,6 +144,18 @@ class NarrativeLineView extends StatelessWidget {
 
   static bool isRightAlignedNpc(String? npc) =>
       npc == 'winnie' || npc == 'winnieicon' || npc == 'specialwinnie';
+
+  static String normalizeDisplayText(String text) {
+    return text.replaceAll(r'\n', '\n');
+  }
+
+  static bool isOperationHint(NarrativeLine line) {
+    final text = line.text.trimLeft().toLowerCase();
+    return text.startsWith('【操作提示】') ||
+        text.startsWith('[操作提示]') ||
+        text.startsWith('[tutorial prompt]') ||
+        text.startsWith('[обучение]');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +192,7 @@ class NarrativeLineView extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              line.text,
+              normalizeDisplayText(line.text),
               textAlign: rightAligned ? TextAlign.right : TextAlign.left,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
@@ -204,7 +235,7 @@ class _NarrativeStageDirection extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        line.text,
+        NarrativeLineView.normalizeDisplayText(line.text),
         textAlign: TextAlign.center,
         style: theme.textTheme.bodyMedium?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,

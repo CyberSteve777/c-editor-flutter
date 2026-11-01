@@ -340,51 +340,6 @@ class _SpeedUpTileModuleScreenState extends State<SpeedUpTileModuleScreen> {
             const SizedBox(height: 16),
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: EditorResponsiveActionRow(
-                  content: Text(
-                    '${l10n?.speedUpTilePlacedCount ?? 'Placed'}: ${_data.roads.length}',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  action: _deleteButton(
-                    key: const ValueKey('speedUpTileClearAll'),
-                    onPressed: _data.roads.isEmpty
-                        ? null
-                        : () => _requestDelete(outsideOnly: false),
-                    backgroundColor: theme.colorScheme.error,
-                    foregroundColor: theme.colorScheme.onError,
-                    label: l10n?.speedUpTileClearAll ?? 'Clear all',
-                  ),
-                ),
-              ),
-            ),
-            if (outside.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: EditorResponsiveActionRow(
-                    content: Text(
-                      '${l10n?.speedUpTileOutsideLawn ?? 'Outside lawn: '}'
-                      '${outside.map((road) => '(${road.gridX}, ${road.gridY})').join(', ')}',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    action: _deleteButton(
-                      key: const ValueKey('speedUpTileDeleteOutside'),
-                      onPressed: () => _requestDelete(outsideOnly: true),
-                      backgroundColor: Colors.amber.shade700,
-                      foregroundColor: Colors.black87,
-                      label:
-                          l10n?.speedUpTileDeleteOutside ??
-                          'Delete outside lawn',
-                    ),
-                  ),
-                ),
-              ),
-            ],
-            const SizedBox(height: 16),
-            Card(
-              child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -471,6 +426,51 @@ class _SpeedUpTileModuleScreenState extends State<SpeedUpTileModuleScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: EditorResponsiveActionRow(
+                  content: Text(
+                    '${l10n?.speedUpTilePlacedCount ?? 'Placed'}: ${_data.roads.length}',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  action: _deleteButton(
+                    key: const ValueKey('speedUpTileClearAll'),
+                    onPressed: _data.roads.isEmpty
+                        ? null
+                        : () => _requestDelete(outsideOnly: false),
+                    backgroundColor: theme.colorScheme.error,
+                    foregroundColor: theme.colorScheme.onError,
+                    label: l10n?.speedUpTileClearAll ?? 'Clear all',
+                  ),
+                ),
+              ),
+            ),
+            if (outside.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: EditorResponsiveActionRow(
+                    content: Text(
+                      '${l10n?.speedUpTileOutsideLawn ?? 'Outside lawn: '}'
+                      '${outside.map((road) => '(${road.gridX}, ${road.gridY})').join(', ')}',
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    action: _deleteButton(
+                      key: const ValueKey('speedUpTileDeleteOutside'),
+                      onPressed: () => _requestDelete(outsideOnly: true),
+                      backgroundColor: Colors.amber.shade700,
+                      foregroundColor: Colors.black87,
+                      label:
+                          l10n?.speedUpTileDeleteOutside ??
+                          'Delete outside lawn',
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

@@ -620,6 +620,68 @@ void main() {
     },
   );
 
+  testWidgets(
+    'batch zombie additions retain every spawn and required resource group',
+    (tester) async {
+      final level = PvzLevelFile(objects: []);
+      var changes = 0;
+      await tester.pumpWidget(_app(_editor(level, changed: () => changes++)));
+      await tester.pumpAndSettle();
+      await _tap(
+        tester,
+        find.byKey(const ValueKey('addGridOverrideWaveGroup')),
+      );
+      await _tap(tester, find.byKey(const ValueKey('gladiator-add-spawn')));
+      final spawns = tester.widget<ZombieSelectionScreen>(
+        find.byType(ZombieSelectionScreen),
+      );
+      expect(spawns.multiSelect, isTrue);
+      final changesBefore = changes;
+      spawns.onMultiZombieSelected!(['roman_shield_top', 'roman_healer']);
+      await tester.pumpAndSettle();
+      expect(
+        readGladiatorRowModuleData(
+          level,
+        )!.encounters.single.spawns.map((entry) => entry.zombieType),
+        ['roman_shield_top', 'roman_healer'],
+      );
+      expect(changes, changesBefore + 1);
+      expect(
+        level.objects.single.objData['ResourceGroupNames'],
+        containsAll([
+          'GladiatorRow',
+          'ZombieRomanTopShieldGroup',
+          'ZombieRomanHealerGroup',
+        ]),
+      );
+      await _tap(
+        tester,
+        find.byKey(const ValueKey('gladiator-add-punishment')),
+      );
+      final pool = tester.widget<ZombieSelectionScreen>(
+        find.byType(ZombieSelectionScreen),
+      );
+      expect(pool.multiSelect, isTrue);
+      final existingPool = readGladiatorRowModuleData(
+        level,
+      )!.punishmentPool.map((entry) => entry.toJson()).toList();
+      pool.onMultiZombieSelected!(['roman_armor1', 'roman_armor2']);
+      await tester.pumpAndSettle();
+      expect(
+        readGladiatorRowModuleData(
+          level,
+        )!.punishmentPool.map((entry) => entry.toJson()),
+        [
+          ...existingPool,
+          {'ZombieTypeName': 'roman_armor1', 'Weight': 1},
+          {'ZombieTypeName': 'roman_armor2', 'Weight': 1},
+        ],
+      );
+      expect(find.byType(ZombieSelectionScreen), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   for (final wave in [5, 13]) {
     testWidgets(
       'timeline opens the correct encounter and editor hint at wave $wave',

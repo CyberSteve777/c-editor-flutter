@@ -222,7 +222,11 @@ class _BasicInfoScreenState extends State<BasicInfoScreen> {
     final displayTitle = value == null
         ? catalog.strings.noDialogue
         : entry?.title ?? value.toString();
-    final iconAsset = entry == null ? null : catalog.displayIcon(entry);
+    final iconAsset = entry != null
+        ? catalog.displayIcon(entry)
+        : value != null
+        ? 'assets/images/others/unknown.webp'
+        : null;
 
     return Card(
       key: ValueKey('narrative-setting-$fieldName'),

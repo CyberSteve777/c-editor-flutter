@@ -40,9 +40,18 @@ class ZombossMechWeightedZombieListEditor extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (ctx) => ZombieSelectionScreen(
+          multiSelect: true,
           onZombieSelected: (id) {
             Navigator.pop(ctx);
             onChanged([...zombieIds, id], [...weights, defaultWeight]);
+          },
+          onMultiZombieSelected: (ids) {
+            Navigator.pop(ctx);
+            if (ids.isEmpty) return;
+            onChanged(
+              [...zombieIds, ...ids],
+              [..._normalizedWeights, for (final _ in ids) defaultWeight],
+            );
           },
           onBack: () => Navigator.pop(ctx),
         ),

@@ -120,6 +120,35 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
     sync();
   }
 
+  void removeCauldron(int index) {
+    positions.removeAt(index);
+    if (index < selected) selected--;
+    if (selected >= positions.length) selected = positions.length - 1;
+    if (selected < 0) selected = 0;
+    sync();
+  }
+
+  void removeCell(int x, int y) {
+    final index = positions.indexWhere(
+      (p) => p['GridX'] == x && p['GridY'] == y,
+    );
+    if (index >= 0) removeCauldron(index);
+  }
+
+  (int, int)? firstEmptyCell() {
+    final (rows, cols) = LevelParser.getGridDimensionsFromFile(
+      widget.levelFile,
+    );
+    for (var y = 0; y < rows; y++) {
+      for (var x = 0; x < cols; x++) {
+        if (!positions.any((p) => p['GridX'] == x && p['GridY'] == y)) {
+          return (x, y);
+        }
+      }
+    }
+    return null;
+  }
+
   Widget grid() {
     final dims = LevelParser.getGridDimensionsFromFile(widget.levelFile);
     final rows = dims.$1, cols = dims.$2;
@@ -127,7 +156,9 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
     return scaleTableForDesktop(
       context: context,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 480),
+        constraints: BoxConstraints(
+          maxWidth: EditorItemCardLayout.gridPreviewMaxWidth(context),
+        ),
         child: AspectRatio(
           aspectRatio: cols / rows,
           child: Container(
@@ -143,44 +174,77 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
               border: Border.all(color: Colors.brown),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: GridView.count(
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: cols,
-              children: List.generate(rows * cols, (i) {
-                final x = i % cols, y = i ~/ cols;
-                final matches = positions.asMap().entries.where(
-                  (e) =>
-                      e.value[widget.cauldron ? 'GridX' : 'mX'] == x &&
-                      e.value[widget.cauldron ? 'GridY' : 'mY'] == y,
-                );
-                final highlighted = widget.cauldron
-                    ? matches.any((e) => e.key == selected)
-                    : matches.isNotEmpty;
-                return InkWell(
-                  key: ValueKey('placementCell_${x}_$y'),
-                  onTap: () => editCell(x, y),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.brown.withValues(alpha: .5),
-                        width: .5,
-                      ),
-                      color: highlighted
-                          ? theme.colorScheme.primary.withValues(alpha: .3)
-                          : null,
-                    ),
-                    child: matches.isEmpty
-                        ? null
-                        : GridItemIcon(
-                            typeName: widget.cauldron
-                                ? 'wizard_crucible'
-                                : 'pumpkin_scarecrow',
-                            size: 40,
-                            fit: BoxFit.contain,
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: List.generate(
+                rows,
+                (y) => Expanded(
+                  child: Row(
+                    children: List.generate(cols, (x) {
+                      final matches = positions.asMap().entries.where(
+                        (e) =>
+                            e.value[widget.cauldron ? 'GridX' : 'mX'] == x &&
+                            e.value[widget.cauldron ? 'GridY' : 'mY'] == y,
+                      );
+                      final highlighted = widget.cauldron
+                          ? matches.any((e) => e.key == selected)
+                          : matches.isNotEmpty;
+                      return Expanded(
+                        child: InkWell(
+                          key: ValueKey('placementCell_${x}_$y'),
+                          onTap: () => editCell(x, y),
+                          onSecondaryTap: widget.cauldron
+                              ? () => removeCell(x, y)
+                              : null,
+                          onLongPress: widget.cauldron
+                              ? () => removeCell(x, y)
+                              : null,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.brown.withValues(alpha: .5),
+                                width: .5,
+                              ),
+                              color: highlighted
+                                  ? widget.cauldron
+                                        ? theme.colorScheme.primary.withValues(
+                                            alpha: .3,
+                                          )
+                                        : const Color(0xFF2E7D32)
+                                  : null,
+                            ),
+                            alignment: Alignment.center,
+                            child: matches.isEmpty
+                                ? null
+                                : LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      final cellSize = constraints.maxWidth;
+                                      return widget.cauldron
+                                          ? Padding(
+                                              padding: const EdgeInsets.all(2),
+                                              child: GridItemIcon(
+                                                typeName: 'wizard_crucible',
+                                                size: cellSize,
+                                                fit: BoxFit.contain,
+                                              ),
+                                            )
+                                          : Icon(
+                                              Icons.check,
+                                              color: Colors.white,
+                                              size: (cellSize * .85).clamp(
+                                                16,
+                                                56,
+                                              ),
+                                            );
+                                    },
+                                  ),
                           ),
+                        ),
+                      );
+                    }),
                   ),
-                );
-              }),
+                ),
+              ),
             ),
           ),
         ),
@@ -251,6 +315,12 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
                       ? l.wizardCauldronHelpOverview
                       : l.pumpkinScarecrowHelpOverview,
                 ),
+                HelpSectionData(
+                  title: widget.cauldron ? l.usage : l.logic,
+                  body: widget.cauldron
+                      ? l.wizardCauldronHelpUsage
+                      : l.pumpkinScarecrowHelpLogic,
+                ),
               ],
             ),
           ),
@@ -288,19 +358,16 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
                         ),
                         selected: i == selected,
                         onSelected: (_) => setState(() => selected = i),
-                        onDeleted: () {
-                          positions.removeAt(i);
-                          selected = 0;
-                          sync();
-                        },
+                        onDeleted: () => removeCauldron(i),
                       ),
                     ),
                   OutlinedButton.icon(
-                    onPressed: () {
-                      positions.add(newCauldron(0, 0));
-                      selected = positions.length - 1;
-                      sync();
-                    },
+                    onPressed: firstEmptyCell() == null
+                        ? null
+                        : () {
+                            final (x, y) = firstEmptyCell()!;
+                            editCell(x, y);
+                          },
                     icon: const Icon(Icons.add),
                     label: Text(l.add),
                   ),

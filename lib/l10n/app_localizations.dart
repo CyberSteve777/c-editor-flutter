@@ -775,19 +775,19 @@ abstract class AppLocalizations {
   /// No description provided for @networkTimeoutAdvice.
   ///
   /// In en, this message translates to:
-  /// **'The request timed out. Check your connection and try again. Access to GitHub may require a proxy or a different network.'**
+  /// **'The request timed out. Check your connection and try again.'**
   String get networkTimeoutAdvice;
 
   /// No description provided for @networkRateLimitAdvice.
   ///
   /// In en, this message translates to:
-  /// **'GitHub\'s request limit has been reached, or access was refused. Wait and try again, or use a different network or proxy.'**
+  /// **'GitHub\'s request limit has been reached, or access was refused. Wait and try again later.'**
   String get networkRateLimitAdvice;
 
   /// No description provided for @networkConnectionAdvice.
   ///
   /// In en, this message translates to:
-  /// **'Could not connect to the server. Check your connection and try again. Access to GitHub may require a proxy or a different network.'**
+  /// **'Could not connect to the server. Check your connection and try again.'**
   String get networkConnectionAdvice;
 
   /// No description provided for @networkServiceAdvice.
@@ -4540,6 +4540,18 @@ abstract class AppLocalizations {
   /// **'Select ALL'**
   String get selectAll;
 
+  /// No description provided for @deselectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect ALL'**
+  String get deselectAll;
+
+  /// No description provided for @zombiePointCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Point cost: {cost}'**
+  String zombiePointCost(int cost);
+
   /// No description provided for @searchPlant.
   ///
   /// In en, this message translates to:
@@ -8155,7 +8167,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombieTentHitpoints.
   ///
   /// In en, this message translates to:
-  /// **'Tent hitpoints (Hitpoints)'**
+  /// **'Tent health (Hitpoints)'**
   String get zombieTentHitpoints;
 
   /// No description provided for @zombieTentProductionInterval.
@@ -8251,7 +8263,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpGravestoneLogic.
   ///
   /// In en, this message translates to:
-  /// **'Selects valid tiles from the pool above to spawn grid items. The total number of grid items cannot exceed the number of available tiles, or excess spawns will fail.'**
+  /// **'This event selects valid tiles from the pool above to spawn grid items. The total number of grid items cannot exceed the number of available tiles, or excess spawns will fail.'**
   String get eventHelpGravestoneLogic;
 
   /// No description provided for @eventHelpGravestoneMissingAssets.
@@ -13020,8 +13032,14 @@ abstract class AppLocalizations {
   /// No description provided for @wizardCauldronHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'Pre-places Wizard Cauldrons on the lawn, commonly used in Fairy Forest. Plant Food makes a cauldron boil briefly.\nDuring boiling, inserted plants yield the same number and level of random plants of the next quality: White to Green, Green to Blue, Blue to Purple; Orange yields other Orange plants.\nAt zero health, the cauldron explodes, damages nearby targets and leaves a temporary ring of poison that continuously damages nearby plants.\nYou can customize each cauldron’s hitpoints, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.'**
+  /// **'Pre-places Wizard Cauldrons on the lawn, commonly used in Fairy Forest. Plant Food makes a cauldron boil briefly.\nDuring boiling, inserted plants yield the same number and level of random plants of the next quality: White to Green, Green to Blue, Blue to Purple; Orange yields other Orange plants.\nAt zero health, the cauldron explodes, damages nearby targets and leaves a temporary ring of poison that continuously damages nearby plants.'**
   String get wizardCauldronHelpOverview;
+
+  /// No description provided for @wizardCauldronHelpUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Click an empty cell to place a Wizard Cauldron, with at most one cauldron per cell. Right-click on desktop or long-press on mobile to remove the cauldron in that cell.\nAfter placing a cauldron, you can customize its health, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.'**
+  String get wizardCauldronHelpUsage;
 
   /// No description provided for @wizardCauldronPositions.
   ///
@@ -13032,7 +13050,7 @@ abstract class AppLocalizations {
   /// No description provided for @wizardCauldronHitpoints.
   ///
   /// In en, this message translates to:
-  /// **'Cauldron hitpoints (CrucibleHitpoints)'**
+  /// **'Cauldron health (CrucibleHitpoints)'**
   String get wizardCauldronHitpoints;
 
   /// No description provided for @speedUpTileTitle.
@@ -17823,6 +17841,12 @@ abstract class AppLocalizations {
   /// **'Places Pumpkin Scarecrows at selected positions, commonly used in Haunting Halloween levels. Crows periodically fly off the scarecrows to carry away plants. Each departing crow is replaced by a new one flying in from outside the lawn, so crows will continue to appear until the scarecrow is destroyed. The health of each scarecrow and the level of its summoned crows can be customized in this event.'**
   String get pumpkinScarecrowHelpOverview;
 
+  /// No description provided for @pumpkinScarecrowHelpLogic.
+  ///
+  /// In en, this message translates to:
+  /// **'This event selects valid tiles from the pool above to spawn scarecrows. The total number of grid items cannot exceed the number of available tiles, or excess spawns will fail.'**
+  String get pumpkinScarecrowHelpLogic;
+
   /// No description provided for @pumpkinScarecrowPositions.
   ///
   /// In en, this message translates to:
@@ -17832,7 +17856,7 @@ abstract class AppLocalizations {
   /// No description provided for @pumpkinScarecrowHitpoints.
   ///
   /// In en, this message translates to:
-  /// **'Scarecrow hitpoints (Hitpoints)'**
+  /// **'Scarecrow health (Hitpoints)'**
   String get pumpkinScarecrowHitpoints;
 
   /// No description provided for @rocketLandingHelpTitle.
@@ -17846,6 +17870,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An event commonly used in Moon BaseZ. It spawns rockets at set positions as objectives contested by both plants and zombies.'**
   String get rocketLandingHelpOverview;
+
+  /// No description provided for @rocketLandingHelpLogic.
+  ///
+  /// In en, this message translates to:
+  /// **'This event selects valid tiles from the pool above to spawn rockets. The total number of grid items cannot exceed the number of available tiles, or excess spawns will fail.'**
+  String get rocketLandingHelpLogic;
 
   /// No description provided for @rocketLandingHelpPlantsTitle.
   ///
@@ -18536,6 +18566,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Spawning Heavy Shield or Cavalry Lance through the Grid Item Spawn event causes the level to crash. Please spawn it another way.'**
   String get spawnGravestonesCrashProneItemsWarning;
+
+  /// No description provided for @startupPluginResources.
+  ///
+  /// In en, this message translates to:
+  /// **'Plugin resources {completed}/{total}'**
+  String startupPluginResources(int completed, int total);
 }
 
 class _AppLocalizationsDelegate

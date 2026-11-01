@@ -2438,6 +2438,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectAll => '全选';
 
   @override
+  String get deselectAll => '全不选';
+
+  @override
+  String zombiePointCost(int cost) {
+    return '消耗点数：$cost';
+  }
+
+  @override
   String get searchPlant => '搜索植物';
 
   @override
@@ -7051,7 +7059,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get wizardCauldronHelpOverview =>
-      '在场地上预先放置巫师坩埚，常用于童话森林地图。投入能量豆后，坩埚会短暂沸腾。\n沸腾时投入植物，会随机生成相同数量、相同阶数的更高一级品质植物：白色变绿色，绿色变蓝色，蓝色变紫色；橙色则随机生成其他橙色植物。\n生命值归零时，坩埚会爆炸，对附近造成伤害，并产生一圈短暂存在的毒液，持续伤害范围内的植物。\n可以自定义每个坩埚的生命值、投入能量豆后沸腾的时间、爆炸对植物和僵尸的伤害、毒液遗留时间和毒液每秒的伤害。';
+      '在场地上预先放置巫师坩埚，常用于童话森林地图。投入能量豆后，坩埚会短暂沸腾。\n沸腾时投入植物，会随机生成相同数量、相同阶数的更高一级品质植物：白色变绿色，绿色变蓝色，蓝色变紫色；橙色则随机生成其他橙色植物。\n生命值归零时，坩埚会爆炸，对附近造成伤害，并产生一圈短暂存在的毒液，持续伤害范围内的植物。';
+
+  @override
+  String get wizardCauldronHelpUsage =>
+      '点击空白格子即可放置巫师坩埚，每格最多放置一个。桌面端右键或移动端长按可删除该格的巫师坩埚。\n放置坩埚后，可自定义该坩埚的生命值、投入能量豆后沸腾的时间、爆炸对植物和僵尸的伤害、毒液遗留时间和毒液每秒的伤害。';
 
   @override
   String get wizardCauldronPositions => '坩埚放置位置';
@@ -9700,6 +9712,10 @@ class AppLocalizationsZh extends AppLocalizations {
       '常见于惊魂万圣夜秘境，在指定位置生成南瓜稻草人。每隔一段时间，稻草人上的僵尸乌鸦就会飞走并叼走植物。乌鸦离开后，新的乌鸦会从场外飞入，因此只要稻草人未被破坏，乌鸦就会持续出现。可自定义稻草人的生命值及乌鸦阶级。';
 
   @override
+  String get pumpkinScarecrowHelpLogic =>
+      '该事件从上面的格子中随机选取可使用的格子生成稻草人。障碍物数量总和不能超过上方位置池的坐标总数，否则多余的物品将无法生成。';
+
+  @override
   String get pumpkinScarecrowPositions => '稻草人生成位置';
 
   @override
@@ -9711,6 +9727,10 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get rocketLandingHelpOverview =>
       '常见于月球基地的事件，在指定位置生成火箭，作为植物和僵尸双方争夺的目标。';
+
+  @override
+  String get rocketLandingHelpLogic =>
+      '该事件从上面的格子中随机选取可使用的格子生成火箭。障碍物数量总和不能超过上方位置池的坐标总数，否则多余的物品将无法生成。';
 
   @override
   String get rocketLandingHelpPlantsTitle => '植物占领';
@@ -10095,4 +10115,9 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get spawnGravestonesCrashProneItemsWarning =>
       '通过「障碍物生成」事件生成近卫重盾或骑兵长枪会导致关卡闪退，请通过其他方式生成。';
+
+  @override
+  String startupPluginResources(int completed, int total) {
+    return '插件资源 $completed/$total';
+  }
 }

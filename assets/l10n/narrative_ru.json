@@ -44,7 +44,7 @@
     "sectionHeianAges": "Эпоха Хэйан",
     "sectionUnderwaterWorld": "Подводный мир",
     "sectionMoonBase": "Лунная база",
-    "sectionMemoryImport": "Импортированные сюжеты",
+    "sectionMemoryImport": "Вступительные диалоги",
     "sectionMemorySeason27": "Сезон 27",
     "sectionMemorySeason28": "Сезон 28",
     "sectionMemorySeason29": "Сезон 29",
@@ -17531,11 +17531,6 @@
           "key": "NARRATIVE_GRAVITY_TUTORIAL_3_2",
           "kind": "stage",
           "text": "(Космонавт Безумный Дейв и Пенни уходят.)"
-        },
-        {
-          "key": "GRAVITY_TUTORIAL_PLANT_COSMICSAUCER",
-          "kind": "system",
-          "text": "[Обучение] Перетащите Космическую Тарелку на указанную клетку."
         }
       ]
     },
@@ -22222,7 +22217,7 @@
       "number": "3.7.1",
       "tag": "memoryLane",
       "icon": "assets/images/round_icons/Mode_MemoryLane.webp",
-      "title": "Дорога Воспоминаний — Импортированный диалог 1",
+      "title": "Дорога Воспоминаний — вступительный диалог 1",
       "characters": [
         "crazydave",
         "winnie"
@@ -22277,7 +22272,7 @@
       "number": "3.7.2",
       "tag": "memoryLane",
       "icon": "assets/images/round_icons/Mode_MemoryLane.webp",
-      "title": "Дорога Воспоминаний — Импортированный диалог 2",
+      "title": "Дорога Воспоминаний — вступительный диалог 2",
       "characters": [
         "crazydave",
         "winnie"
@@ -26571,7 +26566,7 @@
       "number": "4.6.1",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Бесконечная зона — неудача",
+      "title": "Бесконечная зона — уровень не пройден",
       "characters": [
         "crazydave"
       ],
@@ -26693,7 +26688,7 @@
       "number": "4.6.4",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Бесконечная зона — праздник",
+      "title": "Бесконечное испытание (старая версия)",
       "characters": [
         "crazydave"
       ],
@@ -26732,7 +26727,7 @@
       "number": "4.6.5",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Бесконечная зона — праздник уровень 1",
+      "title": "Бесконечное испытание — этаж 1 (старая версия)",
       "characters": [
         "crazydave"
       ],
@@ -26771,7 +26766,7 @@
       "number": "4.6.6",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Бесконечная зона — праздник уровень 2",
+      "title": "Бесконечное испытание — этаж 2 (старая версия)",
       "characters": [
         "crazydave"
       ],
@@ -26810,7 +26805,7 @@
       "number": "4.6.7",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Бесконечная зона — праздник уровень 3",
+      "title": "Бесконечное испытание — этаж 3 (старая версия)",
       "characters": [
         "crazydave"
       ],
@@ -26849,7 +26844,7 @@
       "number": "4.6.8",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Бесконечная зона — праздник уровень 4",
+      "title": "Бесконечное испытание — этаж 4 (старая версия)",
       "characters": [
         "crazydave"
       ],
@@ -26928,7 +26923,7 @@
       "number": "4.6.10",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Бесконечная зона — выбор мира завершён",
+      "title": "Бесконечная зона — выбор растений завершён",
       "characters": [
         "crazydave"
       ],
@@ -27008,7 +27003,7 @@
       "number": "4.6.12",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Бесконечная зона — успех",
+      "title": "Бесконечная зона — уровень пройден",
       "characters": [
         "crazydave"
       ],
@@ -27078,7 +27073,7 @@
       "number": "4.6.13",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Бесконечная зона — обучение выбору начальных растений",
+      "title": "Бесконечная зона — выбор начальных растений",
       "characters": [
         "winnie"
       ],
@@ -31259,7 +31254,7 @@
       "number": "5.2.15",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_PvP.webp",
-      "title": "Режим PvP — Вход в червоточину",
+      "title": "Режим PvP — начало",
       "characters": [
         "winnie",
         "crazydave"
@@ -32614,11 +32609,6 @@
           "key": "NARRATIVE_ARENA_TUTORIAL_1_2",
           "kind": "stage",
           "text": "(Безумный Дейв и Пенни уходят.)"
-        },
-        {
-          "key": "ARENA_TUTORIAL_PLANT_PEASHOOTER",
-          "kind": "system",
-          "text": "[Обучение] Перетащите Горохострел на указанную клетку."
         }
       ]
     },

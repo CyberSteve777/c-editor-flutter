@@ -44,7 +44,7 @@
     "sectionHeianAges": "Heian Ages",
     "sectionUnderwaterWorld": "Underwater World",
     "sectionMoonBase": "Moon BaseZ",
-    "sectionMemoryImport": "Imported Dialogue",
+    "sectionMemoryImport": "Introductory Dialogue",
     "sectionMemorySeason27": "Season 27",
     "sectionMemorySeason28": "Season 28",
     "sectionMemorySeason29": "Season 29",
@@ -54,7 +54,7 @@
     "sectionSecretRealm": "Secret Realm",
     "sectionPvpMode": "PvP Mode",
     "sectionCardClash": "Card Clash",
-    "sectionTwoPlayerDuel": "Two-Player Duel",
+    "sectionTwoPlayerDuel": "Two-Player Mode",
     "sectionPennysPursuit": "Penny's Pursuit",
     "sectionPlantEncounter": "Plant Encounter",
     "sectionEndlessModes": "Endless Zone / Endless Challenge",
@@ -17531,11 +17531,6 @@
           "key": "NARRATIVE_GRAVITY_TUTORIAL_3_2",
           "kind": "stage",
           "text": "(Astronaut Crazy Dave and Penny leave.)"
-        },
-        {
-          "key": "GRAVITY_TUTORIAL_PLANT_COSMICSAUCER",
-          "kind": "system",
-          "text": "[Tutorial prompt] Drag Cosmic Saucer onto the target tile."
         }
       ]
     },
@@ -22222,7 +22217,7 @@
       "number": "3.7.1",
       "tag": "memoryLane",
       "icon": "assets/images/round_icons/Mode_MemoryLane.webp",
-      "title": "Memory Lane - Imported Dialogue 1",
+      "title": "Memory Lane - Introductory Dialogue 1",
       "characters": [
         "crazydave",
         "winnie"
@@ -22277,7 +22272,7 @@
       "number": "3.7.2",
       "tag": "memoryLane",
       "icon": "assets/images/round_icons/Mode_MemoryLane.webp",
-      "title": "Memory Lane - Imported Dialogue 2",
+      "title": "Memory Lane - Introductory Dialogue 2",
       "characters": [
         "crazydave",
         "winnie"
@@ -25142,7 +25137,7 @@
       "number": "4.2.7",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_PinataParty.webp",
-      "title": "Second Summer Night Piñata Party (Strawburst Tutorial)",
+      "title": "Second Summer Night Piñata Party (Strawburst Introduction)",
       "characters": [
         "winnie"
       ],
@@ -26571,7 +26566,7 @@
       "number": "4.6.1",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Endless Zone - Failure",
+      "title": "Endless Zone - Level Failed",
       "characters": [
         "crazydave"
       ],
@@ -26693,7 +26688,7 @@
       "number": "4.6.4",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Endless Zone - Festival",
+      "title": "Endless Challenge (Legacy)",
       "characters": [
         "crazydave"
       ],
@@ -26732,7 +26727,7 @@
       "number": "4.6.5",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Endless Zone - Festival Level 1",
+      "title": "Endless Challenge - Floor 1 (Legacy)",
       "characters": [
         "crazydave"
       ],
@@ -26771,7 +26766,7 @@
       "number": "4.6.6",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Endless Zone - Festival Level 2",
+      "title": "Endless Challenge - Floor 2 (Legacy)",
       "characters": [
         "crazydave"
       ],
@@ -26810,7 +26805,7 @@
       "number": "4.6.7",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Endless Zone - Festival Level 3",
+      "title": "Endless Challenge - Floor 3 (Legacy)",
       "characters": [
         "crazydave"
       ],
@@ -26849,7 +26844,7 @@
       "number": "4.6.8",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Endless Zone - Festival Level 4",
+      "title": "Endless Challenge - Floor 4 (Legacy)",
       "characters": [
         "crazydave"
       ],
@@ -26928,7 +26923,7 @@
       "number": "4.6.10",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Endless Zone - World Selection Complete",
+      "title": "Endless Zone - Plant Selection Complete",
       "characters": [
         "crazydave"
       ],
@@ -27008,7 +27003,7 @@
       "number": "4.6.12",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Endless Zone - Success",
+      "title": "Endless Zone - Level Complete",
       "characters": [
         "crazydave"
       ],
@@ -27078,7 +27073,7 @@
       "number": "4.6.13",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_Endless.webp",
-      "title": "Endless Zone - Starting Plant Selection Tutorial",
+      "title": "Endless Zone - Starting Plant Selection",
       "characters": [
         "winnie"
       ],
@@ -29618,7 +29613,7 @@
       "number": "4.11.6",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Elimination - Mission Complete",
+      "title": "Beplanted - Mission Complete",
       "characters": [
         "zombossicon"
       ],
@@ -29650,7 +29645,7 @@
       "number": "4.11.7",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Elimination - Mammoth Freezing Breath",
+      "title": "Beplanted - Mammoth Freezing Breath",
       "characters": [
         "zombossicon"
       ],
@@ -29682,7 +29677,7 @@
       "number": "4.11.8",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Elimination - Quantum Shield",
+      "title": "Beplanted - Quantum Shield",
       "characters": [
         "zombossicon"
       ],
@@ -29714,7 +29709,7 @@
       "number": "4.11.9",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Elimination - Stage 11",
+      "title": "Beplanted - Stage 11",
       "characters": [
         "zombossicon"
       ],
@@ -29746,7 +29741,7 @@
       "number": "4.11.10",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Elimination - Stage 12",
+      "title": "Beplanted - Stage 12",
       "characters": [
         "zombossicon"
       ],
@@ -29778,7 +29773,7 @@
       "number": "4.11.11",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Elimination - Stage 21",
+      "title": "Beplanted - Stage 21",
       "characters": [
         "zombossicon"
       ],
@@ -29810,7 +29805,7 @@
       "number": "4.11.12",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Elimination - Stage 22",
+      "title": "Beplanted - Stage 22",
       "characters": [
         "zombossicon"
       ],
@@ -29842,7 +29837,7 @@
       "number": "4.11.13",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Elimination - Stage 31",
+      "title": "Beplanted - Stage 31",
       "characters": [
         "zombossicon"
       ],
@@ -29874,7 +29869,7 @@
       "number": "4.11.14",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Elimination - Stage 32",
+      "title": "Beplanted - Stage 32",
       "characters": [
         "zombossicon"
       ],
@@ -29906,7 +29901,7 @@
       "number": "4.11.15",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Elimination - Stage 41",
+      "title": "Beplanted - Stage 41",
       "characters": [
         "zombossicon"
       ],
@@ -29938,7 +29933,7 @@
       "number": "4.11.16",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Elimination - Stage 42",
+      "title": "Beplanted - Stage 42",
       "characters": [
         "zombossicon"
       ],
@@ -31259,7 +31254,7 @@
       "number": "5.2.15",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_PvP.webp",
-      "title": "PvP Mode - Wormhole Entrance",
+      "title": "PvP Mode - Opening",
       "characters": [
         "winnie",
         "crazydave"
@@ -32614,11 +32609,6 @@
           "key": "NARRATIVE_ARENA_TUTORIAL_1_2",
           "kind": "stage",
           "text": "(Crazy Dave and Penny leave.)"
-        },
-        {
-          "key": "ARENA_TUTORIAL_PLANT_PEASHOOTER",
-          "kind": "system",
-          "text": "[Tutorial prompt] Drag Peashooter onto the target tile."
         }
       ]
     },

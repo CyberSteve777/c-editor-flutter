@@ -344,7 +344,7 @@ class _WebBrowserDownloadDialogState extends State<_WebBrowserDownloadDialog> {
         _error = widget.host.localize(
           context,
           'dynamicWebOpenFailed',
-          'Could not open the download link. Allow browser pop-ups, or download manually from GitHub Releases. A proxy may be needed on your network.',
+          'Could not open the download link. Allow browser pop-ups, or download manually from GitHub Releases.',
         );
       }
     });

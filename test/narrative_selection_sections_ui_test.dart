@@ -14,7 +14,7 @@ void main() {
     SelectionViewMemoryStore.clear();
   });
 
-  testWidgets('picker opens section cards before dialogue rows', (
+  testWidgets('All lists dialogues while concrete tags open section cards', (
     tester,
   ) async {
     final catalog = await NarrativeCatalog.load(const Locale('zh'));
@@ -22,12 +22,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
+      find.byKey(const ValueKey('narrative-all-dialogue-list')),
+      findsOneWidget,
+    );
+    expect(find.text('铲子引导'), findsOneWidget);
+    expect(find.text('教程庭院'), findsNothing);
+
+    await tester.tap(find.text('主线世界'));
+    await tester.pumpAndSettle();
+    expect(
       find.byKey(const ValueKey('narrative-section-grid')),
       findsOneWidget,
     );
-    expect(find.text('教程庭院'), findsOneWidget);
-    expect(find.text('铲子引导'), findsNothing);
-
     await tester.tap(find.text('教程庭院'));
     await tester.pumpAndSettle();
     final sectionList = find.byKey(
@@ -42,7 +48,7 @@ void main() {
     expect(
       sectionImages.every(
         (image) =>
-            image.assetPath == 'assets/images/round_icons/Mode_Tutorial.webp',
+            image.assetPath == 'assets/images/round_icons/Stage_Modern.webp',
       ),
       isTrue,
     );
@@ -74,13 +80,68 @@ void main() {
 
       await tester.tap(find.text('回忆之旅'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('导入剧情'));
+      final memoryImportCard = find.byKey(
+        const ValueKey('narrative-section-memoryImport'),
+      );
+      final memoryImportImage = tester.widget<AssetImageWidget>(
+        find.descendant(
+          of: memoryImportCard,
+          matching: find.byType(AssetImageWidget),
+        ),
+      );
+      expect(memoryImportImage.fit, BoxFit.contain);
+      expect(
+        find.descendant(of: memoryImportCard, matching: find.byType(ClipOval)),
+        findsNothing,
+      );
+
+      for (final season in [27, 28, 29, 30, 31, 32]) {
+        final seasonCard = find.byKey(
+          ValueKey('narrative-section-memorySeason$season'),
+        );
+        final seasonImage = tester.widget<AssetImageWidget>(
+          find.descendant(
+            of: seasonCard,
+            matching: find.byType(AssetImageWidget),
+          ),
+        );
+        expect(seasonImage.fit, BoxFit.contain);
+        expect(
+          find.descendant(of: seasonCard, matching: find.byType(ClipOval)),
+          findsNothing,
+        );
+      }
+
+      await tester.tap(find.text('第27赛季'));
+      await tester.pumpAndSettle();
+      final seasonList = find.byKey(
+        const ValueKey('narrative-section-list-memorySeason27'),
+      );
+      final seasonEntryImages = tester.widgetList<AssetImageWidget>(
+        find.descendant(
+          of: seasonList,
+          matching: find.byType(AssetImageWidget),
+        ),
+      );
+      expect(seasonEntryImages, isNotEmpty);
+      expect(
+        seasonEntryImages.every((image) => image.fit == BoxFit.contain),
+        isTrue,
+      );
+      expect(
+        find.descendant(of: seasonList, matching: find.byType(ClipRRect)),
+        findsNothing,
+      );
+
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('引入剧情'));
       await tester.pumpAndSettle();
       expect(find.text('系统教程 - 回忆之旅'), findsOneWidget);
-      expect(find.text('回忆之旅 - 导入剧情1'), findsOneWidget);
+      expect(find.text('回忆之旅 - 引入剧情1'), findsOneWidget);
       expect(
         tester.getTopLeft(find.text('系统教程 - 回忆之旅')).dy,
-        lessThan(tester.getTopLeft(find.text('回忆之旅 - 导入剧情1')).dy),
+        lessThan(tester.getTopLeft(find.text('回忆之旅 - 引入剧情1')).dy),
       );
 
       await tester.tap(find.byType(BackButton));
@@ -134,6 +195,8 @@ void main() {
 
     await tester.pumpWidget(_pickerApp(catalog, bucket: 'level-a'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('主线世界'));
+    await tester.pumpAndSettle();
     await tester.drag(
       find.byKey(const ValueKey('narrative-section-grid')),
       const Offset(0, -700),
@@ -157,6 +220,8 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpAndSettle();
     await tester.pumpWidget(_pickerApp(catalog, bucket: 'level-b'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('主线世界'));
     await tester.pumpAndSettle();
     expect(tester.state<ScrollableState>(gridScrollable()).position.pixels, 0);
     expect(tester.takeException(), isNull);

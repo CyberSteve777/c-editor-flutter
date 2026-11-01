@@ -82,7 +82,7 @@ const _narrativeSections = <NarrativeSection>[
   NarrativeSection(
     id: NarrativeSectionId.tutorialYard,
     category: NarrativeCategory.mainWorlds,
-    iconAsset: 'assets/images/round_icons/Mode_Tutorial.webp',
+    iconAsset: 'assets/images/round_icons/Stage_Modern.webp',
     labelKey: 'sectionTutorialYard',
   ),
   NarrativeSection(
@@ -476,6 +476,7 @@ class NarrativeCatalog {
          for (final dialogue in dialogues) dialogue.valueKey: dialogue,
        } {
     final sourceIndexes = <String, int>{};
+    final naturalGroupIndexes = <String, int>{};
     final sectionIds = <String, NarrativeSectionId>{};
     final entriesBySection = <NarrativeSectionId, List<NarrativeEntry>>{
       for (final section in _narrativeSections) section.id: [],
@@ -484,12 +485,22 @@ class NarrativeCatalog {
       final dialogue = dialogues[index];
       final sectionId = _resolveNarrativeSectionId(dialogue);
       sourceIndexes[dialogue.groupId] = index;
+      naturalGroupIndexes.putIfAbsent(
+        _naturalShape(dialogue.groupId),
+        () => index,
+      );
       sectionIds[dialogue.groupId] = sectionId;
       entriesBySection[sectionId]!.add(dialogue);
     }
     for (final entry in entriesBySection.entries) {
       entry.value.sort(
-        (a, b) => _compareSectionEntries(entry.key, a, b, sourceIndexes),
+        (a, b) => _compareSectionEntries(
+          entry.key,
+          a,
+          b,
+          sourceIndexes,
+          naturalGroupIndexes,
+        ),
       );
     }
     _sectionIdByGroupId = Map.unmodifiable(sectionIds);
@@ -498,6 +509,10 @@ class NarrativeCatalog {
           for (final entry in entriesBySection.entries)
             entry.key: List<NarrativeEntry>.unmodifiable(entry.value),
         });
+    _allDisplayEntries = List<NarrativeEntry>.unmodifiable([
+      for (final section in _narrativeSections)
+        ..._entriesBySection[section.id]!,
+    ]);
   }
 
   factory NarrativeCatalog.fromJson(Map<String, dynamic> json) {
@@ -526,6 +541,7 @@ class NarrativeCatalog {
   final Map<String, NarrativeEntry> _byValue;
   late final Map<String, NarrativeSectionId> _sectionIdByGroupId;
   late final Map<NarrativeSectionId, List<NarrativeEntry>> _entriesBySection;
+  late final List<NarrativeEntry> _allDisplayEntries;
 
   static String localeCodeFor(Locale locale) => switch (locale.languageCode) {
     'zh' => 'zh',
@@ -566,9 +582,9 @@ class NarrativeCatalog {
   }
 
   List<NarrativeEntry> forCategory(NarrativeCategory category) {
-    if (category == NarrativeCategory.all) return dialogues;
-    return dialogues
-        .where((dialogue) => displayCategory(dialogue) == category)
+    if (category == NarrativeCategory.all) return _allDisplayEntries;
+    return _allDisplayEntries
+        .where((dialogue) => sectionForEntry(dialogue).category == category)
         .toList(growable: false);
   }
 
@@ -696,6 +712,7 @@ int _compareSectionEntries(
   NarrativeEntry a,
   NarrativeEntry b,
   Map<String, int> sourceIndexes,
+  Map<String, int> naturalGroupIndexes,
 ) {
   if (sectionId != NarrativeSectionId.systemTutorials) {
     final tutorialOrder = _modeTutorialPriority(
@@ -709,6 +726,32 @@ int _compareSectionEntries(
     ).compareTo(_secretRealmReleaseOrder(b));
     if (releaseOrder != 0) return releaseOrder;
   }
+  if (sectionId == NarrativeSectionId.endlessModes) {
+    final endlessOrder = _endlessModeOrder(a).compareTo(_endlessModeOrder(b));
+    if (endlessOrder != 0) return endlessOrder;
+  }
+  if (sectionId == NarrativeSectionId.pvpMode) {
+    final pvpOrder = _pvpModeOrder(a).compareTo(_pvpModeOrder(b));
+    if (pvpOrder != 0) return pvpOrder;
+  }
+  if (sectionId == NarrativeSectionId.systemTutorials) {
+    final systemAnchorOrder = _systemTutorialAnchor(
+      a,
+      sourceIndexes,
+      naturalGroupIndexes,
+    ).compareTo(_systemTutorialAnchor(b, sourceIndexes, naturalGroupIndexes));
+    if (systemAnchorOrder != 0) return systemAnchorOrder;
+
+    final systemClusterOrder = _systemTutorialClusterOrder(
+      a,
+    ).compareTo(_systemTutorialClusterOrder(b));
+    if (systemClusterOrder != 0) return systemClusterOrder;
+  }
+  final naturalGroupOrder = (naturalGroupIndexes[_naturalShape(a.groupId)] ?? 0)
+      .compareTo(naturalGroupIndexes[_naturalShape(b.groupId)] ?? 0);
+  if (naturalGroupOrder != 0) return naturalGroupOrder;
+  final naturalOrder = _compareNaturalSiblings(a.groupId, b.groupId);
+  if (naturalOrder != 0) return naturalOrder;
   return (sourceIndexes[a.groupId] ?? 0).compareTo(
     sourceIndexes[b.groupId] ?? 0,
   );
@@ -719,6 +762,160 @@ int _modeTutorialPriority(NarrativeEntry entry) {
   if (entry.groupId == 'QUEST_INTRO') return 1;
   return 2;
 }
+
+int _endlessModeOrder(NarrativeEntry entry) {
+  const order = <String, int>{
+    'DANGER_ROOM_TUTORIAL': 0,
+    'DANGER_ROOM_INTROWRAPUP': 1,
+    'DANGER_ROOM_POWER': 2,
+    'DANGER_ROOM_SUCCESS': 3,
+    'DANGER_ROOM_FAILURE': 4,
+    'DANGER_ROOM_LAWNMOWER_SUCCESS': 5,
+    'DANGER_ROOM_INTRO_EGYPT': 6,
+    'DANGER_ROOM_INTRO_PIRATE': 7,
+    'DANGER_ROOM_INTRO_COWBOY': 8,
+    'DANGER_ROOM_INTRO_FUTURE': 9,
+    'DANGER_ROOM_INTRO_DARK': 10,
+    'DANGER_ROOM_INTRO_BEACH': 11,
+    'DANGER_ROOM_INTRO_ICEAGE': 12,
+    'DANGER_ROOM_INTRO_LOSTCITY': 13,
+    'DANGER_ROOM_INTRO_EIGHTIES': 14,
+    'DANGER_ROOM_INTRO_DINO': 15,
+    'DANGER_ROOM_INTRO_MODERN': 16,
+    'DANGER_ROOM_INTRO_FESTIVAL': 17,
+    'DANGER_ROOM_INTRO_FESTIVAL_LEVEL_ONE': 18,
+    'DANGER_ROOM_INTRO_FESTIVAL_LEVEL_TWO': 19,
+    'DANGER_ROOM_INTRO_FESTIVAL_LEVEL_THREE': 20,
+    'DANGER_ROOM_INTRO_FESTIVAL_LEVEL_FOUR': 21,
+    'NEW_DANGER_ROOM_INTRO': 22,
+    'DANGERROOM_SELECT_TUTORIAL': 23,
+  };
+  return order[entry.groupId] ?? 1000;
+}
+
+/// Follows the original PvP onboarding flow instead of the catalogue source
+/// order, which places the map opening after several battle tutorials.
+int _pvpModeOrder(NarrativeEntry entry) {
+  const order = <String, int>{
+    'TUTORIAL_PVP_INTRO': 0,
+    'MAP_PVP_INTRO': 1,
+    'MAP_PVPMAINMENU_INTRO': 2,
+    'MAP_PVPGARDENWAR_INTRO': 3,
+    'PVP_PLANTMODULE_INTRO': 4,
+    'PVP_BATTLEMODULE1_INTRO': 5,
+    'PVP_BATTLEMODULE2_INTRO': 6,
+    'PVP_TRAINZB_INTRO': 7,
+    'PVP_TRAINZB_MORE': 8,
+    'PVP_ATTACK_INTRO': 9,
+    'PVP_ATTACKBEGIN_INTRO': 10,
+    'PVP_ATTACKMODULE_INTRO': 11,
+    'PVP_ATTACKMODULE_BUFINTRO': 12,
+    'PVP_ATTACKMODULE_END': 13,
+    'PVP_OCCUPYMAP_INTRO': 14,
+    'MAP_PVPEVILDAVID_START_INTRO': 15,
+    'MAP_PVPEVILDAVID_FAILED_INTRO': 16,
+    'MAP_PVPEVILDAVID_SUCCESS_1_INTRO': 17,
+    'MAP_PVPEVILDAVID_SUCCESS_2_INTRO': 18,
+    'MAP_PVPEVILDAVID_SUCCESS_3_INTRO': 19,
+    'MAP_PVPEVILDAVID_SUCCESS_4_INTRO': 20,
+    'MAP_PVPEVILDAVID_SUCCESS_5_INTRO': 21,
+    'MAP_PVPEVILDAVID_SUCCESS_6_INTRO': 22,
+  };
+  return order[entry.groupId] ?? 1000;
+}
+
+const _powerGestureTutorialOrder = <String, int>{
+  'PINCH': 0,
+  'FLICK': 1,
+  'WIZARDFINGER': 2,
+};
+
+const _plantPuzzleTutorialOrder = <String, int>{
+  'ELIMINATE_BLOCK_INTRO': 0,
+  'ELIMINATE_COLOR_INTRO': 1,
+  'ELIMINATE_INTRO': 2,
+  'ZOMBIE_INTRO_ELIMINATE_MISSIONFINISH': 3,
+  'ZOMBIE_INTRO_ELIMINATE_FREEZINGWIND': 4,
+  'ZOMBIE_INTRO_ELIMINATE_SPAWNSHIELD': 5,
+  'ZOMBIE_INTRO_ELIMINATE_STAGE11': 6,
+  'ZOMBIE_INTRO_ELIMINATE_STAGE12': 7,
+  'ZOMBIE_INTRO_ELIMINATE_STAGE21': 8,
+  'ZOMBIE_INTRO_ELIMINATE_STAGE22': 9,
+  'ZOMBIE_INTRO_ELIMINATE_STAGE31': 10,
+  'ZOMBIE_INTRO_ELIMINATE_STAGE32': 11,
+  'ZOMBIE_INTRO_ELIMINATE_STAGE41': 12,
+  'ZOMBIE_INTRO_ELIMINATE_STAGE42': 13,
+};
+
+/// Keeps tutorial families together without disturbing the source order of
+/// unrelated system dialogue. The family is anchored at the first member's
+/// original position, while the explicit member order reflects the order in
+/// which the mechanics are introduced to the player.
+int _systemTutorialAnchor(
+  NarrativeEntry entry,
+  Map<String, int> sourceIndexes,
+  Map<String, int> naturalGroupIndexes,
+) {
+  final family = _systemTutorialFamily(entry.groupId);
+  if (family != null) {
+    return family.keys
+        .map((id) => sourceIndexes[id])
+        .whereType<int>()
+        .reduce((first, second) => first < second ? first : second);
+  }
+  return naturalGroupIndexes[_naturalShape(entry.groupId)] ??
+      sourceIndexes[entry.groupId] ??
+      0;
+}
+
+Map<String, int>? _systemTutorialFamily(String id) {
+  if (_powerGestureTutorialOrder.containsKey(id)) {
+    return _powerGestureTutorialOrder;
+  }
+  if (_plantPuzzleTutorialOrder.containsKey(id)) {
+    return _plantPuzzleTutorialOrder;
+  }
+  return null;
+}
+
+int _systemTutorialClusterOrder(NarrativeEntry entry) {
+  return _systemTutorialFamily(entry.groupId)?[entry.groupId] ?? 0;
+}
+
+int _compareNaturalSiblings(String a, String b) {
+  final numberPattern = RegExp(r'\d+');
+  if (_naturalShape(a) != _naturalShape(b)) return 0;
+
+  final aNumbers = numberPattern
+      .allMatches(a)
+      .map((match) => int.parse(match.group(0)!))
+      .toList(growable: false);
+  final bNumbers = numberPattern
+      .allMatches(b)
+      .map((match) => int.parse(match.group(0)!))
+      .toList(growable: false);
+  for (
+    var index = 0;
+    index < aNumbers.length && index < bNumbers.length;
+    index++
+  ) {
+    final comparison = aNumbers[index].compareTo(bNumbers[index]);
+    if (comparison != 0) return comparison;
+  }
+  final lengthComparison = aNumbers.length.compareTo(bNumbers.length);
+  if (lengthComparison != 0) return lengthComparison;
+
+  int phaseOrder(String value) => value.endsWith('_INTRO')
+      ? 0
+      : value.endsWith('_OUTRO')
+      ? 1
+      : 2;
+  return phaseOrder(a).compareTo(phaseOrder(b));
+}
+
+String _naturalShape(String value) => value
+    .replaceFirst(RegExp(r'_(INTRO|OUTRO)$'), '_PHASE')
+    .replaceAll(RegExp(r'\d+'), '#');
 
 int _secretRealmReleaseOrder(NarrativeEntry entry) {
   final id = entry.groupId;

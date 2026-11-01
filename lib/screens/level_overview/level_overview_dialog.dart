@@ -1985,6 +1985,7 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                           activeGridKey,
                           l10n,
                           theme,
+                          showModuleLabel: activeTabIndex == 2,
                         ),
                         const SizedBox(height: 12),
                         _buildLawnGrid(
@@ -2490,15 +2491,20 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
     List<GridPreviewCategoryOption> categories,
     String activeKey,
     AppLocalizations l10n,
-    ThemeData theme,
-  ) {
+    ThemeData theme, {
+    bool showModuleLabel = false,
+  }) {
     final selectedOption = _selectedGridCategory(categories, activeKey);
     if (selectedOption == null) return const SizedBox.shrink();
 
     final optionsForKind = categories
         .where((c) => c.kind == selectedOption.kind)
         .toList();
-    if (optionsForKind.length <= 1) return const SizedBox.shrink();
+    final showKindLabel =
+        showModuleLabel && selectedOption.kind != GridPreviewModuleKind.common;
+    if (optionsForKind.length <= 1 && !showKindLabel) {
+      return const SizedBox.shrink();
+    }
 
     Widget content = SingleChildScrollView(
       controller: _subCategoryScrollController,
@@ -2520,7 +2526,9 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
               mainAxisSize: MainAxisSize.min,
               children: optionsForKind.map((option) {
                 final isSelected = activeKey == option.key;
-                String label = option.wave != null
+                String label = showKindLabel && optionsForKind.length == 1
+                    ? _getModuleLabel(option.kind, l10n)
+                    : option.wave != null
                     ? l10n.customZombieWaveItem(option.wave!)
                     : option.label;
                 return InkWell(
@@ -2571,6 +2579,14 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (showKindLabel && optionsForKind.length > 1)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                _getModuleLabel(selectedOption.kind, l10n),
+                style: theme.textTheme.labelLarge,
+              ),
+            ),
           LocalScrollbarRegion(
             child: Scrollbar(
               key: const ValueKey('gridSubCategoryScrollbar'),
@@ -3278,11 +3294,20 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
           style: style,
           cellBuilder: (col, row) =>
               items.any((item) => item['GridX'] == col && item['GridY'] == row)
-              ? GridItemIcon(
-                  id: 'wizard_crucible',
-                  size: 30,
-                  isGrid: true,
-                  levelFile: widget.levelFile,
+              ? LayoutBuilder(
+                  builder: (context, constraints) => Center(
+                    child: GridItemIcon(
+                      id: 'wizard_crucible',
+                      size:
+                          math.min(
+                            constraints.maxWidth,
+                            constraints.maxHeight,
+                          ) *
+                          0.9,
+                      isGrid: true,
+                      levelFile: widget.levelFile,
+                    ),
+                  ),
                 )
               : null,
         );

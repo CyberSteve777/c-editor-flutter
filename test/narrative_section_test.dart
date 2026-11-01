@@ -160,6 +160,122 @@ void main() {
       expect(releaseBuckets, orderedEquals([...releaseBuckets]..sort()));
     },
   );
+
+  test('endless mode and numbered siblings use their intended order', () async {
+    const endlessOrder = <String>[
+      'DANGER_ROOM_TUTORIAL',
+      'DANGER_ROOM_INTROWRAPUP',
+      'DANGER_ROOM_POWER',
+      'DANGER_ROOM_SUCCESS',
+      'DANGER_ROOM_FAILURE',
+      'DANGER_ROOM_LAWNMOWER_SUCCESS',
+      'DANGER_ROOM_INTRO_EGYPT',
+      'DANGER_ROOM_INTRO_PIRATE',
+      'DANGER_ROOM_INTRO_COWBOY',
+      'DANGER_ROOM_INTRO_FUTURE',
+      'DANGER_ROOM_INTRO_DARK',
+      'DANGER_ROOM_INTRO_BEACH',
+      'DANGER_ROOM_INTRO_ICEAGE',
+      'DANGER_ROOM_INTRO_LOSTCITY',
+      'DANGER_ROOM_INTRO_EIGHTIES',
+      'DANGER_ROOM_INTRO_DINO',
+      'DANGER_ROOM_INTRO_MODERN',
+      'DANGER_ROOM_INTRO_FESTIVAL',
+      'DANGER_ROOM_INTRO_FESTIVAL_LEVEL_ONE',
+      'DANGER_ROOM_INTRO_FESTIVAL_LEVEL_TWO',
+      'DANGER_ROOM_INTRO_FESTIVAL_LEVEL_THREE',
+      'DANGER_ROOM_INTRO_FESTIVAL_LEVEL_FOUR',
+      'NEW_DANGER_ROOM_INTRO',
+      'DANGERROOM_SELECT_TUTORIAL',
+    ];
+    const electricCurrantOrder = <String>[
+      'EPIC_QUEST_ELECTRICCURRANT_1_INTRO',
+      'EPIC_QUEST_ELECTRICCURRANT_2_INTRO',
+      'EPIC_QUEST_ELECTRICCURRANT_4_INTRO',
+      'EPIC_QUEST_ELECTRICCURRANT_5_INTRO',
+      'EPIC_QUEST_ELECTRICCURRANT_6_INTRO',
+      'EPIC_QUEST_ELECTRICCURRANT_9_INTRO',
+      'EPIC_QUEST_ELECTRICCURRANT_10_INTRO',
+      'EPIC_QUEST_ELECTRICCURRANT_10_OUTRO',
+    ];
+
+    for (final locale in const [Locale('zh'), Locale('en'), Locale('ru')]) {
+      final catalog = await NarrativeCatalog.load(locale);
+      expect(
+        catalog
+            .entriesForSection(NarrativeSectionId.endlessModes)
+            .map((entry) => entry.groupId),
+        endlessOrder,
+      );
+      for (final entries in [
+        catalog.entriesForSection(NarrativeSectionId.travelLog),
+        catalog.forCategory(NarrativeCategory.otherModes),
+        catalog.forCategory(NarrativeCategory.all),
+      ]) {
+        expect(
+          entries
+              .where(
+                (entry) =>
+                    entry.groupId.startsWith('EPIC_QUEST_ELECTRICCURRANT_'),
+              )
+              .map((entry) => entry.groupId),
+          electricCurrantOrder,
+        );
+      }
+      for (final section in catalog.sectionsForCategory(
+        NarrativeCategory.all,
+      )) {
+        final siblingGroups = <String, List<NarrativeEntry>>{};
+        for (final entry in catalog.entriesForSection(section.id)) {
+          siblingGroups
+              .putIfAbsent(_naturalTestShape(entry.groupId), () => [])
+              .add(entry);
+        }
+        for (final siblings in siblingGroups.values.where(
+          (entries) => entries.length > 1,
+        )) {
+          for (var index = 1; index < siblings.length; index++) {
+            expect(
+              _compareNaturalTestIds(
+                siblings[index - 1].groupId,
+                siblings[index].groupId,
+              ),
+              lessThanOrEqualTo(0),
+              reason:
+                  '${section.id.name}: ${siblings[index - 1].groupId} must precede ${siblings[index].groupId}',
+            );
+          }
+        }
+      }
+      expect(
+        catalog.sectionForEntry(catalog.dialogues.first).iconAsset,
+        'assets/images/round_icons/Stage_Modern.webp',
+      );
+      expect(
+        catalog.dialogues
+            .expand((entry) => entry.lines)
+            .map((line) => line.key),
+        isNot(
+          anyOf(
+            contains('GRAVITY_TUTORIAL_PLANT_COSMICSAUCER'),
+            contains('ARENA_TUTORIAL_PLANT_PEASHOOTER'),
+          ),
+        ),
+      );
+    }
+
+    final zh = await NarrativeCatalog.load(const Locale('zh'));
+    expect(
+      zh.strings.sectionLabel(
+        zh.sectionsForCategory(NarrativeCategory.memoryLane).first,
+      ),
+      '引入剧情',
+    );
+    expect(zh.findByValue('DANGER_ROOM_TUTORIAL')?.title, '无尽地带 - 初始植物选择');
+    expect(zh.findByValue('DANGER_ROOM_INTROWRAPUP')?.title, '无尽地带 - 植物选择完成');
+    expect(zh.findByValue('DANGER_ROOM_SUCCESS')?.title, '无尽地带 - 过关成功');
+    expect(zh.findByValue('DANGER_ROOM_FAILURE')?.title, '无尽地带 - 过关失败');
+  });
 }
 
 int _secretRealmReleaseBucket(String id) {
@@ -182,4 +298,36 @@ int _secretRealmReleaseBucket(String id) {
   if (id.startsWith('MAUSOLEUM_')) return 15;
   if (id.startsWith('ARENA_')) return 16;
   return 99;
+}
+
+String _naturalTestShape(String value) => value
+    .replaceFirst(RegExp(r'_(INTRO|OUTRO)$'), '_PHASE')
+    .replaceAll(RegExp(r'\d+'), '#');
+
+int _compareNaturalTestIds(String a, String b) {
+  final numberPattern = RegExp(r'\d+');
+  final aNumbers = numberPattern
+      .allMatches(a)
+      .map((match) => int.parse(match.group(0)!))
+      .toList(growable: false);
+  final bNumbers = numberPattern
+      .allMatches(b)
+      .map((match) => int.parse(match.group(0)!))
+      .toList(growable: false);
+  for (
+    var index = 0;
+    index < aNumbers.length && index < bNumbers.length;
+    index++
+  ) {
+    final result = aNumbers[index].compareTo(bNumbers[index]);
+    if (result != 0) return result;
+  }
+  final lengthResult = aNumbers.length.compareTo(bNumbers.length);
+  if (lengthResult != 0) return lengthResult;
+  int phase(String value) => value.endsWith('_INTRO')
+      ? 0
+      : value.endsWith('_OUTRO')
+      ? 1
+      : 2;
+  return phase(a).compareTo(phase(b));
 }
