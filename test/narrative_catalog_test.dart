@@ -158,6 +158,69 @@ void main() {
     }
   });
 
+  test(
+    'system feature tutorials form one consecutive series in every locale',
+    () async {
+      final zh = await NarrativeCatalog.load(const Locale('zh'));
+      final expected = zh.dialogues
+          .where(
+            (entry) =>
+                entry.title.startsWith('系统教程 - ') &&
+                zh.sectionForEntry(entry).id ==
+                    NarrativeSectionId.systemTutorials,
+          )
+          .map((entry) => entry.groupId)
+          .toList();
+      expect(expected, hasLength(32));
+      expect(
+        expected,
+        containsAll(const [
+          'UNLOCK_WORLD_1',
+          'UNLOCK_WORLD_2',
+          'TUTORIAL_CUSTOM_LEVEL_INTRO',
+          'TUTORIAL_DAILY_REWARD_NEWPLAYER',
+          'TUTORIAL_KLOTSKI_NEWPLAYER',
+        ]),
+      );
+
+      for (final locale in const [Locale('zh'), Locale('en'), Locale('ru')]) {
+        final catalog = await NarrativeCatalog.load(locale);
+        for (final entries in [
+          catalog.entriesForSection(NarrativeSectionId.systemTutorials),
+          catalog.forCategory(NarrativeCategory.all),
+          searchNarratives(
+            catalog,
+            NarrativeCategory.systemTutorials,
+            '',
+          ).byTitle,
+        ]) {
+          final ids = entries.map((entry) => entry.groupId).toList();
+          final start = ids.indexOf(expected.first);
+          expect(start, isNonNegative);
+          expect(
+            ids.sublist(start, start + expected.length),
+            expected,
+            reason: locale.languageCode,
+          );
+        }
+        final filteredExpected = expected
+            .where((id) => id.contains('TUTORIAL_'))
+            .toList();
+        final searchIds = searchNarratives(
+          catalog,
+          NarrativeCategory.systemTutorials,
+          'TUTORIAL_',
+        ).byTitle.map((entry) => entry.groupId).toList();
+        final start = searchIds.indexOf(filteredExpected.first);
+        expect(start, isNonNegative);
+        expect(
+          searchIds.sublist(start, start + filteredExpected.length),
+          filteredExpected,
+        );
+      }
+    },
+  );
+
   test('Russian catalogue has no substantive English fallbacks', () async {
     final en = await NarrativeCatalog.load(const Locale('en'));
     final ru = await NarrativeCatalog.load(const Locale('ru'));

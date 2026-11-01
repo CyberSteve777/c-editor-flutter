@@ -211,6 +211,7 @@ void main() {
           },
         );
         final level = PvzLevelFile(objects: [object]);
+        var changes = 0;
         await tester.pumpWidget(
           MaterialApp(
             locale: const Locale('zh'),
@@ -220,7 +221,7 @@ void main() {
               rtid: 'RTID(New@CurrentLevel)',
               levelFile: level,
               cauldron: cauldron,
-              onChanged: () {},
+              onChanged: () => changes++,
               onBack: () {},
             ),
           ),
@@ -231,8 +232,9 @@ void main() {
           findsOneWidget,
         );
         if (cauldron) {
-          await tester.tap(find.widgetWithText(OutlinedButton, '添加'));
-          await tester.pumpAndSettle();
+          expect(find.byType(FilterChip), findsNothing);
+          expect(find.text('选中位置'), findsOneWidget);
+          expect(find.text('R1 : C1'), findsOneWidget);
         }
         final cell = find.byKey(const ValueKey('placementCell_0_0'));
         await tester.tap(cell);
@@ -296,14 +298,33 @@ void main() {
             t: (key, fallback, [args]) => fallback,
           );
           expect(preview.sections.single.items.last.gridX, 1);
-          // The add button must also respect one cauldron per cell.
-          await tester.tap(find.widgetWithText(OutlinedButton, '添加'));
+          await tester.tap(find.byKey(const ValueKey('placementCell_2_0')));
           await tester.pumpAndSettle();
           final cauldrons = data['InitialGridItemWizardCrucibles'] as List;
           expect(cauldrons, hasLength(3));
           expect(cauldrons.last['GridX'], 2);
           expect(cauldrons.last['GridY'], 0);
           cauldrons.last['CrucibleHitpoints'] = 1234;
+          expect(find.text('R1 : C3'), findsOneWidget);
+          final changesBeforeSelection = changes;
+          await tester.tap(cell);
+          await tester.pumpAndSettle();
+          expect(find.text('R1 : C1'), findsOneWidget);
+          expect(changes, changesBeforeSelection);
+          await tester.tap(find.byKey(const ValueKey('placementCell_2_0')));
+          await tester.pumpAndSettle();
+          expect(
+            tester
+                .widget<TextFormField>(
+                  find.byKey(
+                    ValueKey(
+                      '${identityHashCode(cauldrons.last)}_CrucibleHitpoints',
+                    ),
+                  ),
+                )
+                .initialValue,
+            '1234',
+          );
           await tester.tap(
             find.byKey(const ValueKey('placementCell_1_0')),
             buttons: kSecondaryMouseButton,
@@ -311,10 +332,12 @@ void main() {
           await tester.pumpAndSettle();
           expect(cauldrons, hasLength(2));
           expect(cauldrons.last['CrucibleHitpoints'], 1234);
+          expect(find.text('R1 : C3'), findsOneWidget);
           await tester.longPress(cell);
           await tester.pumpAndSettle();
           expect(cauldrons, hasLength(1));
           expect(cauldrons.single['GridX'], 2);
+          expect(find.text('R1 : C3'), findsOneWidget);
         }
         // Every cell fills the original lawn, including when SafeArea padding
         // would otherwise be inherited by a nested scrollable grid.
@@ -337,10 +360,10 @@ void main() {
           final lastCellRect = tester.getRect(
             find.byKey(const ValueKey('placementCell_8_4')),
           );
-          expect(firstCellRect.left - gridRect.left, lessThanOrEqualTo(1));
-          expect(firstCellRect.top - gridRect.top, lessThanOrEqualTo(1));
-          expect(gridRect.right - lastCellRect.right, lessThanOrEqualTo(1));
-          expect(gridRect.bottom - lastCellRect.bottom, lessThanOrEqualTo(1));
+          expect(firstCellRect.left - gridRect.left, closeTo(1, .001));
+          expect(firstCellRect.top - gridRect.top, closeTo(1, .001));
+          expect(gridRect.right - lastCellRect.right, closeTo(1, .001));
+          expect(gridRect.bottom - lastCellRect.bottom, closeTo(1, .001));
           expect(tester.takeException(), isNull);
         }
         await tester.tap(find.byIcon(Icons.help_outline));

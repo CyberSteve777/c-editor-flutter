@@ -259,16 +259,13 @@ class _NarrativeNpcAvatar extends StatelessWidget {
     final asset = id == null || id.isEmpty
         ? 'assets/images/others/unknown.webp'
         : 'assets/images/npcs/npc_$id.webp';
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(6),
-      child: AssetImageWidget(
-        key: ValueKey('npc-avatar-${id ?? 'unknown'}'),
-        assetPath: asset,
-        altCandidates: imageAltCandidates(asset),
-        width: 72,
-        height: 72,
-        fit: BoxFit.cover,
-      ),
+    return AssetImageWidget(
+      key: ValueKey('npc-avatar-${id ?? 'unknown'}'),
+      assetPath: asset,
+      altCandidates: imageAltCandidates(asset),
+      width: 72,
+      height: 72,
+      fit: BoxFit.contain,
     );
   }
 }

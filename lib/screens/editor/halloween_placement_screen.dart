@@ -28,7 +28,11 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
   late PvzObject object;
   late Map<String, dynamic> data;
   late String alias;
-  int selected = 0;
+  int selectedX = 0;
+  int selectedY = 0;
+  int get selected => positions.indexWhere(
+    (p) => p['GridX'] == selectedX && p['GridY'] == selectedY,
+  );
   String get listKey =>
       widget.cauldron ? 'InitialGridItemWizardCrucibles' : 'SpawnPositionsPool';
   List<dynamic> get positions => data[listKey] as List;
@@ -44,6 +48,10 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
     data[listKey] = [
       for (final item in positions) Map<String, dynamic>.from(item as Map),
     ];
+    if (widget.cauldron && positions.isNotEmpty) {
+      selectedX = (positions.first['GridX'] as num?)?.toInt() ?? 0;
+      selectedY = (positions.first['GridY'] as num?)?.toInt() ?? 0;
+    }
     if (!widget.cauldron) {
       data.putIfAbsent('Hitpoints', () => 4000);
       data.putIfAbsent('Level', () => 0);
@@ -103,11 +111,13 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
       final index = positions.indexWhere(
         (p) => p['GridX'] == x && p['GridY'] == y,
       );
+      selectedX = x;
+      selectedY = y;
       if (index >= 0) {
-        selected = index;
+        setState(() {});
+        return;
       } else {
         positions.add(newCauldron(x, y));
-        selected = positions.length - 1;
       }
     } else {
       final index = positions.indexWhere((p) => p['mX'] == x && p['mY'] == y);
@@ -122,9 +132,6 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
 
   void removeCauldron(int index) {
     positions.removeAt(index);
-    if (index < selected) selected--;
-    if (selected >= positions.length) selected = positions.length - 1;
-    if (selected < 0) selected = 0;
     sync();
   }
 
@@ -135,24 +142,13 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
     if (index >= 0) removeCauldron(index);
   }
 
-  (int, int)? firstEmptyCell() {
-    final (rows, cols) = LevelParser.getGridDimensionsFromFile(
-      widget.levelFile,
-    );
-    for (var y = 0; y < rows; y++) {
-      for (var x = 0; x < cols; x++) {
-        if (!positions.any((p) => p['GridX'] == x && p['GridY'] == y)) {
-          return (x, y);
-        }
-      }
-    }
-    return null;
-  }
-
   Widget grid() {
     final dims = LevelParser.getGridDimensionsFromFile(widget.levelFile);
     final rows = dims.$1, cols = dims.$2;
     final theme = Theme.of(context);
+    final borderColor = widget.cauldron
+        ? const Color(0xFF6B899A)
+        : Colors.brown;
     return scaleTableForDesktop(
       context: context,
       child: ConstrainedBox(
@@ -169,9 +165,13 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
             ),
             decoration: BoxDecoration(
               color: theme.brightness == Brightness.dark
-                  ? const Color(0xFF2A2A2A)
+                  ? widget.cauldron
+                        ? const Color(0xFF31383B)
+                        : const Color(0xFF2A2A2A)
+                  : widget.cauldron
+                  ? const Color(0xFFD7ECF1)
                   : const Color(0xFFD7CCC8),
-              border: Border.all(color: Colors.brown),
+              border: Border.all(color: borderColor),
               borderRadius: BorderRadius.circular(6),
             ),
             clipBehavior: Clip.antiAlias,
@@ -187,7 +187,7 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
                             e.value[widget.cauldron ? 'GridY' : 'mY'] == y,
                       );
                       final highlighted = widget.cauldron
-                          ? matches.any((e) => e.key == selected)
+                          ? x == selectedX && y == selectedY
                           : matches.isNotEmpty;
                       return Expanded(
                         child: InkWell(
@@ -202,8 +202,12 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
                           child: Container(
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: Colors.brown.withValues(alpha: .5),
-                                width: .5,
+                                color: widget.cauldron && highlighted
+                                    ? theme.colorScheme.primary
+                                    : borderColor.withValues(alpha: .5),
+                                width: widget.cauldron && highlighted
+                                    ? 1.5
+                                    : .5,
                               ),
                               color: highlighted
                                   ? widget.cauldron
@@ -346,36 +350,29 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
               ),
             const SizedBox(height: 16),
             if (widget.cauldron) ...[
-              HorizontalTagScroller(
-                padding: const EdgeInsets.only(bottom: 14),
-                children: [
-                  for (var i = 0; i < positions.length; i++)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: FilterChip(
-                        label: Text(
-                          '${l.moduleTitle_InitialGridItemWizardCrucibleProps} ${i + 1}',
-                        ),
-                        selected: i == selected,
-                        onSelected: (_) => setState(() => selected = i),
-                        onDeleted: () => removeCauldron(i),
+              EditorPlacementGridCard(
+                header: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l.selectedPosition,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                  OutlinedButton.icon(
-                    onPressed: firstEmptyCell() == null
-                        ? null
-                        : () {
-                            final (x, y) = firstEmptyCell()!;
-                            editCell(x, y);
-                          },
-                    icon: const Icon(Icons.add),
-                    label: Text(l.add),
-                  ),
-                ],
+                    Text(
+                      'R${selectedY + 1} : C${selectedX + 1}',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                grid: grid(),
               ),
-              card([grid()]),
               const SizedBox(height: 16),
-              if (positions.isNotEmpty)
+              if (selected >= 0)
                 card([
                   identity('wizard_crucible'),
                   const SizedBox(height: 12),

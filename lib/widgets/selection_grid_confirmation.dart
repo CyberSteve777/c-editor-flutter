@@ -57,7 +57,7 @@ class SelectionGridConfirmation extends StatelessWidget {
             size.width - safePadding.horizontal - _margin * 2 - fixedWidth,
           ),
           selectAllControl is SelectionGridSelectAllButton
-              ? math.max(140.0, selectAllControl.preferredWidth(context))
+              ? selectAllControl.preferredWidth(context)
               : 140.0,
         );
         final stackWidth = (hasSelectAll ? selectAllWidth : 0.0) + fixedWidth;
@@ -204,6 +204,7 @@ class SelectionGridSelectAllButton extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Center(
+                widthFactor: 1,
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(

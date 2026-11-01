@@ -856,6 +856,11 @@ int _systemTutorialAnchor(
   Map<String, int> sourceIndexes,
   Map<String, int> naturalGroupIndexes,
 ) {
+  if (_isSystemFeatureTutorial(entry.groupId)) {
+    return sourceIndexes.entries
+        .firstWhere((entry) => _isSystemFeatureTutorial(entry.key))
+        .value;
+  }
   final family = _systemTutorialFamily(entry.groupId);
   if (family != null) {
     return family.keys
@@ -867,6 +872,13 @@ int _systemTutorialAnchor(
       sourceIndexes[entry.groupId] ??
       0;
 }
+
+// The localized "System Tutorial" series also includes the world-unlock
+// dialogue. Group it by its stable IDs, leaving the separate New Year story
+// in its original position instead of treating every TUTORIAL_ ID alike.
+bool _isSystemFeatureTutorial(String id) =>
+    (id.startsWith('TUTORIAL_') && id != 'TUTORIAL_NEWYEARREDPACKET') ||
+    id.startsWith('UNLOCK_WORLD_');
 
 Map<String, int>? _systemTutorialFamily(String id) {
   if (_powerGestureTutorialOrder.containsKey(id)) {

@@ -1,7 +1,10 @@
+import 'dart:ui' as ui;
+
 import 'package:c_editor/data/narrative_catalog.dart';
 import 'package:c_editor/screens/select/narrative_preview_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -43,6 +46,67 @@ void main() {
     expect(find.text('第一行\n第二行'), findsOneWidget);
     expect(find.text(r'第一行\n第二行'), findsNothing);
   });
+
+  testWidgets(
+    'NPC portraits keep their full artwork and existing avatar column',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      for (final npc in ['zombossicon', 'crazydave', 'winnie']) {
+        final sourceSize = await tester.runAsync(() async {
+          final bytes = await rootBundle.load(
+            'assets/images/npcs/npc_$npc.webp',
+          );
+          final codec = await ui.instantiateImageCodec(
+            bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes),
+          );
+          final frame = await codec.getNextFrame();
+          final size = Size(
+            frame.image.width.toDouble(),
+            frame.image.height.toDouble(),
+          );
+          frame.image.dispose();
+          codec.dispose();
+          return size;
+        });
+        expect(sourceSize!.height, greaterThan(sourceSize.width));
+
+        for (final width in [320.0, 900.0]) {
+          tester.view.physicalSize = Size(width, 700);
+          final line = NarrativeLine(
+            key: 'PORTRAIT_$npc',
+            kind: NarrativeLineKind.speech,
+            text: 'A dialogue line that can wrap onto multiple lines.',
+            speaker: npc,
+            npc: npc,
+          );
+          await tester.pumpWidget(_lineApp(line, localeCode: 'en'));
+          await tester.pumpAndSettle();
+
+          final portrait = find.byKey(ValueKey('npc-avatar-$npc'));
+          final image = tester.widget<AssetImageWidget>(portrait);
+          final imageSize = tester.getSize(portrait);
+          expect(imageSize, const Size(72, 72));
+          expect(
+            applyBoxFit(image.fit, sourceSize, imageSize).source,
+            sourceSize,
+          );
+          expect(
+            find.ancestor(of: portrait, matching: find.byType(ClipRRect)),
+            findsNothing,
+          );
+          final text = tester.getRect(find.text(line.text));
+          final avatar = tester.getRect(portrait);
+          if (npc == 'winnie') {
+            expect(text.right, lessThanOrEqualTo(avatar.left - 12));
+          } else {
+            expect(text.left, greaterThanOrEqualTo(avatar.right + 12));
+          }
+          expect(tester.takeException(), isNull);
+        }
+      }
+    },
+  );
 
   testWidgets('operation prompts are omitted from the preview', (tester) async {
     final catalog = await NarrativeCatalog.load(const Locale('zh'));
