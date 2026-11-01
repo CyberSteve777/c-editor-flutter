@@ -1,15 +1,18 @@
 import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
+import 'package:c_editor/data/interface_menu_config.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/unused_level_object_utils.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/utils/json_viewer_search.dart';
 import 'package:c_editor/widgets/app_message.dart';
+import 'package:c_editor/widgets/autosave.dart';
 import 'package:c_editor/widgets/editor_components.dart'
     show EditorPopupMenuTile;
 import 'package:c_editor/widgets/json_viewer_search_bar.dart';
@@ -126,6 +129,7 @@ class JsonViewerScreen extends StatefulWidget {
     required this.onBack,
     this.onSaved,
     this.saveLevel,
+    this.menuActions,
   });
 
   final String fileName;
@@ -135,6 +139,7 @@ class JsonViewerScreen extends StatefulWidget {
   final VoidCallback? onSaved;
   final Future<void> Function(String filePath, PvzLevelFile levelFile)?
   saveLevel;
+  final List<InterfaceMenuActionPreference>? menuActions;
 
   @override
   State<JsonViewerScreen> createState() => _JsonViewerScreenState();
@@ -144,6 +149,9 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   double _fontSize = _cachedFontSize ?? 12;
   final _verticalController = ScrollController();
   bool _isEditing = false;
+  String _editInitialText = '';
+  bool _confirmingCancelEdit = false;
+  bool _savingEdit = false;
   final _editController = _JsonEditController();
   final _searchController = TextEditingController();
   final _replaceController = TextEditingController();
@@ -405,8 +413,48 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       return;
     }
 
-    _scrollToLine(match.lineIndex);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          !_verticalController.hasClients ||
+          _matches.isEmpty ||
+          _currentMatchIndex != safeIndex) {
+        return;
+      }
+      RenderParagraph? paragraph;
+      void findParagraph(RenderObject object) {
+        if (object is RenderParagraph) {
+          paragraph = object;
+        } else {
+          object.visitChildren(findParagraph);
+        }
+      }
+
+      final renderObject = _readTextKey.currentContext?.findRenderObject();
+      if (renderObject == null) return;
+      findParagraph(renderObject);
+      final textParagraph = paragraph;
+      if (textParagraph == null) return;
+      final boxes = textParagraph.getBoxesForSelection(
+        TextSelection(baseOffset: match.start, extentOffset: match.end),
+      );
+      if (boxes.isEmpty) return;
+      final position = _verticalController.position;
+      final viewport = RenderAbstractViewport.of(textParagraph);
+      final top = viewport.getOffsetToReveal(textParagraph, 0).offset;
+      final target =
+          (top +
+                  boxes.first.toRect().center.dy -
+                  position.viewportDimension / 2)
+              .clamp(position.minScrollExtent, position.maxScrollExtent);
+      _verticalController.animateTo(
+        target.toDouble(),
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
+    });
   }
+
+  final _readTextKey = GlobalKey();
 
   void _scrollToLine(int lineIndex) {
     if (!_verticalController.hasClients) return;
@@ -509,7 +557,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   }
 
   void _replaceCurrentMatch() {
-    if (!_isEditing || _matches.isEmpty) return;
+    if (_savingEdit || !_isEditing || _matches.isEmpty) return;
     final match = _matches[_currentMatchIndex];
     final replacement = _replaceController.text;
     final next = replaceJsonViewerMatch(
@@ -526,7 +574,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   }
 
   void _replaceAllMatches() {
-    if (!_isEditing || _searchController.text.isEmpty) return;
+    if (_savingEdit || !_isEditing || _searchController.text.isEmpty) return;
     final replacement = _replaceController.text;
     final next = replaceAllJsonViewerMatches(
       _editController.text,
@@ -614,6 +662,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   void _startEdit() {
     final previousScrollOffset = _currentScrollOffset();
     _editController.text = _rawPrettyText();
+    _editInitialText = _editController.text;
     setState(() {
       _isEditing = true;
       _syntaxError = null;
@@ -625,7 +674,44 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
     _pushEscapeHandler();
   }
 
-  void _cancelEdit() {
+  Future<void> _cancelEdit() async {
+    if (_confirmingCancelEdit || _savingEdit) return;
+    if (_editController.text != _editInitialText) {
+      if (autosaveEnabled(context, AutosaveTarget.level)) {
+        await _saveEdit();
+        // Invalid JSON or a failed write leaves edit mode and its text intact.
+        return;
+      }
+      _confirmingCancelEdit = true;
+      bool? discard;
+      try {
+        final l10n = AppLocalizations.of(context)!;
+        discard = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => EscapeClosesModal(
+            child: AlertDialog(
+              key: const ValueKey('jsonDiscardEditsDialog'),
+              title: Text(l10n.unsavedChanges),
+              content: Text(l10n.jsonDiscardEditsBody),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: Text(l10n.stayInEditor),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  child: Text(l10n.discard),
+                ),
+              ],
+            ),
+          ),
+        );
+      } finally {
+        _confirmingCancelEdit = false;
+      }
+      if (!mounted || discard != true) return;
+    }
+    if (!mounted) return;
     _popEscapeHandler();
     setState(() {
       _isEditing = false;
@@ -635,16 +721,68 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
   }
 
   Future<void> _saveEdit() async {
+    if (_savingEdit || !_isEditing) return;
+    setState(() => _savingEdit = true);
     try {
-      final json = jsonDecode(_editController.text) as Map<String, dynamic>;
-      final newLevel = PvzLevelFile.fromJson(json);
+      await _saveEditImpl();
+    } finally {
+      if (mounted) setState(() => _savingEdit = false);
+    }
+  }
+
+  Future<void> _saveEditImpl() async {
+    final l10n = AppLocalizations.of(context);
+    dynamic json;
+    try {
+      json = jsonDecode(_editController.text);
+    } on FormatException catch (error) {
+      final offset = error.offset;
+      if (offset != null) {
+        final preceding = _editController.text.substring(
+          0,
+          offset.clamp(0, _editController.text.length),
+        );
+        final line = 1 + '\n'.allMatches(preceding).length;
+        final column = preceding.length - preceding.lastIndexOf('\n');
+        _showEditError(
+          l10n?.jsonEditSyntaxErrorAt('$line', '$column') ??
+              'Invalid JSON syntax near line $line, column $column. Check commas, brackets, and double quotes, then save again.',
+        );
+      } else {
+        _showEditError(
+          l10n?.jsonEditSyntaxError ??
+              'Invalid JSON syntax. Check commas, brackets, and double quotes, then save again.',
+        );
+      }
+      return;
+    }
+
+    late final PvzLevelFile newLevel;
+    try {
+      // A missing objects list must not silently replace the level with an
+      // empty file. Leave object-specific compatibility to the existing parser.
+      if (json is! Map<String, dynamic> || json['objects'] is! List) {
+        throw const FormatException('Expected a level objects list');
+      }
+      newLevel = PvzLevelFile.fromJson(json);
+    } catch (_) {
+      _showEditError(
+        l10n?.jsonEditStructureError ??
+            "This JSON does not match the level structure. Keep the objects list and each object's objclass and objdata fields; the version must be an integer.",
+      );
+      return;
+    }
+
+    try {
+      await (widget.saveLevel ?? LevelRepository.saveAndExport)(
+        widget.filePath,
+        newLevel,
+      );
+      // Commit only after the file is saved, so a failed write does not change
+      // the level behind the editor or discard the user's pending JSON edits.
       widget.levelFile.objects.clear();
       widget.levelFile.objects.addAll(newLevel.objects);
       widget.levelFile.version = newLevel.version;
-      await (widget.saveLevel ?? LevelRepository.saveAndExport)(
-        widget.filePath,
-        widget.levelFile,
-      );
       if (mounted) {
         _popEscapeHandler();
         setState(() {
@@ -661,17 +799,92 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
           icon: Icons.check_circle,
         );
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _syntaxError = 'JSON error: $e');
-        final l10n = AppLocalizations.of(context);
-        AppMessage.show(
-          context,
-          l10n?.saveFail ?? 'Save failed',
-          icon: Icons.warning_amber_rounded,
-        );
-      }
+    } catch (_) {
+      _showEditError(
+        l10n?.jsonEditSaveError ??
+            'Could not save the file. Check workspace write permissions and free space, then try again. On the web, make sure the browser allows local storage. Your edits have been kept.',
+      );
     }
+  }
+
+  void _showEditError(String message) {
+    if (!mounted) return;
+    setState(() => _syntaxError = message);
+    AppMessage.show(
+      context,
+      AppLocalizations.of(context)?.saveFail ?? 'Save failed',
+      icon: Icons.warning_amber_rounded,
+    );
+  }
+
+  void _toggleJsonView() {
+    setState(() {
+      _viewMode = _viewMode == _JsonViewMode.rawText
+          ? _JsonViewMode.structured
+          : _JsonViewMode.rawText;
+    });
+    _runSearch();
+  }
+
+  String _jsonActionLabel(AppLocalizations? l10n, String id) {
+    return switch (id) {
+      InterfaceMenuActionIds.toggleJsonView =>
+        l10n?.tooltipToggleObjectView ?? 'Toggle object/raw view',
+      InterfaceMenuActionIds.copyJson =>
+        l10n?.tooltipCopyJson ?? 'Copy level JSON',
+      InterfaceMenuActionIds.clearUnused =>
+        l10n?.tooltipClearUnused ?? 'Clear unused objects',
+      InterfaceMenuActionIds.editJson => l10n?.tooltipEdit ?? 'Edit',
+      _ => id,
+    };
+  }
+
+  IconData _jsonActionIcon(String id) {
+    return switch (id) {
+      InterfaceMenuActionIds.toggleJsonView =>
+        _viewMode == _JsonViewMode.structured ? Icons.list : Icons.data_object,
+      InterfaceMenuActionIds.copyJson => Icons.copy,
+      InterfaceMenuActionIds.clearUnused => Icons.cleaning_services,
+      InterfaceMenuActionIds.editJson => Icons.edit,
+      _ => Icons.more_horiz,
+    };
+  }
+
+  Future<void> _handleJsonAction(String id) async {
+    switch (id) {
+      case InterfaceMenuActionIds.toggleJsonView:
+        _toggleJsonView();
+      case InterfaceMenuActionIds.copyJson:
+        await _copyLevelJson();
+      case InterfaceMenuActionIds.clearUnused:
+        _showClearUnusedDialog();
+      case InterfaceMenuActionIds.editJson:
+        _startEdit();
+    }
+  }
+
+  Widget _jsonToolbarAction(AppLocalizations? l10n, String id) {
+    return IconButton(
+      key: ValueKey('jsonToolbarAction_$id'),
+      icon: Icon(_jsonActionIcon(id)),
+      tooltip: _jsonActionLabel(l10n, id),
+      onPressed: () => _handleJsonAction(id),
+    );
+  }
+
+  PopupMenuEntry<String> _jsonOverflowAction(
+    AppLocalizations? l10n,
+    String id,
+  ) {
+    return PopupMenuItem<String>(
+      key: ValueKey('jsonOverflowAction_$id'),
+      value: id,
+      child: EditorPopupMenuTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Icon(_jsonActionIcon(id)),
+        title: Text(_jsonActionLabel(l10n, id)),
+      ),
+    );
   }
 
   @override
@@ -687,6 +900,22 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       builder: (context, constraints) {
         final isNarrow = constraints.maxWidth < 600;
         final pretty = _isEditing ? '' : _rawPrettyText();
+        final configuredActions =
+            widget.menuActions ??
+            defaultInterfaceMenuActions(InterfaceMenuSurface.jsonViewer);
+        final toolbarActionIds = {
+          if (!isNarrow)
+            for (final action in configuredActions)
+              if (action.placement == InterfaceMenuPlacement.toolbar) action.id,
+        };
+        final overflowActions = configuredActions
+            .where(
+              (action) =>
+                  action.placement == InterfaceMenuPlacement.overflow ||
+                  (action.placement == InterfaceMenuPlacement.toolbar &&
+                      !toolbarActionIds.contains(action.id)),
+            )
+            .toList(growable: false);
 
         Widget child = PopScope(
           canPop: !_isEditing,
@@ -733,103 +962,23 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
                   IconButton(
                     icon: const Icon(Icons.save),
                     tooltip: l10n?.tooltipSave ?? 'Save',
-                    onPressed: _saveEdit,
+                    onPressed: _savingEdit ? null : _saveEdit,
                   )
                 else ...[
-                  if (!isNarrow) ...[
-                    IconButton(
-                      icon: Icon(
-                        _viewMode == _JsonViewMode.structured
-                            ? Icons.list
-                            : Icons.data_object,
-                      ),
-                      tooltip:
-                          l10n?.tooltipToggleObjectView ??
-                          'Toggle object/raw view',
-                      onPressed: () {
-                        setState(() {
-                          _viewMode = _viewMode == _JsonViewMode.rawText
-                              ? _JsonViewMode.structured
-                              : _JsonViewMode.rawText;
-                        });
-                        _runSearch();
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.copy),
-                      tooltip: l10n?.tooltipCopyJson ?? 'Copy level JSON',
-                      onPressed: _copyLevelJson,
-                    ),
-                  ],
-                  PopupMenuButton<String>(
-                    tooltip: l10n?.tooltipMore ?? 'More',
-                    icon: const Icon(Icons.more_vert),
-                    onSelected: (value) {
-                      switch (value) {
-                        case 'toggle_view':
-                          setState(() {
-                            _viewMode = _viewMode == _JsonViewMode.rawText
-                                ? _JsonViewMode.structured
-                                : _JsonViewMode.rawText;
-                          });
-                          _runSearch();
-                        case 'copy':
-                          _copyLevelJson();
-                        case 'clear_unused':
-                          _showClearUnusedDialog();
-                        case 'edit':
-                          _startEdit();
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      if (isNarrow) ...[
-                        PopupMenuItem(
-                          value: 'toggle_view',
-                          child: EditorPopupMenuTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: Icon(
-                              _viewMode == _JsonViewMode.structured
-                                  ? Icons.list
-                                  : Icons.data_object,
-                            ),
-                            title: Text(
-                              l10n?.tooltipToggleObjectView ??
-                                  'Toggle object/raw view',
-                            ),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'copy',
-                          child: EditorPopupMenuTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: const Icon(Icons.copy),
-                            title: Text(
-                              l10n?.tooltipCopyJson ?? 'Copy level JSON',
-                            ),
-                          ),
-                        ),
-                        const PopupMenuDivider(),
+                  for (final action in configuredActions)
+                    if (toolbarActionIds.contains(action.id))
+                      _jsonToolbarAction(l10n, action.id),
+                  if (overflowActions.isNotEmpty)
+                    PopupMenuButton<String>(
+                      key: const ValueKey('jsonOverflowMenu'),
+                      tooltip: l10n?.tooltipMore ?? 'More',
+                      icon: const Icon(Icons.more_vert),
+                      onSelected: _handleJsonAction,
+                      itemBuilder: (context) => [
+                        for (final action in overflowActions)
+                          _jsonOverflowAction(l10n, action.id),
                       ],
-                      PopupMenuItem(
-                        value: 'clear_unused',
-                        child: EditorPopupMenuTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.cleaning_services),
-                          title: Text(
-                            l10n?.tooltipClearUnused ?? 'Clear unused objects',
-                          ),
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: EditorPopupMenuTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.edit),
-                          title: Text(l10n?.tooltipEdit ?? 'Edit'),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
                 ],
               ],
             ),
@@ -960,6 +1109,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: TextField(
+                readOnly: _savingEdit,
                 controller: _editController,
                 maxLines: null,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -1283,6 +1433,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
               contextMenuBuilder: _buildReadSelectionContextMenu,
               child: Text.rich(
                 TextSpan(children: documentSpans),
+                key: _readTextKey,
                 style: baseStyle,
                 strutStyle: strutStyle,
                 textHeightBehavior: textHeightBehavior,

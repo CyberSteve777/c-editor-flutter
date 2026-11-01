@@ -4,6 +4,7 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/theme/app_theme.dart';
+import 'package:c_editor/widgets/alias_input_validation.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 
 /// Custom fish properties screen. Similar to CustomZombiePropertiesScreen.
@@ -467,7 +468,15 @@ class _CustomFishPropertiesScreenState
                       isDense: true,
                       hintText: l10n?.aliasLabel ?? 'Alias',
                     ),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) => aliasCharacterValidationError(
+                      l10n,
+                      value ?? '',
+                    ),
                     onChanged: (v) {
+                      if (aliasCharacterValidationError(l10n, v) != null) {
+                        return;
+                      }
                       final trimmed = v.trim();
                       if (trimmed.isNotEmpty && _typeObj != null) {
                         _typeObj!.aliases = [trimmed];

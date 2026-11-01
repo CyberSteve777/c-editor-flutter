@@ -1,4 +1,5 @@
 import 'package:c_editor/widgets/autosave.dart';
+import 'package:c_editor/screens/editor/halloween_placement_screen.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:collection/collection.dart';
@@ -7,6 +8,7 @@ import 'package:c_editor/widgets/app_message.dart';
 import 'package:c_editor/widgets/autosave_settings_dialog.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_module_order_utils.dart';
+import 'package:c_editor/data/interface_menu_config.dart';
 import 'package:c_editor/data/cowboy_minigame_utils.dart';
 import 'package:c_editor/data/zomboss_eighties_speaker_presets.dart';
 import 'package:c_editor/data/level_parser.dart';
@@ -19,11 +21,13 @@ import 'package:c_editor/data/models/custom_stage_preset.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
+import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
 import 'package:c_editor/plugins/plugin_ui_host.dart';
 import 'package:c_editor/screens/level_overview/level_overview.dart';
+import 'package:c_editor/screens/interface_settings_screen.dart';
 import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/fish_properties_repository.dart';
@@ -31,6 +35,7 @@ import 'package:c_editor/screens/editor/basic_info_screen.dart';
 import 'package:c_editor/screens/editor/json_viewer_screen.dart';
 import 'package:c_editor/screens/editor/others/custom_zombie_properties_screen.dart';
 import 'package:c_editor/screens/editor/others/custom_fish_properties_screen.dart';
+import 'package:c_editor/screens/editor/others/jitter_offsets_presets_screen.dart';
 import 'package:c_editor/screens/editor/others/unknown_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/star_challenge_screen.dart';
 import 'package:c_editor/screens/editor/modules/max_sun_module_screen.dart';
@@ -97,6 +102,7 @@ import 'package:c_editor/screens/editor/modules/wave_generator_wave_screen.dart'
 import 'package:c_editor/screens/editor/modules/lawn_mower_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/tunnel_defend_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/gulliver_tunnel_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/speed_up_tile_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/zombie_rush_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/pvz1_copycats_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/pvz1_seeing_stars_module_screen.dart';
@@ -147,6 +153,7 @@ import 'package:c_editor/screens/editor/events/gravity_generator_event_screen.da
 import 'package:c_editor/screens/editor/events/jittered_event_screen.dart';
 import 'package:c_editor/screens/editor/events/ground_spawn_event_screen.dart';
 import 'package:c_editor/data/pvz_alias_utils.dart';
+import 'package:c_editor/widgets/alias_input_validation.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/screens/select/event_selection_screen.dart';
 import 'package:c_editor/data/repository/grid_item_repository.dart';
@@ -288,6 +295,7 @@ class _EditorScreenState extends State<EditorScreen> {
           rtid: glacierRtid,
           levelFile: levelFile,
           onChanged: _markDirty,
+          onRequestZombieMultiSelection: _openZombieSelection,
           onBack: () => Navigator.pop(context),
           onRequestZombieSelection: (onSelected) {
             Navigator.push(
@@ -485,6 +493,9 @@ class _EditorScreenState extends State<EditorScreen> {
   }
 
   Future<String?> _promptCustomStageAlias(String suggested) async {
+    if (!context.read<SettingsCubit>().state.promptForAliasOnCreate) {
+      return suggested;
+    }
     return showDialog<String>(
       context: context,
       builder: (ctx) => _CustomStageAliasPromptDialog(initialAlias: suggested),
@@ -863,6 +874,7 @@ class _EditorScreenState extends State<EditorScreen> {
           title: l10n.addModuleAliasTitle,
           objClass: meta.objClass,
           levelFile: _ec.state.levelFile!,
+          forCreation: true,
         );
         if (chosenAlias == null || !mounted) return;
       }
@@ -1031,28 +1043,7 @@ class _EditorScreenState extends State<EditorScreen> {
               _setActiveTab(EditorTabType.timeline);
               Navigator.pop(context);
             },
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1071,28 +1062,7 @@ class _EditorScreenState extends State<EditorScreen> {
               _setActiveTab(EditorTabType.timeline);
               Navigator.pop(context);
             },
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1113,28 +1083,7 @@ class _EditorScreenState extends State<EditorScreen> {
             },
             onEditCustomZombie: _handleEditCustomZombie,
             onInjectCustomZombie: _injectCustomZombie,
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1329,49 +1278,10 @@ class _EditorScreenState extends State<EditorScreen> {
             onInjectCustomZombie: _injectCustomZombie,
             onEditCustomFish: _handleEditCustomFish,
             onInjectCustomFish: _injectCustomFish,
-            onRequestPlantSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PlantSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    isMultiSelect: false,
-                    onPlantSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiPlantSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                  ),
-                ),
-              );
-            },
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onOpenReferencedEvent: (targetRtid) =>
+                _handleEditEvent(targetRtid, 0),
+            onRequestPlantSelection: _openPlantMultiSelection,
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1392,49 +1302,10 @@ class _EditorScreenState extends State<EditorScreen> {
             },
             onEditCustomZombie: _handleEditCustomZombie,
             onInjectCustomZombie: _injectCustomZombie,
-            onRequestPlantSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PlantSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    isMultiSelect: false,
-                    onPlantSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiPlantSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                  ),
-                ),
-              );
-            },
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onOpenReferencedEvent: (targetRtid) =>
+                _handleEditEvent(targetRtid, 0),
+            onRequestPlantSelection: _openPlantMultiSelection,
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1455,49 +1326,10 @@ class _EditorScreenState extends State<EditorScreen> {
             },
             onEditCustomZombie: _handleEditCustomZombie,
             onInjectCustomZombie: _injectCustomZombie,
-            onRequestPlantSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PlantSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    isMultiSelect: false,
-                    onPlantSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiPlantSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                  ),
-                ),
-              );
-            },
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onOpenReferencedEvent: (targetRtid) =>
+                _handleEditEvent(targetRtid, 0),
+            onRequestPlantSelection: _openPlantMultiSelection,
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1515,27 +1347,7 @@ class _EditorScreenState extends State<EditorScreen> {
             onBack: () => Navigator.pop(context),
             onAddModule: (objClass) =>
                 _addModule(ModuleRegistry.getMetadata(objClass)),
-            onRequestPlantSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PlantSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    isMultiSelect: false,
-                    onPlantSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiPlantSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                  ),
-                ),
-              );
-            },
+            onRequestPlantSelection: _openPlantMultiSelection,
             onRequestToolSelection: (onSelected) {
               Navigator.push(
                 context,
@@ -1608,28 +1420,7 @@ class _EditorScreenState extends State<EditorScreen> {
             },
             onEditCustomZombie: _handleEditCustomZombie,
             onInjectCustomZombie: _injectCustomZombie,
-            onRequestZombieSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ZombieSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    editorCubit: _ec,
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                    multiSelect: false,
-                    onZombieSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onMultiZombieSelected: (_) {},
-                    onBack: () => Navigator.pop(context),
-                  ),
-                ),
-              );
-            },
+            onRequestZombieSelection: _openZombieSelection,
           ),
         ),
       );
@@ -1734,12 +1525,15 @@ class _EditorScreenState extends State<EditorScreen> {
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
+            onRequestZombieMultiSelection: _openZombieSelection,
             onBack: () {
               _setActiveTab(EditorTabType.timeline);
               Navigator.pop(context);
             },
             onEditCustomZombie: _handleEditCustomZombie,
             onInjectCustomZombie: _injectCustomZombie,
+            onOpenReferencedEvent: (targetRtid) =>
+                _handleEditEvent(targetRtid, 0),
             onRequestGridItemSelection: (onSelected) {
               Navigator.push(
                 context,
@@ -1853,6 +1647,21 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
 
+    if (objClass == 'SpawnPumpkinScarecrowWaveActionProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => HalloweenPlacementScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            cauldron: false,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
     if (objClass == 'PumpkinHouseActionProps') {
       await Navigator.push(
         context,
@@ -1876,6 +1685,7 @@ class _EditorScreenState extends State<EditorScreen> {
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
+            onRequestZombieMultiSelection: _openZombieSelection,
             onBack: () => Navigator.pop(context),
             onRequestZombieSelection: (onSelected) {
               Navigator.push(
@@ -2037,6 +1847,7 @@ class _EditorScreenState extends State<EditorScreen> {
       title: l10n.addEventAliasTitle,
       objClass: meta.defaultObjClass,
       levelFile: _ec.state.levelFile!,
+      forCreation: true,
     );
     if (newAlias == null || !mounted) return;
 
@@ -2105,7 +1916,51 @@ class _EditorScreenState extends State<EditorScreen> {
     );
   }
 
-  void _openZombieSelection(void Function(String) onSelected) {
+  Future<void> _handleEditJitterOffsets() async {
+    final levelFile = _ec.state.levelFile;
+    if (levelFile == null) return;
+    final selectedEventRtid = await Navigator.push<String>(
+      context,
+      MaterialPageRoute<String>(
+        builder: (context) => JitterOffsetsPresetsScreen(
+          levelFile: levelFile,
+          onChanged: _markDirty,
+          onBack: () => Navigator.pop(context),
+        ),
+      ),
+    );
+    if (!mounted || selectedEventRtid == null) return;
+    await _handleEditEvent(selectedEventRtid, 0);
+  }
+
+  void _openPlantMultiSelection(void Function(String) onSelected) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PlantSelectionScreen(
+          stateBucketId: _selectionStateBucketId,
+          isMultiSelect: true,
+          levelFile: _ec.state.levelFile,
+          onAddModule: (objClass) {
+            _addModule(ModuleRegistry.getMetadata(objClass));
+          },
+          onPlantSelected: (_) {},
+          onMultiPlantSelected: (ids) {
+            Navigator.pop(context);
+            for (final id in ids) {
+              onSelected(id);
+            }
+          },
+          onBack: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
+  void _openZombieSelection(
+    void Function(String) onSelected, {
+    bool pointPoolOnly = false,
+  }) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -2116,12 +1971,28 @@ class _EditorScreenState extends State<EditorScreen> {
           onAddModule: (objClass) {
             _addModule(ModuleRegistry.getMetadata(objClass));
           },
-          multiSelect: false,
-          onZombieSelected: (id) {
+          excludeIds: pointPoolOnly
+              ? ZombieRepository().allZombies
+                    .where(
+                      (zombie) =>
+                          ZombieRepository().isElite(zombie.id) ||
+                          const [
+                            'yeti',
+                            'treasureyeti',
+                            'treasureyeti_egypt',
+                          ].contains(zombie.id),
+                    )
+                    .map((zombie) => zombie.id)
+                    .toList()
+              : const [],
+          multiSelect: true,
+          onZombieSelected: (_) {},
+          onMultiZombieSelected: (ids) {
             Navigator.pop(context);
-            onSelected(id);
+            for (final id in ids) {
+              onSelected(id);
+            }
           },
-          onMultiZombieSelected: (_) {},
           onBack: () => Navigator.pop(context),
         ),
       ),
@@ -2143,7 +2014,8 @@ class _EditorScreenState extends State<EditorScreen> {
           levelFile: _ec.state.levelFile!,
           onChanged: _markDirty,
           onBack: () => Navigator.pop(context),
-          onRequestZombieSelection: _openZombieSelection,
+          onRequestZombieSelection: (onSelected) =>
+              _openZombieSelection(onSelected, pointPoolOnly: true),
         ),
       ),
     ).then((_) => _setActiveTab(EditorTabType.waveGenerator));
@@ -2160,6 +2032,8 @@ class _EditorScreenState extends State<EditorScreen> {
           onChanged: _markDirty,
           onBack: () => Navigator.pop(context),
           onRequestZombieSelection: _openZombieSelection,
+          onRequestPoolZombieSelection: (onSelected) =>
+              _openZombieSelection(onSelected, pointPoolOnly: true),
         ),
       ),
     ).then((_) => _setActiveTab(EditorTabType.waveGenerator));
@@ -2230,9 +2104,9 @@ class _EditorScreenState extends State<EditorScreen> {
     }
   }
 
-  void _handleEditCustomZombie(String rtid) {
+  Future<void> _handleEditCustomZombie(String rtid) async {
     if (_ec.state.levelFile == null) return;
-    Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CustomZombiePropertiesScreen(
@@ -2312,6 +2186,38 @@ class _EditorScreenState extends State<EditorScreen> {
     _markDirty();
 
     return RtidParser.build(newTypeAlias, 'CurrentLevel');
+  }
+
+  Future<void> _openJsonViewer() async {
+    if (_ec.state.levelFile == null) return;
+    final hadChanges = _ec.state.hasChanges;
+    await _save();
+    if (!mounted) return;
+    if (hadChanges) {
+      // Let the saved banner start its fade-in before the route covers it.
+      await Future<void>.delayed(const Duration(milliseconds: 32));
+      if (!mounted) return;
+    }
+    final jsonMenuActions = context
+        .read<SettingsCubit>()
+        .state
+        .interfaceMenuActionsFor(InterfaceMenuSurface.jsonViewer);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!context.mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => JsonViewerScreen(
+            fileName: _ec.fileName,
+            filePath: _ec.filePath,
+            levelFile: _ec.state.levelFile!,
+            onBack: () => Navigator.pop(context),
+            onSaved: () => _ec.onJsonViewerSaved(),
+            menuActions: jsonMenuActions,
+          ),
+        ),
+      );
+    });
   }
 
   void _showUiScaleDialog(BuildContext context) {
@@ -3018,26 +2924,7 @@ class _EditorScreenState extends State<EditorScreen> {
             onBack: () => Navigator.pop(context),
             onAddModule: (objClass) =>
                 _addModule(ModuleRegistry.getMetadata(objClass)),
-            onRequestPlantSelection: (onSelected) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PlantSelectionScreen(
-                    stateBucketId: _selectionStateBucketId,
-                    isMultiSelect: false,
-                    onPlantSelected: (id) {
-                      Navigator.pop(context);
-                      onSelected(id);
-                    },
-                    onBack: () => Navigator.pop(context),
-                    levelFile: _ec.state.levelFile,
-                    onAddModule: (objClass) {
-                      _addModule(ModuleRegistry.getMetadata(objClass));
-                    },
-                  ),
-                ),
-              );
-            },
+            onRequestPlantSelection: _openPlantMultiSelection,
             onRequestToolSelection: (onSelected) {
               Navigator.push(
                 context,
@@ -3356,6 +3243,7 @@ class _EditorScreenState extends State<EditorScreen> {
             rtid: rtid,
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
+            onRequestZombieMultiSelection: _openZombieSelection,
             onBack: () => Navigator.pop(context),
             onRequestZombieSelection: (onSelected) {
               Navigator.push(
@@ -3618,6 +3506,22 @@ class _EditorScreenState extends State<EditorScreen> {
       );
       return;
     }
+    if (info.source == 'CurrentLevel' &&
+        objClass == 'InitialGridItemWizardCrucibleProps') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => HalloweenPlacementScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            cauldron: true,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
     if (info.source == 'CurrentLevel' && objClass == 'RoofProperties') {
       if (_ec.state.parsedData!.levelDef != null) {
         Navigator.push(
@@ -3695,6 +3599,21 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
     if (info.source == 'CurrentLevel' &&
+        objClass == 'SpeedUpTileModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SpeedUpTileModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
         objClass == 'InitialGridItemGulliverTunnelProperties') {
       Navigator.push(
         context,
@@ -3734,7 +3653,8 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
-            onRequestZombieSelection: _openZombieSelection,
+            onRequestZombieSelection: (onSelected) =>
+                _openZombieSelection(onSelected, pointPoolOnly: true),
             onOpenWaveTimeline: () {
               Navigator.pop(context);
               _setActiveTab(EditorTabType.timeline);
@@ -3754,7 +3674,8 @@ class _EditorScreenState extends State<EditorScreen> {
             levelFile: _ec.state.levelFile!,
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
-            onRequestZombieSelection: _openZombieSelection,
+            onRequestZombieSelection: (onSelected) =>
+                _openZombieSelection(onSelected, pointPoolOnly: true),
           ),
         ),
       );
@@ -3778,6 +3699,104 @@ class _EditorScreenState extends State<EditorScreen> {
         icon: Icons.info_outline,
       );
     }
+  }
+
+  bool _editorActionEnabled(String id) {
+    return switch (id) {
+      InterfaceMenuActionIds.viewJson ||
+      InterfaceMenuActionIds.levelOverview => _ec.state.levelFile != null,
+      _ => true,
+    };
+  }
+
+  String _editorActionLabel(
+    AppLocalizations? l10n,
+    SettingsState settings,
+    String id,
+  ) {
+    return switch (id) {
+      InterfaceMenuActionIds.language => l10n?.language ?? 'Language',
+      InterfaceMenuActionIds.theme => l10n?.toggleTheme ?? 'Toggle theme',
+      InterfaceMenuActionIds.uiScale => l10n?.uiSize ?? 'UI size',
+      InterfaceMenuActionIds.autosave =>
+        settings.hasAutosave
+            ? (l10n?.autosaveOn ?? 'Autosave: on')
+            : (l10n?.autosaveOff ?? 'Autosave: off'),
+      InterfaceMenuActionIds.viewJson =>
+        l10n?.tooltipJsonViewer ?? 'View/edit JSON',
+      InterfaceMenuActionIds.interfaceSettings =>
+        l10n?.interfaceSettings ?? 'Interface settings',
+      InterfaceMenuActionIds.levelOverview =>
+        l10n?.levelOverview ?? 'Level Overview',
+      _ => id,
+    };
+  }
+
+  IconData _editorActionIcon(String id, SettingsState settings) {
+    return switch (id) {
+      InterfaceMenuActionIds.language => Icons.language,
+      InterfaceMenuActionIds.theme =>
+        settings.themeMode == ThemeMode.dark
+            ? Icons.light_mode
+            : Icons.dark_mode,
+      InterfaceMenuActionIds.uiScale => Icons.aspect_ratio,
+      InterfaceMenuActionIds.autosave => Icons.save_outlined,
+      InterfaceMenuActionIds.viewJson => Icons.code,
+      InterfaceMenuActionIds.interfaceSettings => Icons.tune,
+      InterfaceMenuActionIds.levelOverview => Icons.visibility,
+      _ => Icons.more_horiz,
+    };
+  }
+
+  Future<void> _handleEditorAction(String id) async {
+    switch (id) {
+      case InterfaceMenuActionIds.viewJson:
+        await _openJsonViewer();
+      case InterfaceMenuActionIds.language:
+        widget.onLanguageTap(context);
+      case InterfaceMenuActionIds.uiScale:
+        _showUiScaleDialog(context);
+      case InterfaceMenuActionIds.theme:
+        context.read<SettingsCubit>().cycleTheme();
+      case InterfaceMenuActionIds.autosave:
+        await showAutosaveSettingsDialog(context);
+      case InterfaceMenuActionIds.interfaceSettings:
+        await showInterfaceSettingsScreen(context);
+      case InterfaceMenuActionIds.levelOverview:
+        await openLevelOverviewFromOpenSession(context);
+    }
+  }
+
+  Widget _editorToolbarAction(
+    AppLocalizations? l10n,
+    SettingsState settings,
+    String id,
+  ) {
+    final enabled = _editorActionEnabled(id);
+    return IconButton(
+      key: ValueKey('editorToolbarAction_$id'),
+      icon: Icon(_editorActionIcon(id, settings)),
+      tooltip: _editorActionLabel(l10n, settings, id),
+      onPressed: enabled ? () => _handleEditorAction(id) : null,
+    );
+  }
+
+  PopupMenuEntry<String> _editorOverflowAction(
+    AppLocalizations? l10n,
+    SettingsState settings,
+    String id,
+  ) {
+    final enabled = _editorActionEnabled(id);
+    return PopupMenuItem<String>(
+      key: ValueKey('editorOverflowAction_$id'),
+      value: id,
+      enabled: enabled,
+      child: EditorPopupMenuTile(
+        enabled: enabled,
+        leading: Icon(_editorActionIcon(id, settings)),
+        title: Text(_editorActionLabel(l10n, settings, id)),
+      ),
+    );
   }
 
   @override
@@ -3804,6 +3823,35 @@ class _EditorScreenState extends State<EditorScreen> {
         builder: (context, editorState) {
           final l10n = AppLocalizations.of(context);
           final editorTopTabs = _editorTopTabEntries();
+          final configuredActions = settings.interfaceMenuActionsFor(
+            InterfaceMenuSurface.levelEditor,
+          );
+          final requestedToolbarActions = configuredActions
+              .where(
+                (action) => action.placement == InterfaceMenuPlacement.toolbar,
+              )
+              .toList(growable: false);
+          final pluginAppBarActions = pluginEditorAppBarActions(context);
+          final estimatedToolbarCapacity =
+              ((screenWidth - 200 - pluginAppBarActions.length * 48) / 48)
+                  .floor()
+                  .clamp(0, requestedToolbarActions.length)
+                  .toInt();
+          final toolbarCapacity = useCompactActions
+              ? (estimatedToolbarCapacity < 3 ? estimatedToolbarCapacity : 3)
+              : estimatedToolbarCapacity;
+          final toolbarActionIds = {
+            for (final action in requestedToolbarActions.take(toolbarCapacity))
+              action.id,
+          };
+          final overflowActions = configuredActions
+              .where(
+                (action) =>
+                    action.placement == InterfaceMenuPlacement.overflow ||
+                    (action.placement == InterfaceMenuPlacement.toolbar &&
+                        !toolbarActionIds.contains(action.id)),
+              )
+              .toList(growable: false);
           Widget body = Scaffold(
             appBar: AppBar(
               title: Text(_ec.fileName, overflow: TextOverflow.ellipsis),
@@ -3812,43 +3860,9 @@ class _EditorScreenState extends State<EditorScreen> {
                 onPressed: _leaveEditorIfAllowed,
               ),
               actions: [
-                if (!useCompactActions) ...[
-                  IconButton(
-                    icon: const Icon(Icons.code),
-                    tooltip: l10n?.tooltipJsonViewer ?? 'View/edit JSON',
-                    onPressed: _ec.state.levelFile != null
-                        ? () async {
-                            final hadChanges = _ec.state.hasChanges;
-                            await _save();
-                            if (!mounted) return;
-                            if (hadChanges) {
-                              // Let the banner start its fade-in before the route covers the frame.
-                              await Future<void>.delayed(
-                                const Duration(milliseconds: 32),
-                              );
-                              if (!mounted) return;
-                            }
-                            WidgetsBinding.instance.addPostFrameCallback((
-                              _,
-                            ) async {
-                              if (!context.mounted) return;
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => JsonViewerScreen(
-                                    fileName: _ec.fileName,
-                                    filePath: _ec.filePath,
-                                    levelFile: _ec.state.levelFile!,
-                                    onBack: () => Navigator.pop(context),
-                                    onSaved: () => _ec.onJsonViewerSaved(),
-                                  ),
-                                ),
-                              );
-                            });
-                          }
-                        : null,
-                  ),
-                ],
+                for (final action in configuredActions)
+                  if (toolbarActionIds.contains(action.id))
+                    _editorToolbarAction(l10n, settings, action.id),
                 Builder(
                   builder: (context) {
                     return IconButton(
@@ -3858,68 +3872,12 @@ class _EditorScreenState extends State<EditorScreen> {
                     );
                   },
                 ),
-                ...pluginEditorAppBarActions(context),
+                ...pluginAppBarActions,
                 PopupMenuButton<String>(
+                  key: const ValueKey('editorOverflowMenu'),
                   itemBuilder: (context) => [
-                    if (useCompactActions) ...[
-                      PopupMenuItem(
-                        value: 'json',
-                        enabled: _ec.state.levelFile != null,
-                        child: EditorPopupMenuTile(
-                          enabled: _ec.state.levelFile != null,
-                          leading: const Icon(Icons.code),
-                          title: Text(
-                            l10n?.tooltipJsonViewer ?? 'View/edit JSON',
-                          ),
-                        ),
-                      ),
-                      const PopupMenuDivider(),
-                    ],
-                    PopupMenuItem(
-                      value: 'lang',
-                      child: EditorPopupMenuTile(
-                        leading: const Icon(Icons.language),
-                        title: Text(l10n?.language ?? 'Language'),
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'ui',
-                      child: EditorPopupMenuTile(
-                        leading: const Icon(Icons.aspect_ratio),
-                        title: Text(l10n?.uiSize ?? 'UI size'),
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'theme',
-                      child: EditorPopupMenuTile(
-                        leading: Icon(
-                          settings.themeMode == ThemeMode.dark
-                              ? Icons.light_mode
-                              : Icons.dark_mode,
-                        ),
-                        title: Text(l10n?.toggleTheme ?? 'Toggle theme'),
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'autosave',
-                      child: EditorPopupMenuTile(
-                        leading: const Icon(Icons.save_outlined),
-                        title: Text(
-                          settings.hasAutosave
-                              ? (l10n?.autosaveOn ?? 'Autosave: on')
-                              : (l10n?.autosaveOff ?? 'Autosave: off'),
-                        ),
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'level_overview',
-                      enabled: _ec.state.levelFile != null,
-                      child: EditorPopupMenuTile(
-                        enabled: _ec.state.levelFile != null,
-                        leading: const Icon(Icons.visibility),
-                        title: Text(l10n?.levelOverview ?? 'Level Overview'),
-                      ),
-                    ),
+                    for (final action in overflowActions)
+                      _editorOverflowAction(l10n, settings, action.id),
                     ...pluginOverflowMenuItems(
                       context: context,
                       slot: CPluginUiSlots.editorOverflow,
@@ -3927,48 +3885,15 @@ class _EditorScreenState extends State<EditorScreen> {
                     ),
                   ],
                   onSelected: (value) async {
-                    if (value == 'json') {
-                      final hadChanges = _ec.state.hasChanges;
-                      await _save();
-                      if (!mounted) return;
-                      if (hadChanges) {
-                        await Future<void>.delayed(
-                          const Duration(milliseconds: 32),
-                        );
-                        if (!mounted) return;
-                      }
-                      WidgetsBinding.instance.addPostFrameCallback((_) async {
-                        if (!context.mounted) return;
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => JsonViewerScreen(
-                              fileName: _ec.fileName,
-                              filePath: _ec.filePath,
-                              levelFile: _ec.state.levelFile!,
-                              onBack: () => Navigator.pop(context),
-                              onSaved: () => _ec.onJsonViewerSaved(),
-                            ),
-                          ),
-                        );
-                      });
-                    } else if (value == 'lang') {
-                      widget.onLanguageTap(context);
-                    } else if (value == 'ui') {
-                      _showUiScaleDialog(context);
-                    } else if (value == 'theme') {
-                      context.read<SettingsCubit>().cycleTheme();
-                    } else if (value == 'autosave') {
-                      showAutosaveSettingsDialog(context);
-                    } else if (value == 'level_overview') {
-                      await openLevelOverviewFromOpenSession(context);
-                    } else {
+                    if (value.startsWith('plugin:')) {
                       handlePluginOverflowSelection(
                         context,
                         value: value,
                         valuePrefix: 'plugin:',
                         slot: CPluginUiSlots.editorOverflow,
                       );
+                    } else {
+                      await _handleEditorAction(value);
                     }
                   },
                 ),
@@ -4131,6 +4056,8 @@ class _EditorScreenState extends State<EditorScreen> {
                                             onAddEvent: _handleAddEvent,
                                             onEditWaveManagerSettings:
                                                 _handleEditWaveManagerSettings,
+                                            onEditJitterOffsets:
+                                                _handleEditJitterOffsets,
                                             onEditCustomZombie:
                                                 _handleEditCustomZombie,
                                             onEditCustomFish:
@@ -4328,6 +4255,7 @@ class _CustomStageAliasPromptDialog extends StatefulWidget {
 class _CustomStageAliasPromptDialogState
     extends State<_CustomStageAliasPromptDialog> {
   late final TextEditingController _controller;
+  String? _errorText;
 
   @override
   void initState() {
@@ -4341,7 +4269,21 @@ class _CustomStageAliasPromptDialogState
     super.dispose();
   }
 
-  void _submit() => Navigator.pop(context, _controller.text.trim());
+  void _submit() {
+    final raw = _controller.text;
+    final l10n = AppLocalizations.of(context);
+    final characterError = aliasCharacterValidationError(l10n, raw);
+    if (characterError != null) {
+      setState(() => _errorText = characterError);
+      return;
+    }
+    final alias = raw.trim();
+    if (alias.isEmpty) {
+      setState(() => _errorText = l10n?.aliasEmpty ?? 'Alias cannot be empty');
+      return;
+    }
+    Navigator.pop(context, alias);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -4370,7 +4312,11 @@ class _CustomStageAliasPromptDialogState
                   decoration: InputDecoration(
                     labelText: l10n?.customStageAlias ?? 'Stage alias',
                     border: const OutlineInputBorder(),
+                    errorText: _errorText,
                   ),
+                  onChanged: (_) {
+                    if (_errorText != null) setState(() => _errorText = null);
+                  },
                   onSubmitted: (_) => _submit(),
                 ),
                 const SizedBox(height: 12),

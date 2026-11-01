@@ -12,6 +12,8 @@ class StartupLoadingScreen extends StatelessWidget {
     required this.locale,
     required this.themeMode,
     this.loadingCategory,
+    this.pluginResourcesCompleted,
+    this.pluginResourcesTotal,
   });
 
   final double progress;
@@ -19,9 +21,12 @@ class StartupLoadingScreen extends StatelessWidget {
   final ThemeMode themeMode;
   final BootstrapLoadingCategory? loadingCategory;
 
+  final int? pluginResourcesCompleted;
+  final int? pluginResourcesTotal;
+
   static const _barHeight = 6.0;
   static const _labelGap = 8.0;
-  static const _labelReserve = 40.0;
+  static const _labelReserve = 64.0;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +45,7 @@ class StartupLoadingScreen extends StatelessWidget {
           final isDark = theme.brightness == Brightness.dark;
           final accent = isDark ? pvzGreenDark : pvzGreenLight;
           final clamped = progress.clamp(0.0, 1.0);
-          final percentLabel = '${(clamped * 100).round()}%';
+          final percentLabel = '${(clamped * 100).toStringAsFixed(2)}%';
           final labelStyle = TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 13,
@@ -48,7 +53,15 @@ class StartupLoadingScreen extends StatelessWidget {
           );
           final rowHeight = math.max(20.0, labelStyle.fontSize! + 8);
           final barTop = (rowHeight - _barHeight) / 2;
-          final categoryLabel = loadingCategory?.loadingLabel(l10n);
+          final categoryLabel =
+              loadingCategory == BootstrapLoadingCategory.plugins &&
+                  pluginResourcesCompleted != null &&
+                  pluginResourcesTotal != null
+              ? l10n.startupPluginResources(
+                  pluginResourcesCompleted!,
+                  pluginResourcesTotal!,
+                )
+              : loadingCategory?.loadingLabel(l10n);
 
           return Scaffold(
             body: Center(
@@ -104,8 +117,9 @@ class StartupLoadingScreen extends StatelessWidget {
                                     minHeight: _barHeight,
                                     borderRadius: BorderRadius.circular(999),
                                     color: accent,
-                                    backgroundColor:
-                                        accent.withValues(alpha: 0.18),
+                                    backgroundColor: accent.withValues(
+                                      alpha: 0.18,
+                                    ),
                                   ),
                                 ),
                                 Positioned(

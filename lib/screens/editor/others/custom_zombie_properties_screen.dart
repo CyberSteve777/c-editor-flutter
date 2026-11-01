@@ -10,6 +10,7 @@ import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/asset_image.dart';
+import 'package:c_editor/widgets/editor_object_alias.dart';
 import 'package:c_editor/screens/editor/others/resilience_shield_selection_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/resilience_shield_widgets.dart';
@@ -850,25 +851,20 @@ class _CustomZombiePropertiesScreenState
                       children: [
                         _cardSectionTitle(l10n?.baseStats ?? 'Base stats'),
                         const SizedBox(height: 12),
-                        EditorResponsiveInputField(
-                          label: l10n?.aliasLabel ?? 'Alias',
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                          ),
-                          builder: (context, decoration) => TextFormField(
-                            initialValue: _typeObj!.aliases?.isNotEmpty == true
-                                ? _typeObj!.aliases!.first
-                                : '',
-                            decoration: decoration,
-                            onChanged: (v) {
-                              final trimmed = v.trim();
-                              if (trimmed.isNotEmpty && _typeObj != null) {
-                                _typeObj!.aliases = [trimmed];
-                                widget.onChanged();
-                                setState(() {});
-                              }
-                            },
-                          ),
+                        EditorAliasInputField(
+                          alias: _typeObj!.aliases!.first,
+                          levelFile: widget.levelFile,
+                          wrapInCard: false,
+                          duplicateMessage: l10n?.renameCustomZombieFail,
+                          onAliasChanged: (value) {
+                            renameLevelObjectAlias(
+                              levelFile: widget.levelFile,
+                              oldAlias: _typeObj!.aliases!.first,
+                              newAlias: value,
+                              onChanged: widget.onChanged,
+                            );
+                            setState(() {});
+                          },
                         ),
                         const SizedBox(height: 12),
                         _doubleInput(
@@ -1015,7 +1011,7 @@ class _CustomZombiePropertiesScreenState
                                   DropdownMenuItem(
                                     value: '',
                                     child: Text(
-                                      l10n?.groundTrackNone ?? 'None (null)',
+                                      l10n?.groundTrackNone ?? 'None',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),

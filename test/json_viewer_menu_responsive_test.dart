@@ -1,3 +1,4 @@
+import 'package:c_editor/data/interface_menu_config.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/screens/editor/json_viewer_screen.dart';
@@ -103,6 +104,55 @@ void main() {
       ),
       findsOneWidget,
     );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('JSON viewer hides an empty overflow menu on wide screens', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1000, 900);
+    addTearDown(tester.view.reset);
+    final menuActions =
+        defaultInterfaceMenuActions(InterfaceMenuSurface.jsonViewer)
+            .map(
+              (action) =>
+                  action.copyWith(placement: InterfaceMenuPlacement.toolbar),
+            )
+            .toList(growable: false);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: JsonViewerScreen(
+          fileName: 'test.json',
+          filePath: 'test.json',
+          levelFile: PvzLevelFile(objects: const []),
+          onBack: () {},
+          saveLevel: (_, _) async {},
+          menuActions: menuActions,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final actionIds = [
+      InterfaceMenuActionIds.toggleJsonView,
+      InterfaceMenuActionIds.copyJson,
+      InterfaceMenuActionIds.clearUnused,
+      InterfaceMenuActionIds.editJson,
+    ];
+    final centers = <double>[];
+    for (final id in actionIds) {
+      final action = find.byKey(ValueKey('jsonToolbarAction_$id'));
+      expect(action, findsOneWidget);
+      centers.add(tester.getCenter(action).dx);
+    }
+    expect(centers, orderedEquals([...centers]..sort()));
+    expect(find.byKey(const ValueKey('jsonOverflowMenu')), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }

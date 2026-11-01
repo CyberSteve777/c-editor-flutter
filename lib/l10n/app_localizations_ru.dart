@@ -9,6 +9,35 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get updateNotNeededTitle => 'Обновление не требуется';
+
+  @override
+  String get updateCheckFailedLinks =>
+      'Проверить наличие обновлений редактора также можно по следующим ссылкам:';
+
+  @override
+  String get updateOpenBilibili => 'Открыть публикацию Bilibili';
+
+  @override
+  String get updateJoinDiscord => 'Присоединиться к серверу Discord';
+
+  @override
+  String get speedUpTileCompatibilityWarning =>
+      'Плитки модулей «Дорожки подземного дворца» и «Плитки экспедиции» перекрывают ускоряющие плитки, из-за чего те не работают. Не используйте эти модули одновременно.';
+
+  @override
+  String get updateSaveWorkGuidance =>
+      'Автосохранение работает при обычном выходе из поддерживаемых редакторов. Обновление или закрытие страницы может пропустить его. Перед обновлением проверьте сохранение уровня и JSON, завершите экспорт тестовых пакетов и изображений. Этот диалог не сохраняет работу и не перезапускает приложение.';
+
+  @override
+  String get jsonDiscardEditsBody =>
+      'Отменить изменения JSON? Несохранённый текст, включая некорректный JSON, будет потерян. Останьтесь в редакторе, чтобы продолжить и сохранить.';
+
+  @override
+  String get webUpdateSaveAndRefresh =>
+      'Обнаружена новая версия редактора. Сохраните изменения, затем обновите страницу.';
+
+  @override
   String get error => 'Ошибка';
 
   @override
@@ -28,6 +57,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get previewTabGridItems => 'Объекты';
+
+  @override
+  String get previewTabInitialLawnOverview => 'Начальная планировка лужайки';
 
   @override
   String get overviewPresetPlants => 'Предустановленные растения';
@@ -222,13 +254,168 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get autosaveSubtitle =>
-      'Автоматически сохранять изменения при выходе из уровня';
+      'Автоматически сохранять при выходе из уровня или режима редактирования JSON';
 
   @override
   String get ultra => 'Ультра';
 
   @override
   String get uiSize => 'Размер интерфейса';
+
+  @override
+  String get interfaceSettings => 'Настройки интерфейса';
+
+  @override
+  String get lightTheme => 'Светлая тема';
+
+  @override
+  String get darkTheme => 'Тёмная тема';
+
+  @override
+  String get uiScalePreview => 'Пример размера интерфейса';
+
+  @override
+  String get uiScalePreviewTitle => 'Пример заголовка';
+
+  @override
+  String get uiScalePreviewDescription =>
+      'Перемещайте ползунок, чтобы увидеть изменение размера элементов интерфейса';
+
+  @override
+  String get menuCustomization => 'Отображение функций';
+
+  @override
+  String get menuCustomizationDescription =>
+      'Настройте расположение и порядок отображения функций для каждого экрана отдельно. Вынесенные функции отображаются прямо на панели заголовка, свёрнутые функции находятся в меню ⋮, а поддерживаемые функции можно оставить только на этой странице.\nЕсли места на экране недостаточно, функции, которые обычно отображаются на панели заголовка, автоматически перемещаются в меню ⋮ в соответствии с заданным порядком.';
+
+  @override
+  String get menuCustomizationDragHint =>
+      'Перетаскивайте ⋮⋮, чтобы изменить порядок функций';
+
+  @override
+  String get menuSurfaceWorkspace => 'Рабочая область';
+
+  @override
+  String get menuSurfaceLevelEditor => 'Редактор уровня';
+
+  @override
+  String get menuSurfaceJsonViewer => 'Просмотр JSON-файла';
+
+  @override
+  String get menuPlacementToolbar => 'Вынести';
+
+  @override
+  String get menuPlacementOverflow => 'Свернуть';
+
+  @override
+  String get menuPlacementSettingsPage => 'Только на странице настроек';
+
+  @override
+  String get menuConfigurationReset =>
+      'Восстановить стандартный вид этого экрана';
+
+  @override
+  String get aliasPromptOnCreate => 'Запрашивать псевдоним при создании';
+
+  @override
+  String get aliasPromptOnCreateDescription =>
+      'Показывать диалог псевдонима перед созданием события, модуля, испытания или пользовательского поля. Если выключено, C-Editor использует автоматически созданный псевдоним.';
+
+  @override
+  String get popupPrompts => 'Диалоговые подсказки';
+
+  @override
+  String currentTheme(String theme) {
+    return 'Текущая тема: $theme';
+  }
+
+  @override
+  String get checkForUpdatesAutomatically => 'Проверять обновления';
+
+  @override
+  String get checkForUpdatesAutomaticallyDescription =>
+      'Проверять стабильные версии в фоне при открытии рабочего пространства, не чаще раза в 24 часа. Ошибки автоматической проверки не отображаются.';
+
+  @override
+  String get checkForUpdates => 'Проверить обновления';
+
+  @override
+  String get checkingForUpdates => 'Проверка обновлений…';
+
+  @override
+  String get updateAvailableTitle => 'Доступно обновление';
+
+  @override
+  String updateAvailableBody(String version) {
+    return 'Последняя стабильная версия: $version.';
+  }
+
+  @override
+  String get updateAlreadyLatest => 'У вас последняя стабильная версия.';
+
+  @override
+  String get updateCheckFailedTitle => 'Не удалось проверить обновления';
+
+  @override
+  String get updateDownload => 'Выберите ссылку для загрузки';
+
+  @override
+  String get updateGithubDownload => 'Открыть ссылку GitHub Releases';
+
+  @override
+  String get updateDownloadDescription =>
+      'Нажатие на ссылку перенаправит вас в браузер или другое приложение, где на соответствующей странице можно скачать установочный пакет новой версии.';
+
+  @override
+  String get updateLater => 'Напомнить позже';
+
+  @override
+  String get updateBaiduDownload => 'Открыть ссылку Baidu Netdisk';
+
+  @override
+  String get networkTimeoutAdvice =>
+      'Время ожидания истекло. Проверьте соединение и повторите попытку.';
+
+  @override
+  String get networkRateLimitAdvice =>
+      'Достигнут лимит запросов GitHub или доступ отклонён. Повторите попытку позже.';
+
+  @override
+  String get networkConnectionAdvice =>
+      'Не удалось подключиться к серверу. Проверьте соединение и повторите попытку.';
+
+  @override
+  String get networkServiceAdvice =>
+      'Сервер временно недоступен. Повторите попытку позже.';
+
+  @override
+  String get networkResponseAdvice =>
+      'Сервер вернул неожиданные данные. Повторите попытку позже или откройте страницу загрузки напрямую.';
+
+  @override
+  String get updateCheckUnknownAdvice =>
+      'Не удалось завершить проверку обновлений. Повторите попытку позже или откройте страницу загрузки напрямую.';
+
+  @override
+  String get externalLinkFailedAdvice =>
+      'Не удалось открыть страницу загрузки. Скопируйте ссылку и откройте её в браузере.';
+
+  @override
+  String get jsonEditSyntaxError =>
+      'Ошибка синтаксиса JSON. Проверьте запятые, скобки и двойные кавычки, затем сохраните снова.';
+
+  @override
+  String jsonEditSyntaxErrorAt(String line, String column) {
+    return 'Ошибка синтаксиса JSON около строки $line, столбца $column. Проверьте запятые, скобки и двойные кавычки, затем сохраните снова.';
+  }
+
+  @override
+  String get jsonEditStructureError =>
+      'JSON не соответствует структуре уровня. Сохраните список objects и поля objclass и objdata каждого объекта; версия должна быть целым числом.';
+
+  @override
+  String get jsonEditSaveError =>
+      'Не удалось сохранить файл. Проверьте права записи и свободное место в рабочем пространстве. В веб-версии разрешите браузеру использовать локальное хранилище. Ваши изменения сохранены в редакторе.';
 
   @override
   String get aboutSoftware => 'О программе';
@@ -653,6 +840,26 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get renameFail => 'Ошибка переименования, файл уже существует';
+
+  @override
+  String get renameEventFail =>
+      'Не удалось изменить псевдоним события: он уже используется объектом уровня.';
+
+  @override
+  String get renameModuleFail =>
+      'Не удалось изменить псевдоним модуля: он уже используется объектом уровня.';
+
+  @override
+  String get renameCustomZombieFail =>
+      'Не удалось изменить псевдоним пользовательского зомби: он уже используется объектом уровня.';
+
+  @override
+  String get renameAliasFail =>
+      'Не удалось изменить псевдоним: он уже используется объектом уровня.';
+
+  @override
+  String get copyEventAliasFail =>
+      'Не удалось скопировать событие: этот псевдоним уже используется объектом уровня.';
 
   @override
   String get uploadLevel => 'Опубликовать на Креаторскую Площадку';
@@ -1169,6 +1376,224 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get levelBasicInfoSubtitle => 'Название, номер, описание, лужайка';
+
+  @override
+  String get levelBasicInfoHelpTitle => 'Основы определения уровня';
+
+  @override
+  String get levelBasicInfoHelpOverviewBody =>
+      'Определение уровня — корневой узел уровня PvZ2. Оно хранит глобальные свойства уровня и через список модулей связывает все модули уровня. На этой странице можно изменять глобальные свойства уровня.';
+
+  @override
+  String get levelBasicInfoHelpBasicInfoTitle => 'Экран основных данных';
+
+  @override
+  String get levelBasicInfoHelpBasicInfoBody =>
+      'Здесь можно задать название, описание, начальное количество солнца и другие основные данные уровня. Описание уровня показывается белыми субтитрами во время перехода перед началом уровня. Начальное солнце — количество солнца до применения усиления солнца аккаунта.';
+
+  @override
+  String get levelBasicInfoHelpSceneBody =>
+      'Здесь можно выбрать карту, тип музыки и другие настройки окружения уровня из списка. На карте Пиратских морей по умолчанию нет досок.\nДоступные типы музыки зависят от музыкального модуля карты по умолчанию. После настройки собственной карты можно изменить её музыкальный модуль, чтобы использовать на уровне музыку других карт.\nСпособ завершения применяется только к некоторым особым типам уровней, поэтому обычно его не рекомендуется менять.';
+
+  @override
+  String get levelBasicInfoHelpRestrictionsBody =>
+      'Здесь находятся переключатели для отключения «Симбиоза гороховой лозы» и артефактов. «Симбиоз гороховой лозы» — навык гороховой лозы 5-го уровня. Если у игрока есть гороховая лоза 5-го уровня и этот навык включён в аккаунте, при посадке растения семейства гороха сразу же дополнительно высаживается одна гороховая лоза, что может повлиять на прохождение уровней с гороховыми растениями. В режиме Творческого двора артефакты отключаются автоматически, поэтому вручную включать переключатель не требуется.';
+
+  @override
+  String get waveTimelineJitterOffsetsTitle =>
+      'Предустановки смещения позиций появления';
+
+  @override
+  String get waveTimelineJitterOffsetsNone => 'Предустановок пока нет';
+
+  @override
+  String waveTimelineJitterOffsetsSummary(int count, int unused) {
+    return 'Предустановок: $count; без ссылок: $unused';
+  }
+
+  @override
+  String get jitterOffsetsPageTitle =>
+      'Предустановки смещения позиций появления';
+
+  @override
+  String jitterOffsetsPageCount(int count) {
+    return 'Предустановок: $count';
+  }
+
+  @override
+  String get jitterOffsetsAdd => 'Добавить смещение';
+
+  @override
+  String get jitterOffsetsSelectTitle => 'Выбор смещения позиций появления';
+
+  @override
+  String get jitterOffsetsEmpty =>
+      'Предустановок пока нет.\nБез привязанной предустановки списки зомби в событиях «Обычная волна» и «Волна с рыбами» используют стандартные параметры игры: накопительный шаг смещения в одной линии — 80, верхняя граница случайного смещения — 30. Каждый зомби получает случайное смещение от 0 до 29.\nЧтобы изменить смещения, создайте предустановку и привяжите её в событии.';
+
+  @override
+  String get jitterOffsetsNoAlias => '(без псевдонима)';
+
+  @override
+  String get jitterOffsetsUnused =>
+      'Не используется ни одним событием появления';
+
+  @override
+  String jitterOffsetsReferenced(int count) {
+    return 'Используется событиями появления: $count';
+  }
+
+  @override
+  String get jitterOffsetsIncrementLabel =>
+      'Накопительный шаг смещения в одной линии (ZombieSpawningOffsetIncrement)';
+
+  @override
+  String get jitterOffsetsRandomJitterLabel =>
+      'Верхняя граница случайного смещения (ZombieSpawningRandomJitter)';
+
+  @override
+  String get jitterOffsetsIntegerInvalid => 'Введите допустимое целое число.';
+
+  @override
+  String get jitterOffsetsIncrementInvalid =>
+      'Рекомендуется неотрицательное целое число. Отрицательные значения могут преобразоваться в аномально большие смещения и помешать нормальному выходу на газон.';
+
+  @override
+  String get jitterOffsetsRandomJitterInvalid =>
+      'Введите положительное целое число. Ноль или отрицательное значение не отключает случайное смещение и может создать аномально большую горизонтальную позицию, из-за которой зомби не сможет нормально выйти на газон.';
+
+  @override
+  String get jitterOffsetsRename => 'Переименовать';
+
+  @override
+  String get jitterOffsetsDelete => 'Удалить';
+
+  @override
+  String jitterOffsetsCreated(String alias) {
+    return 'Создана предустановка $alias';
+  }
+
+  @override
+  String jitterOffsetsRenamed(int count) {
+    return 'Обновлены ссылки в событиях: $count';
+  }
+
+  @override
+  String get jitterOffsetsRenameTitle => 'Переименовать предустановку';
+
+  @override
+  String get jitterOffsetsRenameDescription =>
+      'После переименования все события, ссылающиеся на эту предустановку, обновляются автоматически.';
+
+  @override
+  String get jitterOffsetsAliasBadChars =>
+      'Псевдоним не может содержать @ ( ), иначе его невозможно корректно разобрать';
+
+  @override
+  String jitterOffsetsAliasTaken(String alias) {
+    return 'Псевдоним $alias уже занят другим объектом';
+  }
+
+  @override
+  String get jitterOffsetsDeleteTitle => 'Удалить предустановку?';
+
+  @override
+  String jitterOffsetsDeleteDescription(String alias) {
+    return 'Предустановка $alias будет удалена. На неё не ссылаются события, поэтому волны не изменятся.';
+  }
+
+  @override
+  String get jitterOffsetsDeleteBlockedTitle => 'Удаление невозможно';
+
+  @override
+  String jitterOffsetsDeleteBlockedDescription(String alias, int count) {
+    return 'На предустановку $alias всё ещё ссылаются события появления: $count. Удалить её нельзя.';
+  }
+
+  @override
+  String get jitterOffsetsDeleteBlockedHint =>
+      'Сначала откройте следующие события и выберите другую предустановку «Смещение позиций появления» либо отвяжите её. Если событие не поддерживает настройки смещения, удалите сохранённые ссылки через ручное редактирование файла:';
+
+  @override
+  String get jitterOffsetsEventLabel => 'Смещение позиций появления';
+
+  @override
+  String get jitterOffsetsEventNone =>
+      'Не привязано (стандартные параметры игры)';
+
+  @override
+  String get jitterOffsetsEventManage => 'Управление';
+
+  @override
+  String get jitterOffsetsEventDescription =>
+      'Регулирует горизонтальное смещение от базовой позиции каждого зомби в одном событии и линии. Направление зависит от того, куда смотрит зомби.';
+
+  @override
+  String get jitterOffsetsEventNoPresets =>
+      'Предустановок пока нет. Событие автоматически использует стандартные параметры игры: накопительный шаг смещения в одной линии — 80, верхняя граница случайного смещения — 30. Каждый зомби получает случайное смещение от 0 до 29. Чтобы изменить смещения, сначала создайте предустановку.';
+
+  @override
+  String jitterOffsetsEventDangling(String alias) {
+    return '$alias (не найдено)';
+  }
+
+  @override
+  String jitterOffsetsEventInvalidOption(String alias) {
+    return '$alias (недопустимые значения)';
+  }
+
+  @override
+  String get jitterOffsetsEventInvalidPreset =>
+      'Предустановка содержит недопустимые параметры. В разделе управления задайте для «Верхней границы случайного смещения» положительное значение.';
+
+  @override
+  String get jitterOffsetsFixedOffsetOverrideWarning =>
+      'Фиксированное смещение по номеру во всей группе не равно 0. Предустановки смещения позиций появления и построения зомби временно не действуют, но сохраняются; при возврате фиксированного смещения к 0 они снова вступают в силу.';
+
+  @override
+  String get jitterOffsetsUnderwaterScopeDescription =>
+      'Эти настройки влияют только на список зомби, но не на список морских существ.';
+
+  @override
+  String get jitterOffsetsAdvancedSettingsTitle => 'Дополнительные настройки';
+
+  @override
+  String get jitterOffsetsFixedOffsetLabel =>
+      'Фиксированное смещение по номеру во всей группе (FixedOffset)';
+
+  @override
+  String get jitterOffsetsFixedOffsetDescription =>
+      'Часто используется в режиме для двух игроков; по умолчанию — 0. При значении 0 используются предустановки смещения позиций появления и построения зомби. Ненулевое значение временно отключает обе, сохраняя их настройки; возврат к 0 снова включает их. Фиксированное смещение накапливается по порядку списка зомби всего события, без отдельного отсчёта для каждой линии, с сохранением базовой позиции каждого зомби. У первого зомби фиксированное смещение равно 0; у каждого следующего оно увеличивается на введённое значение. Даже очень малое ненулевое значение или событие с одним зомби отключает обе предустановки.\nПоложительное значение фиксированного смещения сдвигает зомби вправо, отрицательное — влево; дробная часть сохраняется. Направление взгляда не меняет направление смещения, поэтому используйте настройку осторожно при разных линиях или направлениях взгляда. Например, 8.5 сдвигает первых трёх зомби вправо от их базовых позиций на 0, 8.5 и 17.\nНастройка меняет только горизонтальную позицию, но не количество создаваемых зомби. Слишком большая величина может поместить зомби далеко за газоном или слишком глубоко внутри него, помешать нормальному выходу или расчёту результата уровня.';
+
+  @override
+  String get jitterOffsetsFixedOffsetInvalid => 'Введите допустимое число.';
+
+  @override
+  String get jitterOffsetsHelpTitle => 'Смещение позиций появления зомби';
+
+  @override
+  String get jitterOffsetsHelpOverviewTitle => 'Краткое описание';
+
+  @override
+  String get jitterOffsetsHelpOverviewBody =>
+      'Предустановки смещения регулируют горизонтальное расположение зомби одного события. Они действуют на списки зомби в событиях «Обычная волна» и «Волна с рыбами», не затрагивая морских существ. К базовой позиции каждого зомби применяется накопленное смещение его линии и независимое случайное смещение. Каждая линия накапливает смещение отдельно. Меняется только горизонтальная позиция, но не количество создаваемых зомби, время создания, линия или время волны.\nБез предустановки используются стандартные параметры: накопительный шаг смещения в одной линии равен 80, верхняя граница случайного смещения — 30. Каждый зомби получает случайное смещение от 0 до 29. Зомби нормально появляются и без собственной предустановки.';
+
+  @override
+  String get jitterOffsetsHelpUsageTitle => 'Использование';
+
+  @override
+  String get jitterOffsetsHelpUsageBody =>
+      'Создайте здесь предустановку, затем откройте событие «Обычная волна» или «Волна с рыбами» и выберите её в поле «Смещение позиций появления».\nОдну предустановку можно использовать в нескольких событиях. После её изменения обновятся все события, которые на неё ссылаются. Предустановку, на которую ещё ссылаются события, удалить нельзя: сначала выберите для них другую предустановку или отвяжите её.';
+
+  @override
+  String get jitterOffsetsHelpParametersTitle => 'Описание параметров';
+
+  @override
+  String get jitterOffsetsHelpFixedOffsetTitle =>
+      'Фиксированное смещение по номеру во всей группе';
+
+  @override
+  String get jitterOffsetsHelpParametersBody =>
+      '«Накопительный шаг смещения в одной линии» — значение, добавляемое к накопленному смещению линии после размещения каждого зомби в ней. Рекомендуется неотрицательное целое число. Отрицательные значения могут преобразоваться в аномально большие смещения и помешать нормальному выходу на газон.\n«Верхняя граница случайного смещения» задаёт диапазон независимого случайного смещения каждого зомби. Диапазон начинается с 0 и заканчивается введённым числом минус 1. Например, 10 даёт 0–9. Введите положительное целое число: ноль и отрицательные значения не отключают случайность и могут создавать аномальные координаты.\nНакопленное и случайное смещения складываются, затем применяются к базовой позиции с учётом направления взгляда. Зомби, смотрящий влево и обычно входящий справа, смещается вправо; смотрящий вправо и входящий слева — влево. Без предустановки построения зомби каждая линия начинает с 0. Например, при шаге 20 и верхней границе 10 первые три зомби одной линии получают смещения 0–9, 20–29 и 40–49.\nПредустановка построения зомби задаёт начальное горизонтальное смещение каждой линии и расстояние между следующими зомби той же линии. Каждая линия начинает с указанного в предустановке смещения; после размещения зомби к базовому шагу добавляется поправка его линии. Она меняет горизонтальное расстояние внутри линии, а не вертикальное расстояние между соседними линиями.';
 
   @override
   String get removeModule => 'Удалить модуль';
@@ -1883,10 +2308,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String get musicType => 'Тип музыки';
 
   @override
+  String get currentMusicModule => 'Текущий музыкальный модуль';
+
+  @override
   String get loot => 'Добыча';
 
   @override
   String get victoryModule => 'Условие победы';
+
+  @override
+  String get lootOptionDefault => 'Обычная добыча (DefaultLoot)';
+
+  @override
+  String get lootOptionNone => 'Без добычи (NoLoot)';
+
+  @override
+  String get victoryOptionDefault => 'Обычная победа (VictoryOutro)';
+
+  @override
+  String get victoryOptionZomboss =>
+      'Победа над Зомбоссом (ZombossVictoryOutro)';
 
   @override
   String get basicInfoSection => 'Основная информация';
@@ -1907,6 +2348,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get missingModules => 'Отсутствующие модули';
+
+  @override
+  String get underwaterZombieWinConditionWarningTitle =>
+      'Условие поражения в Подводном мире';
+
+  @override
+  String get underwaterZombieWinConditionWarning =>
+      'На газонах с оформлением «Подводный мир» при одновременном естественном появлении слишком большого числа зомби слева некоторые зомби могут появиться прямо на линии поражения и вызвать проигрыш. Рекомендуется удалить модуль «Условие поражения».';
 
   @override
   String get conflictTitle_ModuleLogic => 'Логический конфликт модулей';
@@ -2069,6 +2518,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get disablePeavine => 'Отключить гороховую лозу';
 
   @override
+  String get peaSymbiosisWarningTitle =>
+      'Рекомендуется отключить симбиоз гороховой лозы';
+
+  @override
+  String get peaSymbiosisWarning =>
+      'На этом уровне доступны следующие гороховые растения. Если у игрока есть Гороховая Лоза 5-го уровня и в учётной записи включён её симбиоз, при посадке любого из них автоматически высаживается Гороховая Лоза, что может повлиять на задуманный игровой процесс. Перейдите в «Основные данные уровня» и отключите симбиоз гороховой лозы.';
+
+  @override
+  String peaSymbiosisAffectedPlants(String plants) {
+    return 'Затронутые растения: $plants';
+  }
+
+  @override
   String get disableArtifact => 'Отключить артефакты';
 
   @override
@@ -2076,6 +2538,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get selectAll => 'Выбрать все';
+
+  @override
+  String get deselectAll => 'Снять выделение';
+
+  @override
+  String zombiePointCost(int cost) {
+    return 'Стоимость в очках: $cost';
+  }
 
   @override
   String get searchPlant => 'Поиск растения';
@@ -2960,6 +3430,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Выберите клетку и нажмите «+», чтобы добавить орлиный штандарт. В одной клетке можно разместить несколько штандартов и удалять их с помощью карточек ниже. Размер сетки зависит от текущего газона; штандарты за его пределами отображаются отдельно.';
 
   @override
+  String get eventTitle_SpawnPumpkinScarecrowWaveActionProps =>
+      'Появление пугал';
+
+  @override
+  String get eventDesc_SpawnPumpkinScarecrowWaveActionProps =>
+      'Создать тыквенные пугала в указанных клетках';
+
+  @override
   String get eventTitle_PumpkinHouseActionProps =>
       'Появление тыквенных домиков';
 
@@ -3261,7 +3739,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get groundTrackNormal => 'Обычная земля (ground_swatch)';
 
   @override
-  String get groundTrackNone => 'Нет (null)';
+  String get groundTrackNone => 'Нет';
 
   @override
   String get appearanceBehavior => 'Внешний вид и поведение';
@@ -3495,6 +3973,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get aliasLabel => 'Псевдоним (только английские буквы; без пробелов)';
+
+  @override
+  String get aliasEmpty => 'Псевдоним не может быть пустым';
+
+  @override
+  String get aliasWhitespaceUnsupported =>
+      'Псевдоним не может содержать пробелы';
+
+  @override
+  String get aliasChineseUnsupported =>
+      'Псевдоним не может содержать китайские иероглифы';
 
   @override
   String get add => 'Добавить';
@@ -3788,7 +4277,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tideWaveZombieMovingSpeed => 'Скорость зомби';
 
   @override
-  String get eventZombieFishWave => 'Cпавн зомби и рыб';
+  String get eventZombieFishWave => 'Волна с рыбами';
 
   @override
   String get eventHelpZombieFishWaveBody =>
@@ -3796,7 +4285,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventHelpZombieFishWaveFish =>
-      'Размещение рыб на сетке. Размер зависит от стадии: Глубокое море 6×10, обычная 5×9. Строка=Y, Столбец=X.';
+      'Размещение морских существ на сетке. Размер зависит от стадии: Глубокое море 6×10, обычная 5×9. Строка=Y, Столбец=X.';
 
   @override
   String get eventHelpBatchLevel =>
@@ -4097,7 +4586,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventHelpZombieTentFields =>
-      'TentType: zombie_tent или zombie_festival_tent.\nHitpoints: прочность палатки.\nProductionInterval: секунды между попытками призыва.\nZombieTypesToSpawn: ZombieTypeName, Weight (относительный шанс), Level (0 = уровень лужайки по умолчанию).';
+      'Палатки зомби бывают обычными и новогодними. Новогодний зомби, прошедший через новогоднюю палатку, превращается в новогоднего зомби с конусом; новогодний зомби с конусом — в новогоднего зомби с ведром. При уничтожении новогодняя палатка также выпускает одного зомби Цай-Шэня (бога богатства).\nЧем больше вес, тем выше вероятность выбора зомби. Например, при весах 10 и 30 соотношение вероятностей выбора двух зомби будет примерно 1:3.\nУровень зомби 0 использует уровень лужайки по умолчанию; в Творческом дворе это уровень 1.\nПри ручном редактировании JSON учтите, что столбцы (Column) и ряды (Row) палаток нумеруются с 1. Например, \"Column\": 7 означает седьмой столбец.';
 
   @override
   String get eventZombieTentSpawn => 'Событие: появление палаток зомби';
@@ -4513,6 +5002,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get zombieFromLeft => 'Слева';
+
+  @override
+  String get zombieFromRight => 'Появляться с правой стороны поля';
+
+  @override
+  String get zombieEntrySideLabel => 'Сторона появления (Direction)';
+
+  @override
+  String get zombieRandomSide => 'Появляться со случайной стороны';
+
+  @override
+  String get zombieRandomSideDescription =>
+      'При создании каждый зомби независимо выбирает левую или правую сторону поля.';
 
   @override
   String get eventMagicMirror => 'Событие волшебного зеркала';
@@ -5311,7 +5813,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get waveStartMessageLabel => 'Красный подзаголовок (WaveStartMessage)';
 
   @override
-  String get optionalWarningText => 'Необязательный текст предупреждения';
+  String get optionalWarningText =>
+      'Необязательный красный текст предупреждения, отображаемый в центре экрана в начале события; ввод на китайском не поддерживается';
 
   @override
   String rowNShort(int n) {
@@ -5514,10 +6017,10 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get eventStandardSpawnTitle => 'Событие стандартной волны';
+  String get eventStandardSpawnTitle => 'Обычная волна';
 
   @override
-  String get eventGroundSpawnTitle => 'Событие вылезания из под земли';
+  String get eventGroundSpawnTitle => 'Спавн из-под земли';
 
   @override
   String get eventHelpStandardOverview =>
@@ -5966,6 +6469,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get backgroundMusicLevelJam => 'Фоновая музыка (LevelJam)';
 
   @override
+  String get selectLevelJamTitle => 'Выберите музыкальный стиль';
+
+  @override
   String get onlyAppliesRockEra => 'Только для карт эры рока.';
 
   @override
@@ -6070,6 +6576,10 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get starChallengeChineseUnsupportedHint =>
       'Китайские символы не поддерживаются.';
+
+  @override
+  String get plantDefeatZombieDescriptionHint =>
+      'Значение по умолчанию [KILL_DESC] отображает «Убейте ... зомби с помощью ...»; прямой ввод китайского текста не поддерживается.';
 
   @override
   String get maximumPlantsLost => 'Макс. потерянных растений';
@@ -6768,6 +7278,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moduleDesc_LawnMowerProperties => 'Стиль газонокосилок для уровня';
 
   @override
+  String get moduleTitle_InitialGridItemWizardCrucibleProps => 'Ведьмин котёл';
+
+  @override
+  String get moduleDesc_InitialGridItemWizardCrucibleProps =>
+      'Настроить котлы Сказочного леса';
+
+  @override
+  String get moduleTitle_SpeedUpTileModuleProperties => 'Ускоряющие плитки';
+
+  @override
+  String get moduleDesc_SpeedUpTileModuleProperties =>
+      'Размещает на газоне ускоряющие плитки из тайного мира коллаборации с Need for Speed';
+
+  @override
   String get moduleTitle_TunnelDefendModuleProperties =>
       'Тоннели Подземного Дворца';
 
@@ -6866,6 +7390,99 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get gulliverTunnelDeleteOutsideConfirmMessage =>
       'Удалить размещения тоннелей за пределами сетки 5×9.';
+
+  @override
+  String get wizardCauldronBoilingDuration =>
+      'Кипение после подкормки (BoilingDuration, единица: секунды)';
+
+  @override
+  String get wizardCauldronExplosionDamage =>
+      'Урон взрыва котла (ExplodeDamageAmount)';
+
+  @override
+  String get wizardCauldronVenomDamagePerSecond =>
+      'Урон яда котла в секунду (VenomDamageAmountPerSecond)';
+
+  @override
+  String get wizardCauldronVenomDuration =>
+      'Время существования яда котла (VenomExistDuration, единица: секунды)';
+
+  @override
+  String get wizardCauldronHelpOverview =>
+      'Разместите котлы Сказочного леса. Подкормка ненадолго заставляет котёл кипеть.\nВо время кипения растения заменяются случайными растениями следующего качества с тем же количеством и уровнем: белые на зелёные, зелёные на синие, синие на фиолетовые; оранжевые на другие оранжевые.\nПри потере здоровья котёл взрывается и оставляет временное кольцо яда, повреждающее растения.';
+
+  @override
+  String get wizardCauldronHelpUsage =>
+      'Нажмите на пустую клетку, чтобы разместить котёл волшебника. В каждой клетке может быть не более одного котла. Щёлкните правой кнопкой мыши на компьютере или нажмите и удерживайте на мобильном устройстве, чтобы удалить котёл из клетки.\nПосле размещения котла можно настроить его здоровье, время кипения после подкормки, урон взрыва растениям и зомби, время существования яда и его урон в секунду.';
+
+  @override
+  String get wizardCauldronPositions => 'Позиции котлов';
+
+  @override
+  String get wizardCauldronHitpoints => 'Здоровье котла (CrucibleHitpoints)';
+
+  @override
+  String get speedUpTileTitle => 'Ускоряющие плитки';
+
+  @override
+  String get speedUpTileHelpOverview =>
+      'Размещайте ускоряющие плитки на выбранных клетках, чтобы подходящие наземные зомби быстро двигались по направлению стрелки. Эти плитки часто встречаются в гоночном тайном мире коллаборации с Need for Speed. Покинув дорогу, зомби возвращаются к обычной ходьбе. Гаргантюа и зомби с особой логикой передвижения игнорируют ускоряющие плитки.';
+
+  @override
+  String get speedUpTileHelpUsageTitle => 'Использование';
+
+  @override
+  String get speedUpTileHelpUsageBody =>
+      'Выберите направление стрелки ниже, затем нажмите на сетку, чтобы разместить ускоряющую плитку. Нажатие на плитку с таким же направлением удаляет её; выбор другого направления и нажатие на существующую плитку меняет её направление. Горизонтальная координата (GridX) и вертикальная координата (GridY) клетки с ускоряющей плиткой отсчитываются от 0. Например, горизонтальная координата 0 означает первый столбец, а 8 — девятый; вертикальная координата 0 означает первую строку, а 2 — третью.';
+
+  @override
+  String get speedUpTileTopologyTitle => 'Правила соединения дороги';
+
+  @override
+  String get speedUpTileTopologyBody =>
+      'Стрелка не означает немедленный поворот при входе на клетку. Обычно зомби продолжают двигаться в прежнем направлении через соседние ускоряющие плитки и проверяют соединения дороги лишь после прохождения примерно одной клетки. Для поворота впереди по старому направлению должна быть обычная клетка, соседняя клетка в нужном направлении должна содержать ускоряющую плитку, и доступный выход должен быть только один. Рекомендуется строить непрерывную дорогу шириной в одну клетку без ответвлений.';
+
+  @override
+  String get speedUpTileSelectDirection => 'Выберите направление стрелки';
+
+  @override
+  String get speedUpTileDirectionLeft => 'Влево';
+
+  @override
+  String get speedUpTileDirectionRight => 'Вправо';
+
+  @override
+  String get speedUpTileDirectionUp => 'Вверх';
+
+  @override
+  String get speedUpTileDirectionDown => 'Вниз';
+
+  @override
+  String get speedUpTilePlacedCount => 'Размещено';
+
+  @override
+  String get speedUpTileClearAll => 'Очистить всё';
+
+  @override
+  String get speedUpTileClearConfirmTitle => 'Очистить все ускоряющие плитки?';
+
+  @override
+  String get speedUpTileClearConfirmMessage =>
+      'Все размещённые ускоряющие плитки будут удалены, включая плитки за пределами газона. Это действие нельзя отменить.';
+
+  @override
+  String get speedUpTileOutsideLawn => 'Ускоряющие плитки вне газона: ';
+
+  @override
+  String get speedUpTileDeleteOutside => 'Удалить ускоряющие плитки вне газона';
+
+  @override
+  String get speedUpTileDeleteOutsideConfirmTitle =>
+      'Удалить ускоряющие плитки вне газона?';
+
+  @override
+  String get speedUpTileDeleteOutsideConfirmMessage =>
+      'Все ускоряющие плитки за пределами текущего газона будут удалены. Это действие нельзя отменить.';
 
   @override
   String get moduleTitle_RiftThemeDemoModuleProperties => 'Модификаторы уровня';
@@ -9236,15 +9853,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get lunarMineVeinHelpHardened =>
-      'Защищена прочной внешней оболочкой из камня. Прежде чем начать обычную добычу, оболочку нужно разрушить атаками растений. Такая жила всегда создаёт кристалл с прочной оболочкой, имеющий 3000 единиц здоровья.';
+      'Вырастает в кристалл с прочной оболочкой, окружённый крепкой породой. Сначала оболочку нужно разрушить атаками растений, и лишь затем кристалл можно добывать обычным способом. Из жилы кристалла с прочной оболочкой всегда вырастает версия кристалла с 3000 единицами здоровья.';
 
   @override
   String get lunarMineVeinHelpFragile =>
-      'Добыча непрерывно расходует прочность кристалла, пока он не расколется. Также можно разместить особые хрупкие кристаллические жилы, содержащие космическую подкормку.';
+      'Вырастает в хрупкий кристалл. При добыче хрупкого кристалла его прочность непрерывно расходуется, пока он не расколется. Также можно разместить особые хрупкие кристаллические жилы, содержащие космическую подкормку.';
 
   @override
   String get lunarMineVeinHelpRadiation =>
-      'Периодически испускает радиацию во все стороны. Облучённые растения случайным образом превращаются в другие растения, а зомби получают урон или мутируют в Космического Радиационного Гаргантюа. Космические Радиационные Гаргантюа обладают огромным запасом здоровья и при гибели также облучают ближайшие растения и зомби.';
+      'Вырастает в радиоактивный кристалл. Радиоактивный кристалл периодически испускает радиацию во все стороны. Облучённые растения случайным образом превращаются в другие растения, а зомби получают урон или мутируют в Космического Радиационного Гаргантюа. Космические Радиационные Гаргантюа обладают огромным запасом здоровья и при гибели также облучают ближайшие растения и зомби.';
 
   @override
   String get lunarMineVeinHelpWaveTitle => 'Нумерация волн';
@@ -9391,11 +10008,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get gladiatorHelpUsage =>
-      'Длительность поединка, количество подкормки за победу и параметры сброса клеток при поражении сверху, а также список зомби для наказания и их веса снизу — общие настройки для всех поединков модуля. Нажмите «Добавить поединок», чтобы настроить отдельный поединок. При добавлении зомби его группы ресурсов автоматически добавляются в модуль. Волна (Wave), ряд (Row) и столбец появления (GridX) нумеруются с 0: Wave 0 соответствует волне 1 на временной шкале, а Wave 4 — волне 5. По умолчанию редактор использует режим поединка с кубком (GameplayVersion 1). Значение 0 включает другой, устаревший режим поединка, который можно изучить в режиме ручного редактирования.';
+      'Длительность поединка, количество подкормки за победу и параметры сброса клеток при поражении сверху, а также список зомби для наказания и их веса снизу — общие настройки для всех поединков модуля.\nНажмите «Добавить поединок», чтобы настроить отдельный поединок. При добавлении зомби его группы ресурсов автоматически добавляются в модуль.\nВолна (Wave), ряд (Row) и столбец появления (GridX) нумеруются с 0: Wave 0 соответствует волне 1 на временной шкале, а Wave 4 — волне 5.\nПо умолчанию редактор использует режим поединка с кубком (GameplayVersion 1). Значение 0 включает другой, устаревший режим поединка, который можно изучить в режиме ручного редактирования.';
 
   @override
   String get gladiatorHelpTips =>
-      'Во время поединка посадка растений не расходует солнце, но растения по-прежнему занимают часть запаса энергии системы жизнеобеспечения.\nМгновенно убивающие атаки Гаргантюа и подобных зомби не повреждают кубок.\nСнаряды растений, вылетающие за пределы арены, задерживаются ограждениями. Зомби, покинувшие арену, а также зомби, чьи отдельные способности нацелены за её пределы, замирают. После окончания отсчёта они освобождаются и продолжают наступление.\nГладиаторский ряд не появляется на шестирядных лужайках с обликом Подводного мира, таких как «20 000 лье под водой» или «Атлантида». Модуль «Гладиаторский ряд» также не работает с Генератором волн.';
+      'Во время поединка посадка растений не расходует солнце, но растения по-прежнему занимают часть запаса энергии системы жизнеобеспечения. Зомби не появляются на клетке с кубком.\nСнаряды растений, вылетающие за пределы гладиаторского ряда, задерживаются ограждениями. Растения и зомби, покинувшие ряд, а также некоторые растения и зомби, оставшиеся внутри, но нацелившие способности на объекты за его пределами, временно замирают. После окончания отсчёта они освобождаются и продолжают действовать.\nГладиаторский ряд не появляется на шестирядных лужайках с обликом Подводного мира, таких как «20 000 лье под водой» или «Атлантида». Модуль «Гладиаторский ряд» также не работает с Генератором волн.';
 
   @override
   String get radiationMeteorHelpTitle => 'Исцеляющий метеорит';
@@ -9600,11 +10217,35 @@ class AppLocalizationsRu extends AppLocalizations {
       'Выбранные растения наполовину вдавливаются в землю. В этом состоянии они не могут атаковать, но зомби по-прежнему могут их есть. Выбранные зомби уверенно движутся вперёд и становятся невосприимчивыми к отбрасыванию.\nКосмическая Тарелка снимает гипергравитацию с зомби и переводит их в состояние парения. Она также снимает гипергравитацию с растений, возвращая их в нормальное состояние.';
 
   @override
+  String get pumpkinScarecrowSpawnCount => 'Количество пугал (Count)';
+
+  @override
+  String get pumpkinScarecrowCrowLevel => 'Уровень воронов (Level, отсчёт с 0)';
+
+  @override
+  String get pumpkinScarecrowHelpOverview =>
+      'Встречается на уровнях Хэллоуина. Вороны периодически покидают пугало и уносят растения. На место улетевших прилетают новые вороны, пока пугало не уничтожено. Можно настроить здоровье пугала и уровень воронов.';
+
+  @override
+  String get pumpkinScarecrowHelpLogic =>
+      'Событие случайно выбирает доступные клетки из указанного выше пула позиций для появления пугал. Общее количество предметов не должно превышать число координат в пуле, иначе лишние предметы не появятся.';
+
+  @override
+  String get pumpkinScarecrowPositions => 'Позиции появления пугал';
+
+  @override
+  String get pumpkinScarecrowHitpoints => 'Здоровье пугала (Hitpoints)';
+
+  @override
   String get rocketLandingHelpTitle => 'Приземление раке';
 
   @override
   String get rocketLandingHelpOverview =>
       'Событие, часто используемое на Лунной Базе. Оно создаёт ракеты в заданных позициях как цели, за которые борются растения и зомби.';
+
+  @override
+  String get rocketLandingHelpLogic =>
+      'Событие случайно выбирает доступные клетки из указанного выше пула позиций для появления ракет. Общее количество предметов не должно превышать число координат в пуле, иначе лишние предметы не появятся.';
 
   @override
   String get rocketLandingHelpPlantsTitle => 'Захват растениями';
@@ -9684,7 +10325,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get moduleHelpStatueMazeOverviewBody =>
-      'Мини-игра эпохи Ренессанса. Она состоит из нескольких раундов. В каждом раунде на поле появляется массив статуй, в некоторых из которых спрятаны зомби-аристократы. В начале раунда игроку показывают расположение спрятанных зомби, затем весь массив несколько раз поворачивается, испытывая его память. После вращений игрок должен с помощью ограниченного запаса инструментов разбить все статуи со спрятанными зомби. Если попытки закончились, а найдены ещё не все зомби, уровень проигран. Когда попытки заканчиваются, игрок также может купить дополнительные за самоцветы.';
+      'Мини-игра эпохи Ренессанса. Она состоит из нескольких раундов. В каждом раунде на поле появляется массив статуй, в некоторых из которых спрятаны зомби-аристократы. В начале раунда игроку показывают расположение спрятанных зомби, затем весь массив несколько раз поворачивается, испытывая его память. После вращений игрок должен с помощью ограниченного запаса инструментов разбить все статуи со спрятанными зомби. Если попытки закончились, а найдены ещё не все зомби, уровень проигран. Когда попытки заканчиваются, игрок также может купить дополнительные за самоцветы. Обратите внимание: после добавления этого модуля индикатор подкормки будет скрыт во время уровня.';
 
   @override
   String get moduleHelpStatueMazeTimingTitle => 'Параметры времени';
@@ -10013,5 +10654,14 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String automaticallySavedTo(String path) {
     return 'Автоматически сохранено в: $path';
+  }
+
+  @override
+  String get spawnGravestonesCrashProneItemsWarning =>
+      'Создание тяжёлого щита или кавалерийского шеста через событие «Появление препятствий» приводит к сбою уровня. Используйте другой способ.';
+
+  @override
+  String startupPluginResources(int completed, int total) {
+    return 'Ресурсы плагинов $completed/$total';
   }
 }

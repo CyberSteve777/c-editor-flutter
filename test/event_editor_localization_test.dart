@@ -59,8 +59,8 @@ void main() {
       final template = keys('en');
       for (final locale in ['zh', 'ru']) {
         expect(
-          template.difference(keys(locale)),
-          isEmpty,
+          keys(locale),
+          unorderedEquals(template),
           reason: '$folder/$locale',
         );
       }

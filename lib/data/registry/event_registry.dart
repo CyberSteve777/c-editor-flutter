@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/halloween_content.dart';
 import '../pvz_models.dart';
 
 enum EventCategory { zombieSpawn, gridItemSpawn, environmental, other }
@@ -577,6 +578,19 @@ class EventRegistry {
           return '';
         }
       },
+    ),
+    scarecrowClass: EventMetadata(
+      titleKey: 'eventTitle_SpawnPumpkinScarecrowWaveActionProps',
+      descriptionKey: 'eventDesc_SpawnPumpkinScarecrowWaveActionProps',
+      icon: Icons.cruelty_free,
+      color: Colors.deepOrange,
+      darkColor: Colors.orangeAccent,
+      category: EventCategory.gridItemSpawn,
+      defaultAlias: 'PumpkinScarecrowEvent',
+      defaultObjClass: scarecrowClass,
+      initialDataFactory: () => HalloweenContentData(cauldron: false),
+      summaryProvider: (obj) =>
+          '${((obj.objData as Map)['SpawnPositionsPool'] as List? ?? []).length}',
     ),
     'PumpkinHouseActionProps': EventMetadata(
       titleKey: 'eventTitle_PumpkinHouseActionProps',

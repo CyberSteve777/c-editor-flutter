@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:c_editor/data/halloween_content.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/data/pvz_models.dart';
-import 'package:c_editor/utils/custom_icons.dart';
 
 enum ModuleCategory { base, mode, scene, gimmick }
 
@@ -229,6 +229,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_ManholePipelineModuleProperties;
       case 'moduleTitle_RoofProperties':
         return l10n.moduleTitle_RoofProperties;
+      case 'moduleTitle_InitialGridItemWizardCrucibleProps':
+        return l10n.moduleTitle_InitialGridItemWizardCrucibleProps;
       case 'moduleTitle_TideProperties':
         return l10n.moduleTitle_TideProperties;
       case 'moduleTitle_BombProperties':
@@ -245,6 +247,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_RainDarkProperties;
       case 'moduleTitle_LawnMowerProperties':
         return l10n.moduleTitle_LawnMowerProperties;
+      case 'moduleTitle_SpeedUpTileModuleProperties':
+        return l10n.moduleTitle_SpeedUpTileModuleProperties;
       case 'moduleTitle_TunnelDefendModuleProperties':
         return l10n.moduleTitle_TunnelDefendModuleProperties;
       case 'moduleTitle_SouDaCheTunnelDefendDefault':
@@ -413,6 +417,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_ManholePipelineModuleProperties;
       case 'moduleDesc_RoofProperties':
         return l10n.moduleDesc_RoofProperties;
+      case 'moduleDesc_InitialGridItemWizardCrucibleProps':
+        return l10n.moduleDesc_InitialGridItemWizardCrucibleProps;
       case 'moduleDesc_TideProperties':
         return l10n.moduleDesc_TideProperties;
       case 'moduleDesc_BombProperties':
@@ -429,6 +435,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_RainDarkProperties;
       case 'moduleDesc_LawnMowerProperties':
         return l10n.moduleDesc_LawnMowerProperties;
+      case 'moduleDesc_SpeedUpTileModuleProperties':
+        return l10n.moduleDesc_SpeedUpTileModuleProperties;
       case 'moduleDesc_TunnelDefendModuleProperties':
         return l10n.moduleDesc_TunnelDefendModuleProperties;
       case 'moduleDesc_SouDaCheTunnelDefendDefault':
@@ -679,7 +687,9 @@ class ModuleRegistry {
     'CamelMinigameProperties': ModuleMetadata(
       titleKey: 'moduleTitle_CamelMinigameProperties',
       descriptionKey: 'moduleDesc_CamelMinigameProperties',
-      icon: CustomIcons.camel,
+      // The two peaks echo the Camel Zombie's humps without reusing the
+      // paw-print icon reserved for dinosaur-related events.
+      icon: Icons.filter_hdr,
       isCore: true,
       allowMultiple: false,
       category: ModuleCategory.mode,
@@ -1261,6 +1271,26 @@ class ModuleRegistry {
       defaultAlias: 'RoofProps',
       initialDataFactory: () => RoofPropertiesData(),
       routeId: 'RoofProperties',
+    ),
+    cauldronClass: ModuleMetadata(
+      titleKey: 'moduleTitle_InitialGridItemWizardCrucibleProps',
+      descriptionKey: 'moduleDesc_InitialGridItemWizardCrucibleProps',
+      icon: Icons.soup_kitchen,
+      isCore: true,
+      category: ModuleCategory.scene,
+      defaultAlias: 'EventItemPlacement',
+      routeId: cauldronClass,
+      initialDataFactory: () => HalloweenContentData(cauldron: true),
+    ),
+    'SpeedUpTileModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_SpeedUpTileModuleProperties',
+      descriptionKey: 'moduleDesc_SpeedUpTileModuleProperties',
+      icon: Icons.fast_forward,
+      isCore: true,
+      category: ModuleCategory.scene,
+      defaultAlias: 'SpeedUpTile',
+      initialDataFactory: () => SpeedUpTileModulePropertiesData(),
+      routeId: 'SpeedUpTileModule',
     ),
     'TunnelDefendModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_TunnelDefendModuleProperties',

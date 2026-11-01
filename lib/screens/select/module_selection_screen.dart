@@ -262,11 +262,11 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
                         )
                     ? 'ConveyorSeedBankProperties'
                     : meta.objClass == 'OakTrainIntroProperties' &&
-                            !widget.existingObjClasses.contains(
-                              'OakTrainProperties',
-                            )
-                        ? 'OakTrainProperties'
-                        : null;
+                          !widget.existingObjClasses.contains(
+                            'OakTrainProperties',
+                          )
+                    ? 'OakTrainProperties'
+                    : null;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: _ModuleSelectionCard(

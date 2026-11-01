@@ -325,20 +325,24 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
   }
 
   void _removeBlockedSelections() {
-    bool isBlocked(String id) => _zombieBlockedReasonForId(id) != null;
+    final excluded = widget.excludeIds.toSet();
+    bool isBlocked(String id) =>
+        excluded.contains(id) || _zombieBlockedReasonForId(id) != null;
     _selectedIds.removeWhere(isBlocked);
     _selectedIdsWithDuplicates.removeWhere(isBlocked);
   }
 
   List<String> _filterSelectableZombieIds(List<String> ids) {
-    return ids.where((id) => _zombieBlockedReasonForId(id) == null).toList();
+    final excluded = widget.excludeIds.toSet();
+    return ids
+        .where(
+          (id) =>
+              !excluded.contains(id) && _zombieBlockedReasonForId(id) == null,
+        )
+        .toList();
   }
 
-  void _selectAllVisible(List<ZombieInfo> zombies) {
-    final selectableIds = zombies
-        .where((zombie) => _zombieBlockedReason(zombie) == null)
-        .map((zombie) => zombie.id)
-        .toList(growable: false);
+  void _toggleAllVisible(List<String> selectableIds) {
     if (selectableIds.isEmpty) return;
 
     setState(() {
@@ -395,10 +399,7 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
             'This content is not officially available yet. Stay tuned for '
                 'future updates!',
       ),
-      _ZombieBlockedReason.missingModule => (
-        l10n?.warning ?? 'Warning',
-        '',
-      ),
+      _ZombieBlockedReason.missingModule => (l10n?.warning ?? 'Warning', ''),
     };
     await showDialog<void>(
       context: context,
@@ -536,6 +537,15 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
       crossAxisSpacing: 8,
       childAspectRatio: 0.65,
     );
+    final selectableIds = zombies
+        .where((zombie) => _zombieBlockedReason(zombie) == null)
+        .map((zombie) => zombie.id)
+        .toList(growable: false);
+    final selectedIds = widget.allowDuplicateSelection
+        ? _selectedIdsWithDuplicates.toSet()
+        : _selectedIds;
+    final allVisibleSelected =
+        selectableIds.isNotEmpty && selectableIds.every(selectedIds.contains);
     final confirmation = widget.multiSelect
         ? FloatingActionButton(
             backgroundColor: themeColor,
@@ -561,11 +571,13 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
         : null;
     final selectAll = widget.multiSelect
         ? SelectionGridSelectAllButton(
-            label: l10n?.selectAll ?? 'Select ALL',
+            label: allVisibleSelected
+                ? (l10n?.deselectAll ?? 'Deselect ALL')
+                : (l10n?.selectAll ?? 'Select ALL'),
             backgroundColor: themeColor,
             foregroundColor: theme.colorScheme.surface,
-            onPressed: _isLoaded && zombies.isNotEmpty
-                ? () => _selectAllVisible(zombies)
+            onPressed: _isLoaded && selectableIds.isNotEmpty
+                ? () => _toggleAllVisible(selectableIds)
                 : null,
           )
         : null;
@@ -739,11 +751,8 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                           selectionColor: widget.multiSelect
                               ? themeColor
                               : null,
-                          onTap: () => _onZombieTap(
-                            context,
-                            zombie,
-                            blockedReason,
-                          ),
+                          onTap: () =>
+                              _onZombieTap(context, zombie, blockedReason),
                           onLongPress: () =>
                               _toggleFavorite(context, zombie.id),
                         );

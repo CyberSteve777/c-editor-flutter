@@ -28,6 +28,7 @@ class WaveGeneratorWaveScreen extends StatefulWidget {
     required this.onChanged,
     required this.onBack,
     required this.onRequestZombieSelection,
+    this.onRequestPoolZombieSelection,
   });
 
   /// 1-based wave index.
@@ -37,6 +38,8 @@ class WaveGeneratorWaveScreen extends StatefulWidget {
   final VoidCallback onBack;
   final void Function(void Function(String) onSelected)
   onRequestZombieSelection;
+  final void Function(void Function(String) onSelected)?
+  onRequestPoolZombieSelection;
 
   @override
   State<WaveGeneratorWaveScreen> createState() =>
@@ -567,7 +570,9 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
 
   void _addPoolEntry() {
     final l10n = AppLocalizations.of(context);
-    widget.onRequestZombieSelection((selectedId) {
+    final requestSelection =
+        widget.onRequestPoolZombieSelection ?? widget.onRequestZombieSelection;
+    requestSelection((selectedId) {
       if (_isYetiZombie(selectedId)) {
         _showYetiZombieBlockedMessage(l10n);
         return;
@@ -720,7 +725,7 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
           title: l10n?.waveGeneratorModuleHelpRow ?? 'Rows',
           body:
               l10n?.waveGeneratorModuleHelpRowBody ??
-              'Rows are numbered from 1. Use “?” for a random row.',
+              'Rows are numbered from 1. Use "?" for a random row.',
         ),
       ],
       _WaveGeneratorWaveSection.randomSpawns => [

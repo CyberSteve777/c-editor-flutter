@@ -1,8 +1,43 @@
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:c_editor/screens/about_screen.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('editor version and check button use the same font size', (
+    tester,
+  ) async {
+    PackageInfo.setMockInitialValues(
+      appName: 'C-Editor',
+      packageName: 'c_editor',
+      version: '1.1.0',
+      buildNumber: '1',
+      buildSignature: '',
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('zh'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: AboutScreen(onBack: () {}),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final button = find.byKey(const ValueKey('aboutCheckForUpdates'));
+    await tester.ensureVisible(button);
+    await tester.pumpAndSettle();
+    final version = find.textContaining('1.1.0');
+    expect(version, findsOneWidget);
+    final label = find.descendant(of: button, matching: find.text('检测更新'));
+    final versionSize = tester.widget<Text>(version).style?.fontSize;
+    final buttonSize = DefaultTextStyle.of(
+      tester.element(label),
+    ).style.fontSize;
+    expect(buttonSize, versionSize);
+    expect(tester.takeException(), isNull);
+  });
   test('Chinese About copy keeps added features and enriches instructions', () {
     final l10n = lookupAppLocalizations(const Locale('zh'));
 

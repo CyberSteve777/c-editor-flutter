@@ -486,17 +486,22 @@ class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              l10n?.waveStartMessage ?? 'Wave start message',
+              l10n?.waveStartMessageLabel ??
+                  'Red warning message (WaveStartMessage)',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             TextFormField(
+              key: const ValueKey('waveStartMessageField'),
               initialValue: _data.waveStartMessage,
               decoration: InputDecoration(
-                hintText: l10n?.optional ?? 'Optional',
-                border: OutlineInputBorder(),
+                helperText:
+                    l10n?.optionalWarningText ??
+                    'Optional red warning text shown at the center of the screen when the event begins; Chinese is not supported',
+                helperMaxLines: 3,
+                border: const OutlineInputBorder(),
               ),
               onChanged: (v) {
                 _data = BeachStageEventData(

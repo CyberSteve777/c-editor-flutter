@@ -30,13 +30,49 @@ String localizeDynamicDownloadError(
       return host.localize(
         context,
         'dynamicNoConnection',
-        'No internet connection. Check your network and try again.',
+        'Could not connect to GitHub. Check your network connection, then try again.',
       );
     case DownloadErrorKind.connectionLost:
       return host.localize(
         context,
         'dynamicConnectionLost',
-        'Connection lost while downloading. Please try again.',
+        'The download connection was interrupted. Check your network connection, then try again.',
+      );
+    case DownloadErrorKind.timeout:
+      return host.localize(
+        context,
+        'dynamicTimeout',
+        'The connection timed out. Check your network connection, then try again.',
+      );
+    case DownloadErrorKind.rateLimited:
+      return host.localize(
+        context,
+        'dynamicRateLimited',
+        'GitHub has temporarily limited requests from your network. Wait and try again later, or switch networks.',
+      );
+    case DownloadErrorKind.accessDenied:
+      return host.localize(
+        context,
+        'dynamicAccessDenied',
+        'GitHub refused this request. Please try again later.',
+      );
+    case DownloadErrorKind.notFound:
+      return host.localize(
+        context,
+        'dynamicNotFound',
+        'This release or download is no longer available. Refresh the release list and choose another version.',
+      );
+    case DownloadErrorKind.invalidResponse:
+      return host.localize(
+        context,
+        'dynamicInvalidResponse',
+        'The server returned unexpected data. Please try again later.',
+      );
+    case DownloadErrorKind.storage:
+      return host.localize(
+        context,
+        'dynamicStorageError',
+        'Could not save the data package. Check workspace write permissions and free space, then try again.',
       );
     case DownloadErrorKind.server:
       final code = serverStatusCode(error);
@@ -50,8 +86,7 @@ String localizeDynamicDownloadError(
       return host.localize(
         context,
         'dynamicFetchError',
-        'Download failed: $error',
-        {'error': '$error'},
+        'Could not download the data package. Check your network, workspace write permissions, and free space, then try again.',
       );
   }
 }
@@ -90,8 +125,15 @@ class _ReleasePickerDialogState extends State<_ReleasePickerDialog> {
     _future = _load();
   }
 
-  Future<List<DynamicReleaseOption>> _load() =>
-      widget.loadReleases?.call() ?? Pvz2cDynamicReleases().list();
+  Future<List<DynamicReleaseOption>> _load() async {
+    if (widget.loadReleases != null) return widget.loadReleases!();
+    final releases = Pvz2cDynamicReleases();
+    try {
+      return await releases.list();
+    } finally {
+      releases.close();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

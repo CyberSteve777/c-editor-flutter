@@ -627,11 +627,13 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
             ),
             const SizedBox(height: 8),
             TextFormField(
+              key: const ValueKey('waveStartMessageField'),
               initialValue: _data.waveStartMessage,
               decoration: InputDecoration(
-                hintText:
+                helperText:
                     l10n?.optionalWarningText ??
-                    'Optional warning text before spawn',
+                    'Optional red warning text shown at the center of the screen when the event begins; Chinese is not supported',
+                helperMaxLines: 3,
                 border: const OutlineInputBorder(),
               ),
               onChanged: (v) {

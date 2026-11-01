@@ -725,6 +725,17 @@
     ],
     "icon": "zombie_future_imp.webp"
   },
+    {
+    "id": "new_pvp_future_imp",
+    "name": "zombie_new_pvp_future_imp",
+    "tags": [
+      "West_Future",
+      "Imp",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_future_imp.webp"
+  },
   {
     "id": "future_jetpack",
     "name": "zombie_future_jetpack",
@@ -2834,6 +2845,17 @@
     "icon": "zombie_eighties_mc.webp"
   },
   {
+    "id": "new_pvp_eighties_mc",
+    "name": "zombie_new_pvp_eighties_mc",
+    "tags": [
+      "Eighties_Dino",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_eighties_mc.webp"
+  },
+  {
     "id": "eighties_glitter",
     "name": "zombie_eighties_glitter",
     "tags": [
@@ -4603,6 +4625,17 @@
     "icon": "zombie_teleport_left.webp"
   },
   {
+    "id": "new_pvp_teleport_left",
+    "name": "zombie_new_pvp_teleport_left",
+    "tags": [
+      "Moon",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_teleport_left.webp"
+  },
+  {
     "id": "teleport_left_beacon",
     "name": "zombie_teleport_left_beacon",
     "tags": [
@@ -6126,6 +6159,17 @@
     "icon": "zombie_gladiator_zombie.webp"
   },
   {
+    "id": "new_pvp_gladiator_zombie",
+    "name": "zombie_new_pvp_gladiator_zombie",
+    "tags": [
+      "Roman",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_gladiator_zombie.webp"
+  },
+  {
     "id": "general_caesar_phase1",
     "name": "zombie_general_caesar_phase1",
     "tags": [
@@ -7428,6 +7472,28 @@
     "icon": "zombie_pumpkin_house_ghost.webp"
   },
   {
+    "id": "zombie_werewolf",
+    "name": "zombie_werewolf",
+    "tags": [
+      "Festival2",
+      "Basic",
+      "Pet",
+      "Chinese"
+    ],
+    "icon": "zombie_werewolf.webp"
+  },
+  {
+    "id": "zombie_werewolf_wolf",
+    "name": "zombie_werewolf_wolf",
+    "tags": [
+      "Festival2",
+      "Strong",
+      "Pet",
+      "Chinese"
+    ],
+    "icon": "zombie_werewolf_wolf.webp"
+  },
+  {
     "id": "pumpkin_knight",
     "name": "zombie_pumpkin_knight",
     "tags": [
@@ -7674,6 +7740,17 @@
     "icon": "zombie_nutcracker.webp"
   },
   {
+    "id": "new_pvp_nutcracker",
+    "name": "zombie_new_pvp_nutcracker",
+    "tags": [
+      "Festival2",
+      "Basic",
+      "PvP",
+      "Chinese"
+    ],
+    "icon": "zombie_nutcracker.webp"
+  },
+  {
     "id": "nutcracker_gargantuar",
     "name": "zombie_nutcracker_gargantuar",
     "tags": [
@@ -7809,9 +7886,7 @@
   {
     "id": "stay_tuned",
     "name": "zombie_stay_tuned",
-    "tags": [
-      "Tale_ZCorp"
-    ],
+    "tags": ["Tale_ZCorp"],
     "icon": "to_be_continued.webp"
   }
 ]

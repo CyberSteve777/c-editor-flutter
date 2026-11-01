@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:c_editor/data/gladiator_row_utils.dart';
+import 'package:c_editor/data/jitter_offsets_utils.dart';
+import 'package:c_editor/bloc/settings/settings_cubit.dart';
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:c_editor/data/module_open_hint.dart';
 import 'package:c_editor/data/moon_wave_preview_utils.dart';
 import 'package:c_editor/data/pvz_alias_utils.dart';
@@ -15,12 +20,14 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/escape_override.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
+import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/fish_type_repository.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/screens/select/event_selection_screen.dart';
 import 'package:c_editor/screens/select/existing_wave_event_selection_screen.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
+import 'package:c_editor/widgets/alias_input_validation.dart';
 import 'package:c_editor/widgets/editor_components.dart'
     show
         EditorResponsiveInputField,
@@ -153,6 +160,7 @@ class WaveTimelineTab extends StatefulWidget {
     required this.onEditEvent,
     required this.onAddEvent,
     required this.onEditWaveManagerSettings,
+    this.onEditJitterOffsets,
     this.onEditCustomZombie,
     this.onEditCustomFish,
     this.onOpenModule,
@@ -167,7 +175,8 @@ class WaveTimelineTab extends StatefulWidget {
   final Future<void> Function(String rtid, int waveIndex) onEditEvent;
   final void Function(int waveIndex) onAddEvent;
   final VoidCallback onEditWaveManagerSettings;
-  final void Function(String rtid)? onEditCustomZombie;
+  final VoidCallback? onEditJitterOffsets;
+  final FutureOr<void> Function(String rtid)? onEditCustomZombie;
   final void Function(String rtid)? onEditCustomFish;
   final OpenModuleCallback? onOpenModule;
   final ValueNotifier<({int waveIndex, String? rtid})?>? openWaveSheetNotifier;
@@ -610,6 +619,68 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         ),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         onTap: widget.onEditWaveManagerSettings,
+      ),
+    );
+  }
+
+  Widget _buildJitterOffsetsCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final onCard = theme.brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black87;
+    final presets = JitterOffsetsUtils.listPresets(widget.levelFile);
+    final unused = JitterOffsetsUtils.unreferencedCount(widget.levelFile);
+    final subtitle = presets.isEmpty
+        ? (l10n?.waveTimelineJitterOffsetsNone ?? 'No presets yet')
+        : (l10n?.waveTimelineJitterOffsetsSummary(presets.length, unused) ??
+              '${presets.length} preset(s), $unused unreferenced');
+
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: theme.brightness == Brightness.dark
+          ? theme.colorScheme.secondary
+          : Colors.blue.shade100,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: widget.onEditJitterOffsets,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.speed, color: onCard),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n?.waveTimelineJitterOffsetsTitle ??
+                          'Spawn Position Offset Presets',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: onCard,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  if (unused > 0) ...[
+                    Icon(Icons.warning_amber_rounded, size: 18, color: onCard),
+                    const SizedBox(width: 4),
+                  ],
+                  Icon(Icons.arrow_forward_ios, size: 16, color: onCard),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                subtitle,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: onCard.withValues(alpha: 0.9),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -1193,6 +1264,18 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
               }
             }
           } catch (_) {}
+        } else if (obj.objClass == 'SpawnZombiesFromGridItemSpawnerProps') {
+          try {
+            final data = SpawnZombiesFromGridItemData.fromJson(
+              Map<String, dynamic>.from(obj.objData as Map),
+            );
+            for (final z in data.zombies) {
+              final info = RtidParser.parse(z.type);
+              if (info?.source == 'CurrentLevel') {
+                usedAliases.add(info!.alias);
+              }
+            }
+          } catch (_) {}
         }
         for (final a in usedAliases) {
           final set = result.putIfAbsent(a, () => <int>{});
@@ -1635,6 +1718,9 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                 info?.alias == custom.alias);
           }).toList();
           final updated = WaveActionData(
+            jitterOffsets: data.jitterOffsets,
+            zombieSpawnPattern: data.zombieSpawnPattern,
+            fixedOffset: data.fixedOffset,
             notificationEvents: data.notificationEvents,
             additionalPlantFood: data.additionalPlantFood,
             spawnPlantName: data.spawnPlantName,
@@ -1654,6 +1740,9 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                 info?.alias == custom.alias);
           }).toList();
           final updated = SpawnZombiesFromGroundData(
+            jitterOffsets: data.jitterOffsets,
+            zombieSpawnPattern: data.zombieSpawnPattern,
+            fixedOffset: data.fixedOffset,
             columnStart: data.columnStart,
             columnEnd: data.columnEnd,
             additionalPlantFood: data.additionalPlantFood,
@@ -1661,6 +1750,42 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
             zombies: filtered,
           );
           obj.objData = updated.toJson();
+        } catch (_) {}
+      }
+      if (obj.objClass == 'SpawnZombiesFishWaveActionProps') {
+        try {
+          final data = SpawnZombiesFishWaveActionPropsData.fromJson(
+            Map<String, dynamic>.from(obj.objData as Map),
+          );
+          final filtered = data.zombies.where((z) {
+            final info = RtidParser.parse(z.type);
+            return !(info?.source == 'CurrentLevel' &&
+                info?.alias == custom.alias);
+          }).toList();
+          final updated = SpawnZombiesFishWaveActionPropsData(
+            jitterOffsets: data.jitterOffsets,
+            zombieSpawnPattern: data.zombieSpawnPattern,
+            fixedOffset: data.fixedOffset,
+            notificationEvents: data.notificationEvents,
+            additionalPlantFood: data.additionalPlantFood,
+            spawnPlantName: data.spawnPlantName,
+            zombies: filtered,
+            fishes: data.fishes,
+          );
+          obj.objData = updated.toJson();
+        } catch (_) {}
+      }
+      if (obj.objClass == 'SpawnZombiesFromGridItemSpawnerProps') {
+        try {
+          final data = SpawnZombiesFromGridItemData.fromJson(
+            Map<String, dynamic>.from(obj.objData as Map),
+          );
+          final filtered = data.zombies.where((z) {
+            final info = RtidParser.parse(z.type);
+            return !(info?.source == 'CurrentLevel' &&
+                info?.alias == custom.alias);
+          }).toList();
+          obj.objData = data.copyWith(zombies: filtered).toJson();
         } catch (_) {}
       }
     }
@@ -1890,7 +2015,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         content: SizedBox(
           width: double.maxFinite,
           child: EditorResponsiveInputField(
-            label: l10n?.newName ?? 'New name',
+            label: l10n?.aliasLabel ?? 'Alias',
             decoration: InputDecoration(),
             builder: (context, decoration) => TextField(
               controller: ctrl,
@@ -1909,16 +2034,36 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
           ),
           FilledButton(
             onPressed: () {
-              final newAlias = ctrl.text.trim();
+              final raw = ctrl.text;
+              final characterError = aliasCharacterValidationError(l10n, raw);
+              if (characterError != null) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(SnackBar(content: Text(characterError)));
+                return;
+              }
+              final newAlias = raw.trim();
+              if (newAlias.isEmpty) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        l10n?.aliasEmpty ?? 'Alias cannot be empty',
+                      ),
+                    ),
+                  );
+                return;
+              }
               Navigator.pop(ctx);
-              if (newAlias.isEmpty) return;
               if (widget.levelFile.objects.any(
                 (o) => o.aliases?.contains(newAlias) == true,
               )) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      l10n?.renameFail ?? 'Rename failed, alias already exists',
+                      l10n?.renameEventFail ??
+                          'Cannot rename event: this alias is already used in the level.',
                     ),
                   ),
                 );
@@ -1981,6 +2126,25 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
   ) {
     final l10n = AppLocalizations.of(context);
     final defaultName = '${alias}_copy';
+    var promptForAlias = true;
+    try {
+      promptForAlias = context
+          .read<SettingsCubit>()
+          .state
+          .promptForAliasOnCreate;
+    } catch (_) {
+      // Preserve the existing dialog in isolated widgets without app settings.
+    }
+    if (!promptForAlias) {
+      _showCopyTargetWaveDialog(
+        context,
+        rtid,
+        defaultName,
+        waveIndex,
+        onEditFinished,
+      );
+      return;
+    }
     final ctrl = TextEditingController(text: defaultName);
     showDialog<void>(
       context: context,
@@ -1991,7 +2155,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         content: SizedBox(
           width: double.maxFinite,
           child: EditorResponsiveInputField(
-            label: l10n?.newName ?? 'New name',
+            label: l10n?.aliasLabel ?? 'Alias',
             decoration: InputDecoration(),
             builder: (context, decoration) =>
                 TextField(controller: ctrl, decoration: decoration),
@@ -2007,16 +2171,36 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
           ),
           FilledButton(
             onPressed: () {
-              final newAlias = ctrl.text.trim();
+              final raw = ctrl.text;
+              final characterError = aliasCharacterValidationError(l10n, raw);
+              if (characterError != null) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(SnackBar(content: Text(characterError)));
+                return;
+              }
+              final newAlias = raw.trim();
+              if (newAlias.isEmpty) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        l10n?.aliasEmpty ?? 'Alias cannot be empty',
+                      ),
+                    ),
+                  );
+                return;
+              }
               Navigator.pop(ctx);
-              if (newAlias.isEmpty) return;
               if (widget.levelFile.objects.any(
                 (o) => o.aliases?.contains(newAlias) == true,
               )) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      l10n?.renameFail ?? 'Rename failed, alias already exists',
+                      l10n?.copyEventAliasFail ??
+                          'Cannot copy event: this alias is already used in the level.',
                     ),
                   ),
                 );
@@ -2994,6 +3178,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         if (deadLinks.isNotEmpty) _buildDeadLinksCard(context, deadLinks),
         _buildCustomZombieCard(context, customZombies),
         if (isDeepSeaLawn) _buildCustomFishCard(context, customFishes),
+        _buildJitterOffsetsCard(context),
         _buildWaveContainerAliasCard(context),
         _buildWaveManagerSettingsCard(
           context,
@@ -3337,7 +3522,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         final listSize = _expectationDialogListSize(ctx);
         return AlertDialog(
           title: Text(
-            '${l10n?.waveLabel ?? "Wave"} $waveIndex ${l10n?.expectation ?? "Expectation"}',
+            '${l10n?.customZombieWaveItem(waveIndex) ?? "Wave $waveIndex"} ${l10n?.expectation ?? "Expectation"}',
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -3364,6 +3549,9 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                       itemBuilder: (_, i) {
                         final e = items[i];
                         final typeName = e.key;
+                        final cost = ZombiePropertiesRepository.getStats(
+                          typeName,
+                        ).cost;
                         final info = ZombieRepository().getZombieById(typeName);
                         final nameKey =
                             info?.name ?? ZombieRepository().getName(typeName);
@@ -3421,6 +3609,11 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                                               ctx,
                                             ).colorScheme.onSurfaceVariant,
                                           ),
+                                    ),
+                                    Text(
+                                      l10n?.zombiePointCost(cost) ??
+                                          'Point cost: $cost',
+                                      style: Theme.of(ctx).textTheme.bodySmall,
                                     ),
                                   ],
                                 ),

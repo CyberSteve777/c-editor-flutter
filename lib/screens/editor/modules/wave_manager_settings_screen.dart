@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/level_jam_picker.dart';
 
 /// Wave manager settings. Ported from Z-Editor-master WaveManagerPropertiesEP.kt
 class WaveManagerSettingsScreen extends StatefulWidget {
@@ -125,15 +126,6 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
     final theme = Theme.of(context);
     // Use secondary (blue) to match Kotlin WaveManagerPropertiesEP PvzBlueLight/Dark
     final themeColor = theme.colorScheme.secondary;
-    final jamOptions = [
-      (null, l10n?.jamNone ?? 'None'),
-      ('jam_pop', l10n?.jamPop ?? 'Pop'),
-      ('jam_rap', l10n?.jamRap ?? 'Rap'),
-      ('jam_metal', l10n?.jamMetal ?? 'Metal'),
-      ('jam_punk', l10n?.jamPunk ?? 'Punk'),
-      ('jam_8bit', l10n?.jam8Bit ?? '8-Bit'),
-    ];
-
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n?.waveManagerSettings ?? 'Wave manager settings'),
@@ -371,30 +363,15 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            EditorResponsiveInputField(
-              label: l10n?.waveManagerLevelJam ?? 'Level Jam',
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.music_note),
-                border: const OutlineInputBorder(),
-              ),
-              builder: (context, decoration) =>
-                  DropdownButtonFormField<String?>(
-                    isExpanded: true,
-                    initialValue: _wm.levelJam,
-                    decoration: decoration,
-                    items: jamOptions.map((e) {
-                      return DropdownMenuItem<String?>(
-                        value: e.$1,
-                        child: Text(e.$2),
-                      );
-                    }).toList(),
-                    onChanged: (v) {
-                      setState(() {
-                        _wm.levelJam = v;
-                        _save();
-                      });
-                    },
-                  ),
+            LevelJamPickerField(
+              labelText: l10n?.waveManagerLevelJam ?? 'Level Jam',
+              value: _wm.levelJam,
+              onChanged: (v) {
+                setState(() {
+                  _wm.levelJam = v;
+                  _save();
+                });
+              },
             ),
             const SizedBox(height: 6),
             Text(

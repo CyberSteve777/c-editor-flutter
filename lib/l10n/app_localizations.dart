@@ -100,6 +100,54 @@ abstract class AppLocalizations {
     Locale('zh'),
   ];
 
+  /// No description provided for @updateNotNeededTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No update needed'**
+  String get updateNotNeededTitle;
+
+  /// No description provided for @updateCheckFailedLinks.
+  ///
+  /// In en, this message translates to:
+  /// **'You can also check for editor updates using the links below:'**
+  String get updateCheckFailedLinks;
+
+  /// No description provided for @updateOpenBilibili.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Bilibili post'**
+  String get updateOpenBilibili;
+
+  /// No description provided for @updateJoinDiscord.
+  ///
+  /// In en, this message translates to:
+  /// **'Join the Discord server'**
+  String get updateJoinDiscord;
+
+  /// No description provided for @speedUpTileCompatibilityWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed-Up Tiles are covered by tiles placed by Underground Palace Pathways or Expedition Tiles and will not work. Do not use these modules together.'**
+  String get speedUpTileCompatibilityWarning;
+
+  /// No description provided for @updateSaveWorkGuidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic saving applies when leaving supported editors normally. Browser refresh or closure may skip it. Before updating, verify that your level and JSON are saved and all test packages and preview images have finished exporting. This dialog does not save or restart anything.'**
+  String get updateSaveWorkGuidance;
+
+  /// No description provided for @jsonDiscardEditsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard the changes in this JSON editor? Unsaved text, including invalid JSON, will be lost. Choose Stay to continue editing and save.'**
+  String get jsonDiscardEditsBody;
+
+  /// No description provided for @webUpdateSaveAndRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of the editor is available. Save your work, then refresh this page to load it.'**
+  String get webUpdateSaveAndRefresh;
+
   /// No description provided for @error.
   ///
   /// In en, this message translates to:
@@ -141,6 +189,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Grid Items'**
   String get previewTabGridItems;
+
+  /// No description provided for @previewTabInitialLawnOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial Lawn Overview'**
+  String get previewTabInitialLawnOverview;
 
   /// No description provided for @overviewPresetPlants.
   ///
@@ -505,7 +559,7 @@ abstract class AppLocalizations {
   /// No description provided for @autosaveSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Save changes automatically when leaving a level'**
+  /// **'Save changes automatically when leaving a level or JSON edit mode'**
   String get autosaveSubtitle;
 
   /// No description provided for @ultra.
@@ -519,6 +573,270 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'UI size'**
   String get uiSize;
+
+  /// No description provided for @interfaceSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Interface settings'**
+  String get interfaceSettings;
+
+  /// No description provided for @lightTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Light theme'**
+  String get lightTheme;
+
+  /// No description provided for @darkTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark theme'**
+  String get darkTheme;
+
+  /// No description provided for @uiScalePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'UI size preview'**
+  String get uiScalePreview;
+
+  /// No description provided for @uiScalePreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Example title'**
+  String get uiScalePreviewTitle;
+
+  /// No description provided for @uiScalePreviewDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the slider to preview changes to interface element sizes'**
+  String get uiScalePreviewDescription;
+
+  /// No description provided for @menuCustomization.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature display'**
+  String get menuCustomization;
+
+  /// No description provided for @menuCustomizationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize where each screen\'s features are displayed and their order. Exposed features appear directly in the app bar, contained features are placed in the ⋮ menu, and supported features can be kept on this page only.\nWhen space is limited, features normally shown in the app bar are automatically moved into the ⋮ menu according to their order.'**
+  String get menuCustomizationDescription;
+
+  /// No description provided for @menuCustomizationDragHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag ⋮⋮ to change the feature order'**
+  String get menuCustomizationDragHint;
+
+  /// No description provided for @menuSurfaceWorkspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Workspace'**
+  String get menuSurfaceWorkspace;
+
+  /// No description provided for @menuSurfaceLevelEditor.
+  ///
+  /// In en, this message translates to:
+  /// **'Level editor'**
+  String get menuSurfaceLevelEditor;
+
+  /// No description provided for @menuSurfaceJsonViewer.
+  ///
+  /// In en, this message translates to:
+  /// **'JSON file view'**
+  String get menuSurfaceJsonViewer;
+
+  /// No description provided for @menuPlacementToolbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Expose'**
+  String get menuPlacementToolbar;
+
+  /// No description provided for @menuPlacementOverflow.
+  ///
+  /// In en, this message translates to:
+  /// **'Contain'**
+  String get menuPlacementOverflow;
+
+  /// No description provided for @menuPlacementSettingsPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings page only'**
+  String get menuPlacementSettingsPage;
+
+  /// No description provided for @menuConfigurationReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore defaults for this screen'**
+  String get menuConfigurationReset;
+
+  /// No description provided for @aliasPromptOnCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for alias when creating'**
+  String get aliasPromptOnCreate;
+
+  /// No description provided for @aliasPromptOnCreateDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the alias dialog before creating an event, module, challenge, or custom lawn. When off, C-Editor uses the generated default alias.'**
+  String get aliasPromptOnCreateDescription;
+
+  /// No description provided for @popupPrompts.
+  ///
+  /// In en, this message translates to:
+  /// **'Dialog prompts'**
+  String get popupPrompts;
+
+  /// No description provided for @currentTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Current theme: {theme}'**
+  String currentTheme(String theme);
+
+  /// No description provided for @checkForUpdatesAutomatically.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for updates'**
+  String get checkForUpdatesAutomatically;
+
+  /// No description provided for @checkForUpdatesAutomaticallyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for stable releases in the background when opening the workspace, at most once every 24 hours. Failed automatic checks stay silent.'**
+  String get checkForUpdatesAutomaticallyDescription;
+
+  /// No description provided for @checkForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for updates'**
+  String get checkForUpdates;
+
+  /// No description provided for @checkingForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for updates…'**
+  String get checkingForUpdates;
+
+  /// No description provided for @updateAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update available'**
+  String get updateAvailableTitle;
+
+  /// No description provided for @updateAvailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The latest stable version is {version}.'**
+  String updateAvailableBody(String version);
+
+  /// No description provided for @updateAlreadyLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'You are using the latest stable version.'**
+  String get updateAlreadyLatest;
+
+  /// No description provided for @updateCheckFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not check for updates'**
+  String get updateCheckFailedTitle;
+
+  /// No description provided for @updateDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a download link'**
+  String get updateDownload;
+
+  /// No description provided for @updateGithubDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the GitHub Releases link'**
+  String get updateGithubDownload;
+
+  /// No description provided for @updateDownloadDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Clicking the link will take you to a browser or another app, where you can download the installer for the new version from the corresponding page.'**
+  String get updateDownloadDescription;
+
+  /// No description provided for @updateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me later'**
+  String get updateLater;
+
+  /// No description provided for @updateBaiduDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the Baidu Netdisk link'**
+  String get updateBaiduDownload;
+
+  /// No description provided for @networkTimeoutAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'The request timed out. Check your connection and try again.'**
+  String get networkTimeoutAdvice;
+
+  /// No description provided for @networkRateLimitAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub\'s request limit has been reached, or access was refused. Wait and try again later.'**
+  String get networkRateLimitAdvice;
+
+  /// No description provided for @networkConnectionAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect to the server. Check your connection and try again.'**
+  String get networkConnectionAdvice;
+
+  /// No description provided for @networkServiceAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'The server is temporarily unavailable. Please try again later.'**
+  String get networkServiceAdvice;
+
+  /// No description provided for @networkResponseAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'The server returned unexpected data. Try again later or visit the download page directly.'**
+  String get networkResponseAdvice;
+
+  /// No description provided for @updateCheckUnknownAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'The update check could not be completed. Try again later, or visit the download page directly.'**
+  String get updateCheckUnknownAdvice;
+
+  /// No description provided for @externalLinkFailedAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the download page. Copy the link and open it in a browser.'**
+  String get externalLinkFailedAdvice;
+
+  /// No description provided for @jsonEditSyntaxError.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid JSON syntax. Check commas, brackets, and double quotes, then save again.'**
+  String get jsonEditSyntaxError;
+
+  /// No description provided for @jsonEditSyntaxErrorAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid JSON syntax near line {line}, column {column}. Check commas, brackets, and double quotes, then save again.'**
+  String jsonEditSyntaxErrorAt(String line, String column);
+
+  /// No description provided for @jsonEditStructureError.
+  ///
+  /// In en, this message translates to:
+  /// **'This JSON does not match the level structure. Keep the objects list and each object\'s objclass and objdata fields; the version must be an integer.'**
+  String get jsonEditStructureError;
+
+  /// No description provided for @jsonEditSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the file. Check workspace write permissions and free space, then try again. On the web, make sure the browser allows local storage. Your edits have been kept.'**
+  String get jsonEditSaveError;
 
   /// No description provided for @aboutSoftware.
   ///
@@ -1245,6 +1563,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rename failed, file already exists'**
   String get renameFail;
+
+  /// No description provided for @renameEventFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot rename event: this alias is already used by an object in the level.'**
+  String get renameEventFail;
+
+  /// No description provided for @renameModuleFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot rename module: this alias is already used by an object in the level.'**
+  String get renameModuleFail;
+
+  /// No description provided for @renameCustomZombieFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot rename custom zombie: this alias is already used by an object in the level.'**
+  String get renameCustomZombieFail;
+
+  /// No description provided for @renameAliasFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot rename: this alias is already used by an object in the level.'**
+  String get renameAliasFail;
+
+  /// No description provided for @copyEventAliasFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot copy event: this alias is already used by an object in the level.'**
+  String get copyEventAliasFail;
 
   /// No description provided for @uploadLevel.
   ///
@@ -2157,6 +2505,348 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Name, Index, Description, Lawn'**
   String get levelBasicInfoSubtitle;
+
+  /// No description provided for @levelBasicInfoHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Definition Basics'**
+  String get levelBasicInfoHelpTitle;
+
+  /// No description provided for @levelBasicInfoHelpOverviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The level definition is the root node of a PvZ2 level. It stores the level\'s global properties and links to every module in the level through its module list. This page lets you edit the level\'s global properties.'**
+  String get levelBasicInfoHelpOverviewBody;
+
+  /// No description provided for @levelBasicInfoHelpBasicInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Information Screen'**
+  String get levelBasicInfoHelpBasicInfoTitle;
+
+  /// No description provided for @levelBasicInfoHelpBasicInfoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Here you can define basic information such as the level name, description, and starting sun. The level description appears as white subtitle text during the transition into the level. Starting sun is the amount available before the account\'s sun upgrade is applied.'**
+  String get levelBasicInfoHelpBasicInfoBody;
+
+  /// No description provided for @levelBasicInfoHelpSceneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Here you can choose scene information such as the level\'s lawn and music type from the list. The Pirate Seas lawn has no planks by default.\nThe available music types depend on the lawn\'s default music module. After customizing the lawn, you can change its music module to use music from other lawns in the level.\nThe settlement setting only applies to certain special level types and generally should not be changed.'**
+  String get levelBasicInfoHelpSceneBody;
+
+  /// No description provided for @levelBasicInfoHelpRestrictionsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This section provides switches for disabling Pea Symbiosis and Artifacts. Pea Symbiosis is Pea Vine\'s Level 5 ability. If a player owns a Level 5 Pea Vine and has enabled this ability on their account, planting a pea plant immediately adds one Pea Vine; this may affect the intended experience of levels that use pea plants. In Creative Courtyard levels, Artifacts are disabled automatically, so the disable switch does not need to be enabled manually.'**
+  String get levelBasicInfoHelpRestrictionsBody;
+
+  /// No description provided for @waveTimelineJitterOffsetsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn Position Offset Presets'**
+  String get waveTimelineJitterOffsetsTitle;
+
+  /// No description provided for @waveTimelineJitterOffsetsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No presets yet'**
+  String get waveTimelineJitterOffsetsNone;
+
+  /// No description provided for @waveTimelineJitterOffsetsSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} preset(s), {unused} unreferenced'**
+  String waveTimelineJitterOffsetsSummary(int count, int unused);
+
+  /// No description provided for @jitterOffsetsPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn Position Offset Presets'**
+  String get jitterOffsetsPageTitle;
+
+  /// No description provided for @jitterOffsetsPageCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} preset(s)'**
+  String jitterOffsetsPageCount(int count);
+
+  /// No description provided for @jitterOffsetsAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Offset'**
+  String get jitterOffsetsAdd;
+
+  /// No description provided for @jitterOffsetsSelectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Spawn Position Offset'**
+  String get jitterOffsetsSelectTitle;
+
+  /// No description provided for @jitterOffsetsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No presets yet.\nWithout a bound preset, the zombie lists in Basic Spawner and Underwater Spawner use the game\'s default parameters: a same-row cumulative offset increment of 80 and a random offset upper bound of 30, giving each zombie a random offset from 0 through 29.\nTo customize the offsets, create a preset and bind it in the event.'**
+  String get jitterOffsetsEmpty;
+
+  /// No description provided for @jitterOffsetsNoAlias.
+  ///
+  /// In en, this message translates to:
+  /// **'(no alias)'**
+  String get jitterOffsetsNoAlias;
+
+  /// No description provided for @jitterOffsetsUnused.
+  ///
+  /// In en, this message translates to:
+  /// **'Not referenced by any spawn event'**
+  String get jitterOffsetsUnused;
+
+  /// No description provided for @jitterOffsetsReferenced.
+  ///
+  /// In en, this message translates to:
+  /// **'Referenced by {count} spawn event(s)'**
+  String jitterOffsetsReferenced(int count);
+
+  /// No description provided for @jitterOffsetsIncrementLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Same-row cumulative offset increment (ZombieSpawningOffsetIncrement)'**
+  String get jitterOffsetsIncrementLabel;
+
+  /// No description provided for @jitterOffsetsRandomJitterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Random offset upper bound (ZombieSpawningRandomJitter)'**
+  String get jitterOffsetsRandomJitterLabel;
+
+  /// No description provided for @jitterOffsetsIntegerInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid integer.'**
+  String get jitterOffsetsIntegerInvalid;
+
+  /// No description provided for @jitterOffsetsIncrementInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'A non-negative integer is recommended. Negative values may be converted into abnormally large offsets and prevent normal entry onto the lawn.'**
+  String get jitterOffsetsIncrementInvalid;
+
+  /// No description provided for @jitterOffsetsRandomJitterInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a positive integer. Zero or a negative value does not disable the random offset and may produce an abnormally large horizontal position, preventing zombies from entering the lawn normally.'**
+  String get jitterOffsetsRandomJitterInvalid;
+
+  /// No description provided for @jitterOffsetsRename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get jitterOffsetsRename;
+
+  /// No description provided for @jitterOffsetsDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get jitterOffsetsDelete;
+
+  /// No description provided for @jitterOffsetsCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Created preset {alias}'**
+  String jitterOffsetsCreated(String alias);
+
+  /// No description provided for @jitterOffsetsRenamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated references in {count} event(s)'**
+  String jitterOffsetsRenamed(int count);
+
+  /// No description provided for @jitterOffsetsRenameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename Preset'**
+  String get jitterOffsetsRenameTitle;
+
+  /// No description provided for @jitterOffsetsRenameDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'After renaming, every event that references this preset is updated automatically.'**
+  String get jitterOffsetsRenameDescription;
+
+  /// No description provided for @jitterOffsetsAliasBadChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Alias cannot contain @ ( ), or it cannot be parsed correctly'**
+  String get jitterOffsetsAliasBadChars;
+
+  /// No description provided for @jitterOffsetsAliasTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Alias {alias} is already used by another object'**
+  String jitterOffsetsAliasTaken(String alias);
+
+  /// No description provided for @jitterOffsetsDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Preset?'**
+  String get jitterOffsetsDeleteTitle;
+
+  /// No description provided for @jitterOffsetsDeleteDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset {alias} will be deleted. No event references it, so no wave is affected.'**
+  String jitterOffsetsDeleteDescription(String alias);
+
+  /// No description provided for @jitterOffsetsDeleteBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot Delete'**
+  String get jitterOffsetsDeleteBlockedTitle;
+
+  /// No description provided for @jitterOffsetsDeleteBlockedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset {alias} is still referenced by {count} spawn event(s) and cannot be deleted.'**
+  String jitterOffsetsDeleteBlockedDescription(String alias, int count);
+
+  /// No description provided for @jitterOffsetsDeleteBlockedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Open these events first and switch \"Spawn Position Offset\" to another preset or unbind it. For events that do not support offset settings, use the manual file editor to remove retained references:'**
+  String get jitterOffsetsDeleteBlockedHint;
+
+  /// No description provided for @jitterOffsetsEventLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn Position Offset'**
+  String get jitterOffsetsEventLabel;
+
+  /// No description provided for @jitterOffsetsEventNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Unbound (use the game\'s default parameters)'**
+  String get jitterOffsetsEventNone;
+
+  /// No description provided for @jitterOffsetsEventManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Presets'**
+  String get jitterOffsetsEventManage;
+
+  /// No description provided for @jitterOffsetsEventDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Controls the horizontal offset added to each zombie\'s base spawn position within the same event and row. Facing determines the offset direction.'**
+  String get jitterOffsetsEventDescription;
+
+  /// No description provided for @jitterOffsetsEventNoPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'No presets yet. This event automatically uses the game\'s default parameters: a same-row cumulative offset increment of 80 and a random offset upper bound of 30, giving each zombie a random offset from 0 through 29. To customize the offsets, create a preset first.'**
+  String get jitterOffsetsEventNoPresets;
+
+  /// No description provided for @jitterOffsetsEventDangling.
+  ///
+  /// In en, this message translates to:
+  /// **'{alias} (missing)'**
+  String jitterOffsetsEventDangling(String alias);
+
+  /// No description provided for @jitterOffsetsEventInvalidOption.
+  ///
+  /// In en, this message translates to:
+  /// **'{alias} (invalid values)'**
+  String jitterOffsetsEventInvalidOption(String alias);
+
+  /// No description provided for @jitterOffsetsEventInvalidPreset.
+  ///
+  /// In en, this message translates to:
+  /// **'This preset contains invalid parameters. Under \"Manage Presets\", set \"Random offset upper bound\" to a positive value.'**
+  String get jitterOffsetsEventInvalidPreset;
+
+  /// No description provided for @jitterOffsetsFixedOffsetOverrideWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'The event\'s batch-index fixed offset is nonzero. The bound Spawn Position Offset preset and spawn formation preset are temporarily ignored but retained; they take effect again when the fixed offset returns to 0.'**
+  String get jitterOffsetsFixedOffsetOverrideWarning;
+
+  /// No description provided for @jitterOffsetsUnderwaterScopeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'These settings affect only the zombie list, not the sea creature list.'**
+  String get jitterOffsetsUnderwaterScopeDescription;
+
+  /// No description provided for @jitterOffsetsAdvancedSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Settings'**
+  String get jitterOffsetsAdvancedSettingsTitle;
+
+  /// No description provided for @jitterOffsetsFixedOffsetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Batch-index fixed offset (FixedOffset)'**
+  String get jitterOffsetsFixedOffsetLabel;
+
+  /// No description provided for @jitterOffsetsFixedOffsetDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Commonly used in Two-Player Mode; the default is 0. A value of 0 uses the Spawn Position Offset preset and spawn formation preset. A nonzero value temporarily disables both but preserves their settings; restoring 0 enables them again. Fixed offsets accumulate in the event\'s zombie-list order without restarting for each row, while each zombie retains its own base position. The first zombie has no fixed offset; each following zombie receives one more entered increment. Even a tiny nonzero value or an event with only one zombie disables both presets.\nA positive fixed offset value moves zombies right, a negative value moves them left, and decimal fractions are preserved. Facing does not reverse this direction, so use this setting carefully with mixed rows or facings. For example, 8.5 moves the first three zombies right by 0, 8.5, and 17 from their own base positions.\nThis setting changes only horizontal position, not the number created. Excessively large magnitudes may place zombies far outside or too deeply inside the lawn, preventing normal entry or causing settlement problems.'**
+  String get jitterOffsetsFixedOffsetDescription;
+
+  /// No description provided for @jitterOffsetsFixedOffsetInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid number.'**
+  String get jitterOffsetsFixedOffsetInvalid;
+
+  /// No description provided for @jitterOffsetsHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombie Spawn Position Offsets'**
+  String get jitterOffsetsHelpTitle;
+
+  /// No description provided for @jitterOffsetsHelpOverviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get jitterOffsetsHelpOverviewTitle;
+
+  /// No description provided for @jitterOffsetsHelpOverviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn Position Offset presets adjust the horizontal arrangement of zombies in the same event. They apply to the zombie lists in Basic Spawner and Underwater Spawner, without affecting sea creatures. Each zombie receives an offset from its row\'s accumulated value and an independent random value, applied to its own base position. Each row accumulates independently. Only horizontal position changes, not the number created, creation time, row, or wave timing.\nWithout a bound preset, the game uses the default parameters: a same-row cumulative offset increment of 80 and a random offset upper bound of 30, giving each zombie a random offset from 0 through 29. Zombies spawn normally without a custom preset.'**
+  String get jitterOffsetsHelpOverviewBody;
+
+  /// No description provided for @jitterOffsetsHelpUsageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Instructions'**
+  String get jitterOffsetsHelpUsageTitle;
+
+  /// No description provided for @jitterOffsetsHelpUsageBody.
+  ///
+  /// In en, this message translates to:
+  /// **'After creating a preset here, open a Basic Spawner or Underwater Spawner event and select it under \"Spawn Position Offset\".\nA preset can be shared by multiple events. Editing it updates every event that references it. A referenced preset cannot be deleted; first switch those events to another preset or unbind it.'**
+  String get jitterOffsetsHelpUsageBody;
+
+  /// No description provided for @jitterOffsetsHelpParametersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parameters'**
+  String get jitterOffsetsHelpParametersTitle;
+
+  /// No description provided for @jitterOffsetsHelpFixedOffsetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Batch-index fixed offset'**
+  String get jitterOffsetsHelpFixedOffsetTitle;
+
+  /// No description provided for @jitterOffsetsHelpParametersBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"Same-row cumulative offset increment\" is the amount added to a row\'s accumulated offset after each zombie in that row is positioned. A non-negative integer is recommended. Negative values may be converted into abnormally large offsets and prevent normal entry.\n\"Random offset upper bound\" sets each zombie\'s independent random offset range. The actual value ranges from 0 through the entered value minus 1. For example, 10 gives 0 through 9. Enter a positive integer; zero or negative values do not disable randomness and may produce abnormal coordinates.\nThe accumulated and random offsets are added together, then applied to the base position according to facing. Facing left, usually entering from the right side of the lawn, moves the spawn position right. Facing right, usually entering from the left side, moves it left. Without a spawn formation preset, each row starts at 0. For example, an increment of 20 and upper bound of 10 give the first three zombies in one row offsets of 0–9, 20–29, and 40–49.\nA spawn formation preset adjusts each row\'s initial horizontal offset and the spacing between later zombies in that row. Each row starts with the preset\'s initial offset; after positioning each zombie, that row gains its extra spacing adjustment as well as the base increment. This changes horizontal spacing within a row, not the vertical distance between rows.'**
+  String get jitterOffsetsHelpParametersBody;
 
   /// No description provided for @removeModule.
   ///
@@ -3460,6 +4150,12 @@ abstract class AppLocalizations {
   /// **'Music type'**
   String get musicType;
 
+  /// No description provided for @currentMusicModule.
+  ///
+  /// In en, this message translates to:
+  /// **'Current music module'**
+  String get currentMusicModule;
+
   /// No description provided for @loot.
   ///
   /// In en, this message translates to:
@@ -3471,6 +4167,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Victory module'**
   String get victoryModule;
+
+  /// No description provided for @lootOptionDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Loot (DefaultLoot)'**
+  String get lootOptionDefault;
+
+  /// No description provided for @lootOptionNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No Loot (NoLoot)'**
+  String get lootOptionNone;
+
+  /// No description provided for @victoryOptionDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Victory (VictoryOutro)'**
+  String get victoryOptionDefault;
+
+  /// No description provided for @victoryOptionZomboss.
+  ///
+  /// In en, this message translates to:
+  /// **'Zomboss Battle Victory (ZombossVictoryOutro)'**
+  String get victoryOptionZomboss;
 
   /// No description provided for @basicInfoSection.
   ///
@@ -3507,6 +4227,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Missing modules'**
   String get missingModules;
+
+  /// No description provided for @underwaterZombieWinConditionWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Underwater World loss-condition notice'**
+  String get underwaterZombieWinConditionWarningTitle;
+
+  /// No description provided for @underwaterZombieWinConditionWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'On lawns using an Underwater World appearance, if too many zombies spawn naturally on the left at the same time, some may spawn directly on the defeat line and trigger a level loss. It is recommended to remove the \"Loss Condition\" module.'**
+  String get underwaterZombieWinConditionWarning;
 
   /// No description provided for @conflictTitle_ModuleLogic.
   ///
@@ -3772,6 +4504,24 @@ abstract class AppLocalizations {
   /// **'Disable Pea Vine\'s Pea Symbiosis'**
   String get disablePeavine;
 
+  /// No description provided for @peaSymbiosisWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Consider disabling Pea Symbiosis'**
+  String get peaSymbiosisWarningTitle;
+
+  /// No description provided for @peaSymbiosisWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'The following pea plants can be used in this level. For players who own a Level 5 Pea Vine and have Pea Symbiosis enabled on their account, planting any of them also plants a Pea Vine automatically and may affect the intended gameplay. Go to \"Basic Information\" and disable Pea Symbiosis.'**
+  String get peaSymbiosisWarning;
+
+  /// No description provided for @peaSymbiosisAffectedPlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Affected plants: {plants}'**
+  String peaSymbiosisAffectedPlants(String plants);
+
   /// No description provided for @disableArtifact.
   ///
   /// In en, this message translates to:
@@ -3789,6 +4539,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select ALL'**
   String get selectAll;
+
+  /// No description provided for @deselectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect ALL'**
+  String get deselectAll;
+
+  /// No description provided for @zombiePointCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Point cost: {cost}'**
+  String zombiePointCost(int cost);
 
   /// No description provided for @searchPlant.
   ///
@@ -5095,7 +5857,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventDesc_SpawnZombiesJitteredWaveActionProps.
   ///
   /// In en, this message translates to:
-  /// **'Standard natural zombie spawning event'**
+  /// **'The most basic zombie spawning event'**
   String get eventDesc_SpawnZombiesJitteredWaveActionProps;
 
   /// No description provided for @eventTitle_FrostWindWaveActionProps.
@@ -5215,7 +5977,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventDesc_SpawnModernPortalsWaveActionProps.
   ///
   /// In en, this message translates to:
-  /// **'Summons spacetime portals at set locations'**
+  /// **'Summons spacetime portals at set positions'**
   String get eventDesc_SpawnModernPortalsWaveActionProps;
 
   /// No description provided for @eventTitle_StormZombieSpawnerProps.
@@ -5263,7 +6025,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventDesc_ZombieAtlantisShellActionProps.
   ///
   /// In en, this message translates to:
-  /// **'Spawns atlantis seashells at set positions'**
+  /// **'Spawns Atlantis Seashells at set positions'**
   String get eventDesc_ZombieAtlantisShellActionProps;
 
   /// No description provided for @eventTitle_SpawnEagleFlagsWaveActionProps.
@@ -5275,13 +6037,13 @@ abstract class AppLocalizations {
   /// No description provided for @eventDesc_SpawnEagleFlagsWaveActionProps.
   ///
   /// In en, this message translates to:
-  /// **'Spawn Eagle Standards at specified positions'**
+  /// **'Spawns Eagle Standards at set positions'**
   String get eventDesc_SpawnEagleFlagsWaveActionProps;
 
   /// No description provided for @eventHelpEagleStandardBody.
   ///
   /// In en, this message translates to:
-  /// **'This event spawns Eagle Standards at specified positions. Zombies that pass by can pick up the Eagle Standard. When the carrier is defeated, the standard drops to the ground, allowing subsequent zombies to pick it up again repeatedly. A zombie carrying the Eagle Standard grants zombies within a 3×3 area damage reduction and immunity to control effects.\nRegular plants cannot attack the Eagle Standard. Once it has been dropped, Magnet-shroom and Gold Magnet can destroy it.'**
+  /// **'This event spawns Eagle Standards at set positions. Zombies that pass by can pick up the Eagle Standard. When the carrier is defeated, the standard drops to the ground, allowing subsequent zombies to pick it up again repeatedly. A zombie carrying the Eagle Standard grants zombies within a 3×3 area damage reduction and immunity to control effects.\nRegular plants cannot attack the Eagle Standard. Once it has been dropped, Magnet-shroom and Gold Magnet can destroy it.'**
   String get eventHelpEagleStandardBody;
 
   /// No description provided for @eventHelpEagleStandardEligibleZombiesTitle.
@@ -5302,6 +6064,18 @@ abstract class AppLocalizations {
   /// **'Select a grid cell and tap \"+\" to add an Eagle Standard. Multiple standards can be placed on the same tile and removed using the cards below. The grid adapts to the current lawn, and standards outside the lawn are listed separately.'**
   String get eventHelpEagleStandardUsage;
 
+  /// No description provided for @eventTitle_SpawnPumpkinScarecrowWaveActionProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Scarecrow Spawn'**
+  String get eventTitle_SpawnPumpkinScarecrowWaveActionProps;
+
+  /// No description provided for @eventDesc_SpawnPumpkinScarecrowWaveActionProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawns Pumpkin Scarecrows at set positions'**
+  String get eventDesc_SpawnPumpkinScarecrowWaveActionProps;
+
   /// No description provided for @eventTitle_PumpkinHouseActionProps.
   ///
   /// In en, this message translates to:
@@ -5311,7 +6085,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventDesc_PumpkinHouseActionProps.
   ///
   /// In en, this message translates to:
-  /// **'Spawns pumpkin houses on the lawn at set positions'**
+  /// **'Spawns Pumpkin Houses at set positions'**
   String get eventDesc_PumpkinHouseActionProps;
 
   /// No description provided for @eventTitle_WaveActionZombieTentProps.
@@ -5323,7 +6097,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventDesc_WaveActionZombieTentProps.
   ///
   /// In en, this message translates to:
-  /// **'Spawn zombie tents at specified positions and configure the zombies they summon'**
+  /// **'Spawns zombie tents at set positions and configure the zombies they summon'**
   String get eventDesc_WaveActionZombieTentProps;
 
   /// No description provided for @eventTitle_SpawnGravestonesWaveActionProps.
@@ -5857,7 +6631,7 @@ abstract class AppLocalizations {
   /// No description provided for @groundTrackNone.
   ///
   /// In en, this message translates to:
-  /// **'None (null)'**
+  /// **'None'**
   String get groundTrackNone;
 
   /// No description provided for @appearanceBehavior.
@@ -6279,6 +7053,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Alias (English letters only; no spaces)'**
   String get aliasLabel;
+
+  /// No description provided for @aliasEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Alias cannot be empty'**
+  String get aliasEmpty;
+
+  /// No description provided for @aliasWhitespaceUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Alias cannot contain spaces'**
+  String get aliasWhitespaceUnsupported;
+
+  /// No description provided for @aliasChineseUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Alias cannot contain Chinese characters'**
+  String get aliasChineseUnsupported;
 
   /// No description provided for @add.
   ///
@@ -7297,7 +8089,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpShellBody.
   ///
   /// In en, this message translates to:
-  /// **'Spawns atlantis seashells at specified positions. Seashells start in a closed state. When a zombie steps on a seashell, it opens, launches the zombie forward, and closes again after 10 seconds. While open, seashells can be attacked by plants and block straight-shot projectiles. Each time a seashell opens, it generates a random item, including a Plant Food, a Cuttlefish, a plant seed packet, or a Relic Imp. After being triggered by zombies 3 times, the seashell will swim toward the seed bank and replace a random seed slot with a seashell seed packet. After the seashell has been planted 3 times, the seed slot will revert to its original plant.'**
+  /// **'Spawns Atlantis Seashells at set positions. Seashells start in a closed state. When a zombie steps on a seashell, it opens, launches the zombie forward, and closes again after 10 seconds. While open, seashells can be attacked by plants and block straight-shot projectiles. Each time a seashell opens, it generates a random item, including a Plant Food, a Cuttlefish, a plant seed packet, or a Relic Imp. After being triggered by zombies 3 times, the seashell will swim toward the seed bank and replace a random seed slot with a seashell seed packet. After the seashell has been planted 3 times, the seed slot will revert to its original plant.'**
   String get eventHelpShellBody;
 
   /// No description provided for @eventHelpShellUsage.
@@ -7309,7 +8101,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpPumpkinHouseBody.
   ///
   /// In en, this message translates to:
-  /// **'Spawns pumpkin houses at specified positions. Zombies that pass through the Pumpkin House are transformed into Pumpkin House Ghosts. Pumpkin House Ghosts have a separate health pool and can only be damaged by lobbed plants. When their health is depleted, they revert to their original zombie form. The Pumpkin House itself also has its own health and can be destroyed by concentrated fire.'**
+  /// **'Spawns Pumpkin Houses at set positions. Zombies that pass through the Pumpkin House are transformed into Pumpkin House Ghosts. Pumpkin House Ghosts have a separate health pool and can only be damaged by lobbed plants. When their health is depleted, they revert to their original zombie form. The Pumpkin House itself also has its own health and can be destroyed by concentrated fire.'**
   String get eventHelpPumpkinHouseBody;
 
   /// No description provided for @eventHelpPumpkinHouseUsage.
@@ -7321,7 +8113,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpZombieTentBody.
   ///
   /// In en, this message translates to:
-  /// **'This event force spawns zombie tents from Memory Lane directly on the lawn. Unlike the tents carried by Imp Porters, these tents do not require Gold Tiles. They appear at the specified positions and continually summon zombies until destroyed. The level can only be won after every zombie tent on the lawn has been destroyed.'**
+  /// **'This event force spawns zombie tents from Memory Lane directly on the lawn. Unlike the tents carried by Imp Porters, these tents do not require Gold Tiles. They appear at the set positions and continually summon zombies until destroyed. The level can only be won after every zombie tent on the lawn has been destroyed.'**
   String get eventHelpZombieTentBody;
 
   /// No description provided for @eventHelpZombieTentUsage.
@@ -7339,7 +8131,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpZombieTentFields.
   ///
   /// In en, this message translates to:
-  /// **'Regular tents and New Year tents function identically; only their appearance differs.\nA higher weight gives a zombie a greater chance of being selected. For example, weights of 10 and 30 give the two zombies an approximately 1:3 chance ratio.\nZombie level 0 uses the lawn’s default level, which is level 1 in Creative Courtyard.\nWhen editing the JSON manually, note that tent columns (Column) and rows (Row) are numbered from 1. For example, \"Column\": 7 means the seventh column.'**
+  /// **'Zombie tents come in regular and New Year variants. A New Year Zombie that passes through a New Year Tent is upgraded to a New Year Conehead Zombie; a New Year Conehead Zombie is upgraded to a New Year Buckethead Zombie. When destroyed, a New Year Tent also releases a God of Wealth.\nA higher weight gives a zombie a greater chance of being selected. For example, weights of 10 and 30 give the two zombies an approximately 1:3 chance ratio.\nZombie level 0 uses the lawn’s default level, which is level 1 in Creative Courtyard.\nWhen editing the JSON manually, note that tent columns (Column) and rows (Row) are numbered from 1. For example, \"Column\": 7 means the seventh column.'**
   String get eventHelpZombieTentFields;
 
   /// No description provided for @eventZombieTentSpawn.
@@ -7375,7 +8167,7 @@ abstract class AppLocalizations {
   /// No description provided for @zombieTentHitpoints.
   ///
   /// In en, this message translates to:
-  /// **'Tent hitpoints (Hitpoints)'**
+  /// **'Tent health (Hitpoints)'**
   String get zombieTentHitpoints;
 
   /// No description provided for @zombieTentProductionInterval.
@@ -7471,7 +8263,7 @@ abstract class AppLocalizations {
   /// No description provided for @eventHelpGravestoneLogic.
   ///
   /// In en, this message translates to:
-  /// **'Selects valid tiles from the pool above to spawn grid items. The total number of grid items cannot exceed the number of available tiles, or excess spawns will fail.'**
+  /// **'This event selects valid tiles from the pool above to spawn grid items. The total number of grid items cannot exceed the number of available tiles, or excess spawns will fail.'**
   String get eventHelpGravestoneLogic;
 
   /// No description provided for @eventHelpGravestoneMissingAssets.
@@ -8092,6 +8884,30 @@ abstract class AppLocalizations {
   /// **'From left'**
   String get zombieFromLeft;
 
+  /// No description provided for @zombieFromRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Appear from the right side of the lawn'**
+  String get zombieFromRight;
+
+  /// No description provided for @zombieEntrySideLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawn side (Direction)'**
+  String get zombieEntrySideLabel;
+
+  /// No description provided for @zombieRandomSide.
+  ///
+  /// In en, this message translates to:
+  /// **'Appear from a random side'**
+  String get zombieRandomSide;
+
+  /// No description provided for @zombieRandomSideDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Each zombie independently chooses the left or right side of the lawn when it is created.'**
+  String get zombieRandomSideDescription;
+
   /// No description provided for @eventMagicMirror.
   ///
   /// In en, this message translates to:
@@ -8317,7 +9133,7 @@ abstract class AppLocalizations {
   /// No description provided for @cowboyMinigameHelpBeginStringBody.
   ///
   /// In en, this message translates to:
-  /// **'The prompt text appears together with the zombie preview before every plant placement. The in-game default message is “Plant a plant from the conveyor belt to begin!”. The text can also be replaced with custom text.'**
+  /// **'The prompt text appears together with the zombie preview before every plant placement. The in-game default message is \"Plant a plant from the conveyor belt to begin!\". The text can also be replaced with custom text.'**
   String get cowboyMinigameHelpBeginStringBody;
 
   /// No description provided for @cowboyMinigameHelpTutorialBody.
@@ -9535,7 +10351,7 @@ abstract class AppLocalizations {
   /// No description provided for @optionalWarningText.
   ///
   /// In en, this message translates to:
-  /// **'Optional warning text shown at the center of the screen when the drop begins; Chinese is not supported'**
+  /// **'Optional red warning text shown at the center of the screen when the event begins; Chinese is not supported'**
   String get optionalWarningText;
 
   /// No description provided for @rowNShort.
@@ -10548,7 +11364,7 @@ abstract class AppLocalizations {
   /// No description provided for @waveManagerHelpPoints.
   ///
   /// In en, this message translates to:
-  /// **'Point-based spawning generates additional zombies during valid waves based on point cost.\nNormal waves have a cap of 60,000 points, while flag waves use a 2.5× multiplier.\nWhen points are positive, zombies are selected from the zombie pool. Expected spawn values for each zombie can be viewed in the wave event container.\nWhen points are negative, zombies with equivalent point value are removed from natural spawns.\nDo not include Elite Zombies, Yetis, or custom zombies in the point-based spawning pool.'**
+  /// **'Point-based spawning generates additional zombies during valid waves based on point cost.\nNormal waves have a cap of 60,000 points, while flag waves use a 2.5× multiplier.\nWhen points are positive, zombies are selected from the zombie pool. Expected spawn values for each zombie can be viewed in the wave event container.\nWhen points are negative, zombies with equivalent point value are removed from Basic Spawner events.\nDo not include Elite Zombies, Yetis, or custom zombies in the point-based spawning pool.'**
   String get waveManagerHelpPoints;
 
   /// No description provided for @pointsSection.
@@ -10622,6 +11438,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Neon Mixtape Tour music switch (LevelJam)'**
   String get backgroundMusicLevelJam;
+
+  /// No description provided for @selectLevelJamTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the jam to switch to'**
+  String get selectLevelJamTitle;
 
   /// No description provided for @onlyAppliesRockEra.
   ///
@@ -10778,6 +11600,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chinese characters are not supported.'**
   String get starChallengeChineseUnsupportedHint;
+
+  /// No description provided for @plantDefeatZombieDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The default [KILL_DESC] displays \"Use ... to kill ... zombies\"; direct Chinese input is not supported.'**
+  String get plantDefeatZombieDescriptionHint;
 
   /// No description provided for @maximumPlantsLost.
   ///
@@ -11985,6 +12813,30 @@ abstract class AppLocalizations {
   /// **'Sets mower styles (doesn\'t work in Creative Courtyard)'**
   String get moduleDesc_LawnMowerProperties;
 
+  /// No description provided for @moduleTitle_InitialGridItemWizardCrucibleProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Wizard Cauldron'**
+  String get moduleTitle_InitialGridItemWizardCrucibleProps;
+
+  /// No description provided for @moduleDesc_InitialGridItemWizardCrucibleProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Configures Fairy Forest Wizard Cauldrons'**
+  String get moduleDesc_InitialGridItemWizardCrucibleProps;
+
+  /// No description provided for @moduleTitle_SpeedUpTileModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed-Up Tiles'**
+  String get moduleTitle_SpeedUpTileModuleProperties;
+
+  /// No description provided for @moduleDesc_SpeedUpTileModuleProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Places preset Speed-Up Tiles from the Need for Speed crossover secret realm on the lawn'**
+  String get moduleDesc_SpeedUpTileModuleProperties;
+
   /// No description provided for @moduleTitle_TunnelDefendModuleProperties.
   ///
   /// In en, this message translates to:
@@ -12152,6 +13004,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This will remove all Gulliver Tunnels outside the 5×9 lawn. This action cannot be undone.'**
   String get gulliverTunnelDeleteOutsideConfirmMessage;
+
+  /// No description provided for @wizardCauldronBoilingDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Boiling time after Plant Food (BoilingDuration, seconds)'**
+  String get wizardCauldronBoilingDuration;
+
+  /// No description provided for @wizardCauldronExplosionDamage.
+  ///
+  /// In en, this message translates to:
+  /// **'Cauldron explosion damage (ExplodeDamageAmount)'**
+  String get wizardCauldronExplosionDamage;
+
+  /// No description provided for @wizardCauldronVenomDamagePerSecond.
+  ///
+  /// In en, this message translates to:
+  /// **'Cauldron venom damage per second (VenomDamageAmountPerSecond)'**
+  String get wizardCauldronVenomDamagePerSecond;
+
+  /// No description provided for @wizardCauldronVenomDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Cauldron venom duration (VenomExistDuration, seconds)'**
+  String get wizardCauldronVenomDuration;
+
+  /// No description provided for @wizardCauldronHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-places Wizard Cauldrons on the lawn, commonly used in Fairy Forest. Plant Food makes a cauldron boil briefly.\nDuring boiling, inserted plants yield the same number and level of random plants of the next quality: White to Green, Green to Blue, Blue to Purple; Orange yields other Orange plants.\nAt zero health, the cauldron explodes, damages nearby targets and leaves a temporary ring of poison that continuously damages nearby plants.'**
+  String get wizardCauldronHelpOverview;
+
+  /// No description provided for @wizardCauldronHelpUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Click an empty cell to place a Wizard Cauldron, with at most one cauldron per cell. Right-click on desktop or long-press on mobile to remove the cauldron in that cell.\nAfter placing a cauldron, you can customize its health, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.'**
+  String get wizardCauldronHelpUsage;
+
+  /// No description provided for @wizardCauldronPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'Cauldron placement positions'**
+  String get wizardCauldronPositions;
+
+  /// No description provided for @wizardCauldronHitpoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Cauldron health (CrucibleHitpoints)'**
+  String get wizardCauldronHitpoints;
+
+  /// No description provided for @speedUpTileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed-Up Tiles'**
+  String get speedUpTileTitle;
+
+  /// No description provided for @speedUpTileHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Places Speed-Up Tiles on selected tiles to make eligible ground zombies move quickly in the arrow\'s direction. These tiles commonly appear in the Need for Speed racing secret realm. Zombies resume normal walking when they leave the road. Gargantuars and zombies with special movement behavior ignore Speed-Up Tiles.'**
+  String get speedUpTileHelpOverview;
+
+  /// No description provided for @speedUpTileHelpUsageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage'**
+  String get speedUpTileHelpUsageTitle;
+
+  /// No description provided for @speedUpTileHelpUsageBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an arrow direction below, then click the grid to place a Speed-Up Tile. Clicking a tile with the same arrow direction removes it; selecting another direction and clicking an existing Speed-Up Tile replaces its direction. A Speed-Up Tile\'s horizontal coordinate (GridX) and vertical coordinate (GridY) both start at 0. For example, horizontal coordinate 0 means the first column and 8 means the ninth column; vertical coordinate 0 means the first row and 2 means the third row.'**
+  String get speedUpTileHelpUsageBody;
+
+  /// No description provided for @speedUpTileTopologyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Road Connection Rules'**
+  String get speedUpTileTopologyTitle;
+
+  /// No description provided for @speedUpTileTopologyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'An arrow does not mean \"turn immediately on entering this tile\". Zombies usually keep moving in their current direction through adjacent Speed-Up Tiles and check road connections only after traveling about one tile. To make a turn, the tile ahead in the old direction must be ordinary ground, the adjacent tile in the intended direction must be a Speed-Up Tile, and there should be only one available exit. A continuous, one-tile-wide road without branches is recommended.'**
+  String get speedUpTileTopologyBody;
+
+  /// No description provided for @speedUpTileSelectDirection.
+  ///
+  /// In en, this message translates to:
+  /// **'Select arrow direction'**
+  String get speedUpTileSelectDirection;
+
+  /// No description provided for @speedUpTileDirectionLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Left'**
+  String get speedUpTileDirectionLeft;
+
+  /// No description provided for @speedUpTileDirectionRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Right'**
+  String get speedUpTileDirectionRight;
+
+  /// No description provided for @speedUpTileDirectionUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Up'**
+  String get speedUpTileDirectionUp;
+
+  /// No description provided for @speedUpTileDirectionDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Down'**
+  String get speedUpTileDirectionDown;
+
+  /// No description provided for @speedUpTilePlacedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Placed'**
+  String get speedUpTilePlacedCount;
+
+  /// No description provided for @speedUpTileClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get speedUpTileClearAll;
+
+  /// No description provided for @speedUpTileClearConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all Speed-Up Tiles?'**
+  String get speedUpTileClearConfirmTitle;
+
+  /// No description provided for @speedUpTileClearConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove all placed Speed-Up Tiles, including those outside the lawn. This action cannot be undone.'**
+  String get speedUpTileClearConfirmMessage;
+
+  /// No description provided for @speedUpTileOutsideLawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed-Up Tiles outside the lawn: '**
+  String get speedUpTileOutsideLawn;
+
+  /// No description provided for @speedUpTileDeleteOutside.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Speed-Up Tiles outside the lawn'**
+  String get speedUpTileDeleteOutside;
+
+  /// No description provided for @speedUpTileDeleteOutsideConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Speed-Up Tiles outside the lawn?'**
+  String get speedUpTileDeleteOutsideConfirmTitle;
+
+  /// No description provided for @speedUpTileDeleteOutsideConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove all Speed-Up Tiles outside the current lawn grid. This action cannot be undone.'**
+  String get speedUpTileDeleteOutsideConfirmMessage;
 
   /// No description provided for @moduleTitle_RiftThemeDemoModuleProperties.
   ///
@@ -14280,7 +15294,7 @@ abstract class AppLocalizations {
   /// No description provided for @armrackModuleHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Places weapon stands from Kongfu World at specified positions on the lawn. Kongfu Zombies and Monk Zombies that pass by a Weapon Stand will pick up the weapon on it, transform into the corresponding special zombie, and fully restore their health. The weapon stand will break and disappear either when its own health is depleted or when the weapon on it is picked up.\nThis module also ensures that Weapon Stands display correctly in both the editor and the game, preventing them from incorrectly appearing with a sun texture.'**
+  /// **'Places weapon stands from Kongfu World at set positions on the lawn. Kongfu Zombies and Monk Zombies that pass by a Weapon Stand will pick up the weapon on it, transform into the corresponding special zombie, and fully restore their health. The weapon stand will break and disappear either when its own health is depleted or when the weapon on it is picked up.\nThis module also ensures that Weapon Stands display correctly in both the editor and the game, preventing them from incorrectly appearing with a sun texture.'**
   String get armrackModuleHelpOverviewBody;
 
   /// No description provided for @armrackModuleHelpPlacement.
@@ -14334,7 +15348,7 @@ abstract class AppLocalizations {
   /// No description provided for @energyGridModuleHelpOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'Generates Taiji Tiles at specified positions on the lawn, commonly used in Kongfu World. When a plant is placed on a Taiji Tile, the Taiji emblem begins to flash and generates one Plant Food after 1000 ÷ the plant\'s sun cost seconds, then disappears. If the plant\'s sun cost is 0, no Plant Food will be generated.'**
+  /// **'Generates Taiji Tiles at set positions on the lawn, commonly used in Kongfu World. When a plant is placed on a Taiji Tile, the Taiji emblem begins to flash and generates one Plant Food after 1000 ÷ the plant\'s sun cost seconds, then disappears. If the plant\'s sun cost is 0, no Plant Food will be generated.'**
   String get energyGridModuleHelpOverviewBody;
 
   /// No description provided for @energyGridModuleHelpPlacement.
@@ -16200,19 +17214,19 @@ abstract class AppLocalizations {
   /// No description provided for @lunarMineVeinHelpHardened.
   ///
   /// In en, this message translates to:
-  /// **'Protected by a sturdy outer layer of rock. The shell must first be destroyed by plant attacks before the crystal can be mined normally. Hard-Shell Crystal Veins always grow the 3,000 HP version of the Hard-Shell Crystal.'**
+  /// **'Grows into a Hard-Shell Crystal encased in sturdy rock. The shell must first be destroyed by plant attacks before the crystal can be mined normally. Hard-Shell Crystal Veins always grow the 3,000 HP version of the Hard-Shell Crystal.'**
   String get lunarMineVeinHelpHardened;
 
   /// No description provided for @lunarMineVeinHelpFragile.
   ///
   /// In en, this message translates to:
-  /// **'Mining continuously consumes its durability until the crystal shatters. Special Fragile Crystal Veins containing Cosmic Plant Food can also be placed.'**
+  /// **'Grows into a Fragile Crystal. Mining a Fragile Crystal continuously consumes its durability until it shatters. Special Fragile Crystal Veins containing Cosmic Plant Food can also be placed.'**
   String get lunarMineVeinHelpFragile;
 
   /// No description provided for @lunarMineVeinHelpRadiation.
   ///
   /// In en, this message translates to:
-  /// **'Periodically releases radiation in all directions. Plants exposed to the radiation will randomly transform into other plants, while irradiated zombies will either take damage or mutate into a Cosmic Radiation Gargantuar. Cosmic Radiation Gargantuars have extremely high health and will also irradiate nearby plants and zombies when defeated.'**
+  /// **'Grows into a Radioactive Crystal. A Radioactive Crystal periodically releases radiation in all directions. Plants exposed to the radiation will randomly transform into other plants, while irradiated zombies will either take damage or mutate into a Cosmic Radiation Gargantuar. Cosmic Radiation Gargantuars have extremely high health and will also irradiate nearby plants and zombies when defeated.'**
   String get lunarMineVeinHelpRadiation;
 
   /// No description provided for @lunarMineVeinHelpWaveTitle.
@@ -16458,13 +17472,13 @@ abstract class AppLocalizations {
   /// No description provided for @gladiatorHelpUsage.
   ///
   /// In en, this message translates to:
-  /// **'The duel duration, Plant Food reward and penalty drop settings above, along with the penalty zombie pool and weights below, are global settings shared by every duel in this module. Select “Add duel” to configure an individual duel. When you add a zombie, its resource groups are automatically added to the module. The wave (Wave), row (Row) and spawn column (GridX) are all numbered from 0: Wave 0 corresponds to timeline wave 1, and Wave 4 to wave 5. The editor defaults to trophy duel mode (GameplayVersion 1). Setting it to 0 enables a different, retired duel mode, which you can explore through manual editing.'**
+  /// **'The duel duration, Plant Food reward and penalty drop settings above, along with the penalty zombie pool and weights below, are global settings shared by every duel in this module.\nSelect \"Add duel\" to configure an individual duel. When you add a zombie, its resource groups are automatically added to the module.\nThe wave (Wave), row (Row) and spawn column (GridX) are all numbered from 0: Wave 0 corresponds to timeline wave 1, and Wave 4 to wave 5.\nThe editor defaults to trophy duel mode (GameplayVersion 1). Setting it to 0 enables a different, retired duel mode, which you can explore through manual editing.'**
   String get gladiatorHelpUsage;
 
   /// No description provided for @gladiatorHelpTips.
   ///
   /// In en, this message translates to:
-  /// **'During a duel, planting no longer costs sun, but plants still occupy the Life Support System’s power capacity.\nInstant-kill attacks from Gargantuars and similar zombies cannot damage the trophy.\nPlant projectiles leaving the arena are blocked by its fences. Zombies that leave the arena, and zombies using certain abilities aimed outside the arena, become frozen in place. They are released when the duel timer ends and resume attacking.\nGladiatorial Rows do not appear on six-row lawns with an Underwater World appearance, such as 20,000 Leagues Under the Sea or Atlantis. The Gladiatorial Row module also does not work with Wave Generator.'**
+  /// **'During a duel, planting no longer costs sun, but plants still occupy the Life Support System’s power capacity. Zombies do not spawn on the trophy tile.\nPlant projectiles leaving the Gladiatorial Row are blocked by its fences. Plants and zombies that leave the row, as well as certain plants and zombies that remain inside it but whose abilities target something outside, temporarily freeze. They are released when the duel timer ends and resume acting.\nGladiatorial Rows do not appear on six-row lawns with an Underwater World appearance, such as 20,000 Leagues Under the Sea or Atlantis. The Gladiatorial Row module also does not work with Wave Generator.'**
   String get gladiatorHelpTips;
 
   /// No description provided for @radiationMeteorHelpTitle.
@@ -16809,6 +17823,42 @@ abstract class AppLocalizations {
   /// **'Targeted plants are pressed halfway into the ground. While in this state, they cannot attack but can still be eaten by zombies. Targeted zombies advance steadily and become immune to knockback effects.\nCosmic Saucer can remove Hypergravity from zombies and put them into the Floating state instead. It can also remove Hypergravity from plants, restoring them to normal.'**
   String get gravityHelpHeavy;
 
+  /// No description provided for @pumpkinScarecrowSpawnCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Scarecrow spawn count (Count)'**
+  String get pumpkinScarecrowSpawnCount;
+
+  /// No description provided for @pumpkinScarecrowCrowLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Crow level (Level, 0-index)'**
+  String get pumpkinScarecrowCrowLevel;
+
+  /// No description provided for @pumpkinScarecrowHelpOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Places Pumpkin Scarecrows at selected positions, commonly used in Haunting Halloween levels. Crows periodically fly off the scarecrows to carry away plants. Each departing crow is replaced by a new one flying in from outside the lawn, so crows will continue to appear until the scarecrow is destroyed. The health of each scarecrow and the level of its summoned crows can be customized in this event.'**
+  String get pumpkinScarecrowHelpOverview;
+
+  /// No description provided for @pumpkinScarecrowHelpLogic.
+  ///
+  /// In en, this message translates to:
+  /// **'This event selects valid tiles from the pool above to spawn scarecrows. The total number of grid items cannot exceed the number of available tiles, or excess spawns will fail.'**
+  String get pumpkinScarecrowHelpLogic;
+
+  /// No description provided for @pumpkinScarecrowPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'Scarecrow spawn positions'**
+  String get pumpkinScarecrowPositions;
+
+  /// No description provided for @pumpkinScarecrowHitpoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Scarecrow health (Hitpoints)'**
+  String get pumpkinScarecrowHitpoints;
+
   /// No description provided for @rocketLandingHelpTitle.
   ///
   /// In en, this message translates to:
@@ -16818,8 +17868,14 @@ abstract class AppLocalizations {
   /// No description provided for @rocketLandingHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'An event commonly used in Moon BaseZ. It spawns rockets at specified positions as objectives contested by both plants and zombies.'**
+  /// **'An event commonly used in Moon BaseZ. It spawns rockets at set positions as objectives contested by both plants and zombies.'**
   String get rocketLandingHelpOverview;
+
+  /// No description provided for @rocketLandingHelpLogic.
+  ///
+  /// In en, this message translates to:
+  /// **'This event selects valid tiles from the pool above to spawn rockets. The total number of grid items cannot exceed the number of available tiles, or excess spawns will fail.'**
+  String get rocketLandingHelpLogic;
 
   /// No description provided for @rocketLandingHelpPlantsTitle.
   ///
@@ -16956,7 +18012,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleHelpStatueMazeOverviewBody.
   ///
   /// In en, this message translates to:
-  /// **'A Renaissance Ages-exclusive minigame. This minigame consists of several rounds, each with an array of statues, some of which conceal Aristocrat Zombies. At the start of each round, the locations of the hidden zombies are revealed. The entire array then rotates several times to challenge the player’s memory. Once the rotations finish, the player must use their limited supply of tools to smash every statue hiding a zombie. The level is lost if any zombies remain undiscovered when all attempts have been used. The player can also spend diamonds to buy extra attempts when they run out.'**
+  /// **'A Renaissance Ages-exclusive minigame. This minigame consists of several rounds, each with an array of statues, some of which conceal Aristocrat Zombies. At the start of each round, the locations of the hidden zombies are revealed. The entire array then rotates several times to challenge the player’s memory. Once the rotations finish, the player must use their limited supply of tools to smash every statue hiding a zombie. The level is lost if any zombies remain undiscovered when all attempts have been used. The player can also spend diamonds to buy extra attempts when they run out. Note that adding this module hides the Plant Food meter during the level.'**
   String get moduleHelpStatueMazeOverviewBody;
 
   /// No description provided for @moduleHelpStatueMazeTimingTitle.
@@ -17034,7 +18090,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleHelpStatueMazeRotationsBody.
   ///
   /// In en, this message translates to:
-  /// **'Each round can contain multiple rotation steps. Each step rotates the entire array by 90°. “C” means clockwise and “AC” means counterclockwise. Tap the play button below the grid to preview all rotation steps in the current round.'**
+  /// **'Each round can contain multiple rotation steps. Each step rotates the entire array by 90°. \"C\" means clockwise and \"AC\" means counterclockwise. Tap the play button below the grid to preview all rotation steps in the current round.'**
   String get moduleHelpStatueMazeRotationsBody;
 
   /// No description provided for @statueMazeRotationsHint.
@@ -17100,7 +18156,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleHelpCamelTutorialBody.
   ///
   /// In en, this message translates to:
-  /// **'Enable “Show tutorial dialogue” to have Crazy Dave and Penny explain how to win by matching pairs before the level starts. The dialogue is fixed to the story shown when playing Ancient Egypt - Day 7 for the first time.'**
+  /// **'Enable \"Show tutorial dialogue\" to have Crazy Dave and Penny explain how to win by matching pairs before the level starts. The dialogue is fixed to the story shown when playing Ancient Egypt - Day 7 for the first time.'**
   String get moduleHelpCamelTutorialBody;
 
   /// No description provided for @moduleHelpCamelTipsBody.
@@ -17504,6 +18560,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Automatically saved to: {path}'**
   String automaticallySavedTo(String path);
+
+  /// No description provided for @spawnGravestonesCrashProneItemsWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Spawning Heavy Shield or Cavalry Lance through the Grid Item Spawn event causes the level to crash. Please spawn it another way.'**
+  String get spawnGravestonesCrashProneItemsWarning;
+
+  /// No description provided for @startupPluginResources.
+  ///
+  /// In en, this message translates to:
+  /// **'Plugin resources {completed}/{total}'**
+  String startupPluginResources(int completed, int total);
 }
 
 class _AppLocalizationsDelegate

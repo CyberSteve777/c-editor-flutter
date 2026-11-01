@@ -179,6 +179,31 @@ void main() {
     },
   );
 
+  testWidgets('gladiator spawn cards stay separated from their heading', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 850);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final l10n = lookupAppLocalizations(const Locale('en'));
+    await tester.pumpWidget(_app(_editor(_level(1)), scale: 2));
+    await tester.pumpAndSettle();
+    final heading = find.text(l10n.gladiatorSpawns);
+    await tester.ensureVisible(heading);
+    await tester.pumpAndSettle();
+    final firstSpawnField = find.byKey(
+      const ValueKey('gladiator-spawn-0-Time'),
+    );
+    final firstCard = find
+        .ancestor(of: firstSpawnField, matching: find.byType(Card))
+        .first;
+    expect(
+      tester.getRect(firstCard).top - tester.getRect(heading).bottom,
+      greaterThanOrEqualTo(16),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   for (final locale in ['zh', 'en', 'ru']) {
     testWidgets(
       'underwater notice and reminder are localized and clear after changing lawns in $locale',
@@ -591,6 +616,68 @@ void main() {
       await tester.pumpAndSettle();
       expect(readGladiatorRowModuleData(level)!.encounters, isEmpty);
       expect(find.byType(GladiatorRowPreview), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'batch zombie additions retain every spawn and required resource group',
+    (tester) async {
+      final level = PvzLevelFile(objects: []);
+      var changes = 0;
+      await tester.pumpWidget(_app(_editor(level, changed: () => changes++)));
+      await tester.pumpAndSettle();
+      await _tap(
+        tester,
+        find.byKey(const ValueKey('addGridOverrideWaveGroup')),
+      );
+      await _tap(tester, find.byKey(const ValueKey('gladiator-add-spawn')));
+      final spawns = tester.widget<ZombieSelectionScreen>(
+        find.byType(ZombieSelectionScreen),
+      );
+      expect(spawns.multiSelect, isTrue);
+      final changesBefore = changes;
+      spawns.onMultiZombieSelected!(['roman_shield_top', 'roman_healer']);
+      await tester.pumpAndSettle();
+      expect(
+        readGladiatorRowModuleData(
+          level,
+        )!.encounters.single.spawns.map((entry) => entry.zombieType),
+        ['roman_shield_top', 'roman_healer'],
+      );
+      expect(changes, changesBefore + 1);
+      expect(
+        level.objects.single.objData['ResourceGroupNames'],
+        containsAll([
+          'GladiatorRow',
+          'ZombieRomanTopShieldGroup',
+          'ZombieRomanHealerGroup',
+        ]),
+      );
+      await _tap(
+        tester,
+        find.byKey(const ValueKey('gladiator-add-punishment')),
+      );
+      final pool = tester.widget<ZombieSelectionScreen>(
+        find.byType(ZombieSelectionScreen),
+      );
+      expect(pool.multiSelect, isTrue);
+      final existingPool = readGladiatorRowModuleData(
+        level,
+      )!.punishmentPool.map((entry) => entry.toJson()).toList();
+      pool.onMultiZombieSelected!(['roman_armor1', 'roman_armor2']);
+      await tester.pumpAndSettle();
+      expect(
+        readGladiatorRowModuleData(
+          level,
+        )!.punishmentPool.map((entry) => entry.toJson()),
+        [
+          ...existingPool,
+          {'ZombieTypeName': 'roman_armor1', 'Weight': 1},
+          {'ZombieTypeName': 'roman_armor2', 'Weight': 1},
+        ],
+      );
+      expect(find.byType(ZombieSelectionScreen), findsNothing);
       expect(tester.takeException(), isNull);
     },
   );
