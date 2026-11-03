@@ -10,6 +10,7 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/halloween_placement_screen.dart';
 import 'package:c_editor/screens/editor_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
@@ -17,6 +18,7 @@ import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/pre
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(ResourceNames.ensureLoaded);
   test(
     'scarecrow and cauldron labels use separate namespaces and established terminology',
     () async {
@@ -330,14 +332,38 @@ void main() {
             buttons: kSecondaryMouseButton,
           );
           await tester.pumpAndSettle();
-          expect(cauldrons, hasLength(2));
+          expect(cauldrons, hasLength(3));
           expect(cauldrons.last['CrucibleHitpoints'], 1234);
           expect(find.text('R1 : C3'), findsOneWidget);
           await tester.longPress(cell);
           await tester.pumpAndSettle();
-          expect(cauldrons, hasLength(1));
-          expect(cauldrons.single['GridX'], 2);
+          expect(cauldrons, hasLength(3));
+          await tester.tap(find.byKey(const ValueKey('placementCell_2_0')));
+          await tester.pumpAndSettle();
           expect(find.text('R1 : C3'), findsOneWidget);
+          final deleteButton = find.byKey(
+            const ValueKey('deleteSelectedWizardCauldron'),
+          );
+          await tester.ensureVisible(deleteButton);
+          await tester.tap(deleteButton);
+          await tester.pumpAndSettle();
+          final strings = lookupAppLocalizations(const Locale('zh'));
+          expect(
+            find.text(strings.removeItemConfirm('R1 : C3 巫师坩埚')),
+            findsOneWidget,
+          );
+          expect(cauldrons, hasLength(3));
+          await tester.tap(find.text(strings.cancel));
+          await tester.pumpAndSettle();
+          expect(cauldrons, hasLength(3));
+          await tester.tap(deleteButton);
+          await tester.pumpAndSettle();
+          await tester.tap(find.text(strings.remove));
+          await tester.pumpAndSettle();
+          expect(cauldrons, hasLength(2));
+          expect(cauldrons.any((p) => p['GridX'] == 2), isFalse);
+          expect(data['FutureField'], 42);
+          expect(deleteButton, findsNothing);
         }
         // Every cell fills the original lawn, including when SafeArea padding
         // would otherwise be inherited by a nested scrollable grid.

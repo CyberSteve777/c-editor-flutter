@@ -274,6 +274,18 @@ abstract class AppLocalizations {
   /// **'Sun doesn\'t fall from the sky'**
   String get sunDroppingInactive;
 
+  /// No description provided for @peaSymbiosisActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Pea Symbiosis: enabled'**
+  String get peaSymbiosisActive;
+
+  /// No description provided for @peaSymbiosisInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Pea Symbiosis: disabled'**
+  String get peaSymbiosisInactive;
+
   /// No description provided for @conveyorChanges.
   ///
   /// In en, this message translates to:
@@ -4129,7 +4141,7 @@ abstract class AppLocalizations {
   /// No description provided for @startingSun.
   ///
   /// In en, this message translates to:
-  /// **'Starting Sun'**
+  /// **'Starting sun'**
   String get startingSun;
 
   /// No description provided for @startingPlantfood.
@@ -7207,13 +7219,13 @@ abstract class AppLocalizations {
   /// No description provided for @zombieCount.
   ///
   /// In en, this message translates to:
-  /// **'Total count (Total)'**
+  /// **'Total count (ZombieCount)'**
   String get zombieCount;
 
   /// No description provided for @timeBeforeSpawn.
   ///
   /// In en, this message translates to:
-  /// **'Time before full spawn (seconds)'**
+  /// **'Time before full spawn (TimeBeforeFullSpawn; seconds)'**
   String get timeBeforeSpawn;
 
   /// No description provided for @waterBoundaryColumn.
@@ -10543,13 +10555,13 @@ abstract class AppLocalizations {
   /// No description provided for @zombieSpawnWaitSec.
   ///
   /// In en, this message translates to:
-  /// **'Spawn delay (seconds) '**
+  /// **'Spawn delay (ZombieSpawnWaitTime; seconds)'**
   String get zombieSpawnWaitSec;
 
   /// No description provided for @gridTypes.
   ///
   /// In en, this message translates to:
-  /// **'Grid item types'**
+  /// **'Grid item types (GridTypes)'**
   String get gridTypes;
 
   /// No description provided for @zombiesCount.
@@ -10974,7 +10986,7 @@ abstract class AppLocalizations {
   /// No description provided for @initialWeight.
   ///
   /// In en, this message translates to:
-  /// **'Initial weight'**
+  /// **'Initial weight (Weight)'**
   String get initialWeight;
 
   /// No description provided for @plantLevelLabel.
@@ -11274,7 +11286,7 @@ abstract class AppLocalizations {
   /// No description provided for @maxCountThreshold.
   ///
   /// In en, this message translates to:
-  /// **'Max count threshold'**
+  /// **'Max count threshold (MaxCount)'**
   String get maxCountThreshold;
 
   /// No description provided for @weightFactor.
@@ -11292,7 +11304,7 @@ abstract class AppLocalizations {
   /// No description provided for @minCountThreshold.
   ///
   /// In en, this message translates to:
-  /// **'Min count threshold'**
+  /// **'Min count threshold (MinCount)'**
   String get minCountThreshold;
 
   /// No description provided for @followAccountLevel.
@@ -11328,19 +11340,19 @@ abstract class AppLocalizations {
   /// No description provided for @startingWave.
   ///
   /// In en, this message translates to:
-  /// **'Starting wave'**
+  /// **'Starting wave (StartingWave)'**
   String get startingWave;
 
   /// No description provided for @startingPoints.
   ///
   /// In en, this message translates to:
-  /// **'Starting points'**
+  /// **'Starting points (StartingPoints)'**
   String get startingPoints;
 
   /// No description provided for @pointIncrement.
   ///
   /// In en, this message translates to:
-  /// **'Point increase per wave'**
+  /// **'Point increase per wave (PointIncrementPerWave)'**
   String get pointIncrement;
 
   /// No description provided for @zombiePool.
@@ -13038,7 +13050,7 @@ abstract class AppLocalizations {
   /// No description provided for @wizardCauldronHelpUsage.
   ///
   /// In en, this message translates to:
-  /// **'Click an empty cell to place a Wizard Cauldron, with at most one cauldron per cell. Right-click on desktop or long-press on mobile to remove the cauldron in that cell.\nAfter placing a cauldron, you can customize its health, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.'**
+  /// **'Click an empty cell to place a Wizard Cauldron, with at most one cauldron per cell.\nAfter placing a cauldron, you can customize its health, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.'**
   String get wizardCauldronHelpUsage;
 
   /// No description provided for @wizardCauldronPositions.
@@ -15474,8 +15486,14 @@ abstract class AppLocalizations {
   /// No description provided for @mechanismPlankEditNotice.
   ///
   /// In en, this message translates to:
-  /// **'This interface only supports editing the starting column and track length. All other parameters use preset values, as modifying them may cause Connected Minecarts to malfunction. For further customization, please edit the JSON file manually.\nAdditionally, Connected Minecarts are not recommended outside of Kongfu World, as they are more likely to appear as purple X markers. This does not affect their actual functionality, but it may impact the level\'s visual presentation.'**
+  /// **'This interface only supports editing the starting column and track length. All other parameters use preset values, as modifying them may cause Connected Minecarts to malfunction. For further customization, please edit the JSON file manually.'**
   String get mechanismPlankEditNotice;
+
+  /// No description provided for @mechanismPlankStageRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Only levels whose base lawn is Kongfu World can use this module.\nTo use Connected Minecarts with another world\'s appearance, customize a lawn based on Kongfu World.'**
+  String get mechanismPlankStageRequiredMessage;
 
   /// No description provided for @mechanismPlankOutOfAreaWarning.
   ///

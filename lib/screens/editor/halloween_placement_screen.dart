@@ -130,16 +130,42 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
     sync();
   }
 
-  void removeCauldron(int index) {
-    positions.removeAt(index);
-    sync();
-  }
-
-  void removeCell(int x, int y) {
-    final index = positions.indexWhere(
-      (p) => p['GridX'] == x && p['GridY'] == y,
+  Future<void> confirmRemoveCauldron() async {
+    if (selected < 0) return;
+    final target = positions[selected];
+    final l = AppLocalizations.of(context)!;
+    final name = ResourceNames.lookupOrFallback(
+      context,
+      'griditem_wizard_crucible',
+      'wizard_crucible',
     );
-    if (index >= 0) removeCauldron(index);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.removeItem),
+        content: Text(
+          l.removeItemConfirm(
+            'R${target['GridY'] + 1} : C${target['GridX'] + 1} $name',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(ctx).colorScheme.error,
+            ),
+            child: Text(l.remove),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || confirmed != true) return;
+    positions.remove(target);
+    sync();
   }
 
   Widget grid() {
@@ -193,12 +219,6 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
                         child: InkWell(
                           key: ValueKey('placementCell_${x}_$y'),
                           onTap: () => editCell(x, y),
-                          onSecondaryTap: widget.cauldron
-                              ? () => removeCell(x, y)
-                              : null,
-                          onLongPress: widget.cauldron
-                              ? () => removeCell(x, y)
-                              : null,
                           child: Container(
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -256,7 +276,7 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
     );
   }
 
-  Widget identity(String type) => Row(
+  Widget identity(String type, {VoidCallback? onDelete}) => Row(
     children: [
       GridItemIcon(typeName: type, size: 48, fit: BoxFit.contain),
       const SizedBox(width: 12),
@@ -272,6 +292,13 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
           ],
         ),
       ),
+      if (onDelete != null)
+        IconButton(
+          key: const ValueKey('deleteSelectedWizardCauldron'),
+          tooltip: AppLocalizations.of(context)!.delete,
+          icon: const Icon(Icons.delete_outline),
+          onPressed: onDelete,
+        ),
     ],
   );
 
@@ -374,7 +401,7 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
               const SizedBox(height: 16),
               if (selected >= 0)
                 card([
-                  identity('wizard_crucible'),
+                  identity('wizard_crucible', onDelete: confirmRemoveCauldron),
                   const SizedBox(height: 12),
                   number(
                     positions[selected],

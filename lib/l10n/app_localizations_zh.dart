@@ -99,6 +99,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sunDroppingInactive => '天降阳光：无';
 
   @override
+  String get peaSymbiosisActive => '豆藤共生：有';
+
+  @override
+  String get peaSymbiosisInactive => '豆藤共生：无';
+
+  @override
   String get conveyorChanges => '传送带变动';
 
   @override
@@ -2442,7 +2448,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String zombiePointCost(int cost) {
-    return '消耗点数：$cost';
+    return '所需点数：$cost';
   }
 
   @override
@@ -3854,10 +3860,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get gridItemLayout => '场地物品布局';
 
   @override
-  String get zombieCount => '总数量 (Total)';
+  String get zombieCount => '总数量 (ZombieCount)';
 
   @override
-  String get timeBeforeSpawn => '完全生成前摇时间（单位：秒）';
+  String get timeBeforeSpawn => '完全生成前摇时间 (TimeBeforeFullSpawn，单位：秒)';
 
   @override
   String get waterBoundaryColumn => '变更位置 (ChangeAmount)';
@@ -5557,7 +5563,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get perBatchGroupSize => '每批数量 (GroupSize)';
 
   @override
-  String get fallTime => '降落耗时（单位：秒）';
+  String get fallTime => '降落耗时 (ZombieFallTime，单位：秒)';
 
   @override
   String get waveStartMessageLabel => '红色字幕警告信息 (WaveStartMessage)';
@@ -5684,10 +5690,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get basicParameters => '基本参数';
 
   @override
-  String get zombieSpawnWaitSec => '僵尸生成延迟（单位：秒）';
+  String get zombieSpawnWaitSec => '僵尸生成延迟 (ZombieSpawnWaitTime，单位：秒)';
 
   @override
-  String get gridTypes => '障碍物类型';
+  String get gridTypes => '障碍物类型 (GridTypes)';
 
   @override
   String zombiesCount(int count) {
@@ -5934,7 +5940,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '启用后放置的僵尸属于植物阵营，可用于“僵尸大战僵尸”(ZvZ)玩法';
 
   @override
-  String get initialWeight => '初始权重';
+  String get initialWeight => '初始权重 (Weight)';
 
   @override
   String get plantLevelLabel => '植物阶级';
@@ -6096,7 +6102,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get maxLimits => '上限控制 (Max Limits)';
 
   @override
-  String get maxCountThreshold => '最大数量阈值';
+  String get maxCountThreshold => '最大数量阈值 (MaxCount)';
 
   @override
   String get weightFactor => '达标后权重倍率';
@@ -6105,7 +6111,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get minLimits => '下限控制 (Min Limits)';
 
   @override
-  String get minCountThreshold => '最小数量阈值';
+  String get minCountThreshold => '最小数量阈值 (MinCount)';
 
   @override
   String get followAccountLevel => '0阶植物将使用玩家账号中的对应阶级';
@@ -7063,7 +7069,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get wizardCauldronHelpUsage =>
-      '点击空白格子即可放置巫师坩埚，每格最多放置一个。桌面端右键或移动端长按可删除该格的巫师坩埚。\n放置坩埚后，可自定义该坩埚的生命值、投入能量豆后沸腾的时间、爆炸对植物和僵尸的伤害、毒液遗留时间和毒液每秒的伤害。';
+      '点击空白格子即可放置巫师坩埚，每格最多放置一个。\n放置坩埚后，可自定义该坩埚的生命值、投入能量豆后沸腾的时间、爆炸对植物和僵尸的伤害、毒液遗留时间和毒液每秒的伤害。';
 
   @override
   String get wizardCauldronPositions => '坩埚放置位置';
@@ -8397,7 +8403,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mechanismPlankEditNotice =>
-      '该界面仅支持编辑轨道宽度和起始列。其他参数采用预设值，因为修改它们可能会导致连体矿车无法正常使用。如需进一步自定义，请手动编辑JSON文件。\n此外，不建议在功夫世界以外的地图中使用连体矿车。连体矿车在其他地图中更容易显示为紫色叉号，虽然不影响实际功能，但可能会影响关卡的整体观感。';
+      '该界面仅支持编辑轨道宽度和起始列。其他参数采用预设值，因为修改它们可能会导致连体矿车无法正常使用。如需进一步自定义，请手动编辑JSON文件。';
+
+  @override
+  String get mechanismPlankStageRequiredMessage =>
+      '只有基础地图为「功夫世界」时，才能选择此模块。\n如果想在其他世界外观的地图中使用连体矿车，建议以功夫世界的地图为基础进行自定义。';
 
   @override
   String get mechanismPlankOutOfAreaWarning => '当前轨道范围可能超出场地。';

@@ -497,7 +497,8 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
               children: [
                 Expanded(
                   child: _NumberField(
-                    label: l10n?.startColumn ?? 'Start column',
+                    label:
+                        l10n?.columnStartLabel ?? 'Start column (ColumnStart)',
                     value: _data.columnStart,
                     onChanged: (v) {
                       _data = ParachuteRainEventData(
@@ -518,7 +519,7 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _NumberField(
-                    label: l10n?.endColumn ?? 'End column',
+                    label: l10n?.columnEndLabel ?? 'End column (ColumnEnd)',
                     value: _data.columnEnd,
                     onChanged: (v) {
                       _data = ParachuteRainEventData(
@@ -567,7 +568,8 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _DoubleField(
-                    label: l10n?.fallTime ?? 'Fall time (s)',
+                    label:
+                        l10n?.fallTime ?? 'Fall time (ZombieFallTime; seconds)',
                     value: _data.zombieFallTime,
                     onChanged: (v) {
                       _data = ParachuteRainEventData(
@@ -589,7 +591,9 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
             ),
             const SizedBox(height: 12),
             _DoubleField(
-              label: l10n?.timeBeforeSpawn ?? 'Time before full spawn (s)',
+              label:
+                  l10n?.timeBeforeSpawn ??
+                  'Time before full spawn (TimeBeforeFullSpawn; seconds)',
               value: _data.timeBeforeFullSpawn,
               onChanged: (v) {
                 _data = ParachuteRainEventData(

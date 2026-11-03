@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/lunar_mine_vein_type_catalog.dart';
 import 'package:c_editor/data/music_suffix_catalog.dart';
 import 'package:c_editor/data/music_type_catalog.dart';
+import 'package:c_editor/data/narrative_catalog.dart';
 import 'package:c_editor/data/speed_up_tile_catalog.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/level_parser.dart';
@@ -151,6 +152,8 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
   int _plantTypeIndex = 0;
   String? _gridItemCategoryKey;
   bool _isLoadingRepos = true;
+  Future<NarrativeCatalog>? _narrativeCatalogFuture;
+  Locale? _narrativeLocale;
 
   List<String> _cachedZombies = [];
   List<DiscoveredGridItem> _cachedGridItems = [];
@@ -200,6 +203,16 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
   void initState() {
     super.initState();
     _initData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final locale = Localizations.localeOf(context);
+    if (_narrativeLocale != locale) {
+      _narrativeLocale = locale;
+      _narrativeCatalogFuture = NarrativeCatalog.load(locale);
+    }
   }
 
   Future<void> _initData() async {
@@ -778,6 +791,14 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
         def.modules.any((m) => m.contains('SunBomb'));
 
     bool sunBombsActive = skySunEnabled && hasSunBombModule;
+    final peaSymbiosisEnabled = def.disablePeavine != true;
+    final peaSymbiosisLabel = peaSymbiosisEnabled
+        ? l10n.peaSymbiosisActive
+        : l10n.peaSymbiosisInactive;
+    final peaSymbiosisIcon = peaSymbiosisEnabled ? Icons.link : Icons.link_off;
+    final peaSymbiosisColor = peaSymbiosisEnabled
+        ? Colors.greenAccent
+        : Colors.redAccent;
 
     bool hasOverwhelm = levelHasModule(
       widget.levelFile,
@@ -886,6 +907,12 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
       color: sunBombsActive
           ? Colors.deepPurpleAccent
           : (skySunEnabled ? Colors.lightBlueAccent : Colors.redAccent),
+    ));
+    summaryLegends.add((
+      title: peaSymbiosisLabel,
+      icon: peaSymbiosisIcon,
+      iconId: null,
+      color: peaSymbiosisColor,
     ));
     if (hasOverwhelm)
       summaryLegends.add((
@@ -1029,6 +1056,46 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                         fontSize: 14,
                       ),
                     ),
+                    FutureBuilder<NarrativeCatalog>(
+                      future: _narrativeCatalogFuture,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const SizedBox.shrink();
+                        }
+                        final catalog = snapshot.requireData;
+                        String title(Object? value) => value == null
+                            ? catalog.strings.noDialogue
+                            : catalog.findByValue(value)?.title ??
+                                  value.toString();
+                        final style = TextStyle(
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.8,
+                          ),
+                          fontSize: 14,
+                        );
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 4),
+                            Text(
+                              '${catalog.strings.firstIntro}: ${title(def.firstIntroNarrative)}',
+                              key: const ValueKey(
+                                'overview-first-intro-narrative',
+                              ),
+                              style: style,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${catalog.strings.firstOutro}: ${title(def.firstOutroNarrative)}',
+                              key: const ValueKey(
+                                'overview-first-outro-narrative',
+                              ),
+                              style: style,
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                     const SizedBox(height: 12),
                     Wrap(
                       spacing: 10,
@@ -1132,6 +1199,13 @@ class _LevelOverviewDialogState extends State<LevelOverviewDialog> {
                       : (skySunEnabled
                             ? l10n.sunDroppingActive
                             : l10n.sunDroppingInactive),
+                ),
+                ResourceChip(
+                  key: const ValueKey('overview-pea-symbiosis'),
+                  icon: peaSymbiosisIcon,
+                  label: isDesktop ? '' : (peaSymbiosisEnabled ? '✓' : '✕'),
+                  color: peaSymbiosisColor,
+                  tooltip: peaSymbiosisLabel,
                 ),
                 if (hasOverwhelm)
                   ResourceChip(

@@ -48,6 +48,15 @@ void main() {
           catalog.forCategory(NarrativeCategory.systemTutorials),
           hasLength(130),
         );
+        expect(
+          catalog.dialogues
+              .expand((entry) => entry.lines)
+              .any(
+                (line) => line.key.contains('重复项') || line.key.contains('源行'),
+              ),
+          isFalse,
+          reason: 'Source-audit metadata must not leak into localized data.',
+        );
       }
 
       List<String> structure(NarrativeCatalog catalog) => catalog.dialogues
@@ -79,6 +88,87 @@ void main() {
       );
     },
   );
+
+  test('annotated dialogue titles stay aligned across locales', () async {
+    final catalogs = <String, NarrativeCatalog>{
+      'zh': await NarrativeCatalog.load(const Locale('zh')),
+      'en': await NarrativeCatalog.load(const Locale('en')),
+      'ru': await NarrativeCatalog.load(const Locale('ru')),
+    };
+    const expectedTitles = <String, Map<String, String>>{
+      'DINO_23_INTRO': {
+        'zh': '恐龙危机 - 第23天（国际版，原始土豆地雷介绍）',
+        'en':
+            'Jurassic Marsh - Day 23 (International, Primal Potato Mine Introduction)',
+        'ru':
+            'Юрское Болото — день 23 (международная версия, представление: Первобытная Картофельная Мина)',
+      },
+      'UNCHARTED_ICEAGE_INTRO_ZOMBOSS_HUNTER': {
+        'zh': '冰河再临 - 第4天（精英猎人僵尸介绍）',
+        'en':
+            'Frostbite Caves Resurgence - Day 4 (Elite Hunter Zombie Introduction)',
+        'ru':
+            'Замороженные Пещеры (реалм) — день 4 (представление: Элитный охотник)',
+      },
+      'UNCHARTED_ICEAGE_INTRO_ZOMBOSS_WEASELHOARDER': {
+        'zh': '冰河再临 - 第6天（精英冰鼬介绍）',
+        'en':
+            'Frostbite Caves Resurgence - Day 6 (Elite Ice Weasel Introduction)',
+        'ru':
+            'Замороженные Пещеры (реалм) — день 6 (представление: Элитная ласка)',
+      },
+      'UNCHARTED_ICEAGE_INTRO_ZOMBOSS_CHIEF': {
+        'zh': '冰河再临 - 第8天（精英冰风酋长僵尸介绍）',
+        'en':
+            'Frostbite Caves Resurgence - Day 8 (Elite Chief Ice Wind Zombie Introduction)',
+        'ru':
+            'Замороженные Пещеры (реалм) — день 8 (представление: Элитный шеф ледяных ветров)',
+      },
+      'MAUSOLEUM_2_INTRO': {
+        'zh': '地宫遗迹 - 第2天（坑道介绍 1）',
+        'en': 'Underground Palace Ruins - Day 2 (Pathways Introduction 1)',
+        'ru':
+            'Руины Подземного дворца — день 2 (представление: Тоннели Подземного Дворца 1)',
+      },
+      'MAUSOLEUM_3_INTRO': {
+        'zh': '地宫遗迹 - 第3天（坑道介绍 2）',
+        'en': 'Underground Palace Ruins - Day 3 (Pathways Introduction 2)',
+        'ru':
+            'Руины Подземного дворца — день 3 (представление: Тоннели Подземного Дворца 2)',
+      },
+      'MAUSOLEUM_5_INTRO': {
+        'zh': '地宫遗迹 - 第5天（弓箭手僵尸、秘境胡萝卜导弹车介绍）',
+        'en':
+            'Underground Palace Ruins - Day 5 (Archer Zombie and Secret Realm Carrotillery Introduction)',
+        'ru':
+            'Руины Подземного дворца — день 5 (представление: Зомби-лучник и Морковортиллерия из параллельной вселенной)',
+      },
+      'MAUSOLEUM_7_INTRO': {
+        'zh': '地宫遗迹 - 第7天（秦俑、魔藤介绍）',
+        'en':
+            'Underground Palace Ruins - Day 7 (Terracotta Warriors and Magic Vine Introduction)',
+        'ru':
+            'Руины Подземного дворца — день 7 (представление: Терракотовая армия и Магическая Лоза)',
+      },
+      'MAUSOLEUM_10_INTRO': {
+        'zh': '地宫遗迹 - 第10天（僵王战）',
+        'en': 'Underground Palace Ruins - Day 10 (Zomboss Battle)',
+        'ru': 'Руины Подземного дворца — день 10 (битва с доктором Зомбоссом)',
+      },
+    };
+
+    for (final expected in expectedTitles.entries) {
+      for (final locale in catalogs.entries) {
+        expect(
+          locale.value.dialogues
+              .singleWhere((entry) => entry.groupId == expected.key)
+              .title,
+          expected.value[locale.key],
+          reason: '${expected.key}/${locale.key}',
+        );
+      }
+    }
+  });
 
   test('all PvP map and Evil Dave dialogue stays in the PvP block', () async {
     final catalogs = [

@@ -280,7 +280,7 @@ class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
             EditorResponsiveFieldRow(
               children: [
                 EditorResponsiveInputField(
-                  label: l10n?.zombieCount ?? 'Zombie count',
+                  label: l10n?.zombieCount ?? 'Zombie count (ZombieCount)',
                   decoration: InputDecoration(border: OutlineInputBorder()),
                   builder: (context, decoration) => TextFormField(
                     initialValue: _data.zombieCount.toString(),
@@ -358,7 +358,7 @@ class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
             EditorResponsiveFieldRow(
               children: [
                 EditorResponsiveInputField(
-                  label: l10n?.startColumn ?? 'Start column',
+                  label: l10n?.columnStartLabel ?? 'Start column (ColumnStart)',
                   decoration: InputDecoration(border: OutlineInputBorder()),
                   builder: (context, decoration) => TextFormField(
                     initialValue: _data.columnStart.toString(),
@@ -383,7 +383,7 @@ class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
                   ),
                 ),
                 EditorResponsiveInputField(
-                  label: l10n?.endColumn ?? 'End column',
+                  label: l10n?.columnEndLabel ?? 'End column (ColumnEnd)',
                   decoration: InputDecoration(border: OutlineInputBorder()),
                   builder: (context, decoration) => TextFormField(
                     initialValue: _data.columnEnd.toString(),
@@ -441,7 +441,9 @@ class _BeachStageEventScreenState extends State<BeachStageEventScreen> {
                   ),
                 ),
                 EditorResponsiveInputField(
-                  label: l10n?.timeBeforeSpawn ?? 'Time before spawn (s)',
+                  label:
+                      l10n?.timeBeforeSpawn ??
+                      'Time before spawn (TimeBeforeFullSpawn; seconds)',
                   builder: (context, decoration) => TextFormField(
                     initialValue: _data.timeBeforeFullSpawn.toString(),
                     decoration: decoration,

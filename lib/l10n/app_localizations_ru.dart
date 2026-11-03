@@ -101,6 +101,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sunDroppingInactive => 'Солнце не падает с неба';
 
   @override
+  String get peaSymbiosisActive => 'Симбиоз гороха: включён';
+
+  @override
+  String get peaSymbiosisInactive => 'Симбиоз гороха: выключен';
+
+  @override
   String get conveyorChanges => 'Изменения в конвейере';
 
   @override
@@ -4063,7 +4069,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get zombieCount => 'Количество зомби';
 
   @override
-  String get timeBeforeSpawn => 'Время до появления (с)';
+  String get timeBeforeSpawn => 'Время до появления (TimeBeforeFullSpawn; с)';
 
   @override
   String get waterBoundaryColumn => 'Колонка границы воды';
@@ -5807,7 +5813,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get perBatchGroupSize => 'В группе (GroupSize)';
 
   @override
-  String get fallTime => 'Время падения (с)';
+  String get fallTime => 'Время падения (ZombieFallTime; с)';
 
   @override
   String get waveStartMessageLabel => 'Красный подзаголовок (WaveStartMessage)';
@@ -5939,10 +5945,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get basicParameters => 'Основные параметры';
 
   @override
-  String get zombieSpawnWaitSec => 'Ожидание призыва зомби (сек)';
+  String get zombieSpawnWaitSec =>
+      'Ожидание призыва зомби (ZombieSpawnWaitTime; сек)';
 
   @override
-  String get gridTypes => 'Типы препятствий';
+  String get gridTypes => 'Типы препятствий (GridTypes)';
 
   @override
   String zombiesCount(int count) {
@@ -6202,7 +6209,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Зомби переходят на сторону растений';
 
   @override
-  String get initialWeight => 'Начальный вес';
+  String get initialWeight => 'Начальный вес (Weight)';
 
   @override
   String get plantLevelLabel => 'Уровень растения';
@@ -6377,7 +6384,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get maxLimits => 'Верхние пределы';
 
   @override
-  String get maxCountThreshold => 'Порог макс. количества';
+  String get maxCountThreshold => 'Порог макс. количества (MaxCount)';
 
   @override
   String get weightFactor => 'Весовой коэффициент';
@@ -6386,7 +6393,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get minLimits => 'Нижние пределы';
 
   @override
-  String get minCountThreshold => 'Порог мин. количества';
+  String get minCountThreshold => 'Порог мин. количества (MinCount)';
 
   @override
   String get followAccountLevel =>
@@ -6406,13 +6413,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pointSettings => 'Настройки очков';
 
   @override
-  String get startingWave => 'Начальная волна';
+  String get startingWave => 'Начальная волна (StartingWave)';
 
   @override
-  String get startingPoints => 'Начальные очки';
+  String get startingPoints => 'Начальные очки (StartingPoints)';
 
   @override
-  String get pointIncrement => 'Прирост очков';
+  String get pointIncrement => 'Прирост очков (PointIncrementPerWave)';
 
   @override
   String get zombiePool => 'Пул зомби';
@@ -7413,7 +7420,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get wizardCauldronHelpUsage =>
-      'Нажмите на пустую клетку, чтобы разместить котёл волшебника. В каждой клетке может быть не более одного котла. Щёлкните правой кнопкой мыши на компьютере или нажмите и удерживайте на мобильном устройстве, чтобы удалить котёл из клетки.\nПосле размещения котла можно настроить его здоровье, время кипения после подкормки, урон взрыва растениям и зомби, время существования яда и его урон в секунду.';
+      'Нажмите на пустую клетку, чтобы разместить котёл волшебника. В каждой клетке может быть не более одного котла.\nПосле размещения котла можно настроить его здоровье, время кипения после подкормки, урон взрыва растениям и зомби, время существования яда и его урон в секунду.';
 
   @override
   String get wizardCauldronPositions => 'Позиции котлов';
@@ -8818,7 +8825,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get mechanismPlankEditNotice =>
-      'Этот интерфейс поддерживает только изменение стартовой колонны и длины рельсовых дорожек. Все остальные параметры используют уже заранее заготовленные значения, так как их изменение может привести к поломке вагонеток. Для более продвинутой кастомизации воспользуйтесь функцией редактирования JSON файла.\nК тому же, не рекомендуется использовать модуль объединённых вагонеток вне лужайки Кунг-Фу мира, так как сами вагонетки могут не прогрузиться и отображаться как фиолетовые кресты. Их работоспособность не постарадает, но на визуальной составляющей уровня это может сказаться сильно.';
+      'Этот интерфейс поддерживает только изменение стартовой колонны и длины рельсовых дорожек. Все остальные параметры используют уже заранее заготовленные значения, так как их изменение может привести к поломке вагонеток. Для более продвинутой кастомизации воспользуйтесь функцией редактирования JSON файла.';
+
+  @override
+  String get mechanismPlankStageRequiredMessage =>
+      'Этот модуль можно выбрать, только если базовая лужайка — Кунг-фу Мир.\nЧтобы использовать объединённые вагонетки с видом другого мира, создайте свою лужайку на основе Кунг-фу Мира.';
 
   @override
   String get mechanismPlankOutOfAreaWarning =>

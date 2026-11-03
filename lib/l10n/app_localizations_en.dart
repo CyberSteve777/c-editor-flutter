@@ -101,6 +101,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sunDroppingInactive => 'Sun doesn\'t fall from the sky';
 
   @override
+  String get peaSymbiosisActive => 'Pea Symbiosis: enabled';
+
+  @override
+  String get peaSymbiosisInactive => 'Pea Symbiosis: disabled';
+
+  @override
   String get conveyorChanges => 'Changes in the conveyor';
 
   @override
@@ -2275,7 +2281,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get levelNumber => 'Level number';
 
   @override
-  String get startingSun => 'Starting Sun';
+  String get startingSun => 'Starting sun';
 
   @override
   String get startingPlantfood => 'Starting Plant Food';
@@ -4071,10 +4077,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gridItemLayout => 'Grid item layout';
 
   @override
-  String get zombieCount => 'Total count (Total)';
+  String get zombieCount => 'Total count (ZombieCount)';
 
   @override
-  String get timeBeforeSpawn => 'Time before full spawn (seconds)';
+  String get timeBeforeSpawn =>
+      'Time before full spawn (TimeBeforeFullSpawn; seconds)';
 
   @override
   String get waterBoundaryColumn => 'Column Offset (ChangeAmount)';
@@ -5966,10 +5973,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get basicParameters => 'Basic parameters';
 
   @override
-  String get zombieSpawnWaitSec => 'Spawn delay (seconds) ';
+  String get zombieSpawnWaitSec => 'Spawn delay (ZombieSpawnWaitTime; seconds)';
 
   @override
-  String get gridTypes => 'Grid item types';
+  String get gridTypes => 'Grid item types (GridTypes)';
 
   @override
   String zombiesCount(int count) {
@@ -6226,7 +6233,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'When enabled, placed zombies belong to the plant faction and can be used in \"Zombie Wars\" (ZvZ) gameplay.';
 
   @override
-  String get initialWeight => 'Initial weight';
+  String get initialWeight => 'Initial weight (Weight)';
 
   @override
   String get plantLevelLabel => 'Plant level';
@@ -6403,7 +6410,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get maxLimits => 'Max limits';
 
   @override
-  String get maxCountThreshold => 'Max count threshold';
+  String get maxCountThreshold => 'Max count threshold (MaxCount)';
 
   @override
   String get weightFactor => 'Post-threshold weight multiplier';
@@ -6412,7 +6419,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get minLimits => 'Min limits';
 
   @override
-  String get minCountThreshold => 'Min count threshold';
+  String get minCountThreshold => 'Min count threshold (MinCount)';
 
   @override
   String get followAccountLevel =>
@@ -6433,13 +6440,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pointSettings => 'Point settings';
 
   @override
-  String get startingWave => 'Starting wave';
+  String get startingWave => 'Starting wave (StartingWave)';
 
   @override
-  String get startingPoints => 'Starting points';
+  String get startingPoints => 'Starting points (StartingPoints)';
 
   @override
-  String get pointIncrement => 'Point increase per wave';
+  String get pointIncrement =>
+      'Point increase per wave (PointIncrementPerWave)';
 
   @override
   String get zombiePool => 'Zombie pool';
@@ -7441,7 +7449,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wizardCauldronHelpUsage =>
-      'Click an empty cell to place a Wizard Cauldron, with at most one cauldron per cell. Right-click on desktop or long-press on mobile to remove the cauldron in that cell.\nAfter placing a cauldron, you can customize its health, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.';
+      'Click an empty cell to place a Wizard Cauldron, with at most one cauldron per cell.\nAfter placing a cauldron, you can customize its health, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.';
 
   @override
   String get wizardCauldronPositions => 'Cauldron placement positions';
@@ -8832,7 +8840,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mechanismPlankEditNotice =>
-      'This interface only supports editing the starting column and track length. All other parameters use preset values, as modifying them may cause Connected Minecarts to malfunction. For further customization, please edit the JSON file manually.\nAdditionally, Connected Minecarts are not recommended outside of Kongfu World, as they are more likely to appear as purple X markers. This does not affect their actual functionality, but it may impact the level\'s visual presentation.';
+      'This interface only supports editing the starting column and track length. All other parameters use preset values, as modifying them may cause Connected Minecarts to malfunction. For further customization, please edit the JSON file manually.';
+
+  @override
+  String get mechanismPlankStageRequiredMessage =>
+      'Only levels whose base lawn is Kongfu World can use this module.\nTo use Connected Minecarts with another world\'s appearance, customize a lawn based on Kongfu World.';
 
   @override
   String get mechanismPlankOutOfAreaWarning =>
