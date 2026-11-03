@@ -2803,7 +2803,7 @@ abstract class AppLocalizations {
   /// No description provided for @jitterOffsetsFixedOffsetDescription.
   ///
   /// In en, this message translates to:
-  /// **'Commonly used in Two-Player Mode; the default is 0. A value of 0 uses the Spawn Position Offset preset and spawn formation preset. A nonzero value temporarily disables both but preserves their settings; restoring 0 enables them again. Fixed offsets accumulate in the event\'s zombie-list order without restarting for each row, while each zombie retains its own base position. The first zombie has no fixed offset; each following zombie receives one more entered increment. Even a tiny nonzero value or an event with only one zombie disables both presets.\nA positive fixed offset value moves zombies right, a negative value moves them left, and decimal fractions are preserved. Facing does not reverse this direction, so use this setting carefully with mixed rows or facings. For example, 8.5 moves the first three zombies right by 0, 8.5, and 17 from their own base positions.\nThis setting changes only horizontal position, not the number created. Excessively large magnitudes may place zombies far outside or too deeply inside the lawn, preventing normal entry or causing settlement problems.'**
+  /// **'Commonly used in Two-Player Mode; the default is 0. A value of 0 uses the Spawn Position Offset preset and spawn formation preset. A nonzero value temporarily disables both but preserves their settings; restoring 0 enables them again. Fixed offsets accumulate in the event\'s zombie-list order without restarting for each row, while each zombie retains its own base position. The first zombie has no fixed offset; each following zombie receives one more entered increment. Even a tiny nonzero value or an event with only one zombie disables both presets.\nA positive fixed offset value moves zombies right, a negative value moves them left, and decimal fractions are preserved. Facing does not reverse this direction, so use this setting carefully with mixed rows or facings. For example, 8.5 moves the first three zombies right by 0, 8.5, and 17 from their own base positions. Note that 8.5 uses game coordinate units, not tiles. Since 8.5 is much smaller than the default cumulative offset increment of 80 within a row, zombies in the same row with nearby base positions will usually appear tightly packed.\nThis setting changes only horizontal position, not the number created. Excessively large magnitudes may place zombies far outside or too deeply inside the lawn, preventing normal entry or causing settlement problems.'**
   String get jitterOffsetsFixedOffsetDescription;
 
   /// No description provided for @jitterOffsetsFixedOffsetInvalid.
@@ -4455,6 +4455,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select lawn'**
   String get selectStage;
+
+  /// No description provided for @switchStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch lawn'**
+  String get switchStage;
 
   /// No description provided for @searchStage.
   ///
@@ -15492,7 +15498,7 @@ abstract class AppLocalizations {
   /// No description provided for @mechanismPlankStageRequiredMessage.
   ///
   /// In en, this message translates to:
-  /// **'Only levels whose base lawn is Kongfu World can use this module.\nTo use Connected Minecarts with another world\'s appearance, customize a lawn based on Kongfu World.'**
+  /// **'To select this module, switch the base lawn to \"Kongfu World\", as only Kongfu World\'s objclass can properly load the connected minecart track textures.\nIf you want to use connected minecarts on a lawn with another world\'s appearance, it is recommended to customize a Kongfu World lawn instead.'**
   String get mechanismPlankStageRequiredMessage;
 
   /// No description provided for @mechanismPlankOutOfAreaWarning.

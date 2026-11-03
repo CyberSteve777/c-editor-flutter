@@ -1,4 +1,5 @@
 import 'package:c_editor/widgets/dropdown_pointer_focus.dart';
+import 'package:c_editor/widgets/persistent_scrollbar_scroll_behavior.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,7 @@ void main() {
           var value = 'One';
           await tester.pumpWidget(
             MaterialApp(
+              scrollBehavior: const PersistentScrollbarScrollBehavior(),
               home: Scaffold(
                 body: Center(
                   child: SizedBox(
@@ -88,6 +90,7 @@ void main() {
     var value = 'One';
     await tester.pumpWidget(
       MaterialApp(
+        scrollBehavior: const PersistentScrollbarScrollBehavior(),
         home: Scaffold(
           body: Center(
             child: StatefulBuilder(

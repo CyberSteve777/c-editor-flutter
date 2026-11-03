@@ -12,6 +12,26 @@ void main() {
   setUp(NarrativeCatalog.clearCacheForTesting);
 
   test(
+    'dialogue search matches phrases across strikethrough formatting',
+    () async {
+      final catalog = await NarrativeCatalog.load(const Locale('en'));
+      final results = searchNarratives(
+        catalog,
+        NarrativeCategory.all,
+        'crazy brilliant',
+      );
+      expect(
+        results.byContent.any(
+          (entry) => entry.lines.any(
+            (line) => line.key == 'NARRATIVE_TRANS_GENOSIS_OPEN_TUTORIAL_2',
+          ),
+        ),
+        isTrue,
+      );
+    },
+  );
+
+  test(
     'three locale catalogues stay structurally aligned and exclude Heroes',
     () async {
       final zh = await NarrativeCatalog.load(const Locale('zh'));
@@ -166,6 +186,90 @@ void main() {
           expected.value[locale.key],
           reason: '${expected.key}/${locale.key}',
         );
+      }
+    }
+  });
+
+  test('duplicate source keys use the game-effective value once', () async {
+    final catalogs = [
+      await NarrativeCatalog.load(const Locale('zh')),
+      await NarrativeCatalog.load(const Locale('en')),
+      await NarrativeCatalog.load(const Locale('ru')),
+    ];
+
+    for (final catalog in catalogs) {
+      for (final dialogue in catalog.dialogues) {
+        final contentKeys = dialogue.lines
+            .where((line) => line.kind != NarrativeLineKind.stage)
+            .map((line) => line.key)
+            .toList(growable: false);
+        expect(
+          contentKeys.toSet(),
+          hasLength(contentKeys.length),
+          reason: '${dialogue.groupId} must resolve each content key once.',
+        );
+
+        final lineSignatures = dialogue.lines
+            .map(
+              (line) => (
+                line.key,
+                line.kind,
+                line.text,
+                line.speaker,
+                line.emotion,
+                line.npc,
+              ),
+            )
+            .toList(growable: false);
+        expect(
+          lineSignatures.toSet(),
+          hasLength(lineSignatures.length),
+          reason: '${dialogue.groupId} must not repeat an identical line.',
+        );
+      }
+
+      expect(
+        catalog.dialogues
+            .singleWhere((entry) => entry.groupId == 'JOUST_OPEN_TUTORIAL')
+            .lines,
+        hasLength(3),
+      );
+      expect(
+        catalog.dialogues
+            .singleWhere((entry) => entry.groupId == 'JOUST_SELECT_TUTORIAL')
+            .lines,
+        hasLength(4),
+      );
+
+      NarrativeLine effectiveLine(String groupId, String key) => catalog
+          .dialogues
+          .singleWhere((entry) => entry.groupId == groupId)
+          .lines
+          .singleWhere(
+            (line) => line.key == key && line.kind == NarrativeLineKind.speech,
+          );
+
+      expect(
+        effectiveLine('HEIAN_13_INTRO', 'NARRATIVE_HEIAN_13_INTRO_3').npc,
+        'crazydave',
+      );
+      expect(
+        effectiveLine(
+          'UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL',
+          'NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4',
+        ).npc,
+        'crazydave',
+      );
+      for (final groupId in ['ATLANTIS_3_INTRO', 'HALLOWEEN_1_INTRO']) {
+        final numberedKeys = catalog.dialogues
+            .singleWhere((entry) => entry.groupId == groupId)
+            .lines
+            .where((line) => line.kind == NarrativeLineKind.speech)
+            .map(
+              (line) => int.parse(RegExp(r'_(\d+)$').firstMatch(line.key)![1]!),
+            )
+            .toList(growable: false);
+        expect(numberedKeys, orderedEquals([...numberedKeys]..sort()));
       }
     }
   });

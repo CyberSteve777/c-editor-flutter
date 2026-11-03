@@ -315,6 +315,7 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
       final selectStage = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
+          contentPadding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
           content: Text(l10n.mechanismPlankStageRequiredMessage),
           actions: [
             TextButton(
@@ -324,7 +325,7 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
             if (widget.onSelectStage != null)
               FilledButton(
                 onPressed: () => Navigator.pop(dialogContext, true),
-                child: Text(l10n.selectStage),
+                child: Text(l10n.switchStage),
               ),
           ],
         ),

@@ -3,44 +3,49 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:c_editor/screens/about_screen.dart';
 import 'package:c_editor/widgets/persistent_scrollbar_scroll_behavior.dart';
+import 'package:c_editor/widgets/app_ui_scaler.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('narrow About page stays centered beside its scrollbar', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(390, 844);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
-    PackageInfo.setMockInitialValues(
-      appName: 'C-Editor',
-      packageName: 'c_editor',
-      version: '1.1.0',
-      buildNumber: '1',
-      buildSignature: '',
-    );
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: ThemeData(platform: TargetPlatform.android),
-        scrollBehavior: const PersistentScrollbarScrollBehavior(),
-        locale: const Locale('zh'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: AboutScreen(onBack: () {}),
-      ),
-    );
-    await tester.pumpAndSettle();
-    final screen = tester.getRect(find.byType(Scaffold));
-    final logo = tester.getRect(find.byType(Image).first);
-    expect(logo.center.dx, closeTo(screen.center.dx, .1));
-    expect(
-      tester.getRect(find.text('C-Editor')).center.dx,
-      closeTo(screen.center.dx, .1),
-    );
-    expect(find.byType(Scrollbar), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
+  for (final (width, scale) in [(390.0, 1.0), (840.0, 1.0), (390.0, .5)]) {
+    testWidgets('About stays centered at width $width and UI scale $scale', (
+      tester,
+    ) async {
+      tester.view.physicalSize = Size(width, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      PackageInfo.setMockInitialValues(
+        appName: 'C-Editor',
+        packageName: 'c_editor',
+        version: '1.1.0',
+        buildNumber: '1',
+        buildSignature: '',
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(platform: TargetPlatform.android),
+          scrollBehavior: const PersistentScrollbarScrollBehavior(),
+          locale: const Locale('zh'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          builder: (context, child) =>
+              AppUiScaler(scale: scale, wrapMessenger: false, child: child!),
+          home: AboutScreen(onBack: () {}),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final screen = tester.getRect(find.byType(Scaffold));
+      final logo = tester.getRect(find.byType(Image).first);
+      expect(logo.center.dx, closeTo(screen.center.dx, .1));
+      expect(
+        tester.getRect(find.text('C-Editor')).center.dx,
+        closeTo(screen.center.dx, .1),
+      );
+      expect(find.byType(Scrollbar), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   testWidgets('editor version and check button use the same font size', (
     tester,

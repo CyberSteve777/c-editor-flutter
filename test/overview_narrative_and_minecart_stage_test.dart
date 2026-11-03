@@ -120,7 +120,7 @@ void main() {
 
       await tester.tap(title);
       await tester.pumpAndSettle();
-      await tester.tap(find.text(l10n.selectStage));
+      await tester.tap(find.text(l10n.switchStage));
       await tester.pumpAndSettle();
       expect(stageSelections, 1);
       expect(tester.widget<Opacity>(opacity).opacity, 1);

@@ -246,29 +246,35 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('wide padded pages preserve their existing gutter', (
+  testWidgets('padded pages stay centered at and beyond the old breakpoint', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      _app(
-        width: 800,
-        platform: TargetPlatform.windows,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: const SizedBox(
-            key: ValueKey('widePage'),
-            width: double.infinity,
-            height: 900,
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    for (final width in [600.0, 800.0, 1200.0]) {
+      tester.view.physicalSize = Size(width, 600);
+      await tester.pumpWidget(
+        _app(
+          width: width,
+          platform: TargetPlatform.windows,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: const SizedBox(
+              key: ValueKey('widePage'),
+              width: double.infinity,
+              height: 900,
+            ),
           ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    final content = tester.getRect(find.byKey(const ValueKey('widePage')));
-    final bar = tester.getRect(_persistentBar);
-    expect(content.left - bar.left, closeTo(16, .01));
-    expect(bar.right - content.right, closeTo(36, .01));
-    expect(tester.takeException(), isNull);
+      );
+      await tester.pumpAndSettle();
+      final content = tester.getRect(find.byKey(const ValueKey('widePage')));
+      final bar = tester.getRect(_persistentBar);
+      expect(content.center.dx, closeTo(bar.center.dx, .01));
+      expect(content.left - bar.left, closeTo(20, .01));
+      expect(bar.right - content.right, closeTo(20, .01));
+      expect(tester.takeException(), isNull);
+    }
   });
 
   testWidgets('horizontal controls keep their component-specific behavior', (

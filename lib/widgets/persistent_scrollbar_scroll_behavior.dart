@@ -13,8 +13,6 @@ import 'package:flutter/rendering.dart';
 class PersistentScrollbarScrollBehavior extends MaterialScrollBehavior {
   const PersistentScrollbarScrollBehavior();
 
-  static const _compactViewportWidth = 600.0;
-
   EdgeInsets? _contentPadding(BuildContext context) {
     EdgeInsetsGeometry? padding;
     context.visitAncestorElements((element) {
@@ -142,27 +140,22 @@ class PersistentScrollbarScrollBehavior extends MaterialScrollBehavior {
     );
     // Unknown padding belongs to the scrollable itself, for example an
     // editable field or a dialog's internal viewport. Keep its original inset.
-    if (contentPadding == null) return paddedViewport(gutter);
+    // Popup menus, dropdowns and dialogs own their padding and intrinsic
+    // dimensions. Keep their fixed gutter separate from page balancing.
+    if (contentPadding == null || ModalRoute.of(context) is PopupRoute) {
+      return paddedViewport(gutter);
+    }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (!constraints.maxWidth.isFinite ||
-            constraints.maxWidth >= _compactViewportWidth) {
-          return paddedViewport(gutter);
-        }
-        // Page padding already gives the thumb some room. On compact pages,
-        // top up that space equally on both sides instead of reserving a
-        // second, one-sided strip which shifts the whole page off center.
-        final safe = MediaQuery.paddingOf(barContext);
-        final safeOnBarSide = gutter.left > 0 ? safe.left : safe.right;
-        final width = math.max(gutter.left, gutter.right) - safeOnBarSide;
-        return paddedViewport(
-          EdgeInsets.only(
-            left: math.max(0.0, width + safe.left - contentPadding.left),
-            right: math.max(0.0, width + safe.right - contentPadding.right),
-          ),
-        );
-      },
+    // Page padding already gives the thumb some room. Top up both sides at
+    // every viewport width, so tablets and zoomed-out pages stay centered too.
+    final safe = MediaQuery.paddingOf(barContext);
+    final safeOnBarSide = gutter.left > 0 ? safe.left : safe.right;
+    final width = math.max(gutter.left, gutter.right) - safeOnBarSide;
+    return paddedViewport(
+      EdgeInsets.only(
+        left: math.max(0.0, width + safe.left - contentPadding.left),
+        right: math.max(0.0, width + safe.right - contentPadding.right),
+      ),
     );
   }
 

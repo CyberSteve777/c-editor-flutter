@@ -15460,13 +15460,6 @@
         {
           "key": "NARRATIVE_HEIAN_13_INTRO_3",
           "kind": "speech",
-          "text": "А корзины с рыбой могут поглощать подкормку.",
-          "speaker": "Пенни",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_HEIAN_13_INTRO_3",
-          "kind": "speech",
           "text": "Ага! Так почему бы нам просто не атаковать их спереди?",
           "speaker": "Безумный Дейв",
           "emotion": "взволнованно",
@@ -15669,13 +15662,6 @@
       ],
       "selectable": true,
       "lines": [
-        {
-          "key": "NARRATIVE_ATLANTIS_3_INTRO_3",
-          "kind": "speech",
-          "text": "Э-э, не обращайте внимания на такие мелочи…",
-          "speaker": "Пенни",
-          "npc": "winnie"
-        },
         {
           "key": "NARRATIVE_ATLANTIS_3_INTRO_1",
           "kind": "stage",
@@ -30494,7 +30480,7 @@
         {
           "key": "NARRATIVE_HALLOWEEN_1_INTRO_3",
           "kind": "speech",
-          "text": "Тело попавшей туда цели исчезнет, и останется лишь парящая голова.",
+          "text": "Магию тыквенного дома можно разрушить, попадая метательными снарядами в голову тыквенного призрака. Возьмите растение-метатель!",
           "speaker": "Пенни",
           "npc": "winnie"
         },
@@ -30507,14 +30493,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3",
-          "kind": "speech",
-          "text": "Магию тыквенного дома можно разрушить, попадая метательными снарядами в голову тыквенного призрака. Возьмите растение-метатель!",
-          "speaker": "Пенни",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3",
+          "key": "NARRATIVE_HALLOWEEN_1_INTRO_4",
           "kind": "stage",
           "text": "(Безумный Дейв и Пенни уходят.)"
         }
@@ -31826,24 +31805,6 @@
           "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2",
           "kind": "stage",
           "text": "(Безумный Дейв уходит.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1",
-          "kind": "stage",
-          "text": "(Появляется Безумный Дейв.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1",
-          "kind": "speech",
-          "text": "Привет! Ты открыл Арену. Давай попробуем!",
-          "speaker": "Безумный Дейв",
-          "emotion": "игриво",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2",
-          "kind": "stage",
-          "text": "(Безумный Дейв уходит.)"
         }
       ]
     },
@@ -31860,32 +31821,6 @@
       ],
       "selectable": true,
       "lines": [
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1",
-          "kind": "stage",
-          "text": "(Появляется Безумный Дейв.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1",
-          "kind": "speech",
-          "text": "На Арене ты сражаешься с другими игроками. Зарабатывай очки и поднимайся в рейтинге, чтобы переходить в более высокие лиги с лучшими наградами.",
-          "speaker": "Безумный Дейв",
-          "emotion": "игриво",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_2",
-          "kind": "speech",
-          "text": "Вперёд, участвуй в состязании!",
-          "speaker": "Безумный Дейв",
-          "emotion": "игриво",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_3",
-          "kind": "stage",
-          "text": "(Безумный Дейв уходит.)"
-        },
         {
           "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1",
           "kind": "stage",
@@ -32266,14 +32201,6 @@
           "speaker": "Безумный Дейв",
           "emotion": "взволнованно",
           "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4",
-          "kind": "speech",
-          "text": "Дорогой Дейв, я не умею потеть, зато доктор Зомбосс немного... нервничает.",
-          "speaker": "Пенни",
-          "emotion": "устало",
-          "npc": "winnie"
         },
         {
           "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4",

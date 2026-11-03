@@ -15460,13 +15460,6 @@
         {
           "key": "NARRATIVE_HEIAN_13_INTRO_3",
           "kind": "speech",
-          "text": "and the fish baskets can absorb energy beans.",
-          "speaker": "Penny",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_HEIAN_13_INTRO_3",
-          "kind": "speech",
           "text": "Aha! Can't we just attack them from the front then?",
           "speaker": "Crazy Dave",
           "emotion": "excited",
@@ -15669,13 +15662,6 @@
       ],
       "selectable": true,
       "lines": [
-        {
-          "key": "NARRATIVE_ATLANTIS_3_INTRO_3",
-          "kind": "speech",
-          "text": "Uh, don't worry about these details…",
-          "speaker": "Penny",
-          "npc": "winnie"
-        },
         {
           "key": "NARRATIVE_ATLANTIS_3_INTRO_1",
           "kind": "stage",
@@ -20510,14 +20496,14 @@
         {
           "key": "NARRATIVE_PVZ1_S30_12_H_INTRO_2",
           "kind": "speech",
-          "text": "Alarm Arrowheads in the same lane will form a warning line.",
+          "text": "Pulseburst Arrowheads in the same lane will form a warning line.",
           "speaker": "Zombie Commander",
           "npc": "zbcommander"
         },
         {
           "key": "NARRATIVE_PVZ1_S30_12_H_INTRO_3",
           "kind": "speech",
-          "text": "Once triggered, one side of the Alarm Arrowheads will activate immediately.",
+          "text": "Once triggered, one side of the Pulseburst Arrowheads will activate immediately.",
           "speaker": "Zombie Commander",
           "npc": "zbcommander"
         },
@@ -23276,7 +23262,7 @@
       "number": "4.1.25",
       "tag": "systemTutorials",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "System Tutorial - Transgenosis",
+      "title": "System Tutorial - Gene Modification",
       "characters": [
         "crazydave"
       ],
@@ -23290,7 +23276,7 @@
         {
           "key": "NARRATIVE_TUTORIAL_TRANSGENOSIS_INTRO_1",
           "kind": "speech",
-          "text": "You should have a lot of plant fragments now, right?",
+          "text": "You should have a lot of plant puzzle pieces now, right?",
           "speaker": "Crazy Dave",
           "emotion": "playful",
           "npc": "crazydave"
@@ -23298,7 +23284,7 @@
         {
           "key": "NARRATIVE_TUTORIAL_TRANSGENOSIS_INTRO_2",
           "kind": "speech",
-          "text": "You can try in transgenics to make them more useful.",
+          "text": "You can try in Gene Modification to make them more useful.",
           "speaker": "Crazy Dave",
           "npc": "crazydave"
         },
@@ -30494,7 +30480,7 @@
         {
           "key": "NARRATIVE_HALLOWEEN_1_INTRO_3",
           "kind": "speech",
-          "text": "Anything that enters it loses its body, leaving only its head floating around.",
+          "text": "Hitting the Pumpkin Ghosts' heads with lobbed projectiles can break the Pumpkin House's magic. Switch to some lobber plants!",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -30507,14 +30493,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3",
-          "kind": "speech",
-          "text": "Hitting the Pumpkin Ghosts' heads with lobbed projectiles can break the Pumpkin House's magic. Switch to some lobber plants!",
-          "speaker": "Penny",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3",
+          "key": "NARRATIVE_HALLOWEEN_1_INTRO_4",
           "kind": "stage",
           "text": "(Crazy Dave and Penny leave.)"
         }
@@ -31826,24 +31805,6 @@
           "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2",
           "kind": "stage",
           "text": "(Crazy Dave leaves.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1",
-          "kind": "stage",
-          "text": "(Crazy Dave appears.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1",
-          "kind": "speech",
-          "text": "Hello! You've unlocked the Arena. Let's give it a try!",
-          "speaker": "Crazy Dave",
-          "emotion": "playful",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2",
-          "kind": "stage",
-          "text": "(Crazy Dave leaves.)"
         }
       ]
     },
@@ -31860,32 +31821,6 @@
       ],
       "selectable": true,
       "lines": [
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1",
-          "kind": "stage",
-          "text": "(Crazy Dave appears.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1",
-          "kind": "speech",
-          "text": "The Arena matches you against other players. Earn points and climb the rankings to advance to higher leagues with better prizes.",
-          "speaker": "Crazy Dave",
-          "emotion": "playful",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_2",
-          "kind": "speech",
-          "text": "Get out there and compete!",
-          "speaker": "Crazy Dave",
-          "emotion": "playful",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_3",
-          "kind": "stage",
-          "text": "(Crazy Dave leaves.)"
-        },
         {
           "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1",
           "kind": "stage",
@@ -32266,14 +32201,6 @@
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4",
-          "kind": "speech",
-          "text": "Dear Dave, I can't sweat, but Dr. Zomboss is a little... anxious.",
-          "speaker": "Penny",
-          "emotion": "tired",
-          "npc": "winnie"
         },
         {
           "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4",
@@ -33101,7 +33028,7 @@
       "number": "5.4.21",
       "tag": "systemTutorials",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Transgenosis Tutorial (1/4)",
+      "title": "Gene Modification Tutorial (1/4)",
       "characters": [
         "crazydave"
       ],
@@ -33115,7 +33042,7 @@
         {
           "key": "NARRATIVE_TRANS_GENOSIS_OPEN_TUTORIAL_1",
           "kind": "speech",
-          "text": "Well, I noticed that you've acquired a magical item called a Shard.",
+          "text": "Well, I noticed that you've acquired a magical item called a puzzle piece.",
           "speaker": "Crazy Dave",
           "emotion": "playful",
           "npc": "crazydave"
@@ -33123,7 +33050,7 @@
         {
           "key": "NARRATIVE_TRANS_GENOSIS_OPEN_TUTORIAL_2",
           "kind": "speech",
-          "text": "Dave from my Rui(feng)Zhi(kuang) team discovered that new and different fragments can be obtained through existing fragments.",
+          "text": "I, the ~~crazy~~ brilliant Dave, have discovered that you can use the puzzle pieces you already have to obtain new and different ones.",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydave"
@@ -33142,7 +33069,7 @@
       "number": "5.4.22",
       "tag": "systemTutorials",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Transgenosis Tutorial (2/4)",
+      "title": "Gene Modification Tutorial (2/4)",
       "characters": [
         "crazydaveicon"
       ],
@@ -33156,7 +33083,7 @@
         {
           "key": "NARRATIVE_TRANS_GENOSIS_SELECT_TUTORIAL_1",
           "kind": "speech",
-          "text": "I put some fragments in your backpack, come and try them now.",
+          "text": "I put some puzzle pieces in your backpack, come and try them now.",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydaveicon"
@@ -33175,7 +33102,7 @@
       "number": "5.4.23",
       "tag": "systemTutorials",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Transgenosis Tutorial (3/4)",
+      "title": "Gene Modification Tutorial (3/4)",
       "characters": [
         "winnieicon",
         "crazydaveicon"
@@ -33190,7 +33117,7 @@
         {
           "key": "NARRATIVE_TRANS_GENOSIS_SELECT_DONE_TUTORIAL_1",
           "kind": "speech",
-          "text": "Fusion requires at least two fragments. The more fragments there are, the higher the probability of fusing high-level fragments.",
+          "text": "Fusion requires at least two puzzle pieces. The more puzzle pieces there are, the higher the probability of fusing high-level puzzle pieces.",
           "speaker": "Penny",
           "emotion": "excited",
           "npc": "winnieicon"
@@ -33222,7 +33149,7 @@
       "number": "5.4.24",
       "tag": "systemTutorials",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Transgenosis Tutorial (4/4)",
+      "title": "Gene Modification Tutorial (4/4)",
       "characters": [
         "crazydave"
       ],
@@ -33528,7 +33455,7 @@
         {
           "key": "NARRATIVE_ACTIVITY_BOSSCHALLENGE_INTRO_1",
           "kind": "speech",
-          "text": "Data shows that zombies here can obtain plant fragments...",
+          "text": "Data shows that zombies here can obtain plant puzzle pieces...",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -33541,7 +33468,7 @@
         {
           "key": "NARRATIVE_ACTIVITY_BOSSCHALLENGE_INTRO_2",
           "kind": "speech",
-          "text": "Plant fragments? What is that? Can it be eaten?",
+          "text": "Plant puzzle pieces? What is that? Can it be eaten?",
           "speaker": "Crazy Dave",
           "emotion": "playful",
           "npc": "crazydave"
@@ -33549,7 +33476,7 @@
         {
           "key": "NARRATIVE_ACTIVITY_BOSSCHALLENGE_INTRO_3",
           "kind": "speech",
-          "text": "Although plants are rich in various vitamins, I think it is better for you to use fragments to synthesize plants to fight against zombies...",
+          "text": "Although plants are rich in various vitamins, I think it is better for you to use puzzle pieces to synthesize plants to fight against zombies...",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"

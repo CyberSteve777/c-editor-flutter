@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 import 'package:c_editor/data/asset_loader.dart';
+import 'package:c_editor/utils/narrative_text_format.dart';
 
 /// The four concrete narrative categories shown by the picker. [all] is a
 /// virtual aggregate and is never written to the generated catalogue.
@@ -413,7 +414,8 @@ class NarrativeEntry {
 
   String get valueKey => value.toString();
 
-  Iterable<String> get dialogueText => lines.map((line) => line.text);
+  Iterable<String> get dialogueText =>
+      lines.map((line) => narrativePlainText(line.text));
 
   Iterable<String> get speakerNames => lines
       .map((line) => line.speaker)
