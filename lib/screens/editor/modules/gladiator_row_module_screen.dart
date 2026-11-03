@@ -334,9 +334,13 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final warningBrightness = Theme.of(context).brightness;
+    final theme = Theme.of(context);
+    final warningBrightness = theme.brightness;
     final warningForeground = editorWarningBannerForeground(warningBrightness);
     final encounter = _encounter;
+    final firstWaveGroup = encounter == null
+        ? -1
+        : _data.encounters.indexWhere((entry) => entry.wave == encounter.wave);
     final compatibilityWarnings =
         LevelIssueRegistry.forLevel(context, widget.levelFile).where(
           (issue) => issue.id == 'gladiatorWaveGeneratorCompatibilityWarning',
@@ -502,6 +506,16 @@ class _GladiatorRowModuleScreenState extends State<GladiatorRowModuleScreen> {
                   (n) => encounter.wave = n.toInt(),
                   integer: true,
                 ),
+                if (firstWaveGroup >= 0 && firstWaveGroup < _selected) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.gladiatorDuplicateWaveHint(firstWaveGroup + 1),
+                    key: const ValueKey('gladiator-duplicate-wave-hint'),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.tertiary,
+                    ),
+                  ),
+                ],
                 _number(
                   encounter,
                   'Row',

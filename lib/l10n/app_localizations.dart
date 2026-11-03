@@ -17355,6 +17355,12 @@ abstract class AppLocalizations {
   /// **'Trigger wave (Wave, starts at 0)'**
   String get gladiatorWave;
 
+  /// No description provided for @gladiatorDuplicateWaveHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only one Gladiatorial Row can be configured per wave. A Gladiatorial Row has already been configured for this wave in Group {group}; subsequent settings will not take effect.'**
+  String gladiatorDuplicateWaveHint(int group);
+
   /// No description provided for @gladiatorRow.
   ///
   /// In en, this message translates to:
@@ -17496,7 +17502,7 @@ abstract class AppLocalizations {
   /// No description provided for @gladiatorHelpUsage.
   ///
   /// In en, this message translates to:
-  /// **'The duel duration, Plant Food reward and penalty drop settings above, along with the penalty zombie pool and weights below, are global settings shared by every duel in this module.\nSelect \"Add duel\" to configure an individual duel. When you add a zombie, its resource groups are automatically added to the module.\nThe wave (Wave), row (Row) and spawn column (GridX) are all numbered from 0: Wave 0 corresponds to timeline wave 1, and Wave 4 to wave 5.\nThe editor defaults to trophy duel mode (GameplayVersion 1). Setting it to 0 enables a different, retired duel mode, which you can explore through manual editing.'**
+  /// **'The duel duration, Plant Food reward and penalty drop settings above, along with the penalty zombie pool and weights below, are global settings shared by every duel in this module.\nSelect \"Add duel\" to configure an individual duel. When you add a zombie, its resource groups are automatically added to the module.\nThe wave (Wave), row (Row) and spawn column (GridX) are all numbered from 0: Wave 0 corresponds to timeline wave 1, and Wave 4 to wave 5. Only one Gladiatorial Row can be configured per wave.\nThe editor defaults to trophy duel mode (GameplayVersion 1). Setting it to 0 enables a different, retired duel mode, which you can explore through manual editing.'**
   String get gladiatorHelpUsage;
 
   /// No description provided for @gladiatorHelpTips.
@@ -17856,13 +17862,13 @@ abstract class AppLocalizations {
   /// No description provided for @pumpkinScarecrowCrowLevel.
   ///
   /// In en, this message translates to:
-  /// **'Crow level (Level, 0-index)'**
+  /// **'Crow level (Level)'**
   String get pumpkinScarecrowCrowLevel;
 
   /// No description provided for @pumpkinScarecrowHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'Places Pumpkin Scarecrows at selected positions, commonly used in Haunting Halloween levels. Crows periodically fly off the scarecrows to carry away plants. Each departing crow is replaced by a new one flying in from outside the lawn, so crows will continue to appear until the scarecrow is destroyed. The health of each scarecrow and the level of its summoned crows can be customized in this event.'**
+  /// **'Places Pumpkin Scarecrows at selected positions, commonly used in Haunting Halloween levels. Crows periodically fly off the scarecrows to carry away plants. Each departing crow is replaced by a new one flying in from outside the lawn, so crows will continue to appear until the scarecrow is destroyed. The health of each scarecrow and the level of its summoned crows can be customized in this event (Level 0 follows the lawn’s default level, which is Level 1 in Creative Courtyard).'**
   String get pumpkinScarecrowHelpOverview;
 
   /// No description provided for @pumpkinScarecrowHelpLogic.

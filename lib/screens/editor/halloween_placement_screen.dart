@@ -84,12 +84,36 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
         onChanged: (text) {
           final value = num.tryParse(text);
           if (value == null || !value.isFinite || value < 0) return;
-          if ((key == 'Level' || key == 'Count') && value != value.truncate()) {
+          if (key == 'Count' && value != value.truncate()) {
             return;
           }
-          target[key] = key == 'Level' || key == 'Count'
-              ? value.toInt()
-              : value;
+          target[key] = key == 'Count' ? value.toInt() : value;
+          sync();
+        },
+      ),
+    ),
+  );
+
+  Widget crowLevel(String label) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: EditorResponsiveInputField(
+      label: label,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        isDense: true,
+      ),
+      builder: (context, decoration) => DropdownButtonFormField<int>(
+        key: const ValueKey('pumpkinScarecrowCrowLevel'),
+        initialValue: (data['Level'] as num? ?? 0).toInt().clamp(0, 10),
+        isExpanded: true,
+        decoration: decoration,
+        items: List.generate(
+          11,
+          (value) => DropdownMenuItem(value: value, child: Text('$value')),
+        ),
+        onChanged: (value) {
+          if (value == null) return;
+          data['Level'] = value;
           sync();
         },
       ),
@@ -469,7 +493,7 @@ class _HalloweenPlacementState extends State<HalloweenPlacementScreen> {
                 for (final pool in data['PumpkinScarecrowPool'] as List)
                   number(pool, 'Count', l.pumpkinScarecrowSpawnCount),
                 number(data, 'Hitpoints', l.pumpkinScarecrowHitpoints),
-                number(data, 'Level', l.pumpkinScarecrowCrowLevel),
+                crowLevel(l.pumpkinScarecrowCrowLevel),
               ]),
             ],
           ],

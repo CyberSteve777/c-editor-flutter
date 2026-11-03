@@ -315,7 +315,7 @@ class _ModuleSelectionScreenState extends State<ModuleSelectionScreen> {
       final selectStage = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          contentPadding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+          contentPadding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
           content: Text(l10n.mechanismPlankStageRequiredMessage),
           actions: [
             TextButton(

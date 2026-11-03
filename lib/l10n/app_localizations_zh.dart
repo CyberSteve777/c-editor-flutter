@@ -9445,6 +9445,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get gladiatorWave => '触发波次 (Wave，从0开始计数)';
 
   @override
+  String gladiatorDuplicateWaveHint(int group) {
+    return '每个波次只能设置一个角斗行。该波次已在第 $group 组中设置角斗行，后续设置将不会生效。';
+  }
+
+  @override
   String get gladiatorRow => '所在行 (Row，从0开始计数)';
 
   @override
@@ -9521,7 +9526,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get gladiatorHelpUsage =>
-      '上方的角斗时长、胜利能量豆数量及失败空投参数，以及下方的惩罚僵尸池和权重，均为全局参数，会对模块中的所有角斗生效。\n点击“添加角斗”，可设置每组角斗的具体参数。加入僵尸时，会自动在模块中添加对应僵尸的资源组。\n角斗的波次 (Wave)、所在行 (Row)、出怪列 (GridX) 均从0开始计数，如波次填0对应波次时间线的第1波，填4对应第5波。\n本模块的对决模式 (GameplayVersion) 在编辑器中默认为1，填0会使用另一种废弃的对决模式，可通过手动编辑模式自行探索。';
+      '上方的角斗时长、胜利能量豆数量及失败空投参数，以及下方的惩罚僵尸池和权重，均为全局参数，会对模块中的所有角斗生效。\n点击“添加角斗”，可设置每组角斗的具体参数。加入僵尸时，会自动在模块中添加对应僵尸的资源组。\n角斗的波次 (Wave)、所在行 (Row)、出怪列 (GridX) 均从0开始计数，如波次填0对应波次时间线的第1波，填4对应第5波。注意每个波次只能设置一个角斗行。\n本模块的对决模式 (GameplayVersion) 在编辑器中默认为1，填0会使用另一种废弃的对决模式，可通过手动编辑模式自行探索。';
 
   @override
   String get gladiatorHelpTips =>
@@ -9718,11 +9723,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pumpkinScarecrowSpawnCount => '稻草人生成数量 (Count)';
 
   @override
-  String get pumpkinScarecrowCrowLevel => '乌鸦阶级 (Level，从0开始计数)';
+  String get pumpkinScarecrowCrowLevel => '乌鸦阶级 (Level)';
 
   @override
   String get pumpkinScarecrowHelpOverview =>
-      '常见于惊魂万圣夜秘境，在指定位置生成南瓜稻草人。每隔一段时间，稻草人上的僵尸乌鸦就会飞走并叼走植物。乌鸦离开后，新的乌鸦会从场外飞入，因此只要稻草人未被破坏，乌鸦就会持续出现。可自定义稻草人的生命值及乌鸦阶级。';
+      '常见于惊魂万圣夜秘境，在指定位置生成南瓜稻草人。每隔一段时间，稻草人上的僵尸乌鸦就会飞走并叼走植物。乌鸦离开后，新的乌鸦会从场外飞入，因此只要稻草人未被破坏，乌鸦就会持续出现。可自定义稻草人的生命值及乌鸦阶级（0阶表示随地图阶级，庭院模式下即为1阶）。';
 
   @override
   String get pumpkinScarecrowHelpLogic =>

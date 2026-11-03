@@ -45,7 +45,11 @@ void main() {
           expect(line.startsWith('  "'), isTrue);
         }
         if (locale == 'zh') {
-          expect(copy['pumpkinScarecrowCrowLevel'], contains('从0开始计数'));
+          expect(copy['pumpkinScarecrowCrowLevel'], '乌鸦阶级 (Level)');
+          expect(
+            copy['pumpkinScarecrowHelpOverview'],
+            contains('乌鸦阶级（0阶表示随地图阶级，庭院模式下即为1阶）'),
+          );
           expect(copy['wizardCauldronBoilingDuration'], contains('单位：秒'));
           expect(
             copy['wizardCauldronHelpUsage'],
@@ -62,7 +66,7 @@ void main() {
             copy['moduleDesc_InitialGridItemWizardCrucibleProps'],
             contains('Fairy Forest'),
           );
-          expect(copy['pumpkinScarecrowCrowLevel'], contains('0-index'));
+          expect(copy['pumpkinScarecrowCrowLevel'], 'Crow level (Level)');
         }
       }
     },
@@ -279,6 +283,35 @@ void main() {
           expect(data['SpawnPositionsPool'], isEmpty);
           await tester.tap(cell);
           await tester.pumpAndSettle();
+          final crowLevel = find.byKey(
+            const ValueKey('pumpkinScarecrowCrowLevel'),
+          );
+          expect(
+            tester
+                .widget<DropdownButton<int>>(
+                  find.descendant(
+                    of: crowLevel,
+                    matching: find.byType(DropdownButton<int>),
+                  ),
+                )
+                .items!
+                .map((item) => item.value),
+            List.generate(11, (value) => value),
+          );
+          await tester.ensureVisible(crowLevel);
+          await tester.tap(crowLevel);
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('10').last);
+          await tester.pumpAndSettle();
+          expect(data['Level'], 10);
+          expect(data['Level'], isA<int>());
+          await tester.tap(crowLevel);
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('0').last);
+          await tester.pumpAndSettle();
+          expect(data['Level'], 0);
+          expect(data['Hitpoints'], 4000);
+          expect(data['FutureField'], 42);
         }
         if (cauldron) {
           await tester.tap(find.byKey(const ValueKey('placementCell_1_0')));
