@@ -132,6 +132,19 @@ class ZombiePropertiesRepository {
     return instance._aliasToTypeCache.containsKey(alias);
   }
 
+  /// True when the bundled reference shows this zombie can be bought from a
+  /// wave point budget (WavePointCost >= 1). The game's point purchase reads
+  /// WavePointCost only and ignores the sheet's Weight, so Weight = 0
+  /// zombies (flag carriers) are buyable too. Zombies whose cost data is
+  /// missing (unknown/custom zombies or property sheets without cost)
+  /// return false.
+  static bool canSpawnFromPoints(String aliasOrTypeName) {
+    final rtidAlias = RtidParser.parse(aliasOrTypeName)?.alias;
+    final typeName = getTypeNameByAlias(rtidAlias ?? aliasOrTypeName);
+    final stats = getStats(typeName);
+    return stats.cost >= 1;
+  }
+
   static Map<String, PvzObject>? getTemplateJson(String typeName) {
     final t = instance._originalTypeJson[typeName];
     final p = instance._originalPropsJson[typeName];

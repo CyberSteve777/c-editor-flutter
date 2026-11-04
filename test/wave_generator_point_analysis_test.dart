@@ -240,7 +240,7 @@ void main() {
       ]);
     });
 
-    test('keeps duplicate pool slots for weight aggregation', () {
+    test('keeps duplicate pool slots in the effective pool', () {
       final data = generator(
         pool: [
           WaveGeneratorPoolEntryData(type: initial),
@@ -304,7 +304,7 @@ void main() {
       expect(preview.commonMaximum, 50);
     });
 
-    test('cost and weight produce a bounded, plausible stable expectation', () {
+    test('cost produces a bounded, plausible stable expectation', () {
       final preview = WaveGeneratorPointAnalysis.simulateRandomSpawns(
         points: 100,
         fixedSpawnCount: 0,
@@ -314,8 +314,28 @@ void main() {
       );
 
       expect(preview.averageTotal, inInclusiveRange(5, 10));
-      expect(preview.entries.first.id, 'heavy');
+      // The cheaper zombie fits more spawns into the same budget, so the
+      // average count ranks it first under the uniform selection.
+      expect(preview.entries.first.id, 'cheap');
       expect(preview.commonMinimum, lessThanOrEqualTo(preview.commonMaximum));
+    });
+
+    test('a Weight = 0 candidate is bought like any other', () {
+      const zeroWeight = WaveGeneratorSpawnCandidate(
+        id: 'zero',
+        cost: 10,
+        weight: 0,
+      );
+      final preview = WaveGeneratorPointAnalysis.simulateRandomSpawns(
+        points: 100,
+        fixedSpawnCount: 0,
+        candidates: const [zeroWeight],
+        iterations: 50,
+        seed: 7,
+      );
+
+      expect(preview.averageTotal, 10);
+      expect(preview.entries.single.averageCount, 10);
     });
 
     test('fixed seed returns exactly the same statistical preview', () {

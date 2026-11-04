@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/bloc/editor/editor_cubit.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
+import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/theme/app_theme.dart';
@@ -35,6 +36,7 @@ enum _ZombieBlockedReason {
   stayTunedTaleZCorp,
   stayTunedFallback,
   missingModule,
+  notPointSpawnable,
 }
 
 class _ZombieSelectionViewState {
@@ -67,6 +69,7 @@ class ZombieSelectionScreen extends StatefulWidget {
     this.stateBucketId,
     this.levelFile,
     this.onAddModule,
+    this.pointSpawnOnly = false,
   });
 
   final bool multiSelect;
@@ -94,6 +97,10 @@ class ZombieSelectionScreen extends StatefulWidget {
 
   /// Called when user taps "Add" in the "module required" dialog.
   final void Function(String objClass)? onAddModule;
+
+  /// When true, zombies that never spawn from the point budget are blocked
+  /// (used by point-based auto-spawner pools).
+  final bool pointSpawnOnly;
 
   @override
   State<ZombieSelectionScreen> createState() => _ZombieSelectionScreenState();
@@ -135,7 +142,10 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
         widget.initialSelectedIds.isNotEmpty) {
       _selectedIds.addAll(widget.initialSelectedIds);
     }
-    ZombieRepository().init().then((_) {
+    Future.wait([
+      ZombieRepository().init(),
+      if (widget.pointSpawnOnly) ZombiePropertiesRepository.init(),
+    ]).then((_) {
       if (mounted) {
         setState(() {
           _removeBlockedSelections();
@@ -310,6 +320,10 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
         }
       }
     }
+    if (widget.pointSpawnOnly &&
+        !ZombiePropertiesRepository.canSpawnFromPoints(zombie.id)) {
+      return _ZombieBlockedReason.notPointSpawnable;
+    }
     return null;
   }
 
@@ -400,6 +414,13 @@ class _ZombieSelectionScreenState extends State<ZombieSelectionScreen> {
                 'future updates!',
       ),
       _ZombieBlockedReason.missingModule => (l10n?.warning ?? 'Warning', ''),
+      _ZombieBlockedReason.notPointSpawnable => (
+        l10n?.pointSpawnOnlyZombieBlockedTitle ??
+            'Cannot be used in point auto-spawn',
+        l10n?.pointSpawnOnlyZombieBlockedMessage ??
+            'This zombie has no WavePointCost data, so the game cannot '
+                'buy it in a point-based auto-spawner.',
+      ),
     };
     await showDialog<void>(
       context: context,

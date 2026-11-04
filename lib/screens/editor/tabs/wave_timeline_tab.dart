@@ -16,6 +16,7 @@ import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/wave_point_analysis.dart';
+import 'package:c_editor/data/zombie_count_simulation.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/escape_override.dart';
@@ -249,15 +250,53 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     super.dispose();
   }
 
+  /// Point budget of [waveIndex]: every dynamic zombie group active in that
+  /// wave contributes its own starting points and per-wave increment.
   int _pointsAtWave(WaveManagerModuleData module, int waveIndex, bool isFlag) {
     if (module.dynamicZombies.isEmpty) return 0;
-    final g = module.dynamicZombies.first;
-    final startEffectWave = g.startingWave + 1;
-    if (waveIndex < startEffectWave) return 0;
-    var basePoints =
-        g.startingPoints + (waveIndex - startEffectWave) * g.pointIncrement;
-    if (basePoints > 60000) basePoints = 60000;
-    return isFlag ? (basePoints * 2.5).toInt() : basePoints;
+    var total = 0;
+    for (final g in module.dynamicZombies) {
+      final startEffectWave = g.startingWave + 1;
+      if (waveIndex < startEffectWave) continue;
+      var basePoints =
+          g.startingPoints + (waveIndex - startEffectWave) * g.pointIncrement;
+      if (basePoints > 60000) basePoints = 60000;
+      if (basePoints < 0) basePoints = 0;
+      total += isFlag ? (basePoints * 2.5).toInt() : basePoints;
+    }
+    return total;
+  }
+
+  /// Simulated zombie count summed across every wave of the Wave Manager:
+  /// each run buys from that wave's own active pool with that wave's point
+  /// budget (flag waves included), so the range covers a whole playthrough.
+  ZombieCountEstimate? _totalExpectationEstimate() {
+    final wm = widget.parsed.waveManager;
+    final module = widget.parsed.waveModule;
+    if (wm is! WaveManagerData || module is! WaveManagerModuleData) {
+      return null;
+    }
+    final waves = wm.waves;
+    if (waves.isEmpty) return null;
+    final interval = wm.flagWaveInterval <= 0 ? 10 : wm.flagWaveInterval;
+    final waveData = <({List<int> costs, int points})>[];
+    for (var index = 0; index < waves.length; index++) {
+      final waveIndex = index + 1;
+      final isFlag = waveIndex % interval == 0 || waveIndex == waves.length;
+      final points = _pointsAtWave(module, waveIndex, isFlag);
+      if (points <= 0) continue;
+      final entries = WavePointAnalysis.resolveEntries(
+        WavePointAnalysis.poolForWave(widget.parsed, waveIndex),
+      );
+      final costs = [
+        for (final e in entries)
+          if (e.cost >= 1) e.cost,
+      ];
+      if (costs.isEmpty) continue;
+      waveData.add((costs: costs, points: points));
+    }
+    if (waveData.isEmpty) return null;
+    return ZombieCountSimulation.simulateTotal(waveData);
   }
 
   Widget _buildHintCard(BuildContext context) {
@@ -3633,13 +3672,43 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
 
   void _showExpectationDialog(BuildContext context, int waveIndex, int points) {
     final l10n = AppLocalizations.of(context);
-    final expectation = WavePointAnalysis.calculateExpectation(
+    final analysis = WavePointAnalysis.analyze(
       points,
       widget.parsed,
+      waveIndex: waveIndex,
     );
+    final expectation = analysis.expectation;
+    final missingStats = analysis.missingStats;
+    final hiddenIds = analysis.hiddenIds;
     final sorted = expectation.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
-    final items = sorted.where((e) => e.value > 0).toList();
+    // Only zombies the game can actually buy from the point budget get a
+    // row; custom entries and no-data zombies stay warning text. Rows that
+    // round to 0.00 for this wave are dropped — a wave with a richer budget
+    // still shows them.
+    final items = [
+      for (final e in sorted)
+        if (e.value >= 0.005 && !hiddenIds.contains(e.key)) e,
+    ];
+    final visiblePool = [
+      for (final e in sorted)
+        if (!hiddenIds.contains(e.key)) e,
+    ];
+    // Simulated zombie counts: one for this wave, one summed across all
+    // waves of the level's spawner.
+    final waveEntries = WavePointAnalysis.resolveEntries(
+      WavePointAnalysis.poolForWave(widget.parsed, waveIndex),
+    );
+    final waveCosts = [
+      for (final e in waveEntries)
+        if (e.cost >= 1) e.cost,
+    ];
+    final waveEstimate = waveCosts.isEmpty || points <= 0
+        ? null
+        : ZombieCountSimulation.simulateWave(waveCosts, points);
+    final totalEstimate = waveEstimate == null
+        ? null
+        : _totalExpectationEstimate();
     showDialog<void>(
       context: context,
       builder: (ctx) {
@@ -3655,10 +3724,54 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('${l10n?.pointsLabel ?? "Points"}: $points'),
+              if (waveEstimate != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  l10n?.zombieCountWaveEstimate(
+                        waveEstimate.average.toStringAsFixed(1),
+                        waveEstimate.minimum,
+                        waveEstimate.maximum,
+                      ) ??
+                      'This wave: about '
+                          '${waveEstimate.average.toStringAsFixed(1)} '
+                          'zombies (from ${waveEstimate.minimum} '
+                          'to ${waveEstimate.maximum})',
+                ),
+                if (totalEstimate != null &&
+                    (totalEstimate.average > 0 || totalEstimate.maximum > 0))
+                  Text(
+                    l10n?.zombieCountTotalEstimate(
+                          totalEstimate.average.toStringAsFixed(1),
+                          totalEstimate.minimum,
+                          totalEstimate.maximum,
+                        ) ??
+                        'All waves combined: about '
+                            '${totalEstimate.average.toStringAsFixed(1)} '
+                            'zombies (from ${totalEstimate.minimum} '
+                            'to ${totalEstimate.maximum})',
+                  ),
+              ],
               const SizedBox(height: 16),
+              if (missingStats.isNotEmpty) ...[
+                Text(
+                  l10n?.waveManagerExpectationMissingData(
+                        missingStats.join(', '),
+                      ) ??
+                      'These zombies lack reliable WavePointCost data and '
+                          'are not counted: ${missingStats.join(', ')}',
+                  style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(ctx).colorScheme.error,
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
               if (items.isEmpty)
                 Text(
-                  l10n?.noDynamicZombies ?? 'No dynamic zombies',
+                  visiblePool.isEmpty
+                      ? (l10n?.noDynamicZombies ?? 'No dynamic zombies')
+                      : (l10n?.expectationNoAffordableZombies ??
+                            'None of this wave\'s pool zombies can be bought '
+                                'with its points.'),
                   style: Theme.of(ctx).textTheme.bodySmall,
                 )
               else

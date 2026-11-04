@@ -224,6 +224,10 @@ class EventSelectionScreen extends StatefulWidget {
           return isTitle
               ? l10n.eventTitle_ThunderWaveActionProps
               : l10n.eventDesc_ThunderWaveActionProps;
+        case 'ZombieAirbubbleActionProps':
+          return isTitle
+              ? l10n.eventTitle_ZombieAirbubbleActionProps
+              : l10n.eventDesc_ZombieAirbubbleActionProps;
         case 'MagicMirrorWaveActionProps':
         case 'WaveActionMagicMirrorTeleportationArrayProps':
           return isTitle

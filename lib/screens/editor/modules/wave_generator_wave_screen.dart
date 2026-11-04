@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/custom_zombie_level_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/wave_generator_level_utils.dart';
@@ -38,6 +39,9 @@ class WaveGeneratorWaveScreen extends StatefulWidget {
   final VoidCallback onBack;
   final void Function(void Function(String) onSelected)
   onRequestZombieSelection;
+
+  /// Point-budget pool adds use this callback (blocks non-point-spawnable
+  /// zombies); falls back to [onRequestZombieSelection] when not set.
   final void Function(void Function(String) onSelected)?
   onRequestPoolZombieSelection;
 
@@ -583,6 +587,19 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
             content: Text(
               l10n?.eliteZombiesNotAllowed ??
                   'Elite zombies are not allowed here',
+            ),
+          ),
+        );
+        return;
+      }
+      if (!ZombiePropertiesRepository.canSpawnFromPoints(selectedId)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l10n?.pointSpawnOnlyZombiesBlocked ??
+                  'This zombie has no WavePointCost data, so the game '
+                      'cannot buy it from a point budget, and it cannot '
+                      'be added to the pool.',
             ),
           ),
         );

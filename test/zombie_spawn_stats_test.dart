@@ -91,4 +91,55 @@ void main() {
     expect(preview.entries.single.id, 'modern_balloon');
     expect(preview.averageTotal, 4);
   });
+
+  test('a no-data pool zombie does not hide the other previews', () {
+    final data = WaveGeneratorPropertiesData(
+      waveSpendingPoints: 400,
+      addToZombiePool: [
+        WaveGeneratorPoolEntryData(type: 'RTID(modern_balloon@ZombieTypes)'),
+        WaveGeneratorPoolEntryData(type: 'RTID(mummy_flag@ZombieTypes)'),
+        WaveGeneratorPoolEntryData(type: 'RTID(my_custom@CurrentLevel)'),
+      ],
+      waves: [WaveGeneratorWaveData(disableRandomSpawns: false)],
+    );
+    final preview = WaveGeneratorPointAnalysis.calculatePreview(data, 1);
+
+    expect(preview.missingDataTypes, ['my_custom']);
+    // The flag carrier has WavePointCost data, so it takes part in the
+    // simulation despite its Weight = 0.
+    expect(
+      preview.entries.map((entry) => entry.id),
+      containsAll(['modern_balloon', 'mummy_flag']),
+    );
+    expect(
+      preview.entries.map((entry) => entry.id),
+      isNot(contains('my_custom')),
+    );
+    expect(preview.canCalculate, isTrue);
+  });
+
+  test('canSpawnFromPoints accepts flag carriers and rejects no-cost '
+      'zombies', () {
+    expect(
+      ZombiePropertiesRepository.canSpawnFromPoints('modern_balloon'),
+      isTrue,
+    );
+    expect(
+      ZombiePropertiesRepository.canSpawnFromPoints(
+        'RTID(modern_balloon@ZombieTypes)',
+      ),
+      isTrue,
+    );
+    // Flag carrier: WavePointCost is known but Weight is 0. The point
+    // purchase ignores Weight, so it is still eligible.
+    expect(ZombiePropertiesRepository.canSpawnFromPoints('mummy_flag'), isTrue);
+    expect(
+      ZombiePropertiesRepository.canSpawnFromPoints('pirate_flag'),
+      isTrue,
+    );
+    // Custom/unknown zombies have no point cost data.
+    expect(ZombiePropertiesRepository.canSpawnFromPoints('my_custom'), isFalse);
+    // Listed zombies whose property sheet lacks WavePointCost data.
+    expect(ZombiePropertiesRepository.canSpawnFromPoints('catapult'), isFalse);
+  });
 }

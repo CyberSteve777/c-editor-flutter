@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,9 +11,9 @@ import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/data/level_validator.dart';
 import 'package:c_editor/data/repository/level_repository.dart';
 import 'package:c_editor/data/repository/world_repository.dart';
-import 'package:c_editor/utils/3rdParty/pyvz2/pyvz2_rton_codec.dart';
 import 'package:c_editor/widgets/asset_image.dart';
 import 'package:c_editor/screens/export/export_engine.dart';
+import 'package:c_editor/screens/export/export_rsb_isolate.dart';
 import 'package:c_editor/plugins/plugin_host_hooks.dart';
 import 'package:c_editor/theme/app_theme.dart';
 
@@ -1692,6 +1695,11 @@ class _ExportScreenState extends State<ExportScreen> {
     if (_selectedArchivePath == null) return;
     final l10n = AppLocalizations.of(context)!;
 
+    // Clear stale cancellation state before anything starts: a Cancel tap
+    // during the encoding stage below must not be lost (or, worse, dropped
+    // by the engine when the pipeline itself begins).
+    _engine.resetExportState();
+
     setState(() {
       _isExporting = true;
       _exportProgress = 0;
@@ -1701,16 +1709,22 @@ class _ExportScreenState extends State<ExportScreen> {
     final String archivePath = _selectedArchivePath!;
 
     try {
-      // 1. Encode the selected levels as encrypted RTON (cross-platform).
+      // 1. Encode the selected levels as encrypted RTON. The heavy Rijndael
+      // pass runs in a background isolate per level, so the editor stays
+      // responsive and the Cancel button keeps working.
       setState(() {
-        _exportProgress = 0.1;
+        _exportProgress = 0.02;
         _exportStatus = l10n.exportStatusCreatingRton;
       });
 
       final Map<String, Uint8List> rtonLevels = {};
-      final rtonCodec = const Pyvz2RtonCodec();
+      final assignmentCount = _levelAssignments.length;
+      var encodedCount = 0;
 
       for (final entry in _levelAssignments.entries) {
+        if (_engine.isCancelledByUser) {
+          throw const ExportCancelledException();
+        }
         final srcPath = entry.key;
         final assignment = entry.value;
         final exportedName = '${assignment.world}${assignment.level}.rton';
@@ -1720,8 +1734,18 @@ class _ExportScreenState extends State<ExportScreen> {
           throw Exception("Failed to load level: $srcPath");
         }
 
-        final rtonBytes = rtonCodec.encode(levelFile, encrypt: true);
+        final levelJson = jsonEncode(levelFile.toJson());
+        final rtonBytes = await compute(exportIsolateEncodeRton, levelJson);
         rtonLevels[exportedName] = rtonBytes;
+
+        encodedCount++;
+        if (mounted) {
+          setState(() {
+            _exportProgress =
+                0.02 + 0.13 * encodedCount / math.max(1, assignmentCount);
+            _exportStatus = l10n.exportStatusCreatingRton;
+          });
+        }
       }
 
       // 2. Run the platform-specific unpack -> inject -> repack pipeline.

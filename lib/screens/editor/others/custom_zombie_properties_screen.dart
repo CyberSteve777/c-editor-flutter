@@ -432,6 +432,7 @@ class _CustomZombiePropertiesScreenState
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+      constraints: const BoxConstraints.tightFor(width: 480),
         title: Text(title),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -498,6 +499,7 @@ class _CustomZombiePropertiesScreenState
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+      constraints: const BoxConstraints.tightFor(width: 480),
         title: Text(title),
         content: Row(
           children: [
@@ -540,6 +542,7 @@ class _CustomZombiePropertiesScreenState
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+      constraints: const BoxConstraints.tightFor(width: 480),
         title: Text(title),
         content: Column(
           mainAxisSize: MainAxisSize.min,

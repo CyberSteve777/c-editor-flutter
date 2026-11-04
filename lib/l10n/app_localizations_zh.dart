@@ -2344,6 +2344,10 @@ class AppLocalizationsZh extends AppLocalizations {
       '波次生成器内嵌波次数据，不能与独立的波次管理器容器同时使用。';
 
   @override
+  String get conflictDesc_WaveGeneratorLevelEscalation =>
+      'Level Escalation 模块基于波次管理器系统的波次来调整僵尸等级，因此不能与波次生成器同时使用。';
+
+  @override
   String conflictDesc_CamelMinigameNonTouchZombies(String zombies) {
     return '记忆骆驼牌仅支持特殊「记忆骆驼牌僵尸」。$zombies等其他僵尸在关卡中出现会导致游戏闪退。请替换或移除这些僵尸。';
   }
@@ -2874,6 +2878,76 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moduleDesc_IncreasedCostModuleProperties => '植物阳光价格随种植次数递增';
 
   @override
+  String get moduleTitle_LevelEscalationModuleProperties => '关卡难度递增';
+
+  @override
+  String get moduleDesc_LevelEscalationModuleProperties =>
+      '按旗帜递增难度：每波增加点数，新僵尸加入生成池';
+
+  @override
+  String get flagCount => '旗帜数';
+
+  @override
+  String get wavesPerFlag => '每旗帜波数';
+
+  @override
+  String get plantfoodToSpawnCount => '植物能量掉落次数';
+
+  @override
+  String levelEscalationTotalWaves(int count) {
+    return '升级总波数：$count';
+  }
+
+  @override
+  String get levelEscalationFlagCountShort => '旗数';
+
+  @override
+  String get levelEscalationFlagIntervalShort => '间隔';
+
+  @override
+  String get expectationNoAffordableZombies => '本波点数不足以购买池中的任何僵尸。';
+
+  @override
+  String get levelEscalationHelpOverviewBody =>
+      '为关卡添加基于点数的难度递增。波次按旗帜分组；每进入新的一波都会获得更多点数，点数用于从僵尸池中生成僵尸。植物能量掉落次数受配置数量限制。';
+
+  @override
+  String get levelEscalationHelpFieldsBody =>
+      '旗帜数（FlagCount）是关卡中的旗帜数量，每旗帜波数（WavesPerFlag）是每个旗帜包含的波数；两者相乘即为总波数。\n起始点数（StartingPoints）是初始点数池，每波点数增量（PointIncrementPerWave）是每进入新的一波额外获得的点数。\n植物能量掉落次数（PlantfoodToSpawnCount）限制模块掉落植物能量的次数。\n僵尸池（ZombiePool）列出可用点数生成的僵尸类型，波次管理属性（WaveManagerProps）将本模块关联到关卡的 WaveManagerProperties 对象。';
+
+  @override
+  String get levelEscalationHelpLevelsTitle => '僵尸等级';
+
+  @override
+  String get levelEscalationHelpLevelsBody =>
+      '本模块无法设置僵尸等级（ZombieLevel）：池中的僵尸始终以 1 级出现。';
+
+  @override
+  String get levelEscalationPredict => '点数预测';
+
+  @override
+  String get levelEscalationPredictHint => '显示配置的僵尸池在每一波的预计僵尸数量。';
+
+  @override
+  String get levelEscalationPredictShow => '显示预测';
+
+  @override
+  String waveManagerExpectationMissingData(String types) {
+    return '以下僵尸缺少可靠的 WavePointCost 数据，未参与计算：$types';
+  }
+
+  @override
+  String get pointSpawnOnlyZombiesBlocked =>
+      '此僵尸没有 WavePointCost 数据，游戏无法从点数预算中购买它，也无法添加到池中。';
+
+  @override
+  String get pointSpawnOnlyZombieBlockedTitle => '不能用于按点数自动出怪';
+
+  @override
+  String get pointSpawnOnlyZombieBlockedMessage =>
+      '此僵尸没有 WavePointCost 数据（游戏读取该字段从波次点数购买僵尸），无法用于按点数自动出怪。';
+
+  @override
   String get moduleTitle_DeathHoleModuleProperties => '死亡坑洞';
 
   @override
@@ -3366,6 +3440,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventDesc_ThunderWaveActionProps => '天降闪电，为植物施加正负电荷状态';
+
+  @override
+  String get eventTitle_ZombieAirbubbleActionProps => '泡泡雨';
+
+  @override
+  String get eventDesc_ZombieAirbubbleActionProps => '从天而降召唤泡泡：数量、生命值与下落速度';
+
+  @override
+  String get eventAirbubble => '事件：泡泡雨';
+
+  @override
+  String get eventHelpAirbubbleWaveBody =>
+      '为波次添加泡泡雨效果：指定数量的泡泡从天而降。每个泡泡拥有独立的生命值，速度范围决定它们下落的快慢。';
+
+  @override
+  String get airbubbleParameters => '泡泡雨参数';
+
+  @override
+  String get airbubbleBubbleNumber => '泡泡数量（BubbleNumber）';
+
+  @override
+  String get airbubbleBubbleHealth => '泡泡生命值（BubbleHealth）';
+
+  @override
+  String get airbubbleSpeedRangeMin => '最小下落速度（SpeedRangeMin）';
+
+  @override
+  String get airbubbleSpeedRangeMax => '最大下落速度（SpeedRangeMax）';
 
   @override
   String get eventTitle_MagicMirrorWaveActionProps => '魔镜传送';
@@ -6185,6 +6287,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noWaveManagerPropsFound => '未找到波次管理器 (WaveManagerProperties) 模块。';
 
   @override
+  String get levelEscalationAddWaveTimeline => '添加波次时间线';
+
+  @override
   String get itemsSortedByRow => '当前格子中的物品';
 
   @override
@@ -8912,7 +9017,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get waveGeneratorExpectationPoolNote =>
-      '预览会通过重复模拟加权选取来估算出怪数量。即使点数相同，结果也可能因选取顺序不同而变化，因此无法准确预测游戏中的实际出怪。';
+      '预览会通过重复模拟随机购买来估算出怪数量。即使点数相同，结果也可能因选取顺序不同而变化，因此无法准确预测游戏中的实际出怪。';
 
   @override
   String waveGeneratorExpectationTitle(int wave) {
@@ -8945,7 +9050,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String waveGeneratorExpectationMissingData(String types) {
-    return '以下僵尸缺少可靠的 WavePointCost 或 Weight 数据，无法计算随机出怪预览：$types';
+    return '以下僵尸缺少可靠的 WavePointCost 数据，无法计算随机出怪预览：$types';
   }
 
   @override
@@ -8956,6 +9061,16 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String waveGeneratorExpectationCommonRange(int minimum, int maximum) {
     return '预计数量范围：$minimum–$maximum只';
+  }
+
+  @override
+  String zombieCountWaveEstimate(String count, int minimum, int maximum) {
+    return '本波：约$count只僵尸（$minimum–$maximum）';
+  }
+
+  @override
+  String zombieCountTotalEstimate(String count, int minimum, int maximum) {
+    return '全部波次合计：约$count只僵尸（$minimum–$maximum）';
   }
 
   @override

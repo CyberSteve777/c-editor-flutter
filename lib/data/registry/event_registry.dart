@@ -300,6 +300,27 @@ class EventRegistry {
         }
       },
     ),
+    'ZombieAirbubbleActionProps': EventMetadata(
+      titleKey: 'eventTitle_ZombieAirbubbleActionProps',
+      descriptionKey: 'eventDesc_ZombieAirbubbleActionProps',
+      icon: Icons.bubble_chart,
+      color: const Color(0xFF00BCD4),
+      darkColor: const Color(0xFF80DEEA),
+      category: EventCategory.zombieSpawn,
+      defaultAlias: 'AirbubbleEvent',
+      defaultObjClass: 'ZombieAirbubbleActionProps',
+      initialDataFactory: () => ZombieAirbubbleActionPropsData(),
+      summaryProvider: (obj) {
+        try {
+          final data = ZombieAirbubbleActionPropsData.fromJson(
+            obj.objData as Map<String, dynamic>,
+          );
+          return '${data.bubbleNumber}';
+        } catch (_) {
+          return '';
+        }
+      },
+    ),
     'BassRainZombieSpawnerProps': EventMetadata(
       titleKey: 'eventTitle_BassRainZombieSpawnerProps',
       descriptionKey: 'eventDesc_BassRainZombieSpawnerProps',

@@ -2423,6 +2423,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Wave Generator embeds waves directly and cannot be used with a separate Wave Manager container.';
 
   @override
+  String get conflictDesc_WaveGeneratorLevelEscalation =>
+      'The Level Escalation module scales zombie levels based on waves from the Wave Manager system, so it cannot be used with the Wave Generator.';
+
+  @override
   String conflictDesc_CamelMinigameNonTouchZombies(String zombies) {
     return 'Mummy Memory only supports the special Mummy Memory Camel Zombies. Other zombies were detected: $zombies. Their appearance in the level will crash the game. Replace or remove them.';
   }
@@ -3009,6 +3013,79 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sun cost increases each time the same plant is planted';
 
   @override
+  String get moduleTitle_LevelEscalationModuleProperties => 'Level Escalation';
+
+  @override
+  String get moduleDesc_LevelEscalationModuleProperties =>
+      'Escalates difficulty across flags: points grow with each wave and new zombies join the spawn pool';
+
+  @override
+  String get flagCount => 'Flag count';
+
+  @override
+  String get wavesPerFlag => 'Waves per flag';
+
+  @override
+  String get plantfoodToSpawnCount => 'Plant Food drop count';
+
+  @override
+  String levelEscalationTotalWaves(int count) {
+    return 'Total escalation waves: $count';
+  }
+
+  @override
+  String get levelEscalationFlagCountShort => 'Flags';
+
+  @override
+  String get levelEscalationFlagIntervalShort => 'Interval';
+
+  @override
+  String get expectationNoAffordableZombies =>
+      'None of this wave\'s pool zombies can be bought with its points.';
+
+  @override
+  String get levelEscalationHelpOverviewBody =>
+      'Adds point-based difficulty escalation to the level. Waves are grouped into flags; each new wave grants more points, and those points are spent to spawn zombies from the pool. Plant Food drops are limited to the configured count.';
+
+  @override
+  String get levelEscalationHelpFieldsBody =>
+      'Flag count (FlagCount) is the number of flags in the level, and Waves per flag (WavesPerFlag) is the number of waves in each flag; together they give the total wave count.\nStarting points (StartingPoints) is the initial point pool, and Point increase per wave (PointIncrementPerWave) is how many extra points are granted for every new wave.\nPlant Food drop count (PlantfoodToSpawnCount) limits how many Plant Food drops the module spawns.\nZombie pool (ZombiePool) lists the zombie types the points can spawn, and Wave manager props (WaveManagerProps) links the module to the level\'s WaveManagerProperties object.';
+
+  @override
+  String get levelEscalationHelpLevelsTitle => 'Zombie levels';
+
+  @override
+  String get levelEscalationHelpLevelsBody =>
+      'The module has no per-zombie level setting (ZombieLevel): every zombie from the pool always spawns at level 1.';
+
+  @override
+  String get levelEscalationPredict => 'Point prediction';
+
+  @override
+  String get levelEscalationPredictHint =>
+      'Shows the expected zombie counts for each wave of the configured pool.';
+
+  @override
+  String get levelEscalationPredictShow => 'Show prediction';
+
+  @override
+  String waveManagerExpectationMissingData(String types) {
+    return 'These zombies lack reliable WavePointCost data and are not counted: $types';
+  }
+
+  @override
+  String get pointSpawnOnlyZombiesBlocked =>
+      'This zombie has no WavePointCost data, so the game cannot buy it from a point budget, and it cannot be added to the pool.';
+
+  @override
+  String get pointSpawnOnlyZombieBlockedTitle =>
+      'Cannot be used in point auto-spawn';
+
+  @override
+  String get pointSpawnOnlyZombieBlockedMessage =>
+      'This zombie has no WavePointCost data (the field the game uses to buy zombies from wave points), so it cannot be used in point auto-spawn.';
+
+  @override
   String get moduleTitle_DeathHoleModuleProperties => 'Death Craters';
 
   @override
@@ -3563,6 +3640,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventDesc_ThunderWaveActionProps =>
       'Lightning strikes, applying positive or negative charges to plants';
+
+  @override
+  String get eventTitle_ZombieAirbubbleActionProps => 'Bubble Rain';
+
+  @override
+  String get eventDesc_ZombieAirbubbleActionProps =>
+      'Rains bubbles from the sky: count, health and fall speed';
+
+  @override
+  String get eventAirbubble => 'Event: Bubble Rain';
+
+  @override
+  String get eventHelpAirbubbleWaveBody =>
+      'Adds a wave effect that summons bubbles falling from the sky. Each bubble has its own health, and the fall speed range controls how fast they drop.';
+
+  @override
+  String get airbubbleParameters => 'Bubble rain parameters';
+
+  @override
+  String get airbubbleBubbleNumber => 'Bubble count (BubbleNumber)';
+
+  @override
+  String get airbubbleBubbleHealth => 'Bubble health (BubbleHealth)';
+
+  @override
+  String get airbubbleSpeedRangeMin => 'Min fall speed (SpeedRangeMin)';
+
+  @override
+  String get airbubbleSpeedRangeMax => 'Max fall speed (SpeedRangeMax)';
 
   @override
   String get eventTitle_MagicMirrorWaveActionProps => 'Magic Mirror';
@@ -6500,6 +6606,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Wave Manager module (WaveManagerProperties) not found.';
 
   @override
+  String get levelEscalationAddWaveTimeline => 'Add wave timeline';
+
+  @override
   String get itemsSortedByRow => 'Item(s) in selected tile';
 
   @override
@@ -9414,7 +9523,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waveGeneratorExpectationPoolNote =>
-      'The preview estimates spawn counts by repeatedly simulating weighted selections. Results can vary with selection order even when the point budget is unchanged, so it cannot precisely predict the game\'s actual spawns.';
+      'The preview estimates spawn counts by repeatedly simulating random purchases. Results can vary with selection order even when the point budget is unchanged, so it cannot precisely predict the game\'s actual spawns.';
 
   @override
   String waveGeneratorExpectationTitle(int wave) {
@@ -9448,7 +9557,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String waveGeneratorExpectationMissingData(String types) {
-    return 'Random-spawn preview unavailable because these zombies are missing reliable WavePointCost or Weight data: $types';
+    return 'Random-spawn preview unavailable because these zombies are missing reliable WavePointCost data: $types';
   }
 
   @override
@@ -9459,6 +9568,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String waveGeneratorExpectationCommonRange(int minimum, int maximum) {
     return 'Estimated count range: $minimum–$maximum';
+  }
+
+  @override
+  String zombieCountWaveEstimate(String count, int minimum, int maximum) {
+    return 'This wave: about $count zombies (from $minimum to $maximum)';
+  }
+
+  @override
+  String zombieCountTotalEstimate(String count, int minimum, int maximum) {
+    return 'All waves combined: about $count zombies (from $minimum to $maximum)';
   }
 
   @override

@@ -21,7 +21,6 @@ import 'package:c_editor/data/models/custom_stage_preset.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/custom_stage_preset_repository.dart';
 import 'package:c_editor/data/repository/reference_repository.dart';
-import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugin_api/c_plugin_host.dart';
@@ -65,6 +64,7 @@ import 'package:c_editor/data/final_stage_time_limited_module_utils.dart';
 import 'package:c_editor/screens/editor/modules/starting_plantfood_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/tide_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/zombie_move_fast_module_screen.dart';
+import 'package:c_editor/screens/editor/modules/level_escalation_module_screen.dart';
 import 'package:c_editor/screens/editor/modules/wave_manager_settings_screen.dart';
 import 'package:c_editor/screens/editor/modules/last_stand_minigame_screen.dart';
 import 'package:c_editor/screens/editor/modules/cowboy_minigame_screen.dart';
@@ -138,6 +138,7 @@ import 'package:c_editor/screens/editor/events/school_bus_event_screen.dart';
 import 'package:c_editor/screens/editor/events/hamster_zombie_event_screen.dart';
 import 'package:c_editor/screens/editor/events/bungee_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/thunder_wave_event_screen.dart';
+import 'package:c_editor/screens/editor/events/airbubble_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/tide_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/zombie_fish_wave_event_screen.dart';
 import 'package:c_editor/screens/editor/events/spawn_grave_stones_event_screen.dart';
@@ -1808,6 +1809,21 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
 
+    if (objClass == 'ZombieAirbubbleActionProps') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AirbubbleWaveEventScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+          ),
+        ),
+      );
+      return;
+    }
+
     AppMessage.show(
       context,
       l10n?.eventEditorInDevelopment ?? 'Event editor in development',
@@ -1965,7 +1981,7 @@ class _EditorScreenState extends State<EditorScreen> {
 
   void _openZombieSelection(
     void Function(String) onSelected, {
-    bool pointPoolOnly = false,
+    bool pointSpawnOnly = false,
   }) {
     Navigator.push(
       context,
@@ -1974,23 +1990,10 @@ class _EditorScreenState extends State<EditorScreen> {
           stateBucketId: _selectionStateBucketId,
           editorCubit: _ec,
           levelFile: _ec.state.levelFile,
+          pointSpawnOnly: pointSpawnOnly,
           onAddModule: (objClass) {
             _addModule(ModuleRegistry.getMetadata(objClass));
           },
-          excludeIds: pointPoolOnly
-              ? ZombieRepository().allZombies
-                    .where(
-                      (zombie) =>
-                          ZombieRepository().isElite(zombie.id) ||
-                          const [
-                            'yeti',
-                            'treasureyeti',
-                            'treasureyeti_egypt',
-                          ].contains(zombie.id),
-                    )
-                    .map((zombie) => zombie.id)
-                    .toList()
-              : const [],
           multiSelect: true,
           onZombieSelected: (_) {},
           onMultiZombieSelected: (ids) {
@@ -2021,7 +2024,7 @@ class _EditorScreenState extends State<EditorScreen> {
           onChanged: _markDirty,
           onBack: () => Navigator.pop(context),
           onRequestZombieSelection: (onSelected) =>
-              _openZombieSelection(onSelected, pointPoolOnly: true),
+              _openZombieSelection(onSelected, pointSpawnOnly: true),
         ),
       ),
     ).then((_) => _setActiveTab(EditorTabType.waveGenerator));
@@ -2039,7 +2042,7 @@ class _EditorScreenState extends State<EditorScreen> {
           onBack: () => Navigator.pop(context),
           onRequestZombieSelection: _openZombieSelection,
           onRequestPoolZombieSelection: (onSelected) =>
-              _openZombieSelection(onSelected, pointPoolOnly: true),
+              _openZombieSelection(onSelected, pointSpawnOnly: true),
         ),
       ),
     ).then((_) => _setActiveTab(EditorTabType.waveGenerator));
@@ -3650,6 +3653,31 @@ class _EditorScreenState extends State<EditorScreen> {
       return;
     }
     if (info.source == 'CurrentLevel' &&
+        objClass == 'LevelEscalationModuleProperties') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LevelEscalationModuleScreen(
+            rtid: rtid,
+            levelFile: _ec.state.levelFile!,
+            onChanged: _markDirty,
+            onBack: () => Navigator.pop(context),
+            onRequestZombieSelection: (onSelected) =>
+                _openZombieSelection(onSelected, pointSpawnOnly: true),
+            onStructureChanged: () {
+              _markDirty();
+              _ec.recalculateTabs();
+            },
+            onOpenWaveTimeline: () {
+              Navigator.pop(context);
+              _setActiveTab(EditorTabType.timeline);
+            },
+          ),
+        ),
+      );
+      return;
+    }
+    if (info.source == 'CurrentLevel' &&
         objClass == 'WaveManagerModuleProperties') {
       Navigator.push(
         context,
@@ -3660,7 +3688,7 @@ class _EditorScreenState extends State<EditorScreen> {
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
             onRequestZombieSelection: (onSelected) =>
-                _openZombieSelection(onSelected, pointPoolOnly: true),
+                _openZombieSelection(onSelected, pointSpawnOnly: true),
             onOpenWaveTimeline: () {
               Navigator.pop(context);
               _setActiveTab(EditorTabType.timeline);
@@ -3681,7 +3709,7 @@ class _EditorScreenState extends State<EditorScreen> {
             onChanged: _markDirty,
             onBack: () => Navigator.pop(context),
             onRequestZombieSelection: (onSelected) =>
-                _openZombieSelection(onSelected, pointPoolOnly: true),
+                _openZombieSelection(onSelected, pointSpawnOnly: true),
           ),
         ),
       );
