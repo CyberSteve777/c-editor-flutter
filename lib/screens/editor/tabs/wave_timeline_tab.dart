@@ -187,10 +187,32 @@ class WaveTimelineTab extends StatefulWidget {
   State<WaveTimelineTab> createState() => _WaveTimelineTabState();
 }
 
+class _WaveEventInsertHover {
+  const _WaveEventInsertHover({
+    required this.waveIndex,
+    required this.insertBeforeIndex,
+  });
+
+  final int waveIndex;
+
+  /// Index to insert before within the wave, or null to append at the end.
+  final int? insertBeforeIndex;
+
+  @override
+  bool operator ==(Object other) =>
+      other is _WaveEventInsertHover &&
+      other.waveIndex == waveIndex &&
+      other.insertBeforeIndex == insertBeforeIndex;
+
+  @override
+  int get hashCode => Object.hash(waveIndex, insertBeforeIndex);
+}
+
 class _WaveTimelineTabState extends State<WaveTimelineTab> {
   VoidCallback? _notifierListener;
   _WaveEventDragData? _draggingEvent;
   int? _dragHoverWaveIndex;
+  _WaveEventInsertHover? _dragHoverInsert;
 
   @override
   void initState() {
@@ -811,6 +833,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
             _buildWaveEventInsertSlot(
               waveIndex: waveIndex,
               insertBeforeIndex: 0,
+              waveLength: rtidList.length,
               objectMap: objectMap,
             ),
           for (var i = 0; i < rtidList.length; i++) ...[
@@ -828,6 +851,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
               _buildWaveEventInsertSlot(
                 waveIndex: waveIndex,
                 insertBeforeIndex: i + 1 < rtidList.length ? i + 1 : null,
+                waveLength: rtidList.length,
                 objectMap: objectMap,
               ),
           ],
@@ -837,6 +861,8 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     final eventDropTarget = DragTarget<_WaveEventDragData>(
       key: ValueKey('waveTimelineDropTarget-$waveIndex'),
       onWillAcceptWithDetails: (details) {
+        // Same-wave reorders go through insert slots so the drop lands at an
+        // exact index; the wave body remains a cross-wave / append fallback.
         return details.data.sourceWaveIndex != waveIndex;
       },
       onMove: (_) {
@@ -845,20 +871,29 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         }
       },
       onLeave: (_) {
+        // Do not clear [_dragHoverInsert] here: moving into a nested insert
+        // slot also leaves this parent target, and wiping insert state would
+        // lose the exact drop index.
         if (_dragHoverWaveIndex == waveIndex) {
           setState(() => _dragHoverWaveIndex = null);
         }
       },
       onAcceptWithDetails: (details) {
+        // Prefer the hovered insert slot when the pointer ends over the wave
+        // body so cross-wave drops can land at an exact position.
+        final insert = _dragHoverInsert?.waveIndex == waveIndex
+            ? _dragHoverInsert?.insertBeforeIndex
+            : null;
         setState(() {
           _dragHoverWaveIndex = null;
+          _dragHoverInsert = null;
           _draggingEvent = null;
         });
         _placeWaveEvent(
           sourceWaveIndex: details.data.sourceWaveIndex,
           sourceIndex: details.data.sourceIndex,
           targetWaveIndex: waveIndex,
-          insertBeforeIndex: null,
+          insertBeforeIndex: insert,
         );
       },
       builder: (context, candidateData, rejectedData) {
@@ -1054,36 +1089,76 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     );
   }
 
+  bool _isNoOpWaveInsert({
+    required int sourceWaveIndex,
+    required int sourceIndex,
+    required int targetWaveIndex,
+    required int? insertBeforeIndex,
+    required int waveLength,
+  }) {
+    if (sourceWaveIndex != targetWaveIndex) return false;
+    // Slot immediately before the dragged chip.
+    if (insertBeforeIndex != null && insertBeforeIndex == sourceIndex) {
+      return true;
+    }
+    // Slot immediately after the dragged chip.
+    if (insertBeforeIndex != null && insertBeforeIndex == sourceIndex + 1) {
+      return true;
+    }
+    // End slot while already last.
+    if (insertBeforeIndex == null && sourceIndex == waveLength - 1) {
+      return true;
+    }
+    return false;
+  }
+
   Widget _buildWaveEventInsertSlot({
     required int waveIndex,
     required int? insertBeforeIndex,
+    required int waveLength,
     required Map<String, PvzObject> objectMap,
   }) {
+    final theme = Theme.of(context);
+    final hover = _WaveEventInsertHover(
+      waveIndex: waveIndex,
+      insertBeforeIndex: insertBeforeIndex,
+    );
     final slotKey = insertBeforeIndex == null
         ? 'waveTimelineInsertSlot-$waveIndex-end'
         : 'waveTimelineInsertSlot-$waveIndex-$insertBeforeIndex';
     return DragTarget<_WaveEventDragData>(
       key: ValueKey(slotKey),
       onWillAcceptWithDetails: (details) {
-        if (details.data.sourceWaveIndex != waveIndex) return true;
-        final from = details.data.sourceIndex;
-        // Mirror jittered: reject only the slot immediately before the dragged item.
-        if (insertBeforeIndex == null) return true;
-        return from != insertBeforeIndex;
+        return !_isNoOpWaveInsert(
+          sourceWaveIndex: details.data.sourceWaveIndex,
+          sourceIndex: details.data.sourceIndex,
+          targetWaveIndex: waveIndex,
+          insertBeforeIndex: insertBeforeIndex,
+          waveLength: waveLength,
+        );
       },
       onMove: (_) {
-        if (_dragHoverWaveIndex != waveIndex) {
-          setState(() => _dragHoverWaveIndex = waveIndex);
+        if (_dragHoverWaveIndex != waveIndex || _dragHoverInsert != hover) {
+          setState(() {
+            _dragHoverWaveIndex = waveIndex;
+            _dragHoverInsert = hover;
+          });
         }
       },
       onLeave: (_) {
-        if (_dragHoverWaveIndex == waveIndex) {
-          setState(() => _dragHoverWaveIndex = null);
+        if (_dragHoverInsert == hover) {
+          setState(() {
+            if (_dragHoverWaveIndex == waveIndex) {
+              _dragHoverWaveIndex = null;
+            }
+            _dragHoverInsert = null;
+          });
         }
       },
       onAcceptWithDetails: (details) {
         setState(() {
           _dragHoverWaveIndex = null;
+          _dragHoverInsert = null;
           _draggingEvent = null;
         });
         _placeWaveEvent(
@@ -1094,7 +1169,9 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         );
       },
       builder: (context, candidateData, rejectedData) {
-        final showPreview = candidateData.isNotEmpty && _draggingEvent != null;
+        final active =
+            candidateData.isNotEmpty || _dragHoverInsert == hover;
+        final showPreview = active && _draggingEvent != null;
         if (showPreview) {
           // Jittered-style ghost at the hovered insert position.
           return Padding(
@@ -1105,18 +1182,24 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
             ),
           );
         }
-        // Zero layout height keeps chip spacing unchanged while dragging;
-        // overflow preserves a usable drop hit target between chips.
+        // Real layout height so slots are hit-testable (zero-height
+        // OverflowBox targets were not receiving same-wave drops).
         return SizedBox(
           width: double.infinity,
-          height: 0,
-          child: OverflowBox(
-            minHeight: zombieDropSlotWidth,
-            maxHeight: zombieDropSlotWidth,
-            alignment: Alignment.center,
-            child: const SizedBox(
+          height: zombieDropSlotWidth,
+          child: Center(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 120),
+              curve: Curves.easeOut,
               width: double.infinity,
-              height: zombieDropSlotWidth,
+              height: active ? 4 : 2,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                color: active
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.outline.withValues(alpha: 0.35),
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
           ),
         );
@@ -1156,6 +1239,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         setState(() {
           _draggingEvent = data;
           _dragHoverWaveIndex = null;
+          _dragHoverInsert = null;
         });
       },
       onDragEnd: (_) {
@@ -1163,6 +1247,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         setState(() {
           _draggingEvent = null;
           _dragHoverWaveIndex = null;
+          _dragHoverInsert = null;
         });
       },
       onDraggableCanceled: (_, _) {
@@ -1170,6 +1255,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
         setState(() {
           _draggingEvent = null;
           _dragHoverWaveIndex = null;
+          _dragHoverInsert = null;
         });
       },
       feedback: Material(
@@ -1828,26 +1914,34 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     if (wm is! WaveManagerData) return;
     final oldAlias = LevelParser.extractAlias(oldRtid);
     if (oldAlias == newAlias) return;
-    if (widget.levelFile.objects.any(
-      (o) => o.aliases?.contains(newAlias) == true,
+    if (!PvzAliasUtils.isAliasAvailable(
+      widget.levelFile,
+      newAlias,
+      excludeAlias: oldAlias,
     )) {
       return;
     }
     final newRtid = RtidParser.build(newAlias, 'CurrentLevel');
-    final objIdx = widget.levelFile.objects.indexWhere(
-      (o) => o.aliases?.contains(oldAlias) == true,
+    PvzAliasUtils.renameAlias(
+      levelFile: widget.levelFile,
+      oldAlias: oldAlias,
+      newAlias: newAlias,
     );
-    if (objIdx >= 0) {
-      widget.levelFile.objects[objIdx] = PvzObject(
-        aliases: [newAlias],
-        objClass: widget.levelFile.objects[objIdx].objClass,
-        objData: widget.levelFile.objects[objIdx].objData,
-      );
-    }
+    // Keep the live wave-manager model in sync with level-file RTID rewrites.
     for (final wave in wm.waves) {
       for (var i = 0; i < wave.length; i++) {
         if (wave[i] == oldRtid) wave[i] = newRtid;
       }
+    }
+    // objectMap is keyed by alias; move the entry so later edits resolve.
+    final mapped = widget.parsed.objectMap.remove(oldAlias);
+    if (mapped != null) {
+      widget.parsed.objectMap[newAlias] = mapped;
+    } else {
+      final obj = widget.levelFile.objects.firstWhereOrNull(
+        (o) => o.aliases?.contains(newAlias) == true,
+      );
+      if (obj != null) widget.parsed.objectMap[newAlias] = obj;
     }
     _syncWaves();
     widget.onChanged();
@@ -2000,8 +2094,9 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     BuildContext context,
     String rtid,
     String alias,
-    VoidCallback? onEditFinished,
-  ) {
+    VoidCallback? onEditFinished, {
+    ValueChanged<String>? onRenamed,
+  }) {
     final l10n = AppLocalizations.of(context);
     final wm = widget.parsed.waveManager;
     if (wm is! WaveManagerData) return;
@@ -2056,8 +2151,10 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                 return;
               }
               Navigator.pop(ctx);
-              if (widget.levelFile.objects.any(
-                (o) => o.aliases?.contains(newAlias) == true,
+              if (!PvzAliasUtils.isAliasAvailable(
+                widget.levelFile,
+                newAlias,
+                excludeAlias: alias,
               )) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -2070,6 +2167,8 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
                 return;
               }
               _performGlobalRename(rtid, newAlias);
+              final newRtid = RtidParser.build(newAlias, 'CurrentLevel');
+              onRenamed?.call(newRtid);
               onEditFinished?.call();
             },
             style: FilledButton.styleFrom(
@@ -2401,15 +2500,7 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
     VoidCallback? onEditFinished,
   }) {
     final l10n = AppLocalizations.of(context);
-    final alias = LevelParser.extractAlias(rtid);
-    final obj = widget.parsed.objectMap[alias];
-    final meta = EventRegistry.getByObjClass(obj?.objClass);
-    final localizedTitle = meta != null
-        ? EventSelectionScreen.resolveEventTitle(context, meta, l10n)
-        : alias;
-    final sheetTitle = meta != null && localizedTitle != alias
-        ? '$alias ($localizedTitle)'
-        : alias;
+    var currentRtid = rtid;
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -2421,236 +2512,271 @@ class _WaveTimelineTabState extends State<WaveTimelineTab> {
             constraints: BoxConstraints(
               maxHeight: MediaQuery.sizeOf(ctx).height * 0.9,
             ),
-            child: SingleChildScrollView(
-              key: const ValueKey('waveEventActionSheetScroll'),
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            child: StatefulBuilder(
+              builder: (ctx, setSheetState) {
+                final alias = LevelParser.extractAlias(currentRtid);
+                final obj =
+                    widget.parsed.objectMap[alias] ??
+                    widget.levelFile.objects.firstWhereOrNull(
+                      (o) => o.aliases?.contains(alias) == true,
+                    );
+                final meta = EventRegistry.getByObjClass(obj?.objClass);
+                final localizedTitle = meta != null
+                    ? EventSelectionScreen.resolveEventTitle(
+                        context,
+                        meta,
+                        l10n,
+                      )
+                    : alias;
+                final sheetTitle = meta != null && localizedTitle != alias
+                    ? '$alias ($localizedTitle)'
+                    : alias;
+                return SingleChildScrollView(
+                  key: const ValueKey('waveEventActionSheetScroll'),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (meta != null) ...[
-                        Icon(meta.icon, color: meta.color),
-                        const SizedBox(width: 8),
-                      ],
-                      Expanded(
-                        child: Text(
-                          sheetTitle,
-                          style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (obj?.objClass != null)
-                    Text(
-                      obj!.objClass,
-                      style: Theme.of(ctx).textTheme.bodySmall,
-                    ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: FilledButton.icon(
-                          onPressed: () async {
-                            Navigator.pop(ctx);
-                            await widget.onEditEvent(rtid, waveIndex);
-                            // Do not re-open wave sheet when exiting event editor
-                          },
-                          icon: const Icon(Icons.edit),
-                          label: Text(
-                            l10n?.editProperties ?? 'Edit properties',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final theme = Theme.of(ctx);
-                      final scheme = theme.colorScheme;
-                      final actionLabels = <String>[
-                        l10n?.rename ?? 'Rename',
-                        l10n?.copy ?? 'Copy',
-                        l10n?.move ?? 'Move',
-                      ];
-                      final requiredRowWidth =
-                          actionLabels
-                              .map(
-                                (label) => _requiredIconButtonWidth(ctx, label),
-                              )
-                              .fold<double>(0, (sum, width) => sum + width) +
-                          16;
-                      final compact = constraints.maxWidth < requiredRowWidth;
-
-                      Widget actionButton({
-                        required Key key,
-                        required IconData icon,
-                        required String label,
-                        required VoidCallback onPressed,
-                      }) {
-                        return TextButton.icon(
-                          key: key,
-                          onPressed: onPressed,
-                          style: TextButton.styleFrom(
-                            minimumSize: const Size(0, 48),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            backgroundColor: scheme.primaryContainer,
-                            foregroundColor: scheme.onPrimaryContainer,
-                          ),
-                          icon: Icon(icon),
-                          label: Text(
-                            label,
-                            maxLines: 2,
-                            softWrap: true,
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                      }
-
-                      final buttons = <Widget>[
-                        actionButton(
-                          key: const ValueKey('waveEventRenameButton'),
-                          icon: Icons.drive_file_rename_outline,
-                          label: actionLabels[0],
-                          onPressed: () => _showRenameDialog(
-                            context,
-                            rtid,
-                            alias,
-                            onEditFinished,
-                          ),
-                        ),
-                        actionButton(
-                          key: const ValueKey('waveEventCopyButton'),
-                          icon: Icons.copy,
-                          label: actionLabels[1],
-                          onPressed: () => _showCopyChoiceDialog(
-                            context,
-                            rtid,
-                            alias,
-                            waveIndex,
-                            onEditFinished,
-                          ),
-                        ),
-                        actionButton(
-                          key: const ValueKey('waveEventMoveButton'),
-                          icon: Icons.drive_file_move,
-                          label: actionLabels[2],
-                          onPressed: () => _showMoveDialog(
-                            context,
-                            rtid,
-                            waveIndex,
-                            onEditFinished,
-                          ),
-                        ),
-                      ];
-
-                      if (compact) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            for (
-                              var index = 0;
-                              index < buttons.length;
-                              index++
-                            ) ...[
-                              SizedBox(
-                                width: double.infinity,
-                                child: buttons[index],
-                              ),
-                              if (index != buttons.length - 1)
-                                const SizedBox(height: 8),
-                            ],
-                          ],
-                        );
-                      }
-                      return Row(
+                      Row(
                         children: [
-                          for (
-                            var index = 0;
-                            index < buttons.length;
-                            index++
-                          ) ...[
-                            Expanded(child: buttons[index]),
-                            if (index != buttons.length - 1)
-                              const SizedBox(width: 8),
+                          if (meta != null) ...[
+                            Icon(meta.icon, color: meta.color),
+                            const SizedBox(width: 8),
                           ],
-                        ],
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: FilledButton.icon(
-                          key: const ValueKey('waveEventRemoveButton'),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: Theme.of(ctx).colorScheme.error,
+                          Expanded(
+                            child: Text(
+                              sheetTitle,
+                              style: Theme.of(ctx).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                          onPressed: () async {
-                            Navigator.pop(ctx);
-                            final ok = await showDialog<bool>(
-                              context: context,
-                              builder: (dctx) {
-                                return AlertDialog(
-                                  title: Text(
-                                    l10n?.confirmRemoveRef ??
-                                        'Remove reference',
+                        ],
+                      ),
+                      if (obj?.objClass != null)
+                        Text(
+                          obj!.objClass,
+                          style: Theme.of(ctx).textTheme.bodySmall,
+                        ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: FilledButton.icon(
+                              onPressed: () async {
+                                Navigator.pop(ctx);
+                                await widget.onEditEvent(
+                                  currentRtid,
+                                  waveIndex,
+                                );
+                                // Do not re-open wave sheet when exiting event editor
+                              },
+                              icon: const Icon(Icons.edit),
+                              label: Text(
+                                l10n?.editProperties ?? 'Edit properties',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final theme = Theme.of(ctx);
+                          final scheme = theme.colorScheme;
+                          final actionLabels = <String>[
+                            l10n?.rename ?? 'Rename',
+                            l10n?.copy ?? 'Copy',
+                            l10n?.move ?? 'Move',
+                          ];
+                          final requiredRowWidth =
+                              actionLabels
+                                  .map(
+                                    (label) =>
+                                        _requiredIconButtonWidth(ctx, label),
+                                  )
+                                  .fold<double>(
+                                    0,
+                                    (sum, width) => sum + width,
+                                  ) +
+                              16;
+                          final compact =
+                              constraints.maxWidth < requiredRowWidth;
+
+                          Widget actionButton({
+                            required Key key,
+                            required IconData icon,
+                            required String label,
+                            required VoidCallback onPressed,
+                          }) {
+                            return TextButton.icon(
+                              key: key,
+                              onPressed: onPressed,
+                              style: TextButton.styleFrom(
+                                minimumSize: const Size(0, 48),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 10,
+                                ),
+                                backgroundColor: scheme.primaryContainer,
+                                foregroundColor: scheme.onPrimaryContainer,
+                              ),
+                              icon: Icon(icon),
+                              label: Text(
+                                label,
+                                maxLines: 2,
+                                softWrap: true,
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          }
+
+                          final buttons = <Widget>[
+                            actionButton(
+                              key: const ValueKey('waveEventRenameButton'),
+                              icon: Icons.drive_file_rename_outline,
+                              label: actionLabels[0],
+                              onPressed: () => _showRenameDialog(
+                                context,
+                                currentRtid,
+                                alias,
+                                onEditFinished,
+                                onRenamed: (newRtid) {
+                                  setSheetState(() => currentRtid = newRtid);
+                                },
+                              ),
+                            ),
+                            actionButton(
+                              key: const ValueKey('waveEventCopyButton'),
+                              icon: Icons.copy,
+                              label: actionLabels[1],
+                              onPressed: () => _showCopyChoiceDialog(
+                                context,
+                                currentRtid,
+                                alias,
+                                waveIndex,
+                                onEditFinished,
+                              ),
+                            ),
+                            actionButton(
+                              key: const ValueKey('waveEventMoveButton'),
+                              icon: Icons.drive_file_move,
+                              label: actionLabels[2],
+                              onPressed: () => _showMoveDialog(
+                                context,
+                                currentRtid,
+                                waveIndex,
+                                onEditFinished,
+                              ),
+                            ),
+                          ];
+
+                          if (compact) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                for (
+                                  var index = 0;
+                                  index < buttons.length;
+                                  index++
+                                ) ...[
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: buttons[index],
                                   ),
-                                  content: Text(
-                                    l10n?.confirmRemoveRefMessage ??
-                                        'Remove this reference? The entity data will remain until all references are removed.',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(dctx, false),
-                                      style: TextButton.styleFrom(
-                                        foregroundColor: Theme.of(
-                                          dctx,
-                                        ).colorScheme.primary,
-                                      ),
-                                      child: Text(l10n?.cancel ?? 'Cancel'),
-                                    ),
-                                    FilledButton(
-                                      onPressed: () =>
-                                          Navigator.pop(dctx, true),
-                                      style: FilledButton.styleFrom(
-                                        backgroundColor: Theme.of(
-                                          dctx,
-                                        ).colorScheme.error,
-                                        foregroundColor: Colors.white,
-                                      ),
-                                      child: Text(
+                                  if (index != buttons.length - 1)
+                                    const SizedBox(height: 8),
+                                ],
+                              ],
+                            );
+                          }
+                          return Row(
+                            children: [
+                              for (
+                                var index = 0;
+                                index < buttons.length;
+                                index++
+                              ) ...[
+                                Expanded(child: buttons[index]),
+                                if (index != buttons.length - 1)
+                                  const SizedBox(width: 8),
+                              ],
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: FilledButton.icon(
+                              key: const ValueKey('waveEventRemoveButton'),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Theme.of(
+                                  ctx,
+                                ).colorScheme.error,
+                              ),
+                              onPressed: () async {
+                                Navigator.pop(ctx);
+                                final ok = await showDialog<bool>(
+                                  context: context,
+                                  builder: (dctx) {
+                                    return AlertDialog(
+                                      title: Text(
                                         l10n?.confirmRemoveRef ??
                                             'Remove reference',
                                       ),
-                                    ),
-                                  ],
+                                      content: Text(
+                                        l10n?.confirmRemoveRefMessage ??
+                                            'Remove this reference? The entity data will remain until all references are removed.',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(dctx, false),
+                                          style: TextButton.styleFrom(
+                                            foregroundColor: Theme.of(
+                                              dctx,
+                                            ).colorScheme.primary,
+                                          ),
+                                          child: Text(
+                                            l10n?.cancel ?? 'Cancel',
+                                          ),
+                                        ),
+                                        FilledButton(
+                                          onPressed: () =>
+                                              Navigator.pop(dctx, true),
+                                          style: FilledButton.styleFrom(
+                                            backgroundColor: Theme.of(
+                                              dctx,
+                                            ).colorScheme.error,
+                                            foregroundColor: Colors.white,
+                                          ),
+                                          child: Text(
+                                            l10n?.confirmRemoveRef ??
+                                                'Remove reference',
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 );
+                                if (ok == true) {
+                                  _smartDeleteEvent(waveIndex, currentRtid);
+                                }
                               },
-                            );
-                            if (ok == true) {
-                              _smartDeleteEvent(waveIndex, rtid);
-                            }
-                          },
-                          icon: const Icon(Icons.remove_circle_outline),
-                          label: Text(
-                            l10n?.removeFromWave ?? 'Remove from wave',
+                              icon: const Icon(Icons.remove_circle_outline),
+                              label: Text(
+                                l10n?.removeFromWave ?? 'Remove from wave',
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ),
