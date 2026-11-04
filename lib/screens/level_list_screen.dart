@@ -2224,7 +2224,7 @@ class _LevelListScreenState extends State<LevelListScreen> {
                                                 fileName: item.name,
                                                 filePath: item.path,
                                               ),
-                                        showMove: !item.isDirectory && !kIsWeb,
+                                        showMove: !item.isDirectory,
                                       ),
                                     );
                                   },
