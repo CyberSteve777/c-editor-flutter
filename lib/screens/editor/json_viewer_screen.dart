@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -1095,7 +1096,7 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
       fontSize: _fontSize,
       height: 1.3,
     );
-    return Scrollbar(
+    final editor = Scrollbar(
       controller: _verticalController,
       thumbVisibility: true,
       trackVisibility: true,
@@ -1111,7 +1112,12 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
               child: TextField(
                 readOnly: _savingEdit,
                 controller: _editController,
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.newline,
                 maxLines: null,
+                // Avoid browser scroll-into-view padding that can leave a
+                // blank strip under the caret after large pastes on web.
+                scrollPadding: kIsWeb ? EdgeInsets.zero : const EdgeInsets.all(20),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontFamily: _codeFontFamily,
                   fontSize: _fontSize,
@@ -1129,6 +1135,10 @@ class _JsonViewerScreenState extends State<JsonViewerScreen> {
         ),
       ),
     );
+    // Paint the editor surface under the scroll view so any web text-editing
+    // overlay / layout gap cannot show through as a white band.
+    if (!kIsWeb) return editor;
+    return ColoredBox(color: colorScheme.surface, child: editor);
   }
 
   Widget _buildLineNumbersColumn(String text, TextStyle baseStyle) {

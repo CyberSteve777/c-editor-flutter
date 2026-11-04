@@ -126,7 +126,45 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
     final theme = Theme.of(context);
     // Use secondary (blue) to match Kotlin WaveManagerPropertiesEP PvzBlueLight/Dark
     final themeColor = theme.colorScheme.secondary;
-    return Scaffold(
+    final onAccent = theme.colorScheme.onPrimary;
+    // Drive TextField focus, switches, and other accents from the AppBar color
+    // instead of the app-wide primary (green).
+    final screenTheme = theme.copyWith(
+      colorScheme: theme.colorScheme.copyWith(primary: themeColor),
+      inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: themeColor, width: 2),
+        ),
+        floatingLabelStyle: WidgetStateTextStyle.resolveWith((states) {
+          if (states.contains(WidgetState.focused)) {
+            return TextStyle(color: themeColor);
+          }
+          return TextStyle(color: theme.colorScheme.onSurface);
+        }),
+        focusColor: themeColor,
+      ),
+      textSelectionTheme: theme.textSelectionTheme.copyWith(
+        cursorColor: themeColor,
+        selectionHandleColor: themeColor,
+      ),
+      switchTheme: theme.switchTheme.copyWith(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return onAccent;
+          return theme.colorScheme.outline;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return themeColor;
+          return theme.colorScheme.surfaceContainerHighest;
+        }),
+        trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return themeColor;
+          return theme.colorScheme.outline;
+        }),
+      ),
+    );
+    return Theme(
+      data: screenTheme,
+      child: Scaffold(
       appBar: AppBar(
         title: Text(l10n?.waveManagerSettings ?? 'Wave manager settings'),
         leading: IconButton(
@@ -134,7 +172,7 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
           onPressed: widget.onBack,
         ),
         backgroundColor: themeColor,
-        foregroundColor: theme.colorScheme.onPrimary,
+        foregroundColor: onAccent,
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -383,6 +421,7 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

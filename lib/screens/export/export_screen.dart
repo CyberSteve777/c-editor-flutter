@@ -172,11 +172,18 @@ class _ExportScreenState extends State<ExportScreen> {
       _rootPath != null &&
       _rootPath!.isNotEmpty;
 
+  /// Directory the user is currently browsing (or the library root).
+  String? get _currentLibraryPath {
+    if (_pathStack.isNotEmpty) return _pathStack.last.path;
+    return _rootPath;
+  }
+
   Future<void> _runExternalDynamicDownload({
     bool skipInitialPrompt = false,
   }) async {
     final hook = PluginHostHooks.offerExternalDynamic;
-    final libraryPath = _rootPath;
+    // Import into the folder currently being browsed, matching native behavior.
+    final libraryPath = _currentLibraryPath;
     if (hook == null || libraryPath == null || libraryPath.isEmpty) return;
     if (!mounted) return;
 
@@ -191,12 +198,14 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   Future<void> _refreshAfterExternalDynamicDownload() async {
-    final libraryPath = _rootPath;
-    if (libraryPath == null || libraryPath.isEmpty) return;
+    final rootPath = _rootPath;
+    if (rootPath == null || rootPath.isEmpty) return;
+    final currentPath = _currentLibraryPath ?? rootPath;
 
     setState(() => _isScanning = true);
     try {
-      final hasEligibleFile = await _engine.hasEligibleArchive(libraryPath);
+      // Eligibility is library-wide; refresh the folder the user is viewing.
+      final hasEligibleFile = await _engine.hasEligibleArchive(rootPath);
       if (!mounted) return;
       if (!hasEligibleFile) return;
 
@@ -206,11 +215,10 @@ class _ExportScreenState extends State<ExportScreen> {
           _noFilesFound = false;
           _pathStack.clear();
         });
-        await _loadDirectory(libraryPath);
+        await _loadDirectory(rootPath);
       } else if (_currentStep == ExportStep.selectingArchive) {
         setState(() => _noFilesFound = false);
-        final dir = _pathStack.isNotEmpty ? _pathStack.last.path : libraryPath;
-        await _loadDirectory(dir);
+        await _loadDirectory(currentPath);
       }
     } finally {
       if (mounted) setState(() => _isScanning = false);

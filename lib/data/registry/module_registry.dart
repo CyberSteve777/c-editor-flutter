@@ -1029,7 +1029,7 @@ class ModuleRegistry {
       isCore: true,
       allowMultiple: false,
       category: ModuleCategory.scene,
-      defaultAlias: 'FrozenPlantPlacement',
+      defaultAlias: 'LegacyPlantPlacement',
       initialDataFactory: () => InitialPlantPropertiesData(),
       routeId: 'InitialPlantProperties',
     ),

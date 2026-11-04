@@ -1188,11 +1188,14 @@ class _EditorScreenState extends State<EditorScreen> {
 
     if (objClass == 'ParachuteRainZombieSpawnerProps' ||
         objClass == 'BassRainZombieSpawnerProps' ||
-        objClass == 'SpiderRainZombieSpawnerProps') {
+        objClass == 'SpiderRainZombieSpawnerProps' ||
+        objClass == 'HeianNinjaZombieSpawnerProps') {
       final subtitle = objClass == 'BassRainZombieSpawnerProps'
           ? 'Event: Bass/Jetpack rain'
           : objClass == 'SpiderRainZombieSpawnerProps'
           ? 'Event: Spider rain'
+          : objClass == 'HeianNinjaZombieSpawnerProps'
+          ? 'Event: Ninjimp airstrike'
           : 'Event: Parachute rain';
       await Navigator.push(
         context,

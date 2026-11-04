@@ -44,10 +44,41 @@ void main() {
         expect(bar.width, greaterThan(0));
         expect(bar.right, lessThan(percentage.left));
         expect(bar.center.dy, closeTo(percentage.center.dy, .1));
+        // Percent label is balanced by an equal leading gap, so the bar
+        // itself should stay centered under the logo/title.
+        expect(bar.center.dx, closeTo(screen.center.dx, 1));
         expect(percentage.right, lessThanOrEqualTo(screen.right - 24));
         expect(category.bottom, lessThan(screen.bottom));
         expect(tester.takeException(), isNull);
       });
     }
   }
+
+  testWidgets('progress bar width stays fixed while percent text changes', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    Future<double> barWidthAt(double progress) async {
+      await tester.pumpWidget(
+        StartupLoadingScreen(
+          progress: progress,
+          locale: const Locale('en'),
+          themeMode: ThemeMode.light,
+          loadingCategory: BootstrapLoadingCategory.stages,
+        ),
+      );
+      await tester.pump();
+      return tester.getSize(find.byType(LinearProgressIndicator)).width;
+    }
+
+    final early = await barWidthAt(0.01);
+    final mid = await barWidthAt(0.5);
+    final done = await barWidthAt(1.0);
+    expect(early, greaterThan(0));
+    expect(mid, closeTo(early, 0.1));
+    expect(done, closeTo(early, 0.1));
+  });
 }

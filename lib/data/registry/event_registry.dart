@@ -311,6 +311,27 @@ class EventRegistry {
       defaultObjClass: 'BassRainZombieSpawnerProps',
       initialDataFactory: () => ParachuteRainEventData(),
     ),
+    'HeianNinjaZombieSpawnerProps': EventMetadata(
+      titleKey: 'eventTitle_HeianNinjaZombieSpawnerProps',
+      descriptionKey: 'eventDesc_HeianNinjaZombieSpawnerProps',
+      icon: Icons.sports_martial_arts,
+      color: const Color(0xFFFF9800),
+      darkColor: const Color(0xFFFFCC80),
+      category: EventCategory.zombieSpawn,
+      defaultAlias: 'HeianNinjaEvent',
+      defaultObjClass: 'HeianNinjaZombieSpawnerProps',
+      initialDataFactory: () => ParachuteRainEventData(),
+      summaryProvider: (obj) {
+        try {
+          final data = ParachuteRainEventData.fromJson(
+            obj.objData as Map<String, dynamic>,
+          );
+          return '${data.groupSize}x${data.spiderCount}';
+        } catch (_) {
+          return '';
+        }
+      },
+    ),
     'DinoWaveActionProps': EventMetadata(
       titleKey: 'eventTitle_DinoWaveActionProps',
       descriptionKey: 'eventDesc_DinoWaveActionProps',

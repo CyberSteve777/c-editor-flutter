@@ -18,15 +18,20 @@ const List<String> _parachuteRainAllowedZombieIds = [
   'zcorp_helpdesk',
 ];
 
-/// Zombie IDs allowed for Bass Rain (eighties_bass, heian_ninja, all future jetpacks).
+/// Zombie IDs allowed for Bass Rain (eighties_bass and jetpack variants).
 const List<String> _bassRainAllowedZombieIds = [
   'eighties_bass',
-  'heian_ninja',
   'future_jetpack',
   'future_jetpack_veteran',
   'future_jetpack_disco',
   'kongfu_rocket',
   'birthday_jetpack',
+];
+
+/// Zombie IDs allowed for Heian Ninja rain (standard + two-player variant).
+const List<String> _heianNinjaRainAllowedZombieIds = [
+  'heian_ninja',
+  'new_pvp_heian_ninja',
 ];
 
 class ParachuteRainEventScreen extends StatefulWidget {
@@ -47,7 +52,7 @@ class ParachuteRainEventScreen extends StatefulWidget {
   final VoidCallback onBack;
   final String eventSubtitle;
 
-  /// 'ParachuteRainZombieSpawnerProps', 'BassRainZombieSpawnerProps', or 'SpiderRainZombieSpawnerProps'
+  /// Rain spawner objclass (parachute / bass / spider / heian ninja).
   final String eventObjClass;
   final void Function(void Function(String) onSelected)
   onRequestZombieSelection;
@@ -149,23 +154,33 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
-            onPressed: () => showEditorHelpDialog(
-              context,
-              isEvent: true,
-              title:
-                  l10n?.eventParachuteRain ??
-                  'Parachute/Bass/Spider rain event',
-              sections: [
-                HelpSectionData(
-                  title: l10n?.overview ?? 'Overview',
-                  body: l10n?.eventHelpParachuteRainBody ?? '',
-                ),
-                HelpSectionData(
-                  title: l10n?.logic ?? 'Logic',
-                  body: l10n?.eventHelpParachuteRainLogic ?? '',
-                ),
-              ],
-            ),
+            onPressed: () {
+              final isHeianNinja =
+                  _objClass == 'HeianNinjaZombieSpawnerProps';
+              showEditorHelpDialog(
+                context,
+                isEvent: true,
+                title: isHeianNinja
+                    ? (l10n?.eventTitle_HeianNinjaZombieSpawnerProps ??
+                          'Ninjimp Airstrike')
+                    : (l10n?.eventParachuteRain ??
+                          'Parachute/Bass/Spider rain event'),
+                sections: [
+                  HelpSectionData(
+                    title: l10n?.overview ?? 'Overview',
+                    body: isHeianNinja
+                        ? (l10n?.eventHelpHeianNinjaRainBody ?? '')
+                        : (l10n?.eventHelpParachuteRainBody ?? ''),
+                  ),
+                  HelpSectionData(
+                    title: l10n?.logic ?? 'Logic',
+                    body: isHeianNinja
+                        ? (l10n?.eventHelpHeianNinjaRainLogic ?? '')
+                        : (l10n?.eventHelpParachuteRainLogic ?? ''),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -204,6 +219,8 @@ class _ParachuteRainEventScreenState extends State<ParachuteRainEventScreen> {
         return _parachuteRainAllowedZombieIds;
       case 'BassRainZombieSpawnerProps':
         return _bassRainAllowedZombieIds;
+      case 'HeianNinjaZombieSpawnerProps':
+        return _heianNinjaRainAllowedZombieIds;
       default:
         return const [];
     }

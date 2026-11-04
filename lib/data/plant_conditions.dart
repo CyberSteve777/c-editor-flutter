@@ -2,8 +2,8 @@
 abstract class PlantConditions {
   PlantConditions._();
 
-  /// Only condition supported on preset plants today.
-  static const ids = ['icecubed'];
+  /// Conditions supported on legacy preset plants.
+  static const ids = ['icecubed', 'shadowboosted'];
 
   static String resourceKey(String id) => 'plantCondition_$id';
 }

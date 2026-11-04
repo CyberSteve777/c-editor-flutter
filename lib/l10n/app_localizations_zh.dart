@@ -2938,7 +2938,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get frozenPlantPlacementHelpConditionBody =>
-      '可以为植物设置冰封状态 (icecubed)，常见于冰河世界关卡。';
+      '可以为植物设置特殊状态，例如冰封 (icecubed，常见于冰河世界关卡) 或暗影强化 (shadowboosted)。';
 
   @override
   String get frozenPlantPlacementHelpLastStandTitle => '复活之战模式';
@@ -3316,6 +3316,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventDesc_BassRainZombieSpawnerProps => '贝斯手或喷射器僵尸从天而降';
+
+  @override
+  String get eventTitle_HeianNinjaZombieSpawnerProps => '忍者小鬼空袭';
+
+  @override
+  String get eventDesc_HeianNinjaZombieSpawnerProps => '忍者小鬼僵尸从天而降';
+
+  @override
+  String get eventHelpHeianNinjaRainBody =>
+      '忍者小鬼会在波次中从天而降。可用于平安京忍者小鬼或其双人对决 (new_pvp) 版本。僵尸阶级随地图阶级序列。';
+
+  @override
+  String get eventHelpHeianNinjaRainLogic =>
+      '僵尸会分批次降落。可控制总数量、每组数量、列范围与时间参数。事件前可显示红色字幕；不设置僵尸类型时，此事件也可仅用于字幕显示。';
 
   @override
   String get eventTitle_BlackHoleWaveActionProps => '黑洞吸引';
