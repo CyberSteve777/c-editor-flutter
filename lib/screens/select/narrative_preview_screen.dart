@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:c_editor/data/narrative_catalog.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/utils/narrative_text_format.dart';
 import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 
@@ -143,10 +144,47 @@ class NarrativeLineView extends StatelessWidget {
   final String localeCode;
 
   static bool isRightAlignedNpc(String? npc) =>
-      npc == 'winnie' || npc == 'winnieicon' || npc == 'specialwinnie';
+      npc == 'winnie' ||
+      npc == 'winnieicon' ||
+      npc == 'specialwinnie' ||
+      npc == 'zbcommander';
 
   static String normalizeDisplayText(String text) {
     return text.replaceAll(r'\n', '\n');
+  }
+
+  static Text _displayText(
+    String text, {
+    required TextAlign textAlign,
+    TextStyle? style,
+  }) {
+    final normalized = normalizeDisplayText(text);
+    final matches = narrativeStrikethroughMatches(normalized).toList();
+    if (matches.isEmpty) {
+      return Text(normalized, textAlign: textAlign, style: style);
+    }
+    final spans = <TextSpan>[];
+    var start = 0;
+    for (final match in matches) {
+      if (match.start > start) {
+        spans.add(TextSpan(text: normalized.substring(start, match.start)));
+      }
+      spans.add(
+        TextSpan(
+          text: match.group(1),
+          style: const TextStyle(decoration: TextDecoration.lineThrough),
+        ),
+      );
+      start = match.end;
+    }
+    if (start < normalized.length) {
+      spans.add(TextSpan(text: normalized.substring(start)));
+    }
+    return Text.rich(
+      TextSpan(children: spans),
+      textAlign: textAlign,
+      style: style,
+    );
   }
 
   static bool isOperationHint(NarrativeLine line) {
@@ -191,8 +229,8 @@ class NarrativeLineView extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Text(
-              normalizeDisplayText(line.text),
+            child: _displayText(
+              line.text,
               textAlign: rightAligned ? TextAlign.right : TextAlign.left,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
@@ -234,8 +272,8 @@ class _NarrativeStageDirection extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Text(
-        NarrativeLineView.normalizeDisplayText(line.text),
+      child: NarrativeLineView._displayText(
+        line.text,
         textAlign: TextAlign.center,
         style: theme.textTheme.bodyMedium?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,

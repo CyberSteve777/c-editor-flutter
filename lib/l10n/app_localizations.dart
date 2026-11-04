@@ -274,6 +274,18 @@ abstract class AppLocalizations {
   /// **'Sun doesn\'t fall from the sky'**
   String get sunDroppingInactive;
 
+  /// No description provided for @peaSymbiosisActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Pea Symbiosis: enabled'**
+  String get peaSymbiosisActive;
+
+  /// No description provided for @peaSymbiosisInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Pea Symbiosis: disabled'**
+  String get peaSymbiosisInactive;
+
   /// No description provided for @conveyorChanges.
   ///
   /// In en, this message translates to:
@@ -2791,7 +2803,7 @@ abstract class AppLocalizations {
   /// No description provided for @jitterOffsetsFixedOffsetDescription.
   ///
   /// In en, this message translates to:
-  /// **'Commonly used in Two-Player Mode; the default is 0. A value of 0 uses the Spawn Position Offset preset and spawn formation preset. A nonzero value temporarily disables both but preserves their settings; restoring 0 enables them again. Fixed offsets accumulate in the event\'s zombie-list order without restarting for each row, while each zombie retains its own base position. The first zombie has no fixed offset; each following zombie receives one more entered increment. Even a tiny nonzero value or an event with only one zombie disables both presets.\nA positive fixed offset value moves zombies right, a negative value moves them left, and decimal fractions are preserved. Facing does not reverse this direction, so use this setting carefully with mixed rows or facings. For example, 8.5 moves the first three zombies right by 0, 8.5, and 17 from their own base positions.\nThis setting changes only horizontal position, not the number created. Excessively large magnitudes may place zombies far outside or too deeply inside the lawn, preventing normal entry or causing settlement problems.'**
+  /// **'Commonly used in Two-Player Mode; the default is 0. A value of 0 uses the Spawn Position Offset preset and spawn formation preset. A nonzero value temporarily disables both but preserves their settings; restoring 0 enables them again. Fixed offsets accumulate in the event\'s zombie-list order without restarting for each row, while each zombie retains its own base position. The first zombie has no fixed offset; each following zombie receives one more entered increment. Even a tiny nonzero value or an event with only one zombie disables both presets.\nA positive fixed offset value moves zombies right, a negative value moves them left, and decimal fractions are preserved. Facing does not reverse this direction, so use this setting carefully with mixed rows or facings. For example, 8.5 moves the first three zombies right by 0, 8.5, and 17 from their own base positions. Note that 8.5 uses game coordinate units, not tiles. Since 8.5 is much smaller than the default cumulative offset increment of 80 within a row, zombies in the same row with nearby base positions will usually appear tightly packed.\nThis setting changes only horizontal position, not the number created. Excessively large magnitudes may place zombies far outside or too deeply inside the lawn, preventing normal entry or causing settlement problems.'**
   String get jitterOffsetsFixedOffsetDescription;
 
   /// No description provided for @jitterOffsetsFixedOffsetInvalid.
@@ -4129,7 +4141,7 @@ abstract class AppLocalizations {
   /// No description provided for @startingSun.
   ///
   /// In en, this message translates to:
-  /// **'Starting Sun'**
+  /// **'Starting sun'**
   String get startingSun;
 
   /// No description provided for @startingPlantfood.
@@ -4443,6 +4455,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select lawn'**
   String get selectStage;
+
+  /// No description provided for @switchStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch lawn'**
+  String get switchStage;
 
   /// No description provided for @searchStage.
   ///
@@ -7207,13 +7225,13 @@ abstract class AppLocalizations {
   /// No description provided for @zombieCount.
   ///
   /// In en, this message translates to:
-  /// **'Total count (Total)'**
+  /// **'Total count (ZombieCount)'**
   String get zombieCount;
 
   /// No description provided for @timeBeforeSpawn.
   ///
   /// In en, this message translates to:
-  /// **'Time before full spawn (seconds)'**
+  /// **'Time before full spawn (TimeBeforeFullSpawn; seconds)'**
   String get timeBeforeSpawn;
 
   /// No description provided for @waterBoundaryColumn.
@@ -10543,13 +10561,13 @@ abstract class AppLocalizations {
   /// No description provided for @zombieSpawnWaitSec.
   ///
   /// In en, this message translates to:
-  /// **'Spawn delay (seconds) '**
+  /// **'Spawn delay (ZombieSpawnWaitTime; seconds)'**
   String get zombieSpawnWaitSec;
 
   /// No description provided for @gridTypes.
   ///
   /// In en, this message translates to:
-  /// **'Grid item types'**
+  /// **'Grid item types (GridTypes)'**
   String get gridTypes;
 
   /// No description provided for @zombiesCount.
@@ -10974,7 +10992,7 @@ abstract class AppLocalizations {
   /// No description provided for @initialWeight.
   ///
   /// In en, this message translates to:
-  /// **'Initial weight'**
+  /// **'Initial weight (Weight)'**
   String get initialWeight;
 
   /// No description provided for @plantLevelLabel.
@@ -11274,7 +11292,7 @@ abstract class AppLocalizations {
   /// No description provided for @maxCountThreshold.
   ///
   /// In en, this message translates to:
-  /// **'Max count threshold'**
+  /// **'Max count threshold (MaxCount)'**
   String get maxCountThreshold;
 
   /// No description provided for @weightFactor.
@@ -11292,7 +11310,7 @@ abstract class AppLocalizations {
   /// No description provided for @minCountThreshold.
   ///
   /// In en, this message translates to:
-  /// **'Min count threshold'**
+  /// **'Min count threshold (MinCount)'**
   String get minCountThreshold;
 
   /// No description provided for @followAccountLevel.
@@ -11328,19 +11346,19 @@ abstract class AppLocalizations {
   /// No description provided for @startingWave.
   ///
   /// In en, this message translates to:
-  /// **'Starting wave'**
+  /// **'Starting wave (StartingWave)'**
   String get startingWave;
 
   /// No description provided for @startingPoints.
   ///
   /// In en, this message translates to:
-  /// **'Starting points'**
+  /// **'Starting points (StartingPoints)'**
   String get startingPoints;
 
   /// No description provided for @pointIncrement.
   ///
   /// In en, this message translates to:
-  /// **'Point increase per wave'**
+  /// **'Point increase per wave (PointIncrementPerWave)'**
   String get pointIncrement;
 
   /// No description provided for @zombiePool.
@@ -13038,7 +13056,7 @@ abstract class AppLocalizations {
   /// No description provided for @wizardCauldronHelpUsage.
   ///
   /// In en, this message translates to:
-  /// **'Click an empty cell to place a Wizard Cauldron, with at most one cauldron per cell. Right-click on desktop or long-press on mobile to remove the cauldron in that cell.\nAfter placing a cauldron, you can customize its health, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.'**
+  /// **'Click an empty cell to place a Wizard Cauldron, with at most one cauldron per cell.\nAfter placing a cauldron, you can customize its health, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.'**
   String get wizardCauldronHelpUsage;
 
   /// No description provided for @wizardCauldronPositions.
@@ -15474,8 +15492,14 @@ abstract class AppLocalizations {
   /// No description provided for @mechanismPlankEditNotice.
   ///
   /// In en, this message translates to:
-  /// **'This interface only supports editing the starting column and track length. All other parameters use preset values, as modifying them may cause Connected Minecarts to malfunction. For further customization, please edit the JSON file manually.\nAdditionally, Connected Minecarts are not recommended outside of Kongfu World, as they are more likely to appear as purple X markers. This does not affect their actual functionality, but it may impact the level\'s visual presentation.'**
+  /// **'This interface only supports editing the starting column and track length. All other parameters use preset values, as modifying them may cause Connected Minecarts to malfunction. For further customization, please edit the JSON file manually.'**
   String get mechanismPlankEditNotice;
+
+  /// No description provided for @mechanismPlankStageRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'To select this module, switch the base lawn to \"Kongfu World\", as only Kongfu World\'s objclass can properly load the connected minecart track textures.\nIf you want to use connected minecarts on a lawn with another world\'s appearance, it is recommended to customize a Kongfu World lawn instead.'**
+  String get mechanismPlankStageRequiredMessage;
 
   /// No description provided for @mechanismPlankOutOfAreaWarning.
   ///
@@ -17331,6 +17355,12 @@ abstract class AppLocalizations {
   /// **'Trigger wave (Wave, starts at 0)'**
   String get gladiatorWave;
 
+  /// No description provided for @gladiatorDuplicateWaveHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only one Gladiatorial Row can be configured per wave. A Gladiatorial Row has already been configured for this wave in Group {group}; subsequent settings will not take effect.'**
+  String gladiatorDuplicateWaveHint(int group);
+
   /// No description provided for @gladiatorRow.
   ///
   /// In en, this message translates to:
@@ -17472,7 +17502,7 @@ abstract class AppLocalizations {
   /// No description provided for @gladiatorHelpUsage.
   ///
   /// In en, this message translates to:
-  /// **'The duel duration, Plant Food reward and penalty drop settings above, along with the penalty zombie pool and weights below, are global settings shared by every duel in this module.\nSelect \"Add duel\" to configure an individual duel. When you add a zombie, its resource groups are automatically added to the module.\nThe wave (Wave), row (Row) and spawn column (GridX) are all numbered from 0: Wave 0 corresponds to timeline wave 1, and Wave 4 to wave 5.\nThe editor defaults to trophy duel mode (GameplayVersion 1). Setting it to 0 enables a different, retired duel mode, which you can explore through manual editing.'**
+  /// **'The duel duration, Plant Food reward and penalty drop settings above, along with the penalty zombie pool and weights below, are global settings shared by every duel in this module.\nSelect \"Add duel\" to configure an individual duel. When you add a zombie, its resource groups are automatically added to the module.\nThe wave (Wave), row (Row) and spawn column (GridX) are all numbered from 0: Wave 0 corresponds to timeline wave 1, and Wave 4 to wave 5. Only one Gladiatorial Row can be configured per wave.\nThe editor defaults to trophy duel mode (GameplayVersion 1). Setting it to 0 enables a different, retired duel mode, which you can explore through manual editing.'**
   String get gladiatorHelpUsage;
 
   /// No description provided for @gladiatorHelpTips.
@@ -17832,13 +17862,13 @@ abstract class AppLocalizations {
   /// No description provided for @pumpkinScarecrowCrowLevel.
   ///
   /// In en, this message translates to:
-  /// **'Crow level (Level, 0-index)'**
+  /// **'Crow level (Level)'**
   String get pumpkinScarecrowCrowLevel;
 
   /// No description provided for @pumpkinScarecrowHelpOverview.
   ///
   /// In en, this message translates to:
-  /// **'Places Pumpkin Scarecrows at selected positions, commonly used in Haunting Halloween levels. Crows periodically fly off the scarecrows to carry away plants. Each departing crow is replaced by a new one flying in from outside the lawn, so crows will continue to appear until the scarecrow is destroyed. The health of each scarecrow and the level of its summoned crows can be customized in this event.'**
+  /// **'Places Pumpkin Scarecrows at selected positions, commonly used in Haunting Halloween levels. Crows periodically fly off the scarecrows to carry away plants. Each departing crow is replaced by a new one flying in from outside the lawn, so crows will continue to appear until the scarecrow is destroyed. The health of each scarecrow and the level of its summoned crows can be customized in this event (Level 0 follows the lawn’s default level, which is Level 1 in Creative Courtyard).'**
   String get pumpkinScarecrowHelpOverview;
 
   /// No description provided for @pumpkinScarecrowHelpLogic.

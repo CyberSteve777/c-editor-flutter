@@ -99,6 +99,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sunDroppingInactive => '天降阳光：无';
 
   @override
+  String get peaSymbiosisActive => '豆藤共生：有';
+
+  @override
+  String get peaSymbiosisInactive => '豆藤共生：无';
+
+  @override
   String get conveyorChanges => '传送带变动';
 
   @override
@@ -1495,7 +1501,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get jitterOffsetsFixedOffsetDescription =>
-      '常见于双人对决，默认值为0。值为 0 时使用出怪位置偏移预设和出怪队形预设；非零时暂时停用两者，但保留原有设置，恢复为 0 后重新生效。非零偏移按本事件僵尸列表的顺序累加，不按行重新计数，并保留各只僵尸的基础位置。第一只的固定偏移为 0，后续每只增加一个填写值；即使只有一只僵尸或填写极小的非零值，也会停用这两种预设。\n固定偏移值为正数时向右，为负数时向左，小数会完整参与计算，方向不随僵尸朝向反转，因此同一事件包含不同行或不同朝向的僵尸时请谨慎设置。例如填写 8.5，前三只分别在各自基础位置上向右偏移 0、8.5、17。\n该设置只改变横向位置，不会增减创建数量。数值绝对值过大可能使僵尸出现在极远的场外或过深的场内位置，造成无法正常进场或结算异常。';
+      '常见于双人对决，默认值为 0。值为 0 时使用出怪位置偏移预设和出怪队形预设；非零时暂时停用两者，但保留原有设置，恢复为 0 后重新生效。非零偏移按本事件僵尸列表的顺序累加，不按行重新计数，并保留各只僵尸的基础位置。第一只僵尸的固定偏移为 0，后续每只增加一个填写值；即使只有一只僵尸或填写极小的非零值，也会停用这两种预设。\n固定偏移值为正数时向右，为负数时向左，小数会完整参与计算，方向不会随僵尸朝向反转。同一事件包含不同行或不同朝向的僵尸时，请谨慎设置。例如填写 8.5，前三只僵尸会分别在各自基础位置上向右偏移 0、8.5、17。注意，这里的 8.5 使用游戏坐标单位，并不是 8.5 格；且 8.5 远小于默认的同一行累计偏移增量 80，因此同一行且基础位置相近的僵尸通常会紧贴排列。\n该设置只改变横向位置，不会增减创建数量。数值绝对值过大可能使僵尸出现在极远的场外或过深的场内位置，造成无法正常进场或结算异常。';
 
   @override
   String get jitterOffsetsFixedOffsetInvalid => '请输入有效的数字。';
@@ -2387,6 +2393,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectStage => '选择地图';
 
   @override
+  String get switchStage => '切换地图';
+
+  @override
   String get searchStage => '搜索地图名称或代号';
 
   @override
@@ -2442,7 +2451,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String zombiePointCost(int cost) {
-    return '消耗点数：$cost';
+    return '所需点数：$cost';
   }
 
   @override
@@ -3854,10 +3863,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get gridItemLayout => '场地物品布局';
 
   @override
-  String get zombieCount => '总数量 (Total)';
+  String get zombieCount => '总数量 (ZombieCount)';
 
   @override
-  String get timeBeforeSpawn => '完全生成前摇时间（单位：秒）';
+  String get timeBeforeSpawn => '完全生成前摇时间 (TimeBeforeFullSpawn，单位：秒)';
 
   @override
   String get waterBoundaryColumn => '变更位置 (ChangeAmount)';
@@ -5557,7 +5566,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get perBatchGroupSize => '每批数量 (GroupSize)';
 
   @override
-  String get fallTime => '降落耗时（单位：秒）';
+  String get fallTime => '降落耗时 (ZombieFallTime，单位：秒)';
 
   @override
   String get waveStartMessageLabel => '红色字幕警告信息 (WaveStartMessage)';
@@ -5684,10 +5693,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get basicParameters => '基本参数';
 
   @override
-  String get zombieSpawnWaitSec => '僵尸生成延迟（单位：秒）';
+  String get zombieSpawnWaitSec => '僵尸生成延迟 (ZombieSpawnWaitTime，单位：秒)';
 
   @override
-  String get gridTypes => '障碍物类型';
+  String get gridTypes => '障碍物类型 (GridTypes)';
 
   @override
   String zombiesCount(int count) {
@@ -5934,7 +5943,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '启用后放置的僵尸属于植物阵营，可用于“僵尸大战僵尸”(ZvZ)玩法';
 
   @override
-  String get initialWeight => '初始权重';
+  String get initialWeight => '初始权重 (Weight)';
 
   @override
   String get plantLevelLabel => '植物阶级';
@@ -6096,7 +6105,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get maxLimits => '上限控制 (Max Limits)';
 
   @override
-  String get maxCountThreshold => '最大数量阈值';
+  String get maxCountThreshold => '最大数量阈值 (MaxCount)';
 
   @override
   String get weightFactor => '达标后权重倍率';
@@ -6105,7 +6114,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get minLimits => '下限控制 (Min Limits)';
 
   @override
-  String get minCountThreshold => '最小数量阈值';
+  String get minCountThreshold => '最小数量阈值 (MinCount)';
 
   @override
   String get followAccountLevel => '0阶植物将使用玩家账号中的对应阶级';
@@ -7063,7 +7072,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get wizardCauldronHelpUsage =>
-      '点击空白格子即可放置巫师坩埚，每格最多放置一个。桌面端右键或移动端长按可删除该格的巫师坩埚。\n放置坩埚后，可自定义该坩埚的生命值、投入能量豆后沸腾的时间、爆炸对植物和僵尸的伤害、毒液遗留时间和毒液每秒的伤害。';
+      '点击空白格子即可放置巫师坩埚，每格最多放置一个。\n放置坩埚后，可自定义该坩埚的生命值、投入能量豆后沸腾的时间、爆炸对植物和僵尸的伤害、毒液遗留时间和毒液每秒的伤害。';
 
   @override
   String get wizardCauldronPositions => '坩埚放置位置';
@@ -8397,7 +8406,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mechanismPlankEditNotice =>
-      '该界面仅支持编辑轨道宽度和起始列。其他参数采用预设值，因为修改它们可能会导致连体矿车无法正常使用。如需进一步自定义，请手动编辑JSON文件。\n此外，不建议在功夫世界以外的地图中使用连体矿车。连体矿车在其他地图中更容易显示为紫色叉号，虽然不影响实际功能，但可能会影响关卡的整体观感。';
+      '该界面仅支持编辑轨道宽度和起始列。其他参数采用预设值，因为修改它们可能会导致连体矿车无法正常使用。如需进一步自定义，请手动编辑JSON文件。';
+
+  @override
+  String get mechanismPlankStageRequiredMessage =>
+      '要选择此模块，请将基础地图切换为「功夫世界」，否则连体矿车的轨道贴图将无法正常显示。\n如果想在其他世界外观的地图中使用连体矿车，建议以功夫世界地图为基础进行自定义。';
 
   @override
   String get mechanismPlankOutOfAreaWarning => '当前轨道范围可能超出场地。';
@@ -9432,6 +9445,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get gladiatorWave => '触发波次 (Wave，从0开始计数)';
 
   @override
+  String gladiatorDuplicateWaveHint(int group) {
+    return '每个波次只能设置一个角斗行。该波次已在第 $group 组中设置角斗行，后续设置将不会生效。';
+  }
+
+  @override
   String get gladiatorRow => '所在行 (Row，从0开始计数)';
 
   @override
@@ -9508,7 +9526,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get gladiatorHelpUsage =>
-      '上方的角斗时长、胜利能量豆数量及失败空投参数，以及下方的惩罚僵尸池和权重，均为全局参数，会对模块中的所有角斗生效。\n点击“添加角斗”，可设置每组角斗的具体参数。加入僵尸时，会自动在模块中添加对应僵尸的资源组。\n角斗的波次 (Wave)、所在行 (Row)、出怪列 (GridX) 均从0开始计数，如波次填0对应波次时间线的第1波，填4对应第5波。\n本模块的对决模式 (GameplayVersion) 在编辑器中默认为1，填0会使用另一种废弃的对决模式，可通过手动编辑模式自行探索。';
+      '上方的角斗时长、胜利能量豆数量及失败空投参数，以及下方的惩罚僵尸池和权重，均为全局参数，会对模块中的所有角斗生效。\n点击“添加角斗”，可设置每组角斗的具体参数。加入僵尸时，会自动在模块中添加对应僵尸的资源组。\n角斗的波次 (Wave)、所在行 (Row)、出怪列 (GridX) 均从0开始计数，如波次填0对应波次时间线的第1波，填4对应第5波。注意每个波次只能设置一个角斗行。\n本模块的对决模式 (GameplayVersion) 在编辑器中默认为1，填0会使用另一种废弃的对决模式，可通过手动编辑模式自行探索。';
 
   @override
   String get gladiatorHelpTips =>
@@ -9705,11 +9723,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pumpkinScarecrowSpawnCount => '稻草人生成数量 (Count)';
 
   @override
-  String get pumpkinScarecrowCrowLevel => '乌鸦阶级 (Level，从0开始计数)';
+  String get pumpkinScarecrowCrowLevel => '乌鸦阶级 (Level)';
 
   @override
   String get pumpkinScarecrowHelpOverview =>
-      '常见于惊魂万圣夜秘境，在指定位置生成南瓜稻草人。每隔一段时间，稻草人上的僵尸乌鸦就会飞走并叼走植物。乌鸦离开后，新的乌鸦会从场外飞入，因此只要稻草人未被破坏，乌鸦就会持续出现。可自定义稻草人的生命值及乌鸦阶级。';
+      '常见于惊魂万圣夜秘境，在指定位置生成南瓜稻草人。每隔一段时间，稻草人上的僵尸乌鸦就会飞走并叼走植物。乌鸦离开后，新的乌鸦会从场外飞入，因此只要稻草人未被破坏，乌鸦就会持续出现。可自定义稻草人的生命值及乌鸦阶级（0阶表示随地图阶级，庭院模式下即为1阶）。';
 
   @override
   String get pumpkinScarecrowHelpLogic =>

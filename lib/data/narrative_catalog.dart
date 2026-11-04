@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 import 'package:c_editor/data/asset_loader.dart';
+import 'package:c_editor/utils/narrative_text_format.dart';
 
 /// The four concrete narrative categories shown by the picker. [all] is a
 /// virtual aggregate and is never written to the generated catalogue.
@@ -413,7 +414,8 @@ class NarrativeEntry {
 
   String get valueKey => value.toString();
 
-  Iterable<String> get dialogueText => lines.map((line) => line.text);
+  Iterable<String> get dialogueText =>
+      lines.map((line) => narrativePlainText(line.text));
 
   Iterable<String> get speakerNames => lines
       .map((line) => line.speaker)
@@ -714,6 +716,23 @@ int _compareSectionEntries(
   Map<String, int> sourceIndexes,
   Map<String, int> naturalGroupIndexes,
 ) {
+  if (sectionId == NarrativeSectionId.ancientEgypt) {
+    final egyptOrder = _ancientEgyptOrder(a).compareTo(_ancientEgyptOrder(b));
+    if (egyptOrder != 0) return egyptOrder;
+  }
+  final mainWorldOrder = _mainWorldTimelineOrders[sectionId];
+  if (mainWorldOrder != null) {
+    final aIndex = mainWorldOrder.indexOf(a.groupId);
+    final bIndex = mainWorldOrder.indexOf(b.groupId);
+    final timelineOrder = (aIndex < 0 ? 1000 : aIndex).compareTo(
+      bIndex < 0 ? 1000 : bIndex,
+    );
+    if (timelineOrder != 0) return timelineOrder;
+  }
+  if (sectionId == NarrativeSectionId.zenGarden) {
+    final zenOrder = _zenGardenOrder(a).compareTo(_zenGardenOrder(b));
+    if (zenOrder != 0) return zenOrder;
+  }
   if (sectionId != NarrativeSectionId.systemTutorials) {
     final tutorialOrder = _modeTutorialPriority(
       a,
@@ -733,6 +752,12 @@ int _compareSectionEntries(
   if (sectionId == NarrativeSectionId.pvpMode) {
     final pvpOrder = _pvpModeOrder(a).compareTo(_pvpModeOrder(b));
     if (pvpOrder != 0) return pvpOrder;
+  }
+  if (sectionId == NarrativeSectionId.travelLog) {
+    final epicQuestOrder = _epicQuestSeriesOrder(
+      a,
+    ).compareTo(_epicQuestSeriesOrder(b));
+    if (epicQuestOrder != 0) return epicQuestOrder;
   }
   if (sectionId == NarrativeSectionId.systemTutorials) {
     final systemAnchorOrder = _systemTutorialAnchor(
@@ -761,6 +786,388 @@ int _modeTutorialPriority(NarrativeEntry entry) {
   if (entry.groupId.startsWith('TUTORIAL_')) return 0;
   if (entry.groupId == 'QUEST_INTRO') return 1;
   return 2;
+}
+
+/// Follows the in-game order of the Epic Quest series that are present in the
+/// current dialogue catalogue instead of the unrelated source-file order.
+int _epicQuestSeriesOrder(NarrativeEntry entry) {
+  final id = entry.groupId;
+  if (id.startsWith('EPIC_QUEST_GOLDBLOOM_')) return 0;
+  if (id.startsWith('EPIC_QUEST_BEGHOULED_BLITZ_')) return 1;
+  if (id.startsWith('EPIC_QUEST_ELECTRICCURRANT_')) return 2;
+  if (id.startsWith('EPIC_QUEST_GEMJAM_')) return 3;
+  return 4;
+}
+
+/// Keeps the current Chinese campaign first, then the international campaign,
+/// followed by legacy and unused dialogue. Each block follows day order and
+/// keeps multi-part or intro/outro pairs adjacent.
+int _ancientEgyptOrder(NarrativeEntry entry) {
+  const order = <String, int>{
+    // Current Chinese campaign: Days 1-15.
+    'FRESHINTRO_EGYPT_DAY1': 0,
+    'FRESHINTRO_ZOMBIE_INTRO': 1,
+    'FRESHINTRO_PLANTFOOD_INTRO': 2,
+    'FRESHINTRO_END_INTRO': 3,
+    'EAT_PLANTFOOD_INTRO': 4,
+    'USE_PLANTFOOD_INTRO': 5,
+    'EGYPT_ICE_INTRO': 6,
+    'EGYPT_STANDSTORM_INTRO': 7,
+    'EGYPT_CAMEL_INTRO': 8,
+    'TUTORIAL_EGYPT6_INTRO': 9,
+    'EAT_PLANTFOOD1_INTRO': 10,
+    'USE_PLANTFOOD1_INTRO': 11,
+    'LEGACY_NUMBERED_SEQUENCE_EGYPT_DAY7': 12,
+    'TUTORIAL_EGYPT8_INTRO': 13,
+    'EGYPT_TOMB_INTRO': 14,
+    'EGYPT_ZOMBIENOTE': 15,
+    'EGYPT_INTRO_ZOMBOSS': 16,
+    'EGYPT_OUTRO_ZOMBOSS': 17,
+
+    // International campaign: Days 1, 6, and 12.
+    'EGYPT_INTRO_FIRSTLEVEL': 18,
+    'LEGACY_NUMBERED_SEQUENCE_EGYPT_DAY1_PLANTFOOD_TUTORIAL': 19,
+    'LEGACY_NUMBERED_SEQUENCE_EGYPT_DAY1_PLANTFOOD_FOLLOWUP': 20,
+    'LEGACY_NUMBERED_SEQUENCE_EGYPT_DAY1_PLANT_EATEN_PROMPT': 21,
+    'EGYPT_WORLDMAP_INTRO': 22,
+    'EGYPT_INTRO_GARGANTUAR': 23,
+    'EGYPT_OUTRO_GARGANTUAR': 24,
+    'EGYPT_OUTRO_DANGER_ROOM_KEY': 25,
+
+    // Legacy campaign: day-specific dialogue first.
+    'BUY_POWERUPS': 26,
+    'EGYPT_CHALLENGE_MINIGAME_B': 27,
+    'WORLDMAP_PLANTGJ_INTRO': 28,
+    'EGYPT_CHALLENGE_LASTSTAND_A': 29,
+    'EGYPT_CHALLENGE_CONVEYOR_INTRO': 30,
+    'EGYPT_CHALLENGE_CONVEYOR_OUTRO': 31,
+    'EGYPT_INTRO_LASTLEVEL': 32,
+    'EGYPT_OUTRO_LASTTLEVEL': 33,
+    'EGYPT_CHALLENGE_MINIGAME_C': 34,
+
+    // Legacy challenges without a confirmed day.
+    'EGYPT_CHALLENGE_PRESET_A': 35,
+    'EGYPT_CHALLENGE_PRESET_B': 36,
+    'EGYPT_CHALLENGE_PRESET_C': 37,
+    'EGYPT_CHALLENGE_PROTECTPLANTS_A': 38,
+    'EGYPT_CHALLENGE_PROTECTPLANTS_B': 39,
+    'EGYPT_CHALLENGE_PROTECTPLANTS_C': 40,
+    'EGYPT_CHALLENGE_LASTSTAND_B': 41,
+    'EGYPT_CHALLENGE_LASTSTAND_C': 42,
+    'EGYPT_CHALLENGE_MINIGAME_A': 43,
+
+    // Unused Zomboss dialogue.
+    'EYGPT_INTRO_ZOMBOSS': 44,
+    'EYGPT_OUTRO_ZOMBOSS': 45,
+  };
+  return order[entry.groupId] ?? 1000;
+}
+
+/// Sections whose source order does not match the displayed day or gameplay
+/// progression. Worlds omitted here already follow their audited timeline.
+const _mainWorldTimelineOrders = <NarrativeSectionId, List<String>>{
+  NarrativeSectionId.tutorialYard: [
+    'LEGACY_NUMBERED_SEQUENCE_SHOVEL',
+    'PLAYER_HOUSE_DAY5',
+  ],
+  NarrativeSectionId.pirateSeas: [
+    'PIRATE_INTRO_FIRSTLEVEL',
+    'PIRATE_WORLDMAP_INTRO',
+    'PIRATE_CHALLENGE_PRESET_A',
+    'LEGACY_NUMBERED_SEQUENCE_PIRATE_DAY3',
+    'PIRATE_OUTRO_DANGER_ROOM_KEY',
+    'PIRATE_ZOMBIENOTE',
+    'PIRATE_INTRO_GARGANTUAR',
+    'PIRATE_OUTRO_GARGANTUAR',
+    'PIRATE_CHALLENGE_MINIGAME_A',
+    'PIRATE_CHALLENGE_PROTECTPLANTS_A',
+    'PIRATE_CHALLENGE_LASTSTAND_A',
+    'PIRATE_INTRO_ZOMBOSS',
+    'PIRATE_OUTRO_ZOMBOSS',
+    'PIRATE_OUTRO_LASTTLEVEL',
+    'PIRATE_CHALLENGE_LASTSTAND_B',
+    'PIRATE_CHALLENGE_LASTSTAND_C',
+    'PIRATE_CHALLENGE_MINIGAME_B',
+    'PIRATE_CHALLENGE_MINIGAME_C',
+    'PIRATE_CHALLENGE_PRESET_B',
+    'PIRATE_CHALLENGE_PRESET_C',
+    'PIRATE_CHALLENGE_PROTECTPLANTS_B',
+    'PIRATE_CHALLENGE_PROTECTPLANTS_C',
+  ],
+  NarrativeSectionId.wildWest: [
+    'COWBOY_INTRO_FIRSTLEVEL',
+    'COWBOY_WORLDMAP_INTRO',
+    'COWBOY_OUTRO_DANGER_ROOM_KEY',
+    'LEGACY_NUMBERED_SEQUENCE_COWBOY_DAY4',
+    'COWBOY_CHALLENGE_LASTSTAND_A',
+    'COWBOY_INTRO_LEVEL7',
+    'COWBOY_ZOMBIENOTE',
+    'COWBOY_INTRO_GARGANTUAR',
+    'COWBOY_OUTRO_GARGANTUAR',
+    'COWBOY_CHALLENGE_PRESET_A',
+    'COWBOY_CHALLENGE_PROTECTPLANTS_A',
+    'COWBOY_INTRO_ZOMBOSS',
+    'COWBOY_OUTRO_ZOMBOSS',
+    'COWBOY_OUTRO_LASTTLEVEL',
+    'COWBOY_NEW_OUTRO_LASTTLEVEL',
+    'COWBOY_CHALLENGE_LASTSTAND_B',
+    'COWBOY_CHALLENGE_LASTSTAND_C',
+    'COWBOY_CHALLENGE_MINIGAME_A',
+    'COWBOY_CHALLENGE_MINIGAME_B',
+    'COWBOY_CHALLENGE_MINIGAME_C',
+    'COWBOY_CHALLENGE_PRESET_B',
+    'COWBOY_CHALLENGE_PRESET_C',
+    'COWBOY_CHALLENGE_PROTECTPLANTS_B',
+    'COWBOY_CHALLENGE_PROTECTPLANTS_C',
+  ],
+  NarrativeSectionId.farFuture: [
+    'COWBOY_OUTRO_ZOMBOSS_INTRO',
+    'FUTURE_INTRO_FIRSTLEVEL',
+    'FUTURE_INTRO_FIRSTLEVEL_FAILURE',
+    'FUTURE_CHALLENGE_SUNBOMBS_A',
+    'FUTURE_OUTRO_DANGER_ROOM_KEY',
+    'FUTURE_CHALLENGE_PRESET_A',
+    'FUTURE_ZOMBIENOTE',
+    'FUTURE_INTRO_GARGANTUAR',
+    'FUTURE_CHALLENGE_LASTSTAND_A',
+    'FUTURE_CHALLENGE_PROTECTPLANTS_A',
+    'FUTURE_MAGNIFYING_GRASS_FAILURE',
+    'FUTURE_CHALLENGE_PRESET_B',
+    'FUTURE_MANUAL_MOWERS',
+    'FUTURE_INTRO_ZOMBOSS',
+    'FUTURE_OUTRO_ZOMBOSS',
+    'FUTURE_INTRO_ZOMBOSS_BASIC',
+    'FUTURE_INTRO_ZOMBOSS_TOUCH',
+  ],
+  NarrativeSectionId.darkAges: [
+    'DARK_INTRO_FIRSTLEVEL',
+    'DARK_INTRO_HYPNOSHROOM',
+    'DARK_INTRO_FUMESHROOM',
+    'DARK_INTRO_EVILPOTIONS',
+    'DARK_ZOMBIENOTE',
+    'DARK_INTRO_GARGANTUAR',
+    'DARK_OUTRO_DANGER_ROOM_KEY',
+    'DARK_INTRO_PEANUT',
+    'DARK_INTRO_MAGNETSHROOM',
+    'DARK_INTRO_ZOMBOSS',
+    'DARK_OUTRO_ZOMBOSS',
+    'DARK_HYPNOSHROOM_INTRO',
+    'DARK_INTRO_SUNSHROOM_CHAT',
+  ],
+  NarrativeSectionId.bigWaveBeach: [
+    'BEACH_INTRO_FIRSTLEVEL',
+    'BEACH_INTRO_TIDES',
+    'BEACH_INTRO_CHOMPER',
+    'BEACH_INTRO_GUACODILE',
+    'BEACH_INTRO_BOWLING',
+    'BEACH_ZOMBIENOTE',
+    'BEACH_INTRO_GARGANTUAR_ALT',
+    'BEACH_OUTRO_DANGER_ROOM_KEY',
+    'BEACH_INTRO_HOMINGTHISTLE',
+    'BEACH_INTRO_BANANA',
+    'BEACH_INTRO_ZOMBOSS',
+    'BEACH_OUTRO_ZOMBOSS',
+    'BEACH_INTRO_GARGANTUAR',
+  ],
+  NarrativeSectionId.frostbiteCaves: [
+    'ICEAGE_INTRO_FIRSTLEVEL',
+    'ICEAGE_INTRO_ICEBLOCKS',
+    'ICEAGE_INTRO_HURRIKALE',
+    'ICEAGE_INTRO_FIREPEASHOOTER',
+    'ICEAGE_INTRO_FLAMETHROWER',
+    'ICEAGE_INTRO_CHARDGUARD',
+    'ICEAGE_INTRO_GARGANTUAR',
+    'ICEAGE_ZOMBIENOTE',
+    'ICEAGE_INTRO_STUNION',
+    'ICEAGE_INTRO_PEPPERPULT',
+    'ICEAGE_OUTRO_DANGER_ROOM_KEY',
+    'ICEAGE_INTRO_ZOMBOSS',
+    'ICEAGE_OUTRO_ZOMBOSS',
+    'ICEAGE_INTRO_XSHOT',
+    'ICEAGE_INTRO_MINIGAME',
+  ],
+  NarrativeSectionId.kongfuWorld: [
+    'KONGFU_INTRO_FIRSTLEVEL',
+    'KONGFU_INTRO_KONGFU_LEVEL6',
+    'KONGFU_INTRO_KONGFU_LEVEL9',
+    'KONGFU_CHALLENGE_LASTSTAND_A',
+    'KONGFU_INTRO_KONGFU_LEVEL32',
+    'KONGFU_INTRO_KONGFU_LEVEL31',
+    'KONGFU_INTRO_KONGFU_LEVEL33',
+    'KONGFU_INTRO_KONGFU_LEVEL34',
+    'KONGFU_INTRO_KONGFU_LEVEL35',
+    'KONGFU_INTRO_KONGFU_LEVEL36',
+    'KONGFU_INTRO_KONGFU_LEVEL14',
+    'KONGFU_INTRO_KONGFU_LEVEL15',
+    'KONGFU_OUTRO_KONGFU_LEVEL15',
+  ],
+  NarrativeSectionId.skyCity: [
+    'SKYCITY_FIRSTLEVEL_INTRO',
+    'CANNON_USE_INTRO',
+    'CANNON_USE_END_INTRO',
+    'POOYAN_CHOOSING',
+    'POOYAN_CHOOSED',
+    'POOYAN_ZOMBIE_GARGANTUAR',
+    'BESIEGE_INTRO',
+    'BOX_INTRO',
+    'BOX_PLANTED_INTRO',
+    'BOX_SHOVELED_INTRO',
+    'SHOWREGINSKY_INTRO',
+    'SHOWSHIPHEALTH_INTRO',
+    'SHOWTHUNDER_INTRO',
+    'PLANTTHUNDER_INTRO',
+  ],
+  NarrativeSectionId.lostCity: [
+    'LOSTCITY_1_INTRO',
+    'LOSTCITY_2_INTRO',
+    'LOSTCITY_3_INTRO',
+    'LOSTCITY_4_INTRO',
+    'LOSTCITY_ZOMBIENOTE',
+    'LOSTCITY_16_INTRO',
+    'LOSTCITY_17_INTRO',
+    'LOSTCITY_22_INTRO',
+    'LOSTCITY_OUTRO_DANGER_ROOM_KEY',
+    'LOSTCITY_INTRO_ZOMBOSS',
+    'LOSTCITY_OUTRO_ZOMBOSS',
+  ],
+  NarrativeSectionId.neonMixtapeTour: [
+    'EIGHTIES_1_INTRO',
+    'EIGHTIES_2_INTRO',
+    'EIGHTIES_3_INTRO',
+    'EIGHTIES_15_OUTRO',
+    'EIGHTIES_16_INTRO',
+    'EIGHTIES_17_INTRO',
+    'EIGHTIES_OUTRO_DANGER_ROOM_KEY',
+    'EIGHTIES_22_INTRO',
+    'EIGHTIES_32_INTRO',
+    'EIGHTIES_32_OUTRO',
+    'EIGHTIES_26_INTRO',
+  ],
+  NarrativeSectionId.jurassicMarsh: [
+    'DINO_1_INTRO',
+    'DINO_2_INTRO',
+    'DINO_6_INTRO',
+    'DINO_9_INTRO',
+    'DINO_8_INTRO',
+    'DINO_21_INTRO',
+    'DINO_16_INTRO',
+    'DINO_15_OUTRO',
+    'DINO_17_INTRO',
+    'DINO_OUTRO_DANGER_ROOM_KEY',
+    'DINO_23_INTRO',
+    'DINO_INTRO_ZOMBOSS',
+    'DINO_OUTRO_ZOMBOSS',
+  ],
+  NarrativeSectionId.modernDay: [
+    'MODERN_1_INTRO',
+    'MODERN_2_INTRO',
+    'MODERN_3_INTRO',
+    'MODERN_5_INTRO',
+    'MODERN_8_INTRO',
+    'MODERN_9_INTRO',
+    'MODERN_11_INTRO',
+    'MODERN_15_OUTRO',
+    'MODERN_16_INTRO',
+    'MODERN_17_INTRO',
+    'MODERN_19_INTRO',
+    'MODERN_OUTRO_DANGER_ROOM_KEY',
+    'MODERN_21_INTRO',
+    'MODERN_22_INTRO',
+    'MODERN_23_INTRO',
+    'MODERN_24_INTRO',
+    'MODERN_25_INTRO',
+    'MODERN_25_OUTRO',
+    'MODERN_26_INTRO',
+    'MODERN_26_OUTRO',
+    'MODERN_27_INTRO',
+    'MODERN_27_OUTRO',
+  ],
+  NarrativeSectionId.steamAges: [
+    'STEAM_1_INTRO',
+    'STEAM_3_INTRO',
+    'STEAM_6_INTRO',
+    'STEAM_13_INTRO',
+    'STEAM_16_INTRO',
+    'STEAM_21_INTRO',
+    'STEAM_INTRO_ZOMBOSS',
+    'STEAM_OUTRO_ZOMBOSS',
+  ],
+  NarrativeSectionId.renaissanceAges: [
+    'RENAI_1_INTRO',
+    'RENAI_3_INTRO',
+    'RENAI_5_INTRO',
+    'RENAI_7_INTRO',
+    'RENAI_14_INTRO',
+    'RENAI_16_INTRO',
+    'RENAI_INTRO_ZOMBOSS',
+    'RENAI_OUTRO_ZOMBOSS',
+  ],
+  NarrativeSectionId.heianAges: [
+    'HEIAN_1_INTRO',
+    'HEIAN_2_INTRO',
+    'HEIAN_3_INTRO',
+    'HEIAN_4_INTRO',
+    'HEIAN_5_INTRO',
+    'HEIAN_6_INTRO',
+    'HEIAN_7_INTRO',
+    'HEIAN_11_INTRO',
+    'HEIAN_13_INTRO',
+    'HEIAN_17_INTRO',
+  ],
+  NarrativeSectionId.underwaterWorld: [
+    'ATLANTIS_1_INTRO',
+    'ATLANTIS_2_INTRO',
+    'ATLANTIS_3_INTRO',
+    'ATLANTIS_4_INTRO',
+    'ATLANTIS_5_INTRO',
+    'ATLANTIS_6_INTRO',
+    'ATLANTIS_7_INTRO',
+    'ATLANTIS_8_INTRO',
+    'ATLANTIS_9_INTRO',
+    'ATLANTIS_10_INTRO',
+    'ATLANTIS_11_INTRO',
+    'ATLANTIS_12_INTRO',
+    'ATLANTIS_13_INTRO',
+    'ATLANTIS_14_INTRO',
+    'ATLANTIS_15_INTRO',
+    'ATLANTIS_16_INTRO',
+    'ATLANTIS_17_INTRO',
+    'ATLANTIS_18_INTRO',
+    'ATLANTIS_21_INTRO',
+    'ATLANTIS_24_INTRO',
+  ],
+  NarrativeSectionId.moonBase: [
+    'MOON1_TUTORIAL_1',
+    'MOON1_TUTORIAL_2',
+    'MOON1_TUTORIAL_3',
+    'MOON1_TUTORIAL_4',
+    'MOON1_TUTORIAL_5',
+    'MOON1_TUTORIAL_6',
+    'MOON1_TUTORIAL_7',
+    'MOON_2_INTRO',
+    'ROCKET_TUTORIAL_1',
+    'ROCKET_TUTORIAL_2',
+    'MOON_4_INTRO',
+    'METEOR_TUTORIAL_1',
+    'METEOR_TUTORIAL_2',
+    'METEOR_TUTORIAL_3',
+    'MOON_13_INTRO',
+    'MOON_14_INTRO',
+    'GRAVITY_TUTORIAL_1',
+    'GRAVITY_TUTORIAL_2',
+    'GRAVITY_TUTORIAL_3',
+    'MOON_20_INTRO',
+  ],
+};
+
+int _zenGardenOrder(NarrativeEntry entry) {
+  const order = <String, int>{
+    'ZEN_GARDEN_MARIGOLD_TUTORIAL_WELCOME': 0,
+    'ZEN_GARDEN_MARIGOLD_TUTORIAL_SPEED_UP': 1,
+    'ZEN_GARDEN_INTRO_TUTORIAL_SPEED_UP': 2,
+    'ZEN_GARDEN_INTRO_TUTORIAL_WELCOME': 3,
+  };
+  return order[entry.groupId] ?? 1000;
 }
 
 int _endlessModeOrder(NarrativeEntry entry) {

@@ -700,7 +700,7 @@
         {
           "key": "NARRATIVE_FRESHINTRO_EGYPT_DAY1_1",
           "kind": "speech",
-          "text": "Welcome to the first stop of our trip, the mysterious ancient Egypt.",
+          "text": "Welcome to the first stop of our trip, the mysterious Ancient Egypt.",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -917,7 +917,7 @@
         {
           "key": "NARRATIVE_EGYPT_ICE_INTRO_1",
           "kind": "speech",
-          "text": "The explorer zombie's torch will instantly kill plants, and we can use Iceburg Lettuce to extinguish the flames.",
+          "text": "Explorer Zombie's torch can instantly destroy plants. We can use Iceberg Lettuce to put out the flame.",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -967,7 +967,7 @@
       "number": "1.3.9",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Stage_Egypt.webp",
-      "title": "Ancient Egypt - Day 5 (Camel Signs Introduction, Intro)",
+      "title": "Ancient Egypt - Day 5 (Camel Zombies Introduction, Intro)",
       "characters": [
         "crazydave",
         "winnie"
@@ -990,7 +990,7 @@
         {
           "key": "NARRATIVE_EGYPT_CAMEL_INTRO_2",
           "kind": "speech",
-          "text": "They are holding Camel cards, and plants that can penetrate bullets can effectively deal with them.",
+          "text": "They're carrying camel signs. Plants with piercing projectiles are especially effective against them.",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -1108,7 +1108,7 @@
         {
           "key": "NARRATIVE_EAT_PLANTFOOD1_INTRO_1",
           "kind": "speech",
-          "text": "Let's try what happens if a cactus eats Plant Food!",
+          "text": "Let's try what happens if a Cactus eats Plant Food!",
           "speaker": "Crazy Dave",
           "npc": "crazydave"
         },
@@ -1259,7 +1259,7 @@
         {
           "key": "NARRATIVE_EGYPT_TOMB_INTRO_1",
           "kind": "speech",
-          "text": "It's a Tomb Raiser Zombie. They will keep summoning tombstones, so get rid of him quickly.",
+          "text": "It's a Tomb Raiser Zombie. It will keep summoning tombstones, so take it out quickly.",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -2641,21 +2641,21 @@
         {
           "key": "NARRATIVE_EYGPT_INTRO_ZOMBOSS_1",
           "kind": "speech",
-          "text": "Welcome to mysterious Egypt, my friend.",
+          "text": "Welcome to Ancient Egypt, my friends.",
           "speaker": "Dr. Zomboss",
           "npc": "zombossicon"
         },
         {
           "key": "NARRATIVE_EYGPT_INTRO_ZOMBOSS_2",
           "kind": "speech",
-          "text": "I'm surprised to see me here.",
+          "text": "Surprised to see me here, aren't you?",
           "speaker": "Dr. Zomboss",
           "npc": "zombossicon"
         },
         {
           "key": "NARRATIVE_EYGPT_INTRO_ZOMBOSS_3",
           "kind": "speech",
-          "text": "Then let me show you the new weapon I made using the inspiration I got from the pyramid!",
+          "text": "Then let me show you the new weapon I made using the inspiration I got from the pyramids!",
           "speaker": "Dr. Zomboss",
           "npc": "zombossicon"
         },
@@ -2667,7 +2667,7 @@
         {
           "key": "NARRATIVE_EYGPT_INTRO_ZOMBOSS_5",
           "kind": "speech",
-          "text": "Why does that guy look so familiar?",
+          "text": "Why does that thing look so familiar?",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydave"
@@ -2675,7 +2675,7 @@
         {
           "key": "NARRATIVE_EYGPT_INTRO_ZOMBOSS_6",
           "kind": "speech",
-          "text": "It is detected that the opponent's combat power is red danger level.",
+          "text": "Enemy combat strength detected at Red Danger Level.",
           "speaker": "Penny",
           "emotion": "tired",
           "npc": "winnie"
@@ -2683,7 +2683,7 @@
         {
           "key": "NARRATIVE_EYGPT_INTRO_ZOMBOSS_7",
           "kind": "speech",
-          "text": "We have to find a way to kill it before we can move forward.",
+          "text": "We'll have to find a way to take it down before we can move on.",
           "speaker": "Penny",
           "emotion": "excited",
           "npc": "winnie"
@@ -2718,21 +2718,21 @@
         {
           "key": "NARRATIVE_EYGPT_OUTRO_ZOMBOSS_1",
           "kind": "speech",
-          "text": "How? This is impossible!",
+          "text": "How can this be? Impossible!",
           "speaker": "Dr. Zomboss",
           "npc": "zombossicon"
         },
         {
           "key": "NARRATIVE_EYGPT_OUTRO_ZOMBOSS_2",
           "kind": "speech",
-          "text": "My works will be defeated. This is not scientific at all!",
+          "text": "My creation was actually defeated? That's completely unscientific!",
           "speaker": "Dr. Zomboss",
           "npc": "zombossicon"
         },
         {
           "key": "NARRATIVE_EYGPT_OUTRO_ZOMBOSS_3",
           "kind": "speech",
-          "text": "There must be something wrong. When I find out the reason, I will come back!",
+          "text": "Something must have gone wrong. Once I figure out why, I'll be back!",
           "speaker": "Dr. Zomboss",
           "npc": "zombossicon"
         },
@@ -11098,7 +11098,7 @@
       "number": "1.12.11",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Stage_Dino.webp",
-      "title": "Jurassic Marsh - Day 23 (International)",
+      "title": "Jurassic Marsh - Day 23 (International, Primal Potato Mine Introduction)",
       "characters": [
         "winnie",
         "crazydave"
@@ -12913,7 +12913,7 @@
       "number": "2.1.8",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Stage_Kongfu.webp",
-      "title": "Kongfu World - Day 25 (Dr. Zomboss Battle, Legacy Day 30)",
+      "title": "Kongfu World - Day 25 (Zomboss Battle, Legacy Day 30)",
       "characters": [
         "crazydave",
         "winnie"
@@ -15458,14 +15458,7 @@
           "npc": "winnie"
         },
         {
-          "key": "NARRATIVE_HEIAN_13_INTRO_3 | 重复项 1/2 | 源行 54594",
-          "kind": "speech",
-          "text": "and the fish baskets can absorb energy beans.",
-          "speaker": "Penny",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_HEIAN_13_INTRO_3 | 重复项 2/2 | 源行 54597",
+          "key": "NARRATIVE_HEIAN_13_INTRO_3",
           "kind": "speech",
           "text": "Aha! Can't we just attack them from the front then?",
           "speaker": "Crazy Dave",
@@ -15473,7 +15466,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_HEIAN_13_INTRO_3 | 重复项 2/2 | 源行 54597",
+          "key": "NARRATIVE_HEIAN_13_INTRO_3",
           "kind": "stage",
           "text": "(Crazy Dave and Penny leave.)"
         }
@@ -15670,13 +15663,6 @@
       "selectable": true,
       "lines": [
         {
-          "key": "NARRATIVE_ATLANTIS_3_INTRO_3 | 重复项 1/2 | 源行 54691",
-          "kind": "speech",
-          "text": "Uh, don't worry about these details…",
-          "speaker": "Penny",
-          "npc": "winnie"
-        },
-        {
           "key": "NARRATIVE_ATLANTIS_3_INTRO_1",
           "kind": "stage",
           "text": "(Crazy Dave and Penny appear.)"
@@ -15697,7 +15683,7 @@
           "npc": "winnie"
         },
         {
-          "key": "NARRATIVE_ATLANTIS_3_INTRO_3 | 重复项 2/2 | 源行 54701",
+          "key": "NARRATIVE_ATLANTIS_3_INTRO_3",
           "kind": "speech",
           "text": "Their ink is not easy to handle, so be careful!",
           "speaker": "Penny",
@@ -20510,14 +20496,14 @@
         {
           "key": "NARRATIVE_PVZ1_S30_12_H_INTRO_2",
           "kind": "speech",
-          "text": "Alarm Arrowheads in the same lane will form a warning line.",
+          "text": "Pulseburst Arrowheads in the same lane will form a warning line.",
           "speaker": "Zombie Commander",
           "npc": "zbcommander"
         },
         {
           "key": "NARRATIVE_PVZ1_S30_12_H_INTRO_3",
           "kind": "speech",
-          "text": "Once triggered, one side of the Alarm Arrowheads will activate immediately.",
+          "text": "Once triggered, one side of the Pulseburst Arrowheads will activate immediately.",
           "speaker": "Zombie Commander",
           "npc": "zbcommander"
         },
@@ -23276,7 +23262,7 @@
       "number": "4.1.25",
       "tag": "systemTutorials",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "System Tutorial - Transgenosis",
+      "title": "System Tutorial - Gene Modification",
       "characters": [
         "crazydave"
       ],
@@ -23290,7 +23276,7 @@
         {
           "key": "NARRATIVE_TUTORIAL_TRANSGENOSIS_INTRO_1",
           "kind": "speech",
-          "text": "You should have a lot of plant fragments now, right?",
+          "text": "You should have a lot of plant puzzle pieces now, right?",
           "speaker": "Crazy Dave",
           "emotion": "playful",
           "npc": "crazydave"
@@ -23298,7 +23284,7 @@
         {
           "key": "NARRATIVE_TUTORIAL_TRANSGENOSIS_INTRO_2",
           "kind": "speech",
-          "text": "You can try in transgenics to make them more useful.",
+          "text": "You can try in Gene Modification to make them more useful.",
           "speaker": "Crazy Dave",
           "npc": "crazydave"
         },
@@ -30227,7 +30213,7 @@
         {
           "key": "NARRATIVE_CHRISTMAS_202512_UNCHARTED_EVENT_TUTORIAL_1",
           "kind": "speech",
-          "text": "Didi, my space and time jump alarm went off.",
+          "text": "Beep-de-beep, my spacetime warp alarm is going off.",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -30248,7 +30234,7 @@
         {
           "key": "NARRATIVE_CHRISTMAS_202512_UNCHARTED_EVENT_TUTORIAL_3",
           "kind": "speech",
-          "text": "It looks like... it looks like something happened during the Ice Age.",
+          "text": "It looks like... something strange has happened in the Ice Age.",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -30256,7 +30242,7 @@
         {
           "key": "NARRATIVE_CHRISTMAS_202512_UNCHARTED_EVENT_TUTORIAL_4",
           "kind": "speech",
-          "text": "Looks like that big head is causing trouble again, let's go! meet him.",
+          "text": "Looks like that big head is up to something again, let's go meet him!",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydave"
@@ -30290,7 +30276,7 @@
         {
           "key": "NARRATIVE_CHILDRENSDAY_UNCHARTED_EVENT_TUTORIAL_1",
           "kind": "speech",
-          "text": "It's time for the annual children's amusement park trip again!",
+          "text": "It's time for the annual trip to the Children's Playpark again!",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -30311,7 +30297,7 @@
         {
           "key": "NARRATIVE_CHILDRENSDAY_UNCHARTED_EVENT_TUTORIAL_3",
           "kind": "speech",
-          "text": "I heard that the bumper car zombies have returned after upgrading their cars and are more difficult to deal with than before, so be careful.",
+          "text": "I heard that Bumper Car Zombie has returned after car's upgrade, and is now more difficult to deal with than before, so be careful.",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -30319,7 +30305,7 @@
         {
           "key": "NARRATIVE_CHILDRENSDAY_UNCHARTED_EVENT_TUTORIAL_4",
           "kind": "speech",
-          "text": "Oh? Then I have to get to know him well.",
+          "text": "Oh? Then I'd better go see what he's got.",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydave"
@@ -30492,9 +30478,9 @@
           "npc": "winnie"
         },
         {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3 | 重复项 1/2 | 源行 54626",
+          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3",
           "kind": "speech",
-          "text": "Anything that enters it loses its body, leaving only its head floating around.",
+          "text": "Hitting the Pumpkin Ghosts' heads with lobbed projectiles can break the Pumpkin House's magic. Switch to some lobber plants!",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -30507,14 +30493,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3 | 重复项 2/2 | 源行 54632",
-          "kind": "speech",
-          "text": "Hitting the Pumpkin Ghosts' heads with lobbed projectiles can break the Pumpkin House's magic. Switch to some lobber plants!",
-          "speaker": "Penny",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3 | 重复项 2/2 | 源行 54632",
+          "key": "NARRATIVE_HALLOWEEN_1_INTRO_4",
           "kind": "stage",
           "text": "(Crazy Dave and Penny leave.)"
         }
@@ -31810,12 +31789,12 @@
       "selectable": true,
       "lines": [
         {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1 | 重复项 1/2 | 源行 49516",
+          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1",
           "kind": "stage",
           "text": "(Crazy Dave appears.)"
         },
         {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1 | 重复项 1/2 | 源行 49516",
+          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1",
           "kind": "speech",
           "text": "Hello! You've unlocked the Arena. Let's give it a try!",
           "speaker": "Crazy Dave",
@@ -31823,25 +31802,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2 | 重复项 1/2 | 源行 49519",
-          "kind": "stage",
-          "text": "(Crazy Dave leaves.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1 | 重复项 2/2 | 源行 49615",
-          "kind": "stage",
-          "text": "(Crazy Dave appears.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1 | 重复项 2/2 | 源行 49615",
-          "kind": "speech",
-          "text": "Hello! You've unlocked the Arena. Let's give it a try!",
-          "speaker": "Crazy Dave",
-          "emotion": "playful",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2 | 重复项 2/2 | 源行 49618",
+          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2",
           "kind": "stage",
           "text": "(Crazy Dave leaves.)"
         }
@@ -31861,12 +31822,12 @@
       "selectable": true,
       "lines": [
         {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1 | 重复项 1/2 | 源行 49522",
+          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1",
           "kind": "stage",
           "text": "(Crazy Dave appears.)"
         },
         {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1 | 重复项 1/2 | 源行 49522",
+          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1",
           "kind": "speech",
           "text": "The Arena matches you against other players. Earn points and climb the rankings to advance to higher leagues with better prizes.",
           "speaker": "Crazy Dave",
@@ -31874,7 +31835,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_2 | 重复项 1/2 | 源行 49525",
+          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_2",
           "kind": "speech",
           "text": "Get out there and compete!",
           "speaker": "Crazy Dave",
@@ -31882,33 +31843,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_3 | 重复项 1/2 | 源行 49528",
-          "kind": "stage",
-          "text": "(Crazy Dave leaves.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1 | 重复项 2/2 | 源行 49621",
-          "kind": "stage",
-          "text": "(Crazy Dave appears.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1 | 重复项 2/2 | 源行 49621",
-          "kind": "speech",
-          "text": "The Arena matches you against other players. Earn points and climb the rankings to advance to higher leagues with better prizes.",
-          "speaker": "Crazy Dave",
-          "emotion": "playful",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_2 | 重复项 2/2 | 源行 49624",
-          "kind": "speech",
-          "text": "Get out there and compete!",
-          "speaker": "Crazy Dave",
-          "emotion": "playful",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_3 | 重复项 2/2 | 源行 49627",
+          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_3",
           "kind": "stage",
           "text": "(Crazy Dave leaves.)"
         }
@@ -31988,7 +31923,7 @@
         {
           "key": "NARRATIVE_ICEAGE_UNCHARTED_EVENT_TUTORIAL_1",
           "kind": "speech",
-          "text": "Brrrrr, my space and time travel alarm went off.",
+          "text": "Beep-de-beep, my spacetime warp alarm is going off.",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -32009,7 +31944,7 @@
         {
           "key": "NARRATIVE_ICEAGE_UNCHARTED_EVENT_TUTORIAL_3",
           "kind": "speech",
-          "text": "It seems... It seems something has happened during the Frostbite Caves.",
+          "text": "It looks like... something strange has happened in the Ice Age.",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -32036,7 +31971,7 @@
       "number": "5.4.2",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Frostbite Caves Resurgence - Day 4",
+      "title": "Frostbite Caves Resurgence - Day 4 (Elite Hunter Zombie Introduction)",
       "characters": [
         "zombossicon"
       ],
@@ -32089,7 +32024,7 @@
       "number": "5.4.3",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Frostbite Caves Resurgence - Day 6",
+      "title": "Frostbite Caves Resurgence - Day 6 (Elite Ice Weasel Introduction)",
       "characters": [
         "zombossicon"
       ],
@@ -32135,7 +32070,7 @@
       "number": "5.4.4",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Frostbite Caves Resurgence - Day 8",
+      "title": "Frostbite Caves Resurgence - Day 8 (Elite Chief Ice Wind Zombie Introduction)",
       "characters": [
         "zombossicon"
       ],
@@ -32250,7 +32185,7 @@
         {
           "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_2",
           "kind": "speech",
-          "text": "WAIT!!!!",
+          "text": "Just you wait!",
           "speaker": "Dr. Zomboss",
           "npc": "zombossicon"
         },
@@ -32268,15 +32203,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4 | 重复项 1/2 | 源行 21956",
-          "kind": "speech",
-          "text": "Dear Dave, I can't sweat, but Dr. Zomboss is a little... anxious.",
-          "speaker": "Penny",
-          "emotion": "tired",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4 | 重复项 2/2 | 源行 21959",
+          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4",
           "kind": "speech",
           "text": "Dammit! Another day of no tacos!",
           "speaker": "Crazy Dave",
@@ -32284,7 +32211,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4 | 重复项 2/2 | 源行 21959",
+          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4",
           "kind": "stage",
           "text": "(Crazy Dave and Penny leave.)"
         }
@@ -32312,7 +32239,7 @@
         {
           "key": "NARRATIVE_MAUSOLEUM_1_INTRO_1",
           "kind": "speech",
-          "text": "WoW~! A whole new world!! This is... Qin Shihuang's Mausoleum...!? Are there any tacos here?",
+          "text": "WoW~! A whole new world!! This is... Qin Shi Huang Mausoleum...!? Are there any tacos here?",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydave"
@@ -32346,7 +32273,7 @@
       "number": "5.4.8",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Underground Palace Ruins - Day 2",
+      "title": "Underground Palace Ruins - Day 2 (Pathways Introduction 1)",
       "characters": [
         "crazydave"
       ],
@@ -32387,7 +32314,7 @@
       "number": "5.4.9",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Underground Palace Ruins - Day 3",
+      "title": "Underground Palace Ruins - Day 3 (Pathways Introduction 2)",
       "characters": [
         "crazydave"
       ],
@@ -32420,7 +32347,7 @@
       "number": "5.4.10",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Underground Palace Ruins - Day 5",
+      "title": "Underground Palace Ruins - Day 5 (Archer Zombie and Secret Realm Carrotillery Introduction)",
       "characters": [
         "winnie"
       ],
@@ -32459,7 +32386,7 @@
       "number": "5.4.11",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Underground Palace Ruins - Day 7",
+      "title": "Underground Palace Ruins - Day 7 (Terracotta Warriors and Magic Vine Introduction)",
       "characters": [
         "crazydave",
         "winnie"
@@ -32482,7 +32409,7 @@
         {
           "key": "NARRATIVE_MAUSOLEUM_7_INTRO_2",
           "kind": "speech",
-          "text": "This is the Terracotta Warriors, a miraculous display of ancient glorious civilization.",
+          "text": "These are Terracotta Warriors, a remarkable legacy of an ancient civilization.",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -32504,7 +32431,7 @@
         {
           "key": "NARRATIVE_MAUSOLEUM_7_INTRO_5",
           "kind": "speech",
-          "text": "The magic vine will have a miraculous effect on the Terracotta Warriors.",
+          "text": "Magic Vine is especially effective against the Terracotta Warriors.",
           "speaker": "Penny",
           "npc": "winnie"
         },
@@ -32522,7 +32449,7 @@
       "number": "5.4.12",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Underground Palace Ruins - Day 10",
+      "title": "Underground Palace Ruins - Day 10 (Zomboss Battle)",
       "characters": [
         "winnie",
         "crazydave"
@@ -33101,7 +33028,7 @@
       "number": "5.4.21",
       "tag": "systemTutorials",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Transgenosis Tutorial (1/4)",
+      "title": "Gene Modification Tutorial (1/4)",
       "characters": [
         "crazydave"
       ],
@@ -33115,7 +33042,7 @@
         {
           "key": "NARRATIVE_TRANS_GENOSIS_OPEN_TUTORIAL_1",
           "kind": "speech",
-          "text": "Well, I noticed that you've acquired a magical item called a Shard.",
+          "text": "Well, I noticed that you've acquired a magical item called a puzzle piece.",
           "speaker": "Crazy Dave",
           "emotion": "playful",
           "npc": "crazydave"
@@ -33123,7 +33050,7 @@
         {
           "key": "NARRATIVE_TRANS_GENOSIS_OPEN_TUTORIAL_2",
           "kind": "speech",
-          "text": "Dave from my Rui(feng)Zhi(kuang) team discovered that new and different fragments can be obtained through existing fragments.",
+          "text": "I, the ~~crazy~~ brilliant Dave, have discovered that you can use the puzzle pieces you already have to obtain new and different ones.",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydave"
@@ -33142,7 +33069,7 @@
       "number": "5.4.22",
       "tag": "systemTutorials",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Transgenosis Tutorial (2/4)",
+      "title": "Gene Modification Tutorial (2/4)",
       "characters": [
         "crazydaveicon"
       ],
@@ -33156,7 +33083,7 @@
         {
           "key": "NARRATIVE_TRANS_GENOSIS_SELECT_TUTORIAL_1",
           "kind": "speech",
-          "text": "I put some fragments in your backpack, come and try them now.",
+          "text": "I put some puzzle pieces in your backpack, come and try them now.",
           "speaker": "Crazy Dave",
           "emotion": "excited",
           "npc": "crazydaveicon"
@@ -33175,7 +33102,7 @@
       "number": "5.4.23",
       "tag": "systemTutorials",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Transgenosis Tutorial (3/4)",
+      "title": "Gene Modification Tutorial (3/4)",
       "characters": [
         "winnieicon",
         "crazydaveicon"
@@ -33190,7 +33117,7 @@
         {
           "key": "NARRATIVE_TRANS_GENOSIS_SELECT_DONE_TUTORIAL_1",
           "kind": "speech",
-          "text": "Fusion requires at least two fragments. The more fragments there are, the higher the probability of fusing high-level fragments.",
+          "text": "Fusion requires at least two puzzle pieces. The more puzzle pieces there are, the higher the probability of fusing high-level puzzle pieces.",
           "speaker": "Penny",
           "emotion": "excited",
           "npc": "winnieicon"
@@ -33222,7 +33149,7 @@
       "number": "5.4.24",
       "tag": "systemTutorials",
       "icon": "assets/images/round_icons/Mode_Tutorial.webp",
-      "title": "Transgenosis Tutorial (4/4)",
+      "title": "Gene Modification Tutorial (4/4)",
       "characters": [
         "crazydave"
       ],
@@ -33528,7 +33455,7 @@
         {
           "key": "NARRATIVE_ACTIVITY_BOSSCHALLENGE_INTRO_1",
           "kind": "speech",
-          "text": "Data shows that zombies here can obtain plant fragments...",
+          "text": "Data shows that zombies here can obtain plant puzzle pieces...",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -33541,7 +33468,7 @@
         {
           "key": "NARRATIVE_ACTIVITY_BOSSCHALLENGE_INTRO_2",
           "kind": "speech",
-          "text": "Plant fragments? What is that? Can it be eaten?",
+          "text": "Plant puzzle pieces? What is that? Can it be eaten?",
           "speaker": "Crazy Dave",
           "emotion": "playful",
           "npc": "crazydave"
@@ -33549,7 +33476,7 @@
         {
           "key": "NARRATIVE_ACTIVITY_BOSSCHALLENGE_INTRO_3",
           "kind": "speech",
-          "text": "Although plants are rich in various vitamins, I think it is better for you to use fragments to synthesize plants to fight against zombies...",
+          "text": "Although plants are rich in various vitamins, I think it is better for you to use puzzle pieces to synthesize plants to fight against zombies...",
           "speaker": "Penny",
           "emotion": "playful",
           "npc": "winnie"
@@ -33908,7 +33835,7 @@
         {
           "key": "NARRATIVE_SKIPPED_TUTORIAL_1",
           "kind": "speech",
-          "text": "Hi, the basic guidance level has been skipped for you. The guidance reward will be sent to you later, so pay attention to check it!",
+          "text": "Hey! The basic tutorial levels have been skipped for you. Your tutorial rewards will be sent out shortly, so keep an eye out for them!",
           "speaker": "Crazy Dave",
           "emotion": "playful",
           "npc": "crazydave"

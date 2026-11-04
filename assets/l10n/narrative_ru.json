@@ -11098,7 +11098,7 @@
       "number": "1.12.11",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Stage_Dino.webp",
-      "title": "Юрское Болото — день 23 (международная версия)",
+      "title": "Юрское Болото — день 23 (международная версия, представление: Первобытная Картофельная Мина)",
       "characters": [
         "winnie",
         "crazydave"
@@ -15458,14 +15458,7 @@
           "npc": "winnie"
         },
         {
-          "key": "NARRATIVE_HEIAN_13_INTRO_3 | 重复项 1/2 | 源行 54594",
-          "kind": "speech",
-          "text": "А корзины с рыбой могут поглощать подкормку.",
-          "speaker": "Пенни",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_HEIAN_13_INTRO_3 | 重复项 2/2 | 源行 54597",
+          "key": "NARRATIVE_HEIAN_13_INTRO_3",
           "kind": "speech",
           "text": "Ага! Так почему бы нам просто не атаковать их спереди?",
           "speaker": "Безумный Дейв",
@@ -15473,7 +15466,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_HEIAN_13_INTRO_3 | 重复项 2/2 | 源行 54597",
+          "key": "NARRATIVE_HEIAN_13_INTRO_3",
           "kind": "stage",
           "text": "(Безумный Дейв и Пенни уходят.)"
         }
@@ -15670,13 +15663,6 @@
       "selectable": true,
       "lines": [
         {
-          "key": "NARRATIVE_ATLANTIS_3_INTRO_3 | 重复项 1/2 | 源行 54691",
-          "kind": "speech",
-          "text": "Э-э, не обращайте внимания на такие мелочи…",
-          "speaker": "Пенни",
-          "npc": "winnie"
-        },
-        {
           "key": "NARRATIVE_ATLANTIS_3_INTRO_1",
           "kind": "stage",
           "text": "(Появляются Безумный Дейв и Пенни.)"
@@ -15697,7 +15683,7 @@
           "npc": "winnie"
         },
         {
-          "key": "NARRATIVE_ATLANTIS_3_INTRO_3 | 重复项 2/2 | 源行 54701",
+          "key": "NARRATIVE_ATLANTIS_3_INTRO_3",
           "kind": "speech",
           "text": "С их чернилами нелегко справиться, так что будьте осторожны!",
           "speaker": "Пенни",
@@ -30492,9 +30478,9 @@
           "npc": "winnie"
         },
         {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3 | 重复项 1/2 | 源行 54626",
+          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3",
           "kind": "speech",
-          "text": "Тело попавшей туда цели исчезнет, и останется лишь парящая голова.",
+          "text": "Магию тыквенного дома можно разрушить, попадая метательными снарядами в голову тыквенного призрака. Возьмите растение-метатель!",
           "speaker": "Пенни",
           "npc": "winnie"
         },
@@ -30507,14 +30493,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3 | 重复项 2/2 | 源行 54632",
-          "kind": "speech",
-          "text": "Магию тыквенного дома можно разрушить, попадая метательными снарядами в голову тыквенного призрака. Возьмите растение-метатель!",
-          "speaker": "Пенни",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3 | 重复项 2/2 | 源行 54632",
+          "key": "NARRATIVE_HALLOWEEN_1_INTRO_4",
           "kind": "stage",
           "text": "(Безумный Дейв и Пенни уходят.)"
         }
@@ -31810,12 +31789,12 @@
       "selectable": true,
       "lines": [
         {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1 | 重复项 1/2 | 源行 49516",
+          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1",
           "kind": "stage",
           "text": "(Появляется Безумный Дейв.)"
         },
         {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1 | 重复项 1/2 | 源行 49516",
+          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1",
           "kind": "speech",
           "text": "Привет! Ты открыл Арену. Давай попробуем!",
           "speaker": "Безумный Дейв",
@@ -31823,25 +31802,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2 | 重复项 1/2 | 源行 49519",
-          "kind": "stage",
-          "text": "(Безумный Дейв уходит.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1 | 重复项 2/2 | 源行 49615",
-          "kind": "stage",
-          "text": "(Появляется Безумный Дейв.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1 | 重复项 2/2 | 源行 49615",
-          "kind": "speech",
-          "text": "Привет! Ты открыл Арену. Давай попробуем!",
-          "speaker": "Безумный Дейв",
-          "emotion": "игриво",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2 | 重复项 2/2 | 源行 49618",
+          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2",
           "kind": "stage",
           "text": "(Безумный Дейв уходит.)"
         }
@@ -31861,12 +31822,12 @@
       "selectable": true,
       "lines": [
         {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1 | 重复项 1/2 | 源行 49522",
+          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1",
           "kind": "stage",
           "text": "(Появляется Безумный Дейв.)"
         },
         {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1 | 重复项 1/2 | 源行 49522",
+          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1",
           "kind": "speech",
           "text": "На Арене ты сражаешься с другими игроками. Зарабатывай очки и поднимайся в рейтинге, чтобы переходить в более высокие лиги с лучшими наградами.",
           "speaker": "Безумный Дейв",
@@ -31874,7 +31835,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_2 | 重复项 1/2 | 源行 49525",
+          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_2",
           "kind": "speech",
           "text": "Вперёд, участвуй в состязании!",
           "speaker": "Безумный Дейв",
@@ -31882,33 +31843,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_3 | 重复项 1/2 | 源行 49528",
-          "kind": "stage",
-          "text": "(Безумный Дейв уходит.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1 | 重复项 2/2 | 源行 49621",
-          "kind": "stage",
-          "text": "(Появляется Безумный Дейв.)"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1 | 重复项 2/2 | 源行 49621",
-          "kind": "speech",
-          "text": "На Арене ты сражаешься с другими игроками. Зарабатывай очки и поднимайся в рейтинге, чтобы переходить в более высокие лиги с лучшими наградами.",
-          "speaker": "Безумный Дейв",
-          "emotion": "игриво",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_2 | 重复项 2/2 | 源行 49624",
-          "kind": "speech",
-          "text": "Вперёд, участвуй в состязании!",
-          "speaker": "Безумный Дейв",
-          "emotion": "игриво",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_3 | 重复项 2/2 | 源行 49627",
+          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_3",
           "kind": "stage",
           "text": "(Безумный Дейв уходит.)"
         }
@@ -32036,7 +31971,7 @@
       "number": "5.4.2",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Замороженные Пещеры (реалм) — день 4",
+      "title": "Замороженные Пещеры (реалм) — день 4 (представление: Элитный охотник)",
       "characters": [
         "zombossicon"
       ],
@@ -32089,7 +32024,7 @@
       "number": "5.4.3",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Замороженные Пещеры (реалм) — день 6",
+      "title": "Замороженные Пещеры (реалм) — день 6 (представление: Элитная ласка)",
       "characters": [
         "zombossicon"
       ],
@@ -32135,7 +32070,7 @@
       "number": "5.4.4",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Замороженные Пещеры (реалм) — день 8",
+      "title": "Замороженные Пещеры (реалм) — день 8 (представление: Элитный шеф ледяных ветров)",
       "characters": [
         "zombossicon"
       ],
@@ -32268,15 +32203,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4 | 重复项 1/2 | 源行 21956",
-          "kind": "speech",
-          "text": "Дорогой Дейв, я не умею потеть, зато доктор Зомбосс немного... нервничает.",
-          "speaker": "Пенни",
-          "emotion": "устало",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4 | 重复项 2/2 | 源行 21959",
+          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4",
           "kind": "speech",
           "text": "Проклятье! Ещё один день без тако!",
           "speaker": "Безумный Дейв",
@@ -32284,7 +32211,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4 | 重复项 2/2 | 源行 21959",
+          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4",
           "kind": "stage",
           "text": "(Безумный Дейв и Пенни уходят.)"
         }
@@ -32346,7 +32273,7 @@
       "number": "5.4.8",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Руины Подземного дворца — день 2",
+      "title": "Руины Подземного дворца — день 2 (представление: Тоннели Подземного Дворца 1)",
       "characters": [
         "crazydave"
       ],
@@ -32387,7 +32314,7 @@
       "number": "5.4.9",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Руины Подземного дворца — день 3",
+      "title": "Руины Подземного дворца — день 3 (представление: Тоннели Подземного Дворца 2)",
       "characters": [
         "crazydave"
       ],
@@ -32420,7 +32347,7 @@
       "number": "5.4.10",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Руины Подземного дворца — день 5",
+      "title": "Руины Подземного дворца — день 5 (представление: Зомби-лучник и Морковортиллерия из параллельной вселенной)",
       "characters": [
         "winnie"
       ],
@@ -32459,7 +32386,7 @@
       "number": "5.4.11",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Руины Подземного дворца — день 7",
+      "title": "Руины Подземного дворца — день 7 (представление: Терракотовая армия и Магическая Лоза)",
       "characters": [
         "crazydave",
         "winnie"
@@ -32522,7 +32449,7 @@
       "number": "5.4.12",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "Руины Подземного дворца — день 10",
+      "title": "Руины Подземного дворца — день 10 (битва с доктором Зомбоссом)",
       "characters": [
         "winnie",
         "crazydave"

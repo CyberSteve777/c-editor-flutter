@@ -6,6 +6,7 @@ import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/plugins/plugin_host_hooks.dart';
 import 'package:c_editor/plugins/plugin_manager.dart';
 import 'package:c_editor/widgets/app_ui_scale.dart';
+import 'package:c_editor/widgets/dropdown_pointer_focus.dart';
 import 'package:c_editor/widgets/locale_flag_icon.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -868,32 +869,38 @@ class _SurfaceSelector extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < 620) {
-          return DropdownButtonFormField<InterfaceMenuSurface>(
-            initialValue: selected,
-            isExpanded: true,
-            decoration: const InputDecoration(border: OutlineInputBorder()),
-            items: [
-              for (final surface in InterfaceMenuSurface.values)
-                DropdownMenuItem<InterfaceMenuSurface>(
-                  value: surface,
-                  child: Row(
-                    children: [
-                      Icon(_icon(surface)),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          _label(surface),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+          return DropdownPointerFocus(
+            builder: (context, focusNode) =>
+                DropdownButtonFormField<InterfaceMenuSurface>(
+                  focusNode: focusNode,
+                  initialValue: selected,
+                  isExpanded: true,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  items: [
+                    for (final surface in InterfaceMenuSurface.values)
+                      DropdownMenuItem<InterfaceMenuSurface>(
+                        value: surface,
+                        child: Row(
+                          children: [
+                            Icon(_icon(surface)),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                _label(surface),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) onSelected(value);
+                  },
                 ),
-            ],
-            onChanged: (value) {
-              if (value != null) onSelected(value);
-            },
           );
         }
         return SegmentedButton<InterfaceMenuSurface>(
@@ -1033,63 +1040,67 @@ class _PlacementControl extends StatelessWidget {
           ),
         ),
         child: DropdownButtonHideUnderline(
-          child: DropdownButton<InterfaceMenuPlacement>(
-            value: placement,
-            isExpanded: true,
-            items: [
-              DropdownMenuItem(
-                value: InterfaceMenuPlacement.toolbar,
-                child: Row(
-                  children: [
-                    const Icon(Icons.push_pin_outlined, size: 18),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        toolbarLabel,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+          child: DropdownPointerFocus(
+            builder: (context, focusNode) =>
+                DropdownButton<InterfaceMenuPlacement>(
+                  focusNode: focusNode,
+                  value: placement,
+                  isExpanded: true,
+                  items: [
+                    DropdownMenuItem(
+                      value: InterfaceMenuPlacement.toolbar,
+                      child: Row(
+                        children: [
+                          const Icon(Icons.push_pin_outlined, size: 18),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              toolbarLabel,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              DropdownMenuItem(
-                value: InterfaceMenuPlacement.overflow,
-                child: Row(
-                  children: [
-                    const Icon(Icons.more_vert, size: 18),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        overflowLabel,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    DropdownMenuItem(
+                      value: InterfaceMenuPlacement.overflow,
+                      child: Row(
+                        children: [
+                          const Icon(Icons.more_vert, size: 18),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              overflowLabel,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              if (allowSettingsPage)
-                DropdownMenuItem(
-                  value: InterfaceMenuPlacement.settingsPage,
-                  child: Row(
-                    children: [
-                      const Icon(Icons.tune, size: 18),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          settingsPageLabel,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                    if (allowSettingsPage)
+                      DropdownMenuItem(
+                        value: InterfaceMenuPlacement.settingsPage,
+                        child: Row(
+                          children: [
+                            const Icon(Icons.tune, size: 18),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                settingsPageLabel,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) onChanged(value);
+                  },
                 ),
-            ],
-            onChanged: (value) {
-              if (value != null) onChanged(value);
-            },
           ),
         ),
       );

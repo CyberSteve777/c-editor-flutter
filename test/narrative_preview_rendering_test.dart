@@ -12,6 +12,54 @@ void main() {
 
   setUp(NarrativeCatalog.clearCacheForTesting);
 
+  testWidgets('the brilliant Dave line strikes only crazy and hides markers', (
+    tester,
+  ) async {
+    final catalog = await NarrativeCatalog.load(const Locale('en'));
+    final line = catalog.dialogues
+        .expand((entry) => entry.lines)
+        .singleWhere(
+          (line) =>
+              line.key == 'NARRATIVE_TRANS_GENOSIS_OPEN_TUTORIAL_2' &&
+              line.kind == NarrativeLineKind.speech,
+        );
+    expect(line.text, contains('~~crazy~~'));
+    await tester.pumpWidget(_lineApp(line, localeCode: 'en'));
+    final body = tester.widget<Text>(
+      find.text(
+        'I, the crazy brilliant Dave, have discovered that you can use the puzzle pieces you already have to obtain new and different ones.',
+      ),
+    );
+    expect(find.text(line.text), findsNothing);
+    final struckWords = <String>[];
+    body.textSpan!.visitChildren((span) {
+      if (span.style?.decoration == TextDecoration.lineThrough) {
+        struckWords.add(span.toPlainText());
+      }
+      return true;
+    });
+    expect(struckWords, ['crazy']);
+    expect(body.style?.decoration, isNot(TextDecoration.lineThrough));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('unmatched dialogue tildes remain ordinary punctuation', (
+    tester,
+  ) async {
+    const line = NarrativeLine(
+      key: 'FAREWELL',
+      kind: NarrativeLineKind.speech,
+      text: '僵尸博士迟早会再次出现！再见~~！',
+      speaker: '疯狂戴夫',
+      npc: 'crazydave',
+    );
+    await tester.pumpWidget(_lineApp(line, localeCode: 'zh'));
+    final text = tester.widget<Text>(find.text(line.text));
+    expect(text.data, line.text);
+    expect(text.textSpan, isNull);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('stage directions are italic in both Chinese and English', (
     tester,
   ) async {

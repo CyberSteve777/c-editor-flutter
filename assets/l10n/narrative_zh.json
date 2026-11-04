@@ -11097,7 +11097,7 @@
       "number": "1.12.11",
       "tag": "mainWorlds",
       "icon": "assets/images/round_icons/Stage_Dino.webp",
-      "title": "恐龙危机 - 第23天（国际版）",
+      "title": "恐龙危机 - 第23天（国际版，原始土豆地雷介绍）",
       "characters": [
         "winnie",
         "crazydave"
@@ -15457,14 +15457,7 @@
           "npc": "winnie"
         },
         {
-          "key": "NARRATIVE_HEIAN_13_INTRO_3 | 重复项 1/2 | 源行 54594",
-          "kind": "speech",
-          "text": "鱼篓可以吸收能量豆。",
-          "speaker": "潘妮",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_HEIAN_13_INTRO_3 | 重复项 2/2 | 源行 54597",
+          "key": "NARRATIVE_HEIAN_13_INTRO_3",
           "kind": "speech",
           "text": "啊哈！那我们攻击正面不就行了？",
           "speaker": "疯狂戴夫",
@@ -15472,7 +15465,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_HEIAN_13_INTRO_3 | 重复项 2/2 | 源行 54597",
+          "key": "NARRATIVE_HEIAN_13_INTRO_3",
           "kind": "stage",
           "text": "（疯狂戴夫、潘妮离场。）"
         }
@@ -15669,13 +15662,6 @@
       "selectable": true,
       "lines": [
         {
-          "key": "NARRATIVE_ATLANTIS_3_INTRO_3 | 重复项 1/2 | 源行 54691",
-          "kind": "speech",
-          "text": "呃，不要在意这些细节…",
-          "speaker": "潘妮",
-          "npc": "winnie"
-        },
-        {
           "key": "NARRATIVE_ATLANTIS_3_INTRO_1",
           "kind": "stage",
           "text": "（疯狂戴夫、潘妮登场。）"
@@ -15696,7 +15682,7 @@
           "npc": "winnie"
         },
         {
-          "key": "NARRATIVE_ATLANTIS_3_INTRO_3 | 重复项 2/2 | 源行 54701",
+          "key": "NARRATIVE_ATLANTIS_3_INTRO_3",
           "kind": "speech",
           "text": "他们的墨汁可不好处理，要多加小心！",
           "speaker": "潘妮",
@@ -30491,9 +30477,9 @@
           "npc": "winnie"
         },
         {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3 | 重复项 1/2 | 源行 54626",
+          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3",
           "kind": "speech",
-          "text": "进入其中的目标身体会消失，只剩下脑袋飘荡。",
+          "text": "通过抛投子弹击中南瓜幽灵头部可破除南瓜屋的魔法，请换上抛投类射手吧！",
           "speaker": "潘妮",
           "npc": "winnie"
         },
@@ -30506,14 +30492,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3 | 重复项 2/2 | 源行 54632",
-          "kind": "speech",
-          "text": "通过抛投子弹击中南瓜幽灵头部可破除南瓜屋的魔法，请换上抛投类射手吧！",
-          "speaker": "潘妮",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_HALLOWEEN_1_INTRO_3 | 重复项 2/2 | 源行 54632",
+          "key": "NARRATIVE_HALLOWEEN_1_INTRO_4",
           "kind": "stage",
           "text": "（疯狂戴夫、潘妮离场。）"
         }
@@ -31809,12 +31788,12 @@
       "selectable": true,
       "lines": [
         {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1 | 重复项 1/2 | 源行 49516",
+          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1",
           "kind": "stage",
           "text": "（疯狂戴夫登场。）"
         },
         {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1 | 重复项 1/2 | 源行 49516",
+          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1",
           "kind": "speech",
           "text": "哈喽，您已经解锁超Z联赛！让我们快去尝试一下！",
           "speaker": "疯狂戴夫",
@@ -31822,25 +31801,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2 | 重复项 1/2 | 源行 49519",
-          "kind": "stage",
-          "text": "（疯狂戴夫离场。）"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1 | 重复项 2/2 | 源行 49615",
-          "kind": "stage",
-          "text": "（疯狂戴夫登场。）"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_1 | 重复项 2/2 | 源行 49615",
-          "kind": "speech",
-          "text": "哈喽，您已经解锁超Z联赛！让我们快去尝试一下！",
-          "speaker": "疯狂戴夫",
-          "emotion": "顽皮",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2 | 重复项 2/2 | 源行 49618",
+          "key": "NARRATIVE_JOUST_OPEN_TUTORIAL_2",
           "kind": "stage",
           "text": "（疯狂戴夫离场。）"
         }
@@ -31860,12 +31821,12 @@
       "selectable": true,
       "lines": [
         {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1 | 重复项 1/2 | 源行 49522",
+          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1",
           "kind": "stage",
           "text": "（疯狂戴夫登场。）"
         },
         {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1 | 重复项 1/2 | 源行 49522",
+          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1",
           "kind": "speech",
           "text": "超Z联赛匹配玩家，获得积分，达到一定名次以后，可以升级到更高级的联赛，奖品会更加丰富。",
           "speaker": "疯狂戴夫",
@@ -31873,7 +31834,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_2 | 重复项 1/2 | 源行 49525",
+          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_2",
           "kind": "speech",
           "text": "快去行动吧！",
           "speaker": "疯狂戴夫",
@@ -31881,33 +31842,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_3 | 重复项 1/2 | 源行 49528",
-          "kind": "stage",
-          "text": "（疯狂戴夫离场。）"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1 | 重复项 2/2 | 源行 49621",
-          "kind": "stage",
-          "text": "（疯狂戴夫登场。）"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_1 | 重复项 2/2 | 源行 49621",
-          "kind": "speech",
-          "text": "超Z联赛匹配玩家，获得积分，达到一定名次以后，可以升级到更高级的联赛，奖品会更加丰富。",
-          "speaker": "疯狂戴夫",
-          "emotion": "顽皮",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_2 | 重复项 2/2 | 源行 49624",
-          "kind": "speech",
-          "text": "快去行动吧！",
-          "speaker": "疯狂戴夫",
-          "emotion": "顽皮",
-          "npc": "crazydave"
-        },
-        {
-          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_3 | 重复项 2/2 | 源行 49627",
+          "key": "NARRATIVE_JOUST_SELECT_TUTORIAL_3",
           "kind": "stage",
           "text": "（疯狂戴夫离场。）"
         }
@@ -32035,7 +31970,7 @@
       "number": "5.4.2",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "冰河再临 - 第4天",
+      "title": "冰河再临 - 第4天（精英猎人僵尸介绍）",
       "characters": [
         "zombossicon"
       ],
@@ -32088,7 +32023,7 @@
       "number": "5.4.3",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "冰河再临 - 第6天",
+      "title": "冰河再临 - 第6天（精英冰鼬介绍）",
       "characters": [
         "zombossicon"
       ],
@@ -32134,7 +32069,7 @@
       "number": "5.4.4",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "冰河再临 - 第8天",
+      "title": "冰河再临 - 第8天（精英冰风酋长僵尸介绍）",
       "characters": [
         "zombossicon"
       ],
@@ -32267,15 +32202,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4 | 重复项 1/2 | 源行 21956",
-          "kind": "speech",
-          "text": "亲爱的戴夫，我是不会出汗的，倒是僵尸博士有些...急了",
-          "speaker": "潘妮",
-          "emotion": "疲惫",
-          "npc": "winnie"
-        },
-        {
-          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4 | 重复项 2/2 | 源行 21959",
+          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4",
           "kind": "speech",
           "text": "可恶啊，又是没找到玉米卷的一天！",
           "speaker": "疯狂戴夫",
@@ -32283,7 +32210,7 @@
           "npc": "crazydave"
         },
         {
-          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4 | 重复项 2/2 | 源行 21959",
+          "key": "NARRATIVE_UNCHARTED_ICEAGE_OUTRO_ZOMBOSS_FINAL_4",
           "kind": "stage",
           "text": "（疯狂戴夫、潘妮离场。）"
         }
@@ -32345,7 +32272,7 @@
       "number": "5.4.8",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "地宫遗迹 - 第2天",
+      "title": "地宫遗迹 - 第2天（坑道介绍 1）",
       "characters": [
         "crazydave"
       ],
@@ -32386,7 +32313,7 @@
       "number": "5.4.9",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "地宫遗迹 - 第3天",
+      "title": "地宫遗迹 - 第3天（坑道介绍 2）",
       "characters": [
         "crazydave"
       ],
@@ -32419,7 +32346,7 @@
       "number": "5.4.10",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "地宫遗迹 - 第5天",
+      "title": "地宫遗迹 - 第5天（弓箭手僵尸、秘境胡萝卜导弹车介绍）",
       "characters": [
         "winnie"
       ],
@@ -32458,7 +32385,7 @@
       "number": "5.4.11",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "地宫遗迹 - 第7天",
+      "title": "地宫遗迹 - 第7天（秦俑、魔藤介绍）",
       "characters": [
         "crazydave",
         "winnie"
@@ -32521,7 +32448,7 @@
       "number": "5.4.12",
       "tag": "otherModes",
       "icon": "assets/images/round_icons/Mode_SecretRealm.webp",
-      "title": "地宫遗迹 - 第10天",
+      "title": "地宫遗迹 - 第10天（僵王战）",
       "characters": [
         "winnie",
         "crazydave"

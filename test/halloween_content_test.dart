@@ -10,6 +10,7 @@ import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/event_registry.dart';
 import 'package:c_editor/data/registry/module_registry.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
+import 'package:c_editor/l10n/resource_names.dart';
 import 'package:c_editor/screens/editor/halloween_placement_screen.dart';
 import 'package:c_editor/screens/editor_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
@@ -17,6 +18,7 @@ import 'package:c_editor/bundled_plugins/preview_img_cplugin/lib/src/preview/pre
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(ResourceNames.ensureLoaded);
   test(
     'scarecrow and cauldron labels use separate namespaces and established terminology',
     () async {
@@ -43,7 +45,11 @@ void main() {
           expect(line.startsWith('  "'), isTrue);
         }
         if (locale == 'zh') {
-          expect(copy['pumpkinScarecrowCrowLevel'], contains('从0开始计数'));
+          expect(copy['pumpkinScarecrowCrowLevel'], '乌鸦阶级 (Level)');
+          expect(
+            copy['pumpkinScarecrowHelpOverview'],
+            contains('乌鸦阶级（0阶表示随地图阶级，庭院模式下即为1阶）'),
+          );
           expect(copy['wizardCauldronBoilingDuration'], contains('单位：秒'));
           expect(
             copy['wizardCauldronHelpUsage'],
@@ -60,7 +66,7 @@ void main() {
             copy['moduleDesc_InitialGridItemWizardCrucibleProps'],
             contains('Fairy Forest'),
           );
-          expect(copy['pumpkinScarecrowCrowLevel'], contains('0-index'));
+          expect(copy['pumpkinScarecrowCrowLevel'], 'Crow level (Level)');
         }
       }
     },
@@ -277,6 +283,35 @@ void main() {
           expect(data['SpawnPositionsPool'], isEmpty);
           await tester.tap(cell);
           await tester.pumpAndSettle();
+          final crowLevel = find.byKey(
+            const ValueKey('pumpkinScarecrowCrowLevel'),
+          );
+          expect(
+            tester
+                .widget<DropdownButton<int>>(
+                  find.descendant(
+                    of: crowLevel,
+                    matching: find.byType(DropdownButton<int>),
+                  ),
+                )
+                .items!
+                .map((item) => item.value),
+            List.generate(11, (value) => value),
+          );
+          await tester.ensureVisible(crowLevel);
+          await tester.tap(crowLevel);
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('10').last);
+          await tester.pumpAndSettle();
+          expect(data['Level'], 10);
+          expect(data['Level'], isA<int>());
+          await tester.tap(crowLevel);
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('0').last);
+          await tester.pumpAndSettle();
+          expect(data['Level'], 0);
+          expect(data['Hitpoints'], 4000);
+          expect(data['FutureField'], 42);
         }
         if (cauldron) {
           await tester.tap(find.byKey(const ValueKey('placementCell_1_0')));
@@ -330,14 +365,38 @@ void main() {
             buttons: kSecondaryMouseButton,
           );
           await tester.pumpAndSettle();
-          expect(cauldrons, hasLength(2));
+          expect(cauldrons, hasLength(3));
           expect(cauldrons.last['CrucibleHitpoints'], 1234);
           expect(find.text('R1 : C3'), findsOneWidget);
           await tester.longPress(cell);
           await tester.pumpAndSettle();
-          expect(cauldrons, hasLength(1));
-          expect(cauldrons.single['GridX'], 2);
+          expect(cauldrons, hasLength(3));
+          await tester.tap(find.byKey(const ValueKey('placementCell_2_0')));
+          await tester.pumpAndSettle();
           expect(find.text('R1 : C3'), findsOneWidget);
+          final deleteButton = find.byKey(
+            const ValueKey('deleteSelectedWizardCauldron'),
+          );
+          await tester.ensureVisible(deleteButton);
+          await tester.tap(deleteButton);
+          await tester.pumpAndSettle();
+          final strings = lookupAppLocalizations(const Locale('zh'));
+          expect(
+            find.text(strings.removeItemConfirm('R1 : C3 巫师坩埚')),
+            findsOneWidget,
+          );
+          expect(cauldrons, hasLength(3));
+          await tester.tap(find.text(strings.cancel));
+          await tester.pumpAndSettle();
+          expect(cauldrons, hasLength(3));
+          await tester.tap(deleteButton);
+          await tester.pumpAndSettle();
+          await tester.tap(find.text(strings.remove));
+          await tester.pumpAndSettle();
+          expect(cauldrons, hasLength(2));
+          expect(cauldrons.any((p) => p['GridX'] == 2), isFalse);
+          expect(data['FutureField'], 42);
+          expect(deleteButton, findsNothing);
         }
         // Every cell fills the original lawn, including when SafeArea padding
         // would otherwise be inherited by a nested scrollable grid.

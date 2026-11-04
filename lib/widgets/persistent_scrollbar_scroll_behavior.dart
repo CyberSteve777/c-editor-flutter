@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart' show CupertinoScrollbar;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 /// Keeps every vertical app scrollbar visible, beside rather than over content.
 ///
@@ -11,6 +12,24 @@ import 'package:flutter/material.dart';
 /// controls keep their existing, component-specific scrollbar behavior.
 class PersistentScrollbarScrollBehavior extends MaterialScrollBehavior {
   const PersistentScrollbarScrollBehavior();
+
+  EdgeInsets? _contentPadding(BuildContext context) {
+    EdgeInsetsGeometry? padding;
+    context.visitAncestorElements((element) {
+      final widget = element.widget;
+      if (widget is Scrollable) return false;
+      if (widget is SingleChildScrollView) {
+        padding = widget.padding;
+        return false;
+      }
+      if (widget is BoxScrollView) {
+        padding = widget.padding;
+        return false;
+      }
+      return true;
+    });
+    return padding?.resolve(Directionality.of(context));
+  }
 
   ({Widget widget, BuildContext context})? _explicitScrollbar(
     BuildContext context,
@@ -100,6 +119,46 @@ class PersistentScrollbarScrollBehavior extends MaterialScrollBehavior {
         : EdgeInsets.only(right: width);
   }
 
+  Widget _withGutter(
+    BuildContext context,
+    Widget child, {
+    BuildContext? scrollbarContext,
+    Widget? scrollbar,
+  }) {
+    final barContext = scrollbarContext ?? context;
+    final gutter = _scrollbarGutter(barContext, scrollbar: scrollbar);
+    final contentPadding = _contentPadding(context);
+    Widget paddedViewport(EdgeInsets padding) => Listener(
+      // Padding does not hit-test by itself. Include the reserved channel so
+      // the scrollbar can receive touches in its larger interactive thumb
+      // target, rather than requiring an exact hit on the thin painted line.
+      behavior: HitTestBehavior.opaque,
+      child: _ScrollbarViewportHitRegion(
+        scrollbarGutter: gutter,
+        child: Padding(padding: padding, child: child),
+      ),
+    );
+    // Unknown padding belongs to the scrollable itself, for example an
+    // editable field or a dialog's internal viewport. Keep its original inset.
+    // Popup menus, dropdowns and dialogs own their padding and intrinsic
+    // dimensions. Keep their fixed gutter separate from page balancing.
+    if (contentPadding == null || ModalRoute.of(context) is PopupRoute) {
+      return paddedViewport(gutter);
+    }
+
+    // Page padding already gives the thumb some room. Top up both sides at
+    // every viewport width, so tablets and zoomed-out pages stay centered too.
+    final safe = MediaQuery.paddingOf(barContext);
+    final safeOnBarSide = gutter.left > 0 ? safe.left : safe.right;
+    final width = math.max(gutter.left, gutter.right) - safeOnBarSide;
+    return paddedViewport(
+      EdgeInsets.only(
+        left: math.max(0.0, width + safe.left - contentPadding.left),
+        right: math.max(0.0, width + safe.right - contentPadding.right),
+      ),
+    );
+  }
+
   @override
   Widget buildScrollbar(
     BuildContext context,
@@ -120,9 +179,11 @@ class PersistentScrollbarScrollBehavior extends MaterialScrollBehavior {
 
     final explicit = _explicitScrollbar(context);
     if (explicit != null) {
-      return Padding(
-        padding: _scrollbarGutter(explicit.context, scrollbar: explicit.widget),
-        child: child,
+      return _withGutter(
+        context,
+        child,
+        scrollbarContext: explicit.context,
+        scrollbar: explicit.widget,
       );
     }
 
@@ -132,7 +193,44 @@ class PersistentScrollbarScrollBehavior extends MaterialScrollBehavior {
       trackVisibility: true,
       interactive: true,
       scrollbarOrientation: ScrollbarOrientation.right,
-      child: Padding(padding: _scrollbarGutter(context), child: child),
+      child: _withGutter(context, child),
     );
+  }
+}
+
+/// The page's existing padding can share the thumb channel visually, but the
+/// viewport's drag recognizer must not compete for touches in that channel.
+class _ScrollbarViewportHitRegion extends SingleChildRenderObjectWidget {
+  const _ScrollbarViewportHitRegion({
+    required this.scrollbarGutter,
+    required super.child,
+  });
+
+  final EdgeInsets scrollbarGutter;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _RenderScrollbarViewportHitRegion(scrollbarGutter);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _RenderScrollbarViewportHitRegion renderObject,
+  ) {
+    renderObject.scrollbarGutter = scrollbarGutter;
+  }
+}
+
+class _RenderScrollbarViewportHitRegion extends RenderProxyBox {
+  _RenderScrollbarViewportHitRegion(this.scrollbarGutter);
+
+  EdgeInsets scrollbarGutter;
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
+    if (!scrollbarGutter.deflateRect(Offset.zero & size).contains(position)) {
+      return false;
+    }
+    return super.hitTestChildren(result, position: position);
   }
 }

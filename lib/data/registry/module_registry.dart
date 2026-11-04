@@ -1295,7 +1295,7 @@ class ModuleRegistry {
     'TunnelDefendModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_TunnelDefendModuleProperties',
       descriptionKey: 'moduleDesc_TunnelDefendModuleProperties',
-      icon: Icons.landscape,
+      icon: Icons.grid_view,
       isCore: true,
       category: ModuleCategory.scene,
       defaultAlias: 'TunnelDefend',

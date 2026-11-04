@@ -7,10 +7,13 @@ Widget _app({
   required TargetPlatform platform,
   required Widget child,
   ScrollBehavior scrollBehavior = const PersistentScrollbarScrollBehavior(),
+  double width = 320,
 }) => MaterialApp(
   theme: ThemeData(platform: platform),
   scrollBehavior: scrollBehavior,
-  home: Scaffold(body: SizedBox(width: 320, height: 240, child: child)),
+  home: Scaffold(
+    body: SizedBox(width: width, height: 240, child: child),
+  ),
 );
 
 ListView _longVerticalList({ScrollController? controller}) => ListView.builder(
@@ -110,6 +113,168 @@ void main() {
     expect(content.left, closeTo(bar.left, 0.01));
     expect(tester.getRect(find.byKey(const ValueKey('helpBody'))), content);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('compact padded pages balance the existing page margins', (
+    tester,
+  ) async {
+    for (final platform in [
+      TargetPlatform.android,
+      TargetPlatform.iOS,
+      TargetPlatform.windows,
+    ]) {
+      for (final padding in [12.0, 16.0, 24.0]) {
+        await tester.pumpWidget(
+          _app(
+            platform: platform,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(padding),
+              child: const SizedBox(
+                key: ValueKey('centeredPage'),
+                width: double.infinity,
+                height: 900,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final content = tester.getRect(
+          find.byKey(const ValueKey('centeredPage')),
+        );
+        final bar = tester.getRect(_persistentBar);
+        final expectedMargin = padding < 20 ? 20.0 : padding;
+        expect(content.center.dx, closeTo(bar.center.dx, .01));
+        expect(content.left - bar.left, closeTo(expectedMargin, .01));
+        expect(bar.right - content.right, closeTo(expectedMargin, .01));
+        expect(tester.takeException(), isNull);
+      }
+    }
+  });
+
+  testWidgets('compact list keeps its edge channel draggable by touch', (
+    tester,
+  ) async {
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      _app(
+        platform: TargetPlatform.android,
+        child: ListView.builder(
+          controller: controller,
+          padding: const EdgeInsets.all(16),
+          itemCount: 30,
+          itemBuilder: (_, index) => SizedBox(
+            key: ValueKey('paddedRow_$index'),
+            width: double.infinity,
+            height: 48,
+            child: Text('Item $index'),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final bar = tester.getRect(_persistentBar);
+    final first = tester.getRect(find.byKey(const ValueKey('paddedRow_0')));
+    expect(first.center.dx, closeTo(bar.center.dx, .01));
+    expect(first.width, closeTo(bar.width - 40, .01));
+    final gesture = await tester.startGesture(
+      Offset(bar.right - 6, bar.top + 20),
+    );
+    await tester.pump();
+    await gesture.moveBy(const Offset(0, 40));
+    await tester.pump(const Duration(milliseconds: 16));
+    await gesture.moveBy(const Offset(0, 60));
+    await tester.pump(const Duration(milliseconds: 16));
+    await gesture.up();
+    await tester.pumpAndSettle();
+    expect(controller.offset, greaterThan(200));
+
+    controller.jumpTo(0);
+    await tester.pumpAndSettle();
+    await tester.dragFrom(
+      Offset(bar.center.dx, bar.top + 180),
+      const Offset(0, -100),
+    );
+    await tester.pumpAndSettle();
+    expect(controller.offset, greaterThan(0));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('compact explicit left scrollbar respects safe insets and RTL', (
+    tester,
+  ) async {
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      _app(
+        platform: TargetPlatform.iOS,
+        child: MediaQuery(
+          data: const MediaQueryData(
+            size: Size(320, 240),
+            padding: EdgeInsets.only(left: 12, right: 4),
+          ),
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scrollbar(
+              key: const ValueKey('safeLeftBar'),
+              controller: controller,
+              thumbVisibility: true,
+              scrollbarOrientation: ScrollbarOrientation.left,
+              child: ListView(
+                controller: controller,
+                padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
+                children: const [
+                  SizedBox(
+                    key: ValueKey('safePaddedRow'),
+                    width: double.infinity,
+                    height: 900,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final content = tester.getRect(find.byKey(const ValueKey('safePaddedRow')));
+    final bar = tester.getRect(find.byKey(const ValueKey('safeLeftBar')));
+    expect(content.left - bar.left, closeTo(32, .01));
+    expect(bar.right - content.right, closeTo(24, .01));
+    expect(find.byType(Scrollbar), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('padded pages stay centered at and beyond the old breakpoint', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    for (final width in [600.0, 800.0, 1200.0]) {
+      tester.view.physicalSize = Size(width, 600);
+      await tester.pumpWidget(
+        _app(
+          width: width,
+          platform: TargetPlatform.windows,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: const SizedBox(
+              key: ValueKey('widePage'),
+              width: double.infinity,
+              height: 900,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final content = tester.getRect(find.byKey(const ValueKey('widePage')));
+      final bar = tester.getRect(_persistentBar);
+      expect(content.center.dx, closeTo(bar.center.dx, .01));
+      expect(content.left - bar.left, closeTo(20, .01));
+      expect(bar.right - content.right, closeTo(20, .01));
+      expect(tester.takeException(), isNull);
+    }
   });
 
   testWidgets('horizontal controls keep their component-specific behavior', (

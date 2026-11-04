@@ -561,7 +561,9 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
                     children: [
                       _intField(
                         controller: _startWaveCtrl,
-                        label: l10n?.startingWave ?? 'Starting wave',
+                        label:
+                            l10n?.startingWave ??
+                            'Starting wave (StartingWave)',
                         onChanged: (v) {
                           final n = int.tryParse(v);
                           if (n != null) _updateFirstGroup(startingWave: n);
@@ -570,7 +572,9 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
                       const SizedBox(height: 8),
                       _intField(
                         controller: _startPointsCtrl,
-                        label: l10n?.startingPoints ?? 'Starting points',
+                        label:
+                            l10n?.startingPoints ??
+                            'Starting points (StartingPoints)',
                         onChanged: (v) {
                           final n = int.tryParse(v);
                           if (n != null) _updateFirstGroup(startingPoints: n);
@@ -579,7 +583,9 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
                       const SizedBox(height: 8),
                       _intField(
                         controller: _pointIncrementCtrl,
-                        label: l10n?.pointIncrement ?? 'Point increment',
+                        label:
+                            l10n?.pointIncrement ??
+                            'Point increment (PointIncrementPerWave)',
                         onChanged: (v) {
                           final n = int.tryParse(v);
                           if (n != null) _updateFirstGroup(pointIncrement: n);

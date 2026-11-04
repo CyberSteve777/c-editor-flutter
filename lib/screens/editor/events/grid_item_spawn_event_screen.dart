@@ -435,7 +435,7 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
                       EditorResponsiveInputField(
                         label:
                             l10n?.zombieSpawnWaitSec ??
-                            'Zombie spawn wait (seconds)',
+                            'Zombie spawn wait (ZombieSpawnWaitTime; seconds)',
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                         ),
@@ -458,8 +458,9 @@ class _GridItemSpawnEventScreenState extends State<GridItemSpawnEventScreen> {
               ),
               const SizedBox(height: 16),
               EditorResponsiveActionRow(
+                breakpoint: 0,
                 content: Text(
-                  l10n?.gridTypes ?? 'Grid types',
+                  l10n?.gridTypes ?? 'Grid item types (GridTypes)',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleMedium?.copyWith(

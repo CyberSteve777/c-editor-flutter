@@ -26,7 +26,6 @@ class StartupLoadingScreen extends StatelessWidget {
 
   static const _barHeight = 6.0;
   static const _labelGap = 8.0;
-  static const _labelReserve = 64.0;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +51,6 @@ class StartupLoadingScreen extends StatelessWidget {
             color: accent,
           );
           final rowHeight = math.max(20.0, labelStyle.fontSize! + 8);
-          final barTop = (rowHeight - _barHeight) / 2;
           final categoryLabel =
               loadingCategory == BootstrapLoadingCategory.plugins &&
                   pluginResourcesCompleted != null &&
@@ -68,12 +66,7 @@ class StartupLoadingScreen extends StatelessWidget {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 320),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    24,
-                    24,
-                    24 + _labelReserve,
-                    24,
-                  ),
+                  padding: const EdgeInsets.all(24),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -97,47 +90,23 @@ class StartupLoadingScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          final barWidth = constraints.maxWidth;
-
-                          return SizedBox(
-                            width: barWidth,
-                            height: rowHeight,
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Positioned(
-                                  left: 0,
-                                  width: barWidth,
-                                  top: barTop,
-                                  height: _barHeight,
-                                  child: LinearProgressIndicator(
-                                    value: progress > 0 ? clamped : null,
-                                    minHeight: _barHeight,
-                                    borderRadius: BorderRadius.circular(999),
-                                    color: accent,
-                                    backgroundColor: accent.withValues(
-                                      alpha: 0.18,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  left: barWidth + _labelGap,
-                                  top: 0,
-                                  height: rowHeight,
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      percentLabel,
-                                      style: labelStyle,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                      ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: rowHeight),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: LinearProgressIndicator(
+                                value: progress > 0 ? clamped : null,
+                                minHeight: _barHeight,
+                                borderRadius: BorderRadius.circular(999),
+                                color: accent,
+                                backgroundColor: accent.withValues(alpha: 0.18),
+                              ),
                             ),
-                          );
-                        },
+                            const SizedBox(width: _labelGap),
+                            Text(percentLabel, style: labelStyle),
+                          ],
+                        ),
                       ),
                       if (categoryLabel != null) ...[
                         const SizedBox(height: 12),

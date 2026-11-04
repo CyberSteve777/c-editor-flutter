@@ -15,6 +15,7 @@ import 'package:c_editor/screens/editor/modules/roof_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/seed_bank_properties_screen.dart';
 import 'package:c_editor/screens/editor/modules/tunnel_defend_module_screen.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/app_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -1048,6 +1049,7 @@ void main() {
 
     expect(find.textContaining('after'), findsOneWidget);
     expect(find.textContaining('before'), findsNothing);
+    AppMessage.hide();
     expect(tester.takeException(), isNull);
   });
 }

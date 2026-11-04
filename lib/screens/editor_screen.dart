@@ -853,6 +853,9 @@ class _EditorScreenState extends State<EditorScreen> {
         builder: (context) => ModuleSelectionScreen(
           existingObjClasses: existingObjClasses,
           stateBucketId: '$_selectionStateBucketId:module-selection',
+          levelFile: _ec.state.levelFile,
+          onSelectStage: () =>
+              _openStageSelection(levelDef: _ec.state.parsedData!.levelDef!),
         ),
       ),
     );

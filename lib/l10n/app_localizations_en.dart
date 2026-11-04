@@ -101,6 +101,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sunDroppingInactive => 'Sun doesn\'t fall from the sky';
 
   @override
+  String get peaSymbiosisActive => 'Pea Symbiosis: enabled';
+
+  @override
+  String get peaSymbiosisInactive => 'Pea Symbiosis: disabled';
+
+  @override
   String get conveyorChanges => 'Changes in the conveyor';
 
   @override
@@ -1544,7 +1550,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get jitterOffsetsFixedOffsetDescription =>
-      'Commonly used in Two-Player Mode; the default is 0. A value of 0 uses the Spawn Position Offset preset and spawn formation preset. A nonzero value temporarily disables both but preserves their settings; restoring 0 enables them again. Fixed offsets accumulate in the event\'s zombie-list order without restarting for each row, while each zombie retains its own base position. The first zombie has no fixed offset; each following zombie receives one more entered increment. Even a tiny nonzero value or an event with only one zombie disables both presets.\nA positive fixed offset value moves zombies right, a negative value moves them left, and decimal fractions are preserved. Facing does not reverse this direction, so use this setting carefully with mixed rows or facings. For example, 8.5 moves the first three zombies right by 0, 8.5, and 17 from their own base positions.\nThis setting changes only horizontal position, not the number created. Excessively large magnitudes may place zombies far outside or too deeply inside the lawn, preventing normal entry or causing settlement problems.';
+      'Commonly used in Two-Player Mode; the default is 0. A value of 0 uses the Spawn Position Offset preset and spawn formation preset. A nonzero value temporarily disables both but preserves their settings; restoring 0 enables them again. Fixed offsets accumulate in the event\'s zombie-list order without restarting for each row, while each zombie retains its own base position. The first zombie has no fixed offset; each following zombie receives one more entered increment. Even a tiny nonzero value or an event with only one zombie disables both presets.\nA positive fixed offset value moves zombies right, a negative value moves them left, and decimal fractions are preserved. Facing does not reverse this direction, so use this setting carefully with mixed rows or facings. For example, 8.5 moves the first three zombies right by 0, 8.5, and 17 from their own base positions. Note that 8.5 uses game coordinate units, not tiles. Since 8.5 is much smaller than the default cumulative offset increment of 80 within a row, zombies in the same row with nearby base positions will usually appear tightly packed.\nThis setting changes only horizontal position, not the number created. Excessively large magnitudes may place zombies far outside or too deeply inside the lawn, preventing normal entry or causing settlement problems.';
 
   @override
   String get jitterOffsetsFixedOffsetInvalid => 'Enter a valid number.';
@@ -2275,7 +2281,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get levelNumber => 'Level number';
 
   @override
-  String get startingSun => 'Starting Sun';
+  String get startingSun => 'Starting sun';
 
   @override
   String get startingPlantfood => 'Starting Plant Food';
@@ -2467,6 +2473,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectStage => 'Select lawn';
+
+  @override
+  String get switchStage => 'Switch lawn';
 
   @override
   String get searchStage => 'Search by lawn name or codename';
@@ -4071,10 +4080,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gridItemLayout => 'Grid item layout';
 
   @override
-  String get zombieCount => 'Total count (Total)';
+  String get zombieCount => 'Total count (ZombieCount)';
 
   @override
-  String get timeBeforeSpawn => 'Time before full spawn (seconds)';
+  String get timeBeforeSpawn =>
+      'Time before full spawn (TimeBeforeFullSpawn; seconds)';
 
   @override
   String get waterBoundaryColumn => 'Column Offset (ChangeAmount)';
@@ -5966,10 +5976,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get basicParameters => 'Basic parameters';
 
   @override
-  String get zombieSpawnWaitSec => 'Spawn delay (seconds) ';
+  String get zombieSpawnWaitSec => 'Spawn delay (ZombieSpawnWaitTime; seconds)';
 
   @override
-  String get gridTypes => 'Grid item types';
+  String get gridTypes => 'Grid item types (GridTypes)';
 
   @override
   String zombiesCount(int count) {
@@ -6226,7 +6236,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'When enabled, placed zombies belong to the plant faction and can be used in \"Zombie Wars\" (ZvZ) gameplay.';
 
   @override
-  String get initialWeight => 'Initial weight';
+  String get initialWeight => 'Initial weight (Weight)';
 
   @override
   String get plantLevelLabel => 'Plant level';
@@ -6403,7 +6413,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get maxLimits => 'Max limits';
 
   @override
-  String get maxCountThreshold => 'Max count threshold';
+  String get maxCountThreshold => 'Max count threshold (MaxCount)';
 
   @override
   String get weightFactor => 'Post-threshold weight multiplier';
@@ -6412,7 +6422,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get minLimits => 'Min limits';
 
   @override
-  String get minCountThreshold => 'Min count threshold';
+  String get minCountThreshold => 'Min count threshold (MinCount)';
 
   @override
   String get followAccountLevel =>
@@ -6433,13 +6443,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pointSettings => 'Point settings';
 
   @override
-  String get startingWave => 'Starting wave';
+  String get startingWave => 'Starting wave (StartingWave)';
 
   @override
-  String get startingPoints => 'Starting points';
+  String get startingPoints => 'Starting points (StartingPoints)';
 
   @override
-  String get pointIncrement => 'Point increase per wave';
+  String get pointIncrement =>
+      'Point increase per wave (PointIncrementPerWave)';
 
   @override
   String get zombiePool => 'Zombie pool';
@@ -7441,7 +7452,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wizardCauldronHelpUsage =>
-      'Click an empty cell to place a Wizard Cauldron, with at most one cauldron per cell. Right-click on desktop or long-press on mobile to remove the cauldron in that cell.\nAfter placing a cauldron, you can customize its health, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.';
+      'Click an empty cell to place a Wizard Cauldron, with at most one cauldron per cell.\nAfter placing a cauldron, you can customize its health, boiling time after Plant Food, explosion damage to plants and zombies, venom duration, and venom damage per second.';
 
   @override
   String get wizardCauldronPositions => 'Cauldron placement positions';
@@ -8832,7 +8843,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mechanismPlankEditNotice =>
-      'This interface only supports editing the starting column and track length. All other parameters use preset values, as modifying them may cause Connected Minecarts to malfunction. For further customization, please edit the JSON file manually.\nAdditionally, Connected Minecarts are not recommended outside of Kongfu World, as they are more likely to appear as purple X markers. This does not affect their actual functionality, but it may impact the level\'s visual presentation.';
+      'This interface only supports editing the starting column and track length. All other parameters use preset values, as modifying them may cause Connected Minecarts to malfunction. For further customization, please edit the JSON file manually.';
+
+  @override
+  String get mechanismPlankStageRequiredMessage =>
+      'To select this module, switch the base lawn to \"Kongfu World\", as only Kongfu World\'s objclass can properly load the connected minecart track textures.\nIf you want to use connected minecarts on a lawn with another world\'s appearance, it is recommended to customize a Kongfu World lawn instead.';
 
   @override
   String get mechanismPlankOutOfAreaWarning =>
@@ -9959,6 +9974,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gladiatorWave => 'Trigger wave (Wave, starts at 0)';
 
   @override
+  String gladiatorDuplicateWaveHint(int group) {
+    return 'Only one Gladiatorial Row can be configured per wave. A Gladiatorial Row has already been configured for this wave in Group $group; subsequent settings will not take effect.';
+  }
+
+  @override
   String get gladiatorRow => 'Row (Row, starts at 0)';
 
   @override
@@ -10040,7 +10060,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gladiatorHelpUsage =>
-      'The duel duration, Plant Food reward and penalty drop settings above, along with the penalty zombie pool and weights below, are global settings shared by every duel in this module.\nSelect \"Add duel\" to configure an individual duel. When you add a zombie, its resource groups are automatically added to the module.\nThe wave (Wave), row (Row) and spawn column (GridX) are all numbered from 0: Wave 0 corresponds to timeline wave 1, and Wave 4 to wave 5.\nThe editor defaults to trophy duel mode (GameplayVersion 1). Setting it to 0 enables a different, retired duel mode, which you can explore through manual editing.';
+      'The duel duration, Plant Food reward and penalty drop settings above, along with the penalty zombie pool and weights below, are global settings shared by every duel in this module.\nSelect \"Add duel\" to configure an individual duel. When you add a zombie, its resource groups are automatically added to the module.\nThe wave (Wave), row (Row) and spawn column (GridX) are all numbered from 0: Wave 0 corresponds to timeline wave 1, and Wave 4 to wave 5. Only one Gladiatorial Row can be configured per wave.\nThe editor defaults to trophy duel mode (GameplayVersion 1). Setting it to 0 enables a different, retired duel mode, which you can explore through manual editing.';
 
   @override
   String get gladiatorHelpTips =>
@@ -10249,11 +10269,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pumpkinScarecrowSpawnCount => 'Scarecrow spawn count (Count)';
 
   @override
-  String get pumpkinScarecrowCrowLevel => 'Crow level (Level, 0-index)';
+  String get pumpkinScarecrowCrowLevel => 'Crow level (Level)';
 
   @override
   String get pumpkinScarecrowHelpOverview =>
-      'Places Pumpkin Scarecrows at selected positions, commonly used in Haunting Halloween levels. Crows periodically fly off the scarecrows to carry away plants. Each departing crow is replaced by a new one flying in from outside the lawn, so crows will continue to appear until the scarecrow is destroyed. The health of each scarecrow and the level of its summoned crows can be customized in this event.';
+      'Places Pumpkin Scarecrows at selected positions, commonly used in Haunting Halloween levels. Crows periodically fly off the scarecrows to carry away plants. Each departing crow is replaced by a new one flying in from outside the lawn, so crows will continue to appear until the scarecrow is destroyed. The health of each scarecrow and the level of its summoned crows can be customized in this event (Level 0 follows the lawn’s default level, which is Level 1 in Creative Courtyard).';
 
   @override
   String get pumpkinScarecrowHelpLogic =>
