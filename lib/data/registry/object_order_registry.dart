@@ -125,6 +125,7 @@ class ObjectOrderRegistry {
     'SpiderRainZombieSpawnerProps',
     'ParachuteRainZombieSpawnerProps',
     'BassRainZombieSpawnerProps',
+    'HeianNinjaZombieSpawnerProps',
     'SpawnModernPortalsWaveActionProps',
     'FrostWindWaveActionProps',
     'DinoWaveActionProps',
