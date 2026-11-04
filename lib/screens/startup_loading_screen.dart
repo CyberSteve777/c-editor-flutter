@@ -26,6 +26,9 @@ class StartupLoadingScreen extends StatelessWidget {
 
   static const _barHeight = 6.0;
   static const _labelGap = 8.0;
+  /// Widest percent strings we expect with [toStringAsFixed(2)]; used so the
+  /// bar width stays fixed while the live label text changes during load.
+  static const _percentWidthSamples = ['100.00%', '88.88%', '00.00%'];
 
   @override
   Widget build(BuildContext context) {
@@ -90,23 +93,67 @@ class StartupLoadingScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      ConstrainedBox(
-                        constraints: BoxConstraints(minHeight: rowHeight),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: LinearProgressIndicator(
-                                value: progress > 0 ? clamped : null,
-                                minHeight: _barHeight,
-                                borderRadius: BorderRadius.circular(999),
-                                color: accent,
-                                backgroundColor: accent.withValues(alpha: 0.18),
-                              ),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final textDirection = Directionality.of(context);
+                          final textScaler = MediaQuery.textScalerOf(context);
+                          var labelWidth = 0.0;
+                          for (final sample in _percentWidthSamples) {
+                            final painter = TextPainter(
+                              text: TextSpan(text: sample, style: labelStyle),
+                              textDirection: textDirection,
+                              textScaler: textScaler,
+                            )..layout();
+                            labelWidth = math.max(labelWidth, painter.width);
+                          }
+                          // Balance the trailing percent with an equal leading
+                          // gap so the bar stays centered under the logo.
+                          // Clamp when large text scale would otherwise crush
+                          // the bar to zero width.
+                          const minBarWidth = 32.0;
+                          final maxSide =
+                              ((constraints.maxWidth -
+                                          (2 * _labelGap) -
+                                          minBarWidth) /
+                                      2)
+                                  .clamp(0.0, double.infinity);
+                          final side = math.min(labelWidth, maxSide);
+
+                          return ConstrainedBox(
+                            constraints: BoxConstraints(minHeight: rowHeight),
+                            child: Row(
+                              children: [
+                                SizedBox(width: side),
+                                const SizedBox(width: _labelGap),
+                                Expanded(
+                                  child: LinearProgressIndicator(
+                                    value: progress > 0 ? clamped : null,
+                                    minHeight: _barHeight,
+                                    borderRadius: BorderRadius.circular(999),
+                                    color: accent,
+                                    backgroundColor: accent.withValues(
+                                      alpha: 0.18,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: _labelGap),
+                                SizedBox(
+                                  width: side,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerRight,
+                                    child: Text(
+                                      percentLabel,
+                                      style: labelStyle,
+                                      maxLines: 1,
+                                      softWrap: false,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: _labelGap),
-                            Text(percentLabel, style: labelStyle),
-                          ],
-                        ),
+                          );
+                        },
                       ),
                       if (categoryLabel != null) ...[
                         const SizedBox(height: 12),
