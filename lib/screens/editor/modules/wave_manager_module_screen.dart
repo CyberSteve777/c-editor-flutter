@@ -11,6 +11,7 @@ import 'package:c_editor/widgets/asset_image.dart'
     show AssetImageWidget, imageAltCandidates;
 import 'package:c_editor/widgets/editor_components.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
+import 'package:c_editor/widgets/wave_flag_strip.dart';
 
 /// Wave manager module editor. Ported from WaveManagerModulesPropertiesEP.kt
 class WaveManagerModuleScreen extends StatefulWidget {
@@ -155,6 +156,19 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
         );
         return;
       }
+      if (!ZombiePropertiesRepository.canSpawnFromPoints(selectedId)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l10n?.pointSpawnOnlyZombiesBlocked ??
+                  'This zombie has no WavePointCost data, so the game '
+                      'cannot buy it from a point budget, and it cannot '
+                      'be added to the pool.',
+            ),
+          ),
+        );
+        return;
+      }
       final aliases = ZombieRepository().buildZombieAliases(selectedId);
       final rtid = RtidParser.build(aliases, 'ZombieTypes');
       _firstGroup.zombiePool.add(rtid);
@@ -277,6 +291,23 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
       _data.waveManagerProps ?? 'null',
     );
     final showPropsFixButton = !isPropsValid && actualWaveMgrAlias != null;
+
+    // Waves of the linked WaveManagerProperties object, used by the flag
+    // strip below the props card.
+    WaveManagerData? linkedWaveManager;
+    try {
+      final objData = propsObj.objData;
+      if (objData is Map) {
+        linkedWaveManager = WaveManagerData.fromJson(
+          Map<String, dynamic>.from(objData),
+        );
+      }
+    } catch (_) {
+      linkedWaveManager = null;
+    }
+    final linkedWaves = linkedWaveManager?.waves ?? const <List<String>>[];
+    final rawFlagInterval = linkedWaveManager?.flagWaveInterval ?? 0;
+    final linkedFlagInterval = rawFlagInterval <= 0 ? 10 : rawFlagInterval;
 
     Widget buildPropsDetails() {
       return Column(
@@ -484,6 +515,18 @@ class _WaveManagerModuleScreenState extends State<WaveManagerModuleScreen> {
               ),
             ),
             const SizedBox(height: 16),
+            if (linkedWaves.isNotEmpty) ...[
+              // Small fixed green strip over the level's waves: one equal
+              // (invisible) segment per wave, visible flags on flag waves.
+              // Wave 1 maps to the right edge, the final wave (always a
+              // flag wave) to the left edge.
+              WaveFlagStrip(
+                waveCount: linkedWaves.length,
+                isFlagWave: (w) =>
+                    w % linkedFlagInterval == 0 || w == linkedWaves.length,
+              ),
+              const SizedBox(height: 16),
+            ],
             Card(
               color: contentCardColor,
               child: Padding(

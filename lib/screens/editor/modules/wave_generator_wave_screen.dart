@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/custom_zombie_level_utils.dart';
 import 'package:c_editor/data/level_parser.dart';
 import 'package:c_editor/data/pvz_models.dart';
+import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
 import 'package:c_editor/data/wave_generator_level_utils.dart';
@@ -28,6 +29,7 @@ class WaveGeneratorWaveScreen extends StatefulWidget {
     required this.onChanged,
     required this.onBack,
     required this.onRequestZombieSelection,
+    this.onRequestPoolZombieSelection,
   });
 
   /// 1-based wave index.
@@ -37,6 +39,11 @@ class WaveGeneratorWaveScreen extends StatefulWidget {
   final VoidCallback onBack;
   final void Function(void Function(String) onSelected)
   onRequestZombieSelection;
+
+  /// Point-budget pool adds use this callback (blocks non-point-spawnable
+  /// zombies); falls back to [onRequestZombieSelection] when not set.
+  final void Function(void Function(String) onSelected)?
+  onRequestPoolZombieSelection;
 
   @override
   State<WaveGeneratorWaveScreen> createState() =>
@@ -567,7 +574,9 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
 
   void _addPoolEntry() {
     final l10n = AppLocalizations.of(context);
-    widget.onRequestZombieSelection((selectedId) {
+    final requestSelection =
+        widget.onRequestPoolZombieSelection ?? widget.onRequestZombieSelection;
+    requestSelection((selectedId) {
       if (_isYetiZombie(selectedId)) {
         _showYetiZombieBlockedMessage(l10n);
         return;
@@ -578,6 +587,19 @@ class _WaveGeneratorWaveScreenState extends State<WaveGeneratorWaveScreen> {
             content: Text(
               l10n?.eliteZombiesNotAllowed ??
                   'Elite zombies are not allowed here',
+            ),
+          ),
+        );
+        return;
+      }
+      if (!ZombiePropertiesRepository.canSpawnFromPoints(selectedId)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l10n?.pointSpawnOnlyZombiesBlocked ??
+                  'This zombie has no WavePointCost data, so the game '
+                      'cannot buy it from a point budget, and it cannot '
+                      'be added to the pool.',
             ),
           ),
         );

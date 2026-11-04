@@ -1989,6 +1989,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Генератор волн хранит данные волн внутри модуля и не может использоваться вместе с отдельным контейнером менеджера волн.';
 
   @override
+  String get conflictDesc_WaveGeneratorLevelEscalation =>
+      'Модуль Level Escalation масштабирует уровни зомби на основе волн из системы менеджера волн, поэтому его нельзя использовать вместе с генератором волн.';
+
+  @override
   String conflictDesc_CamelMinigameNonTouchZombies(String zombies) {
     return '«Память мумии» поддерживает только специальных зомби-верблюдов этой мини-игры. Обнаружены другие зомби: $zombies. Их появление на уровне приведёт к вылету игры. Замените или удалите их.';
   }
@@ -2538,6 +2542,80 @@ class AppLocalizationsRu extends AppLocalizations {
       'Рост стоимости солнца при посадке';
 
   @override
+  String get moduleTitle_LevelEscalationModuleProperties =>
+      'Эскалация сложности';
+
+  @override
+  String get moduleDesc_LevelEscalationModuleProperties =>
+      'Усложняет уровень по флажкам: очки растут с каждой волной, а новые зомби попадают в пул';
+
+  @override
+  String get flagCount => 'Количество флажков';
+
+  @override
+  String get wavesPerFlag => 'Волн на флажок';
+
+  @override
+  String get plantfoodToSpawnCount => 'Количество выпадений питания растений';
+
+  @override
+  String levelEscalationTotalWaves(int count) {
+    return 'Всего волн эскалации: $count';
+  }
+
+  @override
+  String get levelEscalationFlagCountShort => 'Флаги';
+
+  @override
+  String get levelEscalationFlagIntervalShort => 'Интервал';
+
+  @override
+  String get expectationNoAffordableZombies =>
+      'Ни один зомби из пула этой волны нельзя купить за её очки.';
+
+  @override
+  String get levelEscalationHelpOverviewBody =>
+      'Добавляет на уровень эскалацию сложности на основе очков. Волны сгруппированы в флажки; с каждой новой волной выдаётся больше очков, а очки тратятся на появление зомби из пула. Количество выпадений питания растений ограничено настроенным значением.';
+
+  @override
+  String get levelEscalationHelpFieldsBody =>
+      'Количество флажков (FlagCount) — число флажков на уровне, а волн на флажок (WavesPerFlag) — число волн в каждом флажке; вместе они дают общее число волн.\nСтартовые очки (StartingPoints) — начальный пул очков, а прирост очков за волну (PointIncrementPerWave) — сколько дополнительных очков выдаётся за каждую новую волну.\nКоличество выпадений питания растений (PlantfoodToSpawnCount) ограничивает число выпадений питания растений.\nПул зомби (ZombiePool) — список типов зомби, которые могут появиться за очки, а ссылка на волны (WaveManagerProps) связывает модуль с объектом WaveManagerProperties уровня.';
+
+  @override
+  String get levelEscalationHelpLevelsTitle => 'Уровни зомби';
+
+  @override
+  String get levelEscalationHelpLevelsBody =>
+      'В модуле нельзя задать уровни зомби (ZombieLevel): каждый зомби из пула всегда появляется первого уровня.';
+
+  @override
+  String get levelEscalationPredict => 'Предсказание по очкам';
+
+  @override
+  String get levelEscalationPredictHint =>
+      'Показывает ожидаемое количество зомби по каждой волне для настроенного пула.';
+
+  @override
+  String get levelEscalationPredictShow => 'Показать предсказание';
+
+  @override
+  String waveManagerExpectationMissingData(String types) {
+    return 'У следующих зомби нет надёжных данных WavePointCost, поэтому они не учитываются: $types';
+  }
+
+  @override
+  String get pointSpawnOnlyZombiesBlocked =>
+      'У этого зомби нет данных WavePointCost — игра не может покупать его за очки, и добавить его в пул нельзя.';
+
+  @override
+  String get pointSpawnOnlyZombieBlockedTitle =>
+      'Нельзя добавить в автоспавнер за очки';
+
+  @override
+  String get pointSpawnOnlyZombieBlockedMessage =>
+      'У этого зомби нет данных о стоимости очков волны (WavePointCost), поэтому игра не может покупать его в автоспавнере за очки.';
+
+  @override
   String get moduleTitle_DeathHoleModuleProperties => 'Кратеры';
 
   @override
@@ -3062,6 +3140,35 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get eventDesc_ThunderWaveActionProps =>
       'Молнии во время волны (с положительными/отрицательными зарядами)';
+
+  @override
+  String get eventTitle_ZombieAirbubbleActionProps => 'Дождь из пузырей';
+
+  @override
+  String get eventDesc_ZombieAirbubbleActionProps =>
+      'Пузыри падают с неба: количество, прочность и скорость падения';
+
+  @override
+  String get eventAirbubble => 'Событие: дождь из пузырей';
+
+  @override
+  String get eventHelpAirbubbleWaveBody =>
+      'Добавляет эффект волны, при котором сверху падают пузыри. У каждого пузыря есть своя прочность, а диапазон скоростей задаёт, как быстро они падают.';
+
+  @override
+  String get airbubbleParameters => 'Параметры дождя из пузырей';
+
+  @override
+  String get airbubbleBubbleNumber => 'Количество пузырей (BubbleNumber)';
+
+  @override
+  String get airbubbleBubbleHealth => 'Прочность пузыря (BubbleHealth)';
+
+  @override
+  String get airbubbleSpeedRangeMin => 'Мин. скорость падения (SpeedRangeMin)';
+
+  @override
+  String get airbubbleSpeedRangeMax => 'Макс. скорость падения (SpeedRangeMax)';
 
   @override
   String get eventTitle_MagicMirrorWaveActionProps => 'Волшебное зеркало';
@@ -5944,6 +6051,9 @@ class AppLocalizationsRu extends AppLocalizations {
       'Объект WaveManagerProperties не найден.';
 
   @override
+  String get levelEscalationAddWaveTimeline => 'Добавить таймлайн волн';
+
+  @override
   String get itemsSortedByRow => 'Предметы (по рядам)';
 
   @override
@@ -8720,7 +8830,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get waveGeneratorExpectationPoolNote =>
-      'Предпросмотр оценивает количество зомби с помощью повторных симуляций взвешенного выбора. Даже при одинаковом числе очков результат может меняться из-за порядка выбора, поэтому точно предсказать фактический призыв в игре невозможно.';
+      'Предпросмотр оценивает количество зомби с помощью повторных симуляций случайных покупок. Даже при одинаковом числе очков результат может меняться из-за порядка выбора, поэтому точно предсказать фактический призыв в игре невозможно.';
 
   @override
   String waveGeneratorExpectationTitle(int wave) {
@@ -8754,7 +8864,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String waveGeneratorExpectationMissingData(String types) {
-    return 'Невозможно рассчитать предпросмотр случайного призыва: у следующих зомби отсутствуют надёжные данные WavePointCost или Weight: $types';
+    return 'Невозможно рассчитать предпросмотр случайного призыва: у следующих зомби отсутствуют надёжные данные WavePointCost: $types';
   }
 
   @override
@@ -8765,6 +8875,16 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String waveGeneratorExpectationCommonRange(int minimum, int maximum) {
     return 'Ожидаемый диапазон количества: $minimum–$maximum';
+  }
+
+  @override
+  String zombieCountWaveEstimate(String count, int minimum, int maximum) {
+    return 'За эту волну: около $count зомби (от $minimum до $maximum)';
+  }
+
+  @override
+  String zombieCountTotalEstimate(String count, int minimum, int maximum) {
+    return 'За все волны суммарно: около $count зомби (от $minimum до $maximum)';
   }
 
   @override

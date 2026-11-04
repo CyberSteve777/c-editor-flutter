@@ -24,9 +24,18 @@ void showWaveGeneratorExpectationDialog(
 }) {
   final l10n = AppLocalizations.of(context);
   final preview = WaveGeneratorPointAnalysis.calculatePreview(data, waveIndex);
-  final items = preview.entries
-      .where((entry) => entry.averageCount > 0)
-      .toList();
+  // Candidates already exclude custom and no-data zombies; rows whose
+  // simulated average rounds to 0.00 for this wave's budget are dropped —
+  // a wave with a richer budget still shows them.
+  final shownItems = [
+    for (final entry in preview.entries)
+      if (entry.averageCount >= 0.005) entry,
+  ];
+  // Summed estimate across every wave of the generator, shown below the
+  // per-wave numbers so the dialog covers a whole playthrough as well.
+  final totalEstimate = preview.canCalculate
+      ? WaveGeneratorPointAnalysis.simulateTotalZombieCount(data)
+      : null;
 
   showDialog<void>(
     context: context,
@@ -45,7 +54,16 @@ void showWaveGeneratorExpectationDialog(
         ),
       ];
 
-      if (preview.missingDataTypes.isNotEmpty) {
+      final missing = preview.missingDataTypes;
+      // Only block the whole preview when nothing was left to simulate;
+      // otherwise the remaining pool zombies are still listed.
+      final blocked =
+          missing.isNotEmpty &&
+          preview.entries.isEmpty &&
+          preview.randomSpawnsEnabled &&
+          preview.points > 0;
+
+      if (blocked) {
         body.addAll([
           const SizedBox(height: 12),
           DecoratedBox(
@@ -56,90 +74,112 @@ void showWaveGeneratorExpectationDialog(
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Text(
-                l10n?.waveGeneratorExpectationMissingData(
-                      preview.missingDataTypes.join(', '),
-                    ) ??
-                    'Preview unavailable because some zombies are missing WavePointCost or Weight data: ${preview.missingDataTypes.join(', ')}',
+                l10n?.waveGeneratorExpectationMissingData(missing.join(', ')) ??
+                    'Preview unavailable because some zombies are missing WavePointCost data: ${missing.join(', ')}',
                 style: TextStyle(color: theme.colorScheme.onErrorContainer),
               ),
             ),
           ),
         ]);
-      } else if (!preview.randomSpawnsEnabled) {
-        body.addAll([
-          const SizedBox(height: 12),
-          Text(
-            l10n?.waveGeneratorExpectationDisabled ??
-                'Random spawning is disabled on this wave.',
-          ),
-        ]);
-      } else if (preview.poolIsEmpty || preview.points <= 0) {
-        body.addAll([
-          const SizedBox(height: 12),
-          Text(
-            l10n?.waveGeneratorExpectationEmpty ??
-                'No eligible pool zombies for random spawns on this wave.',
-            style: theme.textTheme.bodySmall,
-          ),
-        ]);
       } else {
         body.addAll([
-          const SizedBox(height: 8),
-          Text(
-            l10n?.waveGeneratorExpectationEstimatedTotal(
-                  preview.averageTotal.toStringAsFixed(1),
-                ) ??
-                'Estimated random spawns: about ${preview.averageTotal.toStringAsFixed(1)}',
-            style: summaryStyle,
-          ),
-          if (preview.commonMinimum != preview.commonMaximum) ...[
-            const SizedBox(height: 4),
+          if (missing.isNotEmpty) ...[
+            const SizedBox(height: 12),
             Text(
-              l10n?.waveGeneratorExpectationCommonRange(
-                    preview.commonMinimum,
-                    preview.commonMaximum,
-                  ) ??
-                  'Common range: ${preview.commonMinimum}–${preview.commonMaximum}',
-              style: summaryStyle,
+              l10n?.waveManagerExpectationMissingData(missing.join(', ')) ??
+                  'These zombies lack reliable WavePointCost data and are not counted: ${missing.join(', ')}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
+              ),
             ),
           ],
-          const SizedBox(height: 8),
-          Text(
-            l10n?.waveGeneratorExpectationPoolNote ??
-                'This is a stable statistical preview of repeated weighted purchases from the current effective pool, not a prediction of the game RNG.',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+          if (!preview.randomSpawnsEnabled) ...[
+            const SizedBox(height: 12),
+            Text(
+              l10n?.waveGeneratorExpectationDisabled ??
+                  'Random spawning is disabled on this wave.',
             ),
-          ),
-          const SizedBox(height: 12),
-          for (final entry in items)
-            Builder(
-              builder: (context) {
-                final typeName = entry.id;
-                final info = ZombieRepository().getZombieById(typeName);
-                final nameKey =
-                    info?.name ?? ZombieRepository().getName(typeName);
-                final displayName = ResourceNames.lookup(ctx, nameKey);
-                final iconPath = info?.iconAssetPath ?? _kUnknownIconPath;
-                return _ExpectationZombieEntryTile(
-                  iconSize: iconSize,
-                  iconPath: iconPath,
-                  displayName: displayName.isNotEmpty ? displayName : typeName,
-                  typeName: typeName,
-                  costWeightLabel:
-                      l10n?.waveGeneratorExpectationCostWeight(
-                        entry.cost,
-                        entry.weight.toStringAsFixed(0),
-                      ) ??
-                      'Cost ${entry.cost} · Weight ${entry.weight.toStringAsFixed(0)}',
-                  averageLabel:
-                      l10n?.waveGeneratorExpectationAverageCount(
-                        entry.averageCount.toStringAsFixed(2),
-                      ) ??
-                      'Avg. ${entry.averageCount.toStringAsFixed(2)}',
-                );
-              },
+          ] else if (preview.poolIsEmpty ||
+              preview.points <= 0 ||
+              shownItems.isEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              l10n?.waveGeneratorExpectationEmpty ??
+                  'No eligible pool zombies for random spawns on this wave.',
+              style: theme.textTheme.bodySmall,
             ),
+          ] else ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n?.waveGeneratorExpectationEstimatedTotal(
+                    preview.averageTotal.toStringAsFixed(1),
+                  ) ??
+                  'Estimated random spawns: about ${preview.averageTotal.toStringAsFixed(1)}',
+              style: summaryStyle,
+            ),
+            if (preview.commonMinimum != preview.commonMaximum) ...[
+              const SizedBox(height: 4),
+              Text(
+                l10n?.waveGeneratorExpectationCommonRange(
+                      preview.commonMinimum,
+                      preview.commonMaximum,
+                    ) ??
+                    'Common range: ${preview.commonMinimum}–${preview.commonMaximum}',
+                style: summaryStyle,
+              ),
+            ],
+            if (totalEstimate != null && totalEstimate.average > 0) ...[
+              const SizedBox(height: 6),
+              Text(
+                l10n?.zombieCountTotalEstimate(
+                      totalEstimate.average.toStringAsFixed(1),
+                      totalEstimate.minimum,
+                      totalEstimate.maximum,
+                    ) ??
+                    'All waves combined: about ${totalEstimate.average.toStringAsFixed(1)} zombies (from ${totalEstimate.minimum} to ${totalEstimate.maximum})',
+                style: summaryStyle,
+              ),
+            ],
+            const SizedBox(height: 8),
+            Text(
+              l10n?.waveGeneratorExpectationPoolNote ??
+                  'This is a stable statistical preview of repeated random purchases from the current effective pool, not a prediction of the game RNG.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 12),
+            for (final entry in shownItems)
+              Builder(
+                builder: (context) {
+                  final typeName = entry.id;
+                  final info = ZombieRepository().getZombieById(typeName);
+                  final nameKey =
+                      info?.name ?? ZombieRepository().getName(typeName);
+                  final displayName = ResourceNames.lookup(ctx, nameKey);
+                  final iconPath = info?.iconAssetPath ?? _kUnknownIconPath;
+                  return _ExpectationZombieEntryTile(
+                    iconSize: iconSize,
+                    iconPath: iconPath,
+                    displayName: displayName.isNotEmpty
+                        ? displayName
+                        : typeName,
+                    typeName: typeName,
+                    costWeightLabel:
+                        l10n?.waveGeneratorExpectationCostWeight(
+                          entry.cost,
+                          entry.weight.toStringAsFixed(0),
+                        ) ??
+                        'Cost ${entry.cost} · Weight ${entry.weight.toStringAsFixed(0)}',
+                    averageLabel:
+                        l10n?.waveGeneratorExpectationAverageCount(
+                          entry.averageCount.toStringAsFixed(2),
+                        ) ??
+                        'Avg. ${entry.averageCount.toStringAsFixed(2)}',
+                  );
+                },
+              ),
+          ],
         ]);
       }
 

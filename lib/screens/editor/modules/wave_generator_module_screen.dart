@@ -3,12 +3,14 @@ import 'package:c_editor/widgets/camel_minigame_conflicts.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/registry/issue_registry.dart';
 import 'package:c_editor/data/rtid_parser.dart';
+import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/repository/zombie_repository.dart';
 import 'package:c_editor/data/wave_generator_level_utils.dart';
 import 'package:c_editor/data/zombie_display_utils.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/theme/app_theme.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/wave_flag_strip.dart';
 import 'package:c_editor/widgets/wave_generator_zombie_tile.dart';
 import 'package:c_editor/widgets/editor_object_alias.dart';
 
@@ -184,6 +186,19 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
             content: Text(
               l10n?.eliteZombiesNotAllowed ??
                   'Elite zombies are not allowed here',
+            ),
+          ),
+        );
+        return;
+      }
+      if (!ZombiePropertiesRepository.canSpawnFromPoints(selectedId)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l10n?.pointSpawnOnlyZombiesBlocked ??
+                  'This zombie has no WavePointCost data, so the game '
+                      'cannot buy it from a point budget, and it cannot '
+                      'be added to the pool.',
             ),
           ),
         );
@@ -429,6 +444,23 @@ class _WaveGeneratorModuleScreenState extends State<WaveGeneratorModuleScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
+                    if (_data.waves.isNotEmpty) ...[
+                      // Flag strip over the generator's waves: one equal
+                      // (invisible) segment per wave with visible flags on
+                      // flag waves. Waves run right to left so the final
+                      // flag wave sits at the left edge; the strip updates
+                      // live with the interval field below.
+                      WaveFlagStrip(
+                        waveCount: _data.waves.length,
+                        isFlagWave: (w) {
+                          final interval = _data.flagWaveInterval <= 0
+                              ? 10
+                              : _data.flagWaveInterval;
+                          return w % interval == 0 || w == _data.waves.length;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                    ],
                     _buildLabeledNumberField(
                       controller: _flagIntervalCtrl,
                       label:

@@ -247,6 +247,47 @@ void main() {
     );
 
     testWidgets(
+      '${locale.languageCode}: Wave Generator conflicts with Level Escalation',
+      (tester) async {
+        await _withContext(tester, locale, (context) {
+          final l10n = AppLocalizations.of(context)!;
+          const classes = {
+            'WaveGeneratorProperties',
+            'LevelEscalationModuleProperties',
+          };
+          expect(
+            ConflictRegistry.getActiveConflicts(
+              context,
+              classes,
+            ).map((pair) => pair.second),
+            [l10n.conflictDesc_WaveGeneratorLevelEscalation],
+          );
+          expect(
+            LevelValidator.validate(
+              context,
+              _levelWithModules(classes),
+            ).where((issue) => issue.isError).map((issue) => issue.message),
+            [l10n.conflictDesc_WaveGeneratorLevelEscalation],
+          );
+          // Level Escalation alone or with Wave Manager stays conflict-free.
+          for (final alone in [
+            {'LevelEscalationModuleProperties'},
+            {
+              'LevelEscalationModuleProperties',
+              'WaveManagerModuleProperties',
+              'WaveManagerProperties',
+            },
+          ]) {
+            expect(
+              ConflictRegistry.getActiveConflicts(context, alone),
+              isEmpty,
+            );
+          }
+        });
+      },
+    );
+
+    testWidgets(
       '${locale.languageCode}: Last Stand intro conflict remains with Life Support',
       (tester) async {
         await _withContext(tester, locale, (context) {

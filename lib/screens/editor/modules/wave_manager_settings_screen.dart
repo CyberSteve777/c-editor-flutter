@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/l10n/app_localizations.dart';
 import 'package:c_editor/widgets/editor_components.dart';
+import 'package:c_editor/widgets/wave_flag_strip.dart';
 
 /// Wave manager settings. Ported from Z-Editor-master WaveManagerPropertiesEP.kt
 class WaveManagerSettingsScreen extends StatefulWidget {
@@ -82,6 +83,8 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
     if (n != null && n > 0) {
       _wm.flagWaveInterval = n;
       _save();
+      // Rebuild so the flag strip reflects the new interval live.
+      setState(() {});
     }
   }
 
@@ -197,6 +200,22 @@ class _WaveManagerSettingsScreenState extends State<WaveManagerSettingsScreen> {
               ),
             ),
             const SizedBox(height: 12),
+            if (_wm.waves.isNotEmpty) ...[
+              // Flag strip: one equal (invisible) segment per wave with
+              // visible flags on flag waves; the final wave (always a flag
+              // wave) sits at the left edge. Updates live with the interval
+              // field below.
+              WaveFlagStrip(
+                waveCount: _wm.waves.length,
+                isFlagWave: (w) {
+                  final interval = _wm.flagWaveInterval <= 0
+                      ? 10
+                      : _wm.flagWaveInterval;
+                  return w % interval == 0 || w == _wm.waves.length;
+                },
+              ),
+              const SizedBox(height: 12),
+            ],
             EditorResponsiveInputField(
               label: l10n?.flagInterval ?? 'Flag interval (FlagWaveInterval)',
               builder: (context, decoration) => TextField(

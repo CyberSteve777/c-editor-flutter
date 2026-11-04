@@ -466,6 +466,13 @@ class LevelIssueRegistry {
       conflictingClasses: {'WaveGeneratorProperties', 'WaveManagerProperties'},
       descriptionKey: 'conflictDesc_WaveGeneratorWaveManager',
     ),
+    ModuleConflictRule(
+      conflictingClasses: {
+        'WaveGeneratorProperties',
+        'LevelEscalationModuleProperties',
+      },
+      descriptionKey: 'conflictDesc_WaveGeneratorLevelEscalation',
+    ),
   ];
 
   static final List<LevelIssueRule> rules = [
@@ -993,6 +1000,8 @@ class LevelIssueRegistry {
         return l10n.conflictDesc_WaveGeneratorWaveManagerModule;
       case 'conflictDesc_WaveGeneratorWaveManager':
         return l10n.conflictDesc_WaveGeneratorWaveManager;
+      case 'conflictDesc_WaveGeneratorLevelEscalation':
+        return l10n.conflictDesc_WaveGeneratorLevelEscalation;
       default:
         return key;
     }

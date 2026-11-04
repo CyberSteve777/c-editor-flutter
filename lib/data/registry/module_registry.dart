@@ -199,6 +199,8 @@ class ModuleRegistry {
         return l10n.moduleTitle_IncreasedCostModuleProperties;
       case 'moduleTitle_DeathHoleModuleProperties':
         return l10n.moduleTitle_DeathHoleModuleProperties;
+      case 'moduleTitle_LevelEscalationModuleProperties':
+        return l10n.moduleTitle_LevelEscalationModuleProperties;
       case 'moduleTitle_ZombieMoveFastModuleProperties':
         return l10n.moduleTitle_ZombieMoveFastModuleProperties;
       case 'moduleTitle_InitialPlantProperties':
@@ -383,6 +385,8 @@ class ModuleRegistry {
         return l10n.moduleDesc_IncreasedCostModuleProperties;
       case 'moduleDesc_DeathHoleModuleProperties':
         return l10n.moduleDesc_DeathHoleModuleProperties;
+      case 'moduleDesc_LevelEscalationModuleProperties':
+        return l10n.moduleDesc_LevelEscalationModuleProperties;
       case 'moduleDesc_ZombieMoveFastModuleProperties':
         return l10n.moduleDesc_ZombieMoveFastModuleProperties;
       case 'moduleDesc_InitialPlantProperties':
@@ -960,6 +964,18 @@ class ModuleRegistry {
       defaultAlias: 'DeathHoleModule',
       initialDataFactory: () => DeathHoleModuleData(),
       routeId: 'DeathHoleModule',
+    ),
+    'LevelEscalationModuleProperties': ModuleMetadata(
+      titleKey: 'moduleTitle_LevelEscalationModuleProperties',
+      descriptionKey: 'moduleDesc_LevelEscalationModuleProperties',
+      icon: Icons.stairs,
+      isCore: true,
+      category: ModuleCategory.base,
+      defaultAlias: 'LevelEscalation',
+      initialDataFactory: () => LevelEscalationModuleData(
+        waveManagerProps: 'RTID(WaveManagerProps@CurrentLevel)',
+      ),
+      routeId: 'LevelEscalationModule',
     ),
     'PVZ1PassageModuleProperties': ModuleMetadata(
       titleKey: 'moduleTitle_PVZ1PassageModuleProperties',

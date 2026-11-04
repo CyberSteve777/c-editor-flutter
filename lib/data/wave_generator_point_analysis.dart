@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:c_editor/data/pvz_models.dart';
 import 'package:c_editor/data/repository/zombie_properties_repository.dart';
 import 'package:c_editor/data/rtid_parser.dart';
+import 'package:c_editor/data/zombie_count_simulation.dart';
 
 /// Effective state of one legacy [WaveGeneratorProperties] wave.
 class WaveGeneratorWaveState {
@@ -80,15 +81,14 @@ class WaveGeneratorSpawnPreview {
   final int commonMinimum;
   final int commonMaximum;
   final List<WaveGeneratorSpawnPreviewEntry> entries;
+
+  /// Pool zombies without usable WavePointCost data (unknown or custom).
   final List<String> missingDataTypes;
   final bool randomSpawnsEnabled;
   final bool poolIsEmpty;
 
   bool get canCalculate =>
-      randomSpawnsEnabled &&
-      points > 0 &&
-      !poolIsEmpty &&
-      missingDataTypes.isEmpty;
+      randomSpawnsEnabled && points > 0 && entries.isNotEmpty;
 }
 
 /// Shared calculations for the legacy embedded Wave Generator system.
@@ -222,34 +222,37 @@ class WaveGeneratorPointAnalysis {
       final alias = RtidParser.parse(rtid)?.alias ?? rtid;
       final typeName = ZombiePropertiesRepository.getTypeNameByAlias(alias);
       final stats = ZombiePropertiesRepository.getStats(typeName);
-      if (stats.cost <= 0 || stats.weight <= 0) {
+      if (stats.cost <= 0) {
         if (!missingDataTypes.contains(typeName)) {
           missingDataTypes.add(typeName);
         }
         continue;
       }
-      final previous = candidatesByType[typeName];
+      // Weight is not a purchase filter: the game buys affordable pool
+      // entries regardless of their sheet Weight (flag carriers included).
       candidatesByType[typeName] = WaveGeneratorSpawnCandidate(
         id: typeName,
         cost: stats.cost,
-        // Duplicate pool slots retain their historical weight contribution.
-        weight: (previous?.weight ?? 0) + stats.weight.toDouble(),
+        weight: stats.weight.toDouble(),
       );
     }
     return candidatesByType.values.toList();
   }
 
-  /// Simulates the game's repeated affordable-candidate purchase loop.
+  /// Simulates the game's repeated random purchase loop.
   ///
-  /// The same seed produces the same result. Affordability and point deduction
-  /// both use [WaveGeneratorSpawnCandidate.cost] because this project does not
-  /// currently model legacy per-pool Cost/Weight override fields.
+  /// The same seed produces the same result. Every step picks uniformly
+  /// among the affordable candidates: point purchase reads WavePointCost for
+  /// affordability and deduction, and the sheet's Weight does not take part.
+  /// This project does not currently model legacy per-pool Cost/Weight
+  /// override fields.
   static WaveGeneratorSpawnPreview simulateRandomSpawns({
     required int points,
     required int fixedSpawnCount,
     required List<WaveGeneratorSpawnCandidate> candidates,
     int iterations = defaultSimulationIterations,
     int seed = _stablePreviewSeed,
+    List<String> missingDataTypes = const [],
   }) {
     final safeIterations = max(1, iterations);
     final random = Random(seed);
@@ -265,27 +268,12 @@ class WaveGeneratorPointAnalysis {
         final affordable = candidates
             .where(
               (candidate) =>
-                  candidate.cost > 0 &&
-                  candidate.cost <= remainingPoints &&
-                  candidate.weight > 0,
+                  candidate.cost > 0 && candidate.cost <= remainingPoints,
             )
             .toList();
         if (affordable.isEmpty) break;
 
-        final totalWeight = affordable.fold<double>(
-          0,
-          (sum, candidate) => sum + candidate.weight,
-        );
-        if (totalWeight <= 0) break;
-        var choice = random.nextDouble() * totalWeight;
-        var selected = affordable.last;
-        for (final candidate in affordable) {
-          choice -= candidate.weight;
-          if (choice < 0) {
-            selected = candidate;
-            break;
-          }
-        }
+        final selected = affordable[random.nextInt(affordable.length)];
 
         remainingPoints -= selected.cost;
         generated++;
@@ -315,14 +303,14 @@ class WaveGeneratorPointAnalysis {
     return WaveGeneratorSpawnPreview(
       points: points,
       fixedSpawnCount: fixedSpawnCount,
-      iterations: safeIterations,
+      iterations: iterations,
       averageTotal: generatedTotals.isEmpty
           ? 0
           : generatedTotals.reduce((a, b) => a + b) / generatedTotals.length,
       commonMinimum: percentile(0.10),
       commonMaximum: percentile(0.90),
       entries: entries,
-      missingDataTypes: const [],
+      missingDataTypes: missingDataTypes,
       randomSpawnsEnabled: true,
       poolIsEmpty: candidates.isEmpty,
     );
@@ -342,7 +330,9 @@ class WaveGeneratorPointAnalysis {
     final enabled = wave != null && !wave.disableRandomSpawns;
     final fixedCount = wave?.zombies.length ?? 0;
 
-    if (!enabled || points <= 0 || pool.isEmpty || missing.isNotEmpty) {
+    // Zombies without usable cost data are reported but do not block the
+    // preview: every other pool zombie is still simulated and listed.
+    if (!enabled || points <= 0 || pool.isEmpty) {
       return WaveGeneratorSpawnPreview(
         points: points,
         fixedSpawnCount: fixedCount,
@@ -362,8 +352,8 @@ class WaveGeneratorPointAnalysis {
       points,
       fixedCount,
       iterations,
-      for (final candidate in candidates)
-        '${candidate.id}:${candidate.cost}:${candidate.weight}',
+      for (final candidate in candidates) '${candidate.id}:${candidate.cost}',
+      missing.join(','),
     ].join('|');
     final cached = _previewCache[cacheKey];
     if (cached != null) return cached;
@@ -374,12 +364,39 @@ class WaveGeneratorPointAnalysis {
       candidates: candidates,
       iterations: iterations,
       seed: _stablePreviewSeed + waveNumber,
+      missingDataTypes: List.unmodifiable(missing),
     );
     if (_previewCache.length >= 64) {
       _previewCache.remove(_previewCache.keys.first);
     }
     _previewCache[cacheKey] = preview;
     return preview;
+  }
+
+  /// Zombie count summed across every wave of the generator: each run buys
+  /// zombies wave by wave with the wave's own pool and budget, so the range
+  /// reflects how a whole playthrough's random spawning behaves.
+  static ZombieCountEstimate simulateTotalZombieCount(
+    WaveGeneratorPropertiesData data,
+  ) {
+    final waves = <({List<int> costs, int points})>[];
+    final missing = <String>[];
+    for (var waveNumber = 1; waveNumber <= data.waves.length; waveNumber++) {
+      final wave = data.waves[waveNumber - 1];
+      if (wave.disableRandomSpawns) continue;
+      final points = pointsAtWave(data, waveNumber);
+      if (points <= 0) continue;
+      final candidates = _resolveCandidates(
+        poolAtWave(data, waveNumber),
+        missing,
+      );
+      if (candidates.isEmpty) continue;
+      waves.add((
+        costs: [for (final candidate in candidates) candidate.cost],
+        points: points,
+      ));
+    }
+    return ZombieCountSimulation.simulateTotal(waves);
   }
 
   static bool showExpectationForWave(
