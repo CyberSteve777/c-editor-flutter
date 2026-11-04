@@ -5473,7 +5473,7 @@ abstract class AppLocalizations {
   /// No description provided for @frozenPlantPlacementHelpConditionBody.
   ///
   /// In en, this message translates to:
-  /// **'Plants can be set to frozen state (icecubed), commonly used in Frostbite Caves levels.'**
+  /// **'Plants can be set to a special state such as frozen (icecubed), commonly used in Frostbite Caves levels, or shadow boosted (shadowboosted).'**
   String get frozenPlantPlacementHelpConditionBody;
 
   /// No description provided for @frozenPlantPlacementHelpLastStandTitle.
@@ -6201,6 +6201,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Jetpack or Bass Zombies drop in from above'**
   String get eventDesc_BassRainZombieSpawnerProps;
+
+  /// No description provided for @eventTitle_HeianNinjaZombieSpawnerProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Ninjimp Airstrike'**
+  String get eventTitle_HeianNinjaZombieSpawnerProps;
+
+  /// No description provided for @eventDesc_HeianNinjaZombieSpawnerProps.
+  ///
+  /// In en, this message translates to:
+  /// **'Ninjimp zombies drop in from above'**
+  String get eventDesc_HeianNinjaZombieSpawnerProps;
+
+  /// No description provided for @eventHelpHeianNinjaRainBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Ninjimp zombies drop onto the lawn during a wave. Use this for Heian Ninjimp or the two-player (new_pvp) variant. Zombie levels follow the lawn’s level sequence.'**
+  String get eventHelpHeianNinjaRainBody;
+
+  /// No description provided for @eventHelpHeianNinjaRainLogic.
+  ///
+  /// In en, this message translates to:
+  /// **'Zombies drop in batches. Control total count, group size, column range, and timing. A red warning message can appear before the event; leave the zombie type empty to use this event only for the subtitle.'**
+  String get eventHelpHeianNinjaRainLogic;
 
   /// No description provided for @eventTitle_BlackHoleWaveActionProps.
   ///

@@ -3088,7 +3088,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get frozenPlantPlacementHelpConditionBody =>
-      'Растения можно установить в замороженное состояние, часто используется на уровнях Ледникового периода.';
+      'Растениям можно задать особое состояние: заморозка (icecubed), часто на уровнях Ледникового периода, или теневое усиление (shadowboosted).';
 
   @override
   String get frozenPlantPlacementHelpLastStandTitle =>
@@ -3507,6 +3507,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get eventDesc_BassRainZombieSpawnerProps => 'Падают басисты';
+
+  @override
+  String get eventTitle_HeianNinjaZombieSpawnerProps =>
+      'Авиаудар ниндзя-бесенят';
+
+  @override
+  String get eventDesc_HeianNinjaZombieSpawnerProps =>
+      'Ниндзя-бесенята падают с неба';
+
+  @override
+  String get eventHelpHeianNinjaRainBody =>
+      'Ниндзя-бесенята падают на газон во время волны. Используйте Heian Ninjimp или вариант для двух игроков (new_pvp). Уровни зомби следуют последовательности уровня газона.';
+
+  @override
+  String get eventHelpHeianNinjaRainLogic =>
+      'Зомби падают группами. Настраивайте общее число, размер группы, диапазон колонок и тайминги. Перед событием может появиться красное предупреждение; оставьте тип зомби пустым, чтобы использовать событие только для субтитров.';
 
   @override
   String get eventTitle_BlackHoleWaveActionProps => 'Чёрная дыра';

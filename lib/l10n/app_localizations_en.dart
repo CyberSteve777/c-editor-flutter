@@ -3077,7 +3077,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get frozenPlantPlacementHelpConditionBody =>
-      'Plants can be set to frozen state (icecubed), commonly used in Frostbite Caves levels.';
+      'Plants can be set to a special state such as frozen (icecubed), commonly used in Frostbite Caves levels, or shadow boosted (shadowboosted).';
 
   @override
   String get frozenPlantPlacementHelpLastStandTitle => 'Intensive Battle Mode';
@@ -3506,6 +3506,21 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventDesc_BassRainZombieSpawnerProps =>
       'Jetpack or Bass Zombies drop in from above';
+
+  @override
+  String get eventTitle_HeianNinjaZombieSpawnerProps => 'Ninjimp Airstrike';
+
+  @override
+  String get eventDesc_HeianNinjaZombieSpawnerProps =>
+      'Ninjimp zombies drop in from above';
+
+  @override
+  String get eventHelpHeianNinjaRainBody =>
+      'Ninjimp zombies drop onto the lawn during a wave. Use this for Heian Ninjimp or the two-player (new_pvp) variant. Zombie levels follow the lawn’s level sequence.';
+
+  @override
+  String get eventHelpHeianNinjaRainLogic =>
+      'Zombies drop in batches. Control total count, group size, column range, and timing. A red warning message can appear before the event; leave the zombie type empty to use this event only for the subtitle.';
 
   @override
   String get eventTitle_BlackHoleWaveActionProps => 'Black Hole';
